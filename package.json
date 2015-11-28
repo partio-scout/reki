@@ -1,0 +1,14 @@
+{
+  "name": "reki",
+  "version": "0.0.0",
+  "description": "Finnjamboree 2016 camp registry system",
+  "engines": {
+    "node": "~4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:partio-scout/reki.git"
+  },
+  "private": true,
+  "licence": "UNLICENCED"
+}
