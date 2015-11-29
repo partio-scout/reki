@@ -17,10 +17,15 @@
     "compression": "^1.6.0",
     "cors": "^2.7.1",
     "errorhandler": "^1.4.2",
+    "history": "^1.13.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "^2.43.0",
+    "react": "^0.14.3",
+    "react-bootstrap": "^0.28.1",
+    "react-dom": "^0.14.3",
+    "react-router": "^1.0.0",
     "serve-favicon": "^2.3.0"
   },
   "devDependencies": {
