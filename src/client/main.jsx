@@ -19,4 +19,4 @@ const routes = (
   </Router>
 );
 
-render(routes, document.body);
+render(routes, document.getElementById('app'));
