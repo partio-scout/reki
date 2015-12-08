@@ -83,8 +83,7 @@
     }
   },
   "validations": [],
-  "relations": {
-  },
+  "relations": {},
   "acls": [
     {
       "principalType": "ROLE",
@@ -92,11 +91,11 @@
       "permission": "DENY"
     },
     {
+      "accessType": "WRITE",
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "DENY",
-      "property": "create",
-      "accessType": "WRITE"
+      "property": "create"
     },
     {
       "principalType": "ROLE",

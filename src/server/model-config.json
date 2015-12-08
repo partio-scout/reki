@@ -23,5 +23,9 @@
   "Registryuser": {
     "dataSource": "db",
     "public": true
+  },
+  "Participant": {
+    "dataSource": "db",
+    "public": true
   }
 }
