@@ -5,6 +5,8 @@
   "main": "src/server/server.js",
   "scripts": {
     "start": "node .",
+    "create-user": "node scripts/create-user.js",
+    "dev-login": "node scripts/dev-login.js",
     "test": "npm run linter && npm run test-mocha",
     "linter": "eslint --ext js --ext jsx src test",
     "test-mocha": "mocha --compilers js:babel-core/register",
@@ -30,6 +32,7 @@
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "^2.43.0",
     "node-sass": "^3.4.2",
+    "passport-saml": "^0.14.0",
     "react": "^0.14.3",
     "react-bootstrap": "^0.28.1",
     "react-dom": "^0.14.3",
@@ -44,6 +47,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
+    "commander": "^2.9.0",
     "eslint": "^1.10.2",
     "eslint-plugin-react": "^3.11.2",
     "http-proxy": "^1.12.0",
