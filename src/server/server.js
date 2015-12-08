@@ -1,11 +1,10 @@
-// Since this file is the one to call babel-core/register, it is the only one that doesn't es6 module syntax
-// Most es6 features are supported by node directly, however. See: https://nodejs.org/en/docs/es6t/
-require('babel-core/register');
+import loopback from 'loopback';
+import boot from 'loopback-boot';
+import path from 'path';
 
-const loopback = require('loopback');
-const boot = require('loopback-boot');
+const app = loopback();
 
-const app = module.exports = loopback();
+export default app;
 
 app.start = function() {
   // start the web server
@@ -15,7 +14,8 @@ app.start = function() {
   });
 };
 
-app.set('standalone', require.main === module);
+const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
+app.set('standalone', require.main.filename === bootstrapFileName);
 app.set('isDev', process.env.NODE_ENV === 'dev');
 
 // Bootstrap the application, configure models, datasources and middleware.

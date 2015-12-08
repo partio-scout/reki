@@ -21,4 +21,6 @@ Note that the virtual machine has the `NODE_ENV`-environment variable set to `de
 By default file change events do not propagate between the host and virtual machine. Therefore the webpack development server and test watcher won't function properly. The notification can be easily enabled though with a vagrant plugin. If you already have vagrant running, destroy your current virtual machine with `vagrant destroy`. Then run `vagrant plugin install vagrant-notify-forwarder`, then recreate the virtual machine with `vagrant up` and enjoy your file watchers!
 
 ## ES6
-ES6 syntax is supported in almost all files. `src/server/server.js` doesn't support ES6 at all, since it is the entry point that introduces the babel compiler. All modules loaded by loopback (such as boot scripts, configuration override files and model js files) support all other es6 features but module exports. Because the module export interface differs from the commonjs interface expected by loopback, the use of `module.exports` is required. Elsewhere, all es6 features are available.
+ES6 syntax is supported and should be used in all files, including the module syntax.
+
+The only exception is formed by the modules loaded by loopback (such as boot scripts, configuration override files and model js files). They cannot use the export syntax of es6 modules because the module export interface differs from the commonjs interface expected by loopback. In these files, use `module.exports` instead of the es6 `export`.
