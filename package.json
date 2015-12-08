@@ -5,6 +5,7 @@
   "main": "src/server/server.js",
   "scripts": {
     "start": "node .",
+    "create-user": "node scripts/create-user.js",
     "dev-login": "node scripts/dev-login.js",
     "test": "npm run linter && npm run test-mocha",
     "linter": "eslint --ext js --ext jsx src test",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
+    "commander": "^2.9.0",
     "eslint": "^1.10.2",
     "eslint-plugin-react": "^3.11.2",
     "http-proxy": "^1.12.0",
