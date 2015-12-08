@@ -5,6 +5,7 @@
   "main": "src/server/server.js",
   "scripts": {
     "start": "node .",
+    "dev-login": "node scripts/dev-login.js",
     "test": "npm run linter && npm run test-mocha",
     "linter": "eslint --ext js --ext jsx src test",
     "test-mocha": "mocha --compilers js:babel-core/register",
