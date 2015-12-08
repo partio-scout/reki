@@ -7,28 +7,48 @@
     "start": "node .",
     "test": "npm run linter && npm run test-mocha",
     "linter": "eslint --ext js --ext jsx src test",
-    "test-mocha": "mocha --compilers js:babel-core/register"
+    "test-mocha": "mocha --compilers js:babel-core/register",
+    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.js"
   },
   "dependencies": {
     "babel-core": "^6.2.1",
+    "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.1.18",
+    "babel-preset-react": "^6.1.18",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
+    "bootstrap": "^3.3.6",
+    "bootstrap-sass": "^3.3.6",
     "compression": "^1.6.0",
     "cors": "^2.7.1",
+    "css-loader": "^0.23.0",
     "errorhandler": "^1.4.2",
+    "file-loader": "^0.8.5",
+    "history": "^1.13.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "^2.43.0",
-    "serve-favicon": "^2.3.0"
+    "node-sass": "^3.4.2",
+    "react": "^0.14.3",
+    "react-bootstrap": "^0.28.1",
+    "react-dom": "^0.14.3",
+    "react-router": "^1.0.0",
+    "sass-loader": "^3.1.2",
+    "serve-favicon": "^2.3.0",
+    "style-loader": "^0.13.0",
+    "uglify-js": "^2.6.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.9"
   },
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
     "eslint": "^1.10.2",
     "eslint-plugin-react": "^3.11.2",
-    "mocha": "^2.3.4"
+    "http-proxy": "^1.12.0",
+    "mocha": "^2.3.4",
+    "webpack-dev-server": "^1.14.0"
   },
   "engines": {
     "node": "~4.2.2",

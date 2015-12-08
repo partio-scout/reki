@@ -1,0 +1,72 @@
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+
+// Colors
+$blue: rgb(54, 169, 225);
+$green: rgb(0, 168, 112);
+$yellow: rgb(255, 237, 0);
+$orange: rgb(231, 64, 17);
+$purple: rgb(184, 21, 112);
+$white: #fff;
+$black: #000;
+$pale-grey: #f7f7f5;
+
+$body-bg: $pale-grey;
+
+$brand-primary: $blue;
+$brand-success: $green;
+$brand-info: $blue;
+$brand-warning: $yellow;
+$brand-danger: $orange;
+
+$navbar-default-bg: $green;
+$navbar-default-brand-color: $white;
+$navbar-default-brand-hover-color: $white;
+$navbar-border-radius: 0;
+$navbar-default-link-color: $white;
+$navbar-default-link-hover-color: $white;
+$navbar-default-link-hover-bg: darken($green, 3%);
+
+$border-radius-base: 3px;
+$border-radius-large: 0;
+$border-radius-small: 0;
+
+@import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
+.delete {
+  color: $brand-danger;
+
+  &:hover {
+    color: darken($brand-danger, 6.5%);
+  }
+}
+
+.toolBar {
+  margin: 20px 0;
+}
+
+.table thead tr th {
+  background: $green;
+  color: $white;
+  border: 0;
+}
+
+.acceptance-colunms {
+  text-align: center;
+}
+
+table {
+  border-bottom: 1px solid $table-border-color;
+}
+
+.purchase-order h2 {
+  margin: 10px 0;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+.field p.form-control-static {
+  display: none; // this is a dirty hack - we use FormControls.Static to hold several fields on one row
+}
+
