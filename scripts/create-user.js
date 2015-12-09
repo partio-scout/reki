@@ -1,9 +1,6 @@
-const Promise = require('bluebird');
-
-const path = require('path');
-const serverPath = path.resolve(__dirname, '../src/server');
-const app = require(serverPath + '/server.js');
-const crypto = require('crypto');
+import Promise from 'bluebird';
+import app from '../src/server/server.js';
+import crypto from 'crypto';
 
 const Registryuser = app.models.Registryuser;
 const createUser = Promise.promisify(Registryuser.create, { context: Registryuser });

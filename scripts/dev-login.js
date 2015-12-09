@@ -1,6 +1,4 @@
-const path = require('path');
-const serverPath = path.resolve(__dirname, '../src/server');
-const app = require(path.resolve(serverPath, 'server.js'));
+import app from '../src/server/server.js';
 
 const email = process.argv[2];
 
