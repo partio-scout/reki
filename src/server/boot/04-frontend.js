@@ -6,7 +6,7 @@ const publicPath = path.resolve(__dirname, '../../public');
 function startDevServer() {
   const webpack = require('webpack');
   const WebpackDevServer = require('webpack-dev-server');
-  const webpackConfig = require('./../../../webpack.development.config');
+  const webpackConfig = require('./../../../webpack.development.config.babel').default;
 
   let bundleStart = null;
   const compiler = webpack(webpackConfig);
