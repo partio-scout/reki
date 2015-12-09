@@ -1,4 +1,4 @@
-module.exports = function(app) {
+export default function(app) {
   if (app.get('isDev') && app.get('standalone')) {
     app.get('/dev-login/:id', (req, res) => {
       const id = req.params.id;
@@ -9,4 +9,4 @@ module.exports = function(app) {
       });
     });
   }
-};
+}

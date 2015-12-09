@@ -1,6 +1,6 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
 
-module.exports = function(server, cb) {
+export default function(server, cb) {
   if (!server.get('standalone')) {
     return cb();
   }
@@ -17,4 +17,4 @@ module.exports = function(server, cb) {
       : db.autoupdate(modelsToUpdate).then(() => console.log(`Models: ${modelsToUpdate} updated.`)))
     .catch(err => { console.error(`Error: ${err} when autoupdating models: ${modelsToUpdate}`); return Promise.reject(err); })
     .asCallback(cb);
-};
+}

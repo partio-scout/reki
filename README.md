@@ -22,5 +22,3 @@ By default file change events do not propagate between the host and virtual mach
 
 ## ES6
 ES6 syntax is supported and should be used in all files, including the module syntax.
-
-The only exception is formed by the modules loaded by loopback (such as boot scripts, configuration override files and model js files). They cannot use the export syntax of es6 modules because the module export interface differs from the commonjs interface expected by loopback. In these files, use `module.exports` instead of the es6 `export`.
