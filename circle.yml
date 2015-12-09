@@ -3,3 +3,8 @@ machine:
     version: 4.2.2
   environment:
     TEST_DATABASE_URL: postgres://ubuntu@localhost/circle_test
+deployment:
+  development:
+    branch: master
+    heroku:
+      appname: reki-development
