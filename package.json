@@ -7,6 +7,7 @@
     "start": "node .",
     "create-user": "babel-node scripts/create-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
+    "postinstall": "scripts/deploy-bundle.sh",
     "test": "npm run linter && npm run test-mocha",
     "linter": "eslint --ext js --ext jsx src test webpack.development.config.babel.js webpack.production.config.babel.js",
     "test-mocha": "mocha --compilers js:babel-core/register",
