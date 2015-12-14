@@ -131,4 +131,6 @@ Vagrant.configure(2) do |config|
     s.privileged = false
     s.inline = $install_project
   end
+  puts "HOST OS:"
+  puts RbConfig::CONFIG['host_os']
 end
