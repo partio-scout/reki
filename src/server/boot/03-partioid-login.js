@@ -1,6 +1,6 @@
-const fs = require('fs');
-const SAML = require('passport-saml').SAML;
-const path = require('path');
+import fs from 'fs';
+import { SAML } from 'passport-saml';
+import path from 'path';
 
 const useProductionPartioID = process.env.PARTIOID_USE_PRODUCTION === 'true';
 const partioIDRemoteName = useProductionPartioID ? 'id' : 'qaid';
@@ -17,8 +17,7 @@ function processError(req, res, err) {
   console.error(err);
 }
 
-module.exports = function(app) {
-
+export default function(app) {
   app.get('/saml/login', (req, res) =>
     partioid.getAuthorizeUrl(req, (err, url) => {
       if (err) {
@@ -60,4 +59,4 @@ module.exports = function(app) {
       }
     })
   );
-};
+}

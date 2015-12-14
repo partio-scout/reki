@@ -1,12 +1,14 @@
-const loopback = require('loopback');
-const path = require('path');
+import loopback from 'loopback';
+import path from 'path';
+
+import webpack from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
+import webpackConfig from './../../../webpack.development.config.babel';
+import httpProxy from 'http-proxy';
 
 const publicPath = path.resolve(__dirname, '../../public');
 
 function startDevServer() {
-  const webpack = require('webpack');
-  const WebpackDevServer = require('webpack-dev-server');
-  const webpackConfig = require('./../../../webpack.development.config');
 
   let bundleStart = null;
   const compiler = webpack(webpackConfig);
@@ -31,7 +33,6 @@ function startDevServer() {
 }
 
 function redirectBuildPathToDevServer(server) {
-  const httpProxy = require('http-proxy');
   const proxy = httpProxy.createProxyServer({
     changeOrigin: true,
     ws: true,
@@ -46,7 +47,7 @@ function redirectBuildPathToDevServer(server) {
   server.on('upgrade', (req, socket, head) => proxy.ws(req, socket, head));
 }
 
-module.exports = function(server) {
+export default function(server) {
   server.on('started', () => {
     if (server.get('isDev')) {
       startDevServer();
@@ -55,4 +56,4 @@ module.exports = function(server) {
 
     server.use(loopback.static(publicPath));
   });
-};
+}

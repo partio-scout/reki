@@ -2,21 +2,24 @@
   "name": "reki",
   "version": "0.0.0",
   "description": "Finnjamboree 2016 camp registry system",
-  "main": "src/server/server.js",
+  "main": "src/server/bootstrap.js",
   "scripts": {
     "start": "node .",
-    "create-user": "node scripts/create-user.js",
-    "dev-login": "node scripts/dev-login.js",
+    "create-user": "babel-node scripts/create-user.js",
+    "dev-login": "babel-node scripts/dev-login.js",
     "test": "npm run linter && npm run test-mocha",
-    "linter": "eslint --ext js --ext jsx src test",
+    "linter": "eslint --ext js --ext jsx src test webpack.development.config.babel.js webpack.production.config.babel.js",
     "test-mocha": "mocha --compilers js:babel-core/register",
-    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.js"
+    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js"
   },
   "dependencies": {
-    "babel-core": "^6.2.1",
+    "babel-core": "^6.3.15",
     "babel-loader": "^6.2.0",
-    "babel-preset-es2015": "^6.1.18",
-    "babel-preset-react": "^6.1.18",
+    "babel-plugin-add-module-exports": "^0.1.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-es2015-node4": "^2.0.2",
+    "babel-preset-react": "^6.3.13",
+    "babel-register": "^6.3.13",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
     "bootstrap": "^3.3.6",
@@ -45,6 +48,7 @@
     "webpack": "^1.12.9"
   },
   "devDependencies": {
+    "babel-cli": "^6.3.15",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
     "commander": "^2.9.0",
@@ -64,7 +68,10 @@
   },
   "babel": {
     "presets": [
-      "es2015"
+      "es2015-node4"
+    ],
+    "plugins": [
+      "add-module-exports"
     ]
   },
   "private": true,
