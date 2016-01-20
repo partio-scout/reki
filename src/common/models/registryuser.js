@@ -1,2 +1,2 @@
-module.exports = function(Registryuser) {
-};
+export default function(Registryuser) {
+}

@@ -1,0 +1,163 @@
+{
+  "name": "Participant",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "participant"
+    }
+  },
+  "properties": {
+    "participantId": {
+      "type": "Number",
+      "id": true,
+      "generated": true,
+      "postgresql": {
+        "columnName": "participant_id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "firstName": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "first_name",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "lastName": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "last_name",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "nonScout": {
+      "type": "boolean",
+      "required": true,
+      "postgresql": {
+        "columnName": "non_scout",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "memberNumber": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "member_number",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "dateOfBirth": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "date_of_birth",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "phoneNumber": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "phone_number",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "email": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "email",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "homeCity": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "home_city",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "swimmingSkill": {
+      "type": "boolean",
+      "postgresql": {
+        "columnName": "swimming_skill",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "gender": {
+      "type": "boolean",
+      "description": "FALSE for men, TRUE for female, NULL for undefined",
+      "postgresql": {
+        "columnName": "gender",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "interestedInHomeHospitality": {
+      "type": "boolean",
+      "postgresql": {
+        "columnName": "interested_in_home_hospitality",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": []
+}

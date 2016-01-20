@@ -6,23 +6,23 @@
     "compression": {},
     "cors": {
       "params": {
-      "origin": true,
-      "credentials": true,
-      "maxAge": 86400
+        "origin": true,
+        "credentials": true,
+        "maxAge": 86400
+      }
     }
-  }
   },
-  "session": {
-  },
-  "auth": {
-  },
+  "session": {},
+  "auth": {},
   "parse": {
-    "body-parser#urlencoded": { "params": { "extended": true } }
+    "body-parser#urlencoded": {
+      "params": {
+        "extended": true
+      }
+    }
   },
-  "routes": {
-  },
-  "files": {
-  },
+  "routes": {},
+  "files": {},
   "final": {
     "loopback#urlNotFound": {}
   },
