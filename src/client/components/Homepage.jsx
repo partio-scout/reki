@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function getHomepage() {
+export function getHomepage() {
   class HomePage extends React.Component {
     render() {
       return (
