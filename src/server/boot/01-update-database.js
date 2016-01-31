@@ -1,4 +1,5 @@
 import Promise from 'bluebird';
+import { getModelCreationList } from '../../common/models-list';
 
 export default function(server, cb) {
   if (!server.get('standalone')) {
@@ -8,7 +9,7 @@ export default function(server, cb) {
   const db = server.datasources.db;
   const isActual = Promise.promisify(db.isActual, { context: db });
 
-  const modelsToUpdate = require('../models-list');
+  const modelsToUpdate = getModelCreationList();
 
   db.setMaxListeners(40);
   isActual(modelsToUpdate)
