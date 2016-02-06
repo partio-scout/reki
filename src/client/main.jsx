@@ -6,16 +6,21 @@ import { render } from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
-import getApp from './components/App';
-import getHomepage from './components/Homepage';
+import * as components from './components';
 
-const app = getApp();
-const homepage = getHomepage();
+const app = components.getApp();
+const homepage = components.getHomepage();
+const ParticipantListPage = components.getParticipantListPage();
+const ParticipantDetailsPage = components.getParticipantDetailsPage();
 
 const routes = (
   <Router history={ createBrowserHistory() }>
     <Route path="/" component={ app }>
       <IndexRoute component={ homepage } />
+      <Route path="participants">
+        <IndexRoute component={ ParticipantListPage } />
+        <Route path=":id" component={ ParticipantDetailsPage } />
+      </Route>
     </Route>
   </Router>
 );
