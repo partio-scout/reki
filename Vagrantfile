@@ -75,6 +75,8 @@ npm install || exit 1
 sudo -u postgres psql -f vagrant/drop-database-and-user.sql || exit 1
 sudo -u postgres psql -f vagrant/create-database-and-user.sql || exit 1
 
+npm run seed-database || exit 1
+
 exit 0
 SCRIPT
 
