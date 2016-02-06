@@ -1,10 +1,39 @@
 import React from 'react';
 
-export function getParticipantDetailsPage() {
+export function getParticipantDetailsPage(ParticipantStore, ParticipantActions) {
   class ParticipantDetailsPage extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = ParticipantStore.getState();
+    }
+
+    componentWillMount() {
+      ParticipantActions.fetchParticipantById(this.props.params.id);
+    }
+
+    componentDidMount() {
+      ParticipantStore.listen(this.onChange);
+    }
+
+    componentWillUnMount() {
+      ParticipantStore.unlisten(this.onChange);
+    }
+
+    onChange(state) {
+      this.setState(state);
+    }
+
     render() {
+      let participantName = '';
+      if (this.state.participantDetails) {
+        participantName = this.state.participantDetails.firstName;
+      }
+
       return (
-        <h1>{ `Leiriläinen ${this.props.params.id}` }</h1>
+        <div>
+          <h1>{ `Leiriläinen ${this.props.params.id}` }</h1>
+          { participantName }
+        </div>
       );
     }
   }

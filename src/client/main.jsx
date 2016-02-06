@@ -5,13 +5,27 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
+import Alt from 'alt';
+import Superagent from 'superagent';
+import SuperagentAsPromised from 'superagent-as-promised';
 
 import * as components from './components';
+import * as stores from './stores';
+import * as actions from './actions';
+
+const request = SuperagentAsPromised(Superagent);
+import { getRestfulResource } from './utils';
+const RestfulResource = getRestfulResource(request);
+
+const participant = new RestfulResource('/api/participants/');
+const alt = new Alt();
+const participantActions = actions.getParticipantActions(alt, participant);
+const participantStore = stores.getParticipantStore(alt, participantActions);
 
 const app = components.getApp();
 const homepage = components.getHomepage();
 const ParticipantListPage = components.getParticipantListPage();
-const ParticipantDetailsPage = components.getParticipantDetailsPage();
+const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 
 const routes = (
   <Router history={ createBrowserHistory() }>
