@@ -7,6 +7,7 @@ import webpackConfig from './../../../webpack.development.config.babel';
 import httpProxy from 'http-proxy';
 
 const publicPath = path.resolve(__dirname, '../../public');
+const indexFilePath = path.resolve(publicPath, 'index.html');
 
 function startDevServer() {
 
@@ -55,5 +56,6 @@ export default function(server) {
     }
 
     server.use(loopback.static(publicPath));
+    server.get('*', (req, res) => res.sendFile(indexFilePath));
   });
 }
