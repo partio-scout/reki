@@ -10,11 +10,17 @@ import * as components from './components';
 
 const app = components.getApp();
 const homepage = components.getHomepage();
+const ParticipantListPage = components.getParticipantListPage();
+const ParticipantDetailsPage = components.getParticipantDetailsPage();
 
 const routes = (
   <Router history={ createBrowserHistory() }>
     <Route path="/" component={ app }>
       <IndexRoute component={ homepage } />
+      <Route path="participants">
+        <IndexRoute component={ ParticipantListPage } />
+        <Route path=":id" component={ ParticipantDetailsPage } />
+      </Route>
     </Route>
   </Router>
 );
