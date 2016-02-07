@@ -1,22 +1,22 @@
 import React from 'react';
 
-export function getParticipantDetailsPage(ParticipantStore, ParticipantActions) {
+export function getParticipantDetailsPage(participantStore, participantActions) {
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
-      this.state = ParticipantStore.getState();
+      this.state = participantStore.getState();
     }
 
     componentWillMount() {
-      ParticipantActions.fetchParticipantById(this.props.params.id);
+      participantActions.fetchParticipantById(this.props.params.id);
     }
 
     componentDidMount() {
-      ParticipantStore.listen(this.onChange);
+      participantStore.listen(this.onChange.bind(this));
     }
 
     componentWillUnMount() {
-      ParticipantStore.unlisten(this.onChange);
+      participantStore.unlisten(this.onChange.bind(this));
     }
 
     onChange(state) {
@@ -25,14 +25,16 @@ export function getParticipantDetailsPage(ParticipantStore, ParticipantActions) 
 
     render() {
       let participantName = '';
+      let nonScout = '';
       if (this.state.participantDetails) {
-        participantName = this.state.participantDetails.firstName;
+        participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
+        nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
       }
 
       return (
         <div>
-          <h1>{ `Leiriläinen ${this.props.params.id}` }</h1>
-          { participantName }
+          <h1><b>{ participantName }</b></h1>
+          <p>{ nonScout }</p>
         </div>
       );
     }
@@ -46,4 +48,3 @@ export function getParticipantDetailsPage(ParticipantStore, ParticipantActions) 
 
   return ParticipantDetailsPage;
 }
-

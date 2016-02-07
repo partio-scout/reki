@@ -12,14 +12,14 @@ import SuperagentAsPromised from 'superagent-as-promised';
 import * as components from './components';
 import * as stores from './stores';
 import * as actions from './actions';
+import { getRestfulResource } from './utils';
 
 const request = SuperagentAsPromised(Superagent);
-import { getRestfulResource } from './utils';
 const RestfulResource = getRestfulResource(request);
 
-const participant = new RestfulResource('/api/participants/');
+const participantResource = new RestfulResource('/api/participants/');
 const alt = new Alt();
-const participantActions = actions.getParticipantActions(alt, participant);
+const participantActions = actions.getParticipantActions(alt, participantResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
 
 const app = components.getApp();

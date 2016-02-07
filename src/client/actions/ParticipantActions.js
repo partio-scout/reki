@@ -1,19 +1,21 @@
-export function getParticipantActions(alt, Participant) {
+export function getParticipantActions(alt, participantResource) {
   class ParticipantActions {
 
     fetchParticipantById(participantId) {
-      this.dispatch();
-      Participant.findById(participantId)
-        .then(participant => this.actions.updateParticipantById(participant))
-        .catch(err => this.actions.loadingParticipantByIdFailed(err));
+      return dispatch => {
+        dispatch();
+        participantResource.findById(participantId)
+          .then(participant => this.updateParticipantById(participant))
+          .catch(err => this.loadingParticipantByIdFailed(err));
+      };
     }
 
     updateParticipantById(participant) {
-      this.dispatch(participant);
+      return participant;
     }
 
     loadingParticipantByIdFailed(err) {
-      this.dispatch(err);
+      return err;
     }
 
   }
