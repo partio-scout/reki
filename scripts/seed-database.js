@@ -1,19 +1,21 @@
 import path from 'path';
+import Promise from 'bluebird';
 
 import app from '../src/server/server';
 import { getModelCreationList, getFixtureCreationList } from '../src/common/models-list';
 
 function getFixtures(modelName) {
-  return require(path.resolve(`../src/common/fixtures/${modelName}.json`));
+  return Promise.try(() => require(path.resolve(__dirname, `../src/common/fixtures/${modelName}`)));
 }
 
 function createFixtures(modelName) {
-  const fixtureData = getFixtures(modelName);
   const model = app.models[modelName];
+  const createModel = Promise.promisify(model.create, { context: model });
 
-  return model.create(fixtureData)
-    .then(() => console.log(`Created ${fixtureData.length} fixtures for model ${modelName}`),
-          () => console.error(`Fixture creation for model ${modelName} failed.`));
+  return getFixtures(modelName)
+    .then(fixtureData => createModel(fixtureData)
+      .then(() => console.log(`Created ${fixtureData.length} fixtures for model ${modelName}`)))
+    .catch(err => console.error(`Fixture creation for model ${modelName} failed. ${err}`));
 }
 
 // Pikkukikka joka suorittaa promiseReturningFunctionin peräkkäin jokaiselle values-listan jäsenelle niin,
