@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Grid } from 'react-bootstrap';
 import { Link } from 'react-router';
 
-export default function getApp() {
+export function getApp() {
   class App extends React.Component {
     render() {
       return (
