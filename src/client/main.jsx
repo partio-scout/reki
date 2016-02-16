@@ -16,8 +16,8 @@ import { getRestfulResource } from './utils';
 
 const request = SuperagentAsPromised(Superagent);
 const RestfulResource = getRestfulResource(request);
-
 const participantResource = new RestfulResource('/api/participants/');
+
 const alt = new Alt();
 const participantActions = actions.getParticipantActions(alt, participantResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);

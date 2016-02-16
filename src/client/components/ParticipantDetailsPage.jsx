@@ -34,12 +34,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
         nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
-        const [year, month, time] = `${this.state.participantDetails.dateOfBirth}`.split('-');
-        const day = `${time}`.substring(0,2);
-        dateOfBirth = `${day}.${month}.${year}`;
+        const dateOfBirthString = this.state.participantDetails.dateOfBirth;
+        const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
+        const day = time.substring(0,2);
+        dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
+
         participantPhone = `0${this.state.participantDetails.phoneNumber}`;
-        homeCity = `${this.state.participantDetails.homeCity}`;
-        email = `${this.state.participantDetails.email}`;
+        homeCity = this.state.participantDetails.homeCity || '-';
+        email = this.state.participantDetails.email || '-';
       }
 
       return (
@@ -56,11 +58,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 3 }>
                 <Panel header="Yhteystiedot">
                   <p className="text-muted"> Puhelin </p>
-                  <p >{ `${participantPhone}` }</p>
+                  <p >{ participantPhone }</p>
                   <p className="text-muted"> Kotikaupunki</p>
-                  <p >{ `${homeCity}` }</p>
+                  <p >{ homeCity }</p>
                   <p className="text-muted"> Sähköposti</p>
-                  <p >{ `${email}` }</p>
+                  <p >{ email }</p>
                 </Panel>
               </Col>
             </Row>
