@@ -1,13 +1,17 @@
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
 // Colors
-$blue: rgb(54, 169, 225);
-$green: rgb(0, 168, 112);
-$yellow: rgb(255, 237, 0);
-$orange: rgb(231, 64, 17);
+$blue: rgb(53, 152, 220);
+$green: rgb(27, 188, 129);
+$yellow: rgb(247, 200, 16);
+$red: rgb(236, 64, 75);
 $purple: rgb(184, 21, 112);
 $white: #fff;
 $black: #000;
+$pale-grey: #f7f7f7;
+$light-grey: #e9edef;
+$mid-grey: #2b3643;
+$dark-grey: #262626;
 $pale-grey: #f7f7f5;
 
 $body-bg: $pale-grey;
@@ -16,21 +20,91 @@ $brand-primary: $blue;
 $brand-success: $green;
 $brand-info: $blue;
 $brand-warning: $yellow;
-$brand-danger: $orange;
+$brand-danger: $red;
 
-$navbar-default-bg: $green;
+$navbar-default-bg: $mid-grey;
 $navbar-default-brand-color: $white;
 $navbar-default-brand-hover-color: $white;
 $navbar-border-radius: 0;
 $navbar-default-link-color: $white;
 $navbar-default-link-hover-color: $white;
-$navbar-default-link-hover-bg: darken($green, 3%);
+$navbar-default-link-hover-bg: lighten($mid-grey, 3%);
 
-$border-radius-base: 3px;
-$border-radius-large: 0;
-$border-radius-small: 0;
+$border-radius-base: 2px;
+$border-radius-large: 2px;
+$border-radius-small: 2px;
+
+$btn-font-weight: bold;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
+/**
+ * Scaffolding
+ */
+
+body {
+  color: $dark-grey;
+}
+
+/**
+ * Tables
+ */
+
+table {
+  border: 1px solid $table-border-color;
+}
+
+.table thead tr th {
+  background: $white;
+  color: $dark-grey;
+  border: 0;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+  background-color: $white;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n) {
+  background-color: lighten($light-grey, 5%);
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+/**
+ * Buttons
+ */
+
+.btn {
+  border: 0;
+  transition: 150ms all ease-in-out;
+}
+
+/**
+ * Navbar
+ */
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  transition: 150ms background ease-in-out;
+}
+
+/**
+ *
+ */
+
+.acceptance-colunms {
+  text-align: center;
+}
+
+.purchase-order h2 {
+  margin: 10px 0;
+}
+
+.field p.form-control-static {
+  display: none; // this is a dirty hack - we use FormControls.Static to hold several fields on one row
+}
 
 .delete {
   color: $brand-danger;
@@ -43,30 +117,3 @@ $border-radius-small: 0;
 .toolBar {
   margin: 20px 0;
 }
-
-.table thead tr th {
-  background: $green;
-  color: $white;
-  border: 0;
-}
-
-.acceptance-colunms {
-  text-align: center;
-}
-
-table {
-  border-bottom: 1px solid $table-border-color;
-}
-
-.purchase-order h2 {
-  margin: 10px 0;
-}
-
-td {
-  vertical-align: middle !important;
-}
-
-.field p.form-control-static {
-  display: none; // this is a dirty hack - we use FormControls.Static to hold several fields on one row
-}
-
