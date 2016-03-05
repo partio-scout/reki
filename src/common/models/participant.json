@@ -82,13 +82,13 @@
       }
     },
     "phoneNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "phone_number",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
         "nullable": "YES"
       }
     },

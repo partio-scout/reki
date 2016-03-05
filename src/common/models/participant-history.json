@@ -1,9 +1,13 @@
 {
-  "name": "participant-history",
+  "name": "ParticipantHistory",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "participant_history"
+    }
   },
   "properties": {
     "departed": {
@@ -15,7 +19,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "participant": {
+      "type": "belongsTo",
+      "model": "Participant",
+      "foreignKey": ""
+    }
+  },
   "acls": [],
   "methods": {}
 }
