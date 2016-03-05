@@ -82,13 +82,13 @@
       }
     },
     "phoneNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "phone_number",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
         "nullable": "YES"
       }
     },
@@ -127,7 +127,7 @@
     },
     "gender": {
       "type": "boolean",
-      "description": "FALSE for men, TRUE for female, NULL for undefined",
+      "description": "TRUE for male, FALSE for female, NULL for undefined",
       "postgresql": {
         "columnName": "gender",
         "dataType": "boolean",
