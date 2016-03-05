@@ -83,7 +83,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "auditEvents": {
+      "type": "hasMany",
+      "model": "AuditEvent",
+      "foreignKey": "registryuserId"
+    }
+  },
   "acls": [
     {
       "principalType": "ROLE",
