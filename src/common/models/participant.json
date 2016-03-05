@@ -150,7 +150,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "presenceHistory": {
+      "type": "hasMany",
+      "model": "participant-history",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",
@@ -165,5 +171,5 @@
       "permission": "ALLOW"
     }
   ],
-  "methods": []
+  "methods": {}
 }

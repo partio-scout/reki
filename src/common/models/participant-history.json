@@ -1,0 +1,21 @@
+{
+  "name": "participant-history",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "departed": {
+      "type": "date",
+      "required": true
+    },
+    "arrived": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

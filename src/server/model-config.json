@@ -27,5 +27,9 @@
   "Participant": {
     "dataSource": "db",
     "public": true
+  },
+  "participant-history": {
+    "dataSource": "db",
+    "public": true
   }
 }
