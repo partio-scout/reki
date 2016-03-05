@@ -3,21 +3,45 @@ import app from '../src/server/server.js';
 import faker from 'faker';
 
 const ParticipantModel = app.models.Participant;
+const createParticipant = Promise.promisify(ParticipantModel.create, { context: ParticipantModel });
+
+var opts = require('commander')
+  .usage('<amount of fake participants to create>')
+  .parse(process.argv);
+
+if (opts.args.length > 1) {
+  opts.outputHelp();
+  console.error('Please provide amount of test data to create.');
+  process.exit(1);
+}
+const amountToCreate = opts.args.length == 1 ? opts.args[0] : 5;
+
 faker.locale = 'it';
 
-let dob = faker.date.past(30, new Date("Sat Sep 20 2004"));
-dob = dob.getFullYear() + "-" + dob.getMonth() + "-" + dob.getDate();
+function createMockParticipants(i) {
+  let dob = faker.date.past(30, new Date("Sat Sep 20 2004"));
+  dob = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
 
-const participant = {
-  "firstName": faker.name.firstName(),
-  "lastName": faker.name.lastName(),
-  "nonScout": Math.random() < 0.1,
-  "memberNumber": Math.floor(Math.random()*10000000),
-  "dateOfBirth": dob,
-  "phoneNumber": faker.phone.phoneNumber('050 #######'),
-  "email": faker.internet.email(),
-  "homeCity": faker.address.city()
+  const participant = {
+    "firstName": faker.name.firstName(),
+    "lastName": faker.name.lastName(),
+    "nonScout": Math.random() < 0.1,
+    "memberNumber": Math.floor(Math.random()*10000000),
+    "dateOfBirth": dob,
+    "phoneNumber": faker.phone.phoneNumber('050 #######'),
+    "email": faker.internet.email(),
+    "homeCity": faker.address.city()
+  }
+
+  createParticipant(participant)
+  .then(createdParticipantInfo => {
+    console.log('Created a participant');
+    i > 1 ? createMockParticipants(i-1) : '';
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
 }
-console.log('Attempting to create fake data.');
-ParticipantModel.create(participant);
-console.log('Succesfully created a fake participant!');
+console.log('Attempting to create mock data.');
+createMockParticipants(amountToCreate);
