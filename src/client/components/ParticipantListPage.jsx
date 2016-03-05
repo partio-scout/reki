@@ -1,6 +1,9 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import { ParticipantRow } from './ParticipantRow';
+import { ListOffsetSelector } from './ListOffsetSelector';
+
+const chunkSize = 20;
 
 export function getParticipantListPage(participantStore, participantActions) {
   class ParticipantListPage extends React.Component {
@@ -12,7 +15,8 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     componentDidMount() {
       participantStore.listen(this.onParticipantStoreChange.bind(this));
-      participantActions.loadParticipantList(this.state.participantsOffset, 20);
+      participantActions.loadParticipantCount();
+      participantActions.loadParticipantList(this.state.participantsOffset, chunkSize);
     }
 
     componentWillUnmount() {
@@ -23,10 +27,20 @@ export function getParticipantListPage(participantStore, participantActions) {
       this.setState(state);
     }
 
+    handleOffsetSelectionChanged(newOffset) {
+      participantActions.loadParticipantList(newOffset, chunkSize);
+    }
+
     render() {
       return (
         <div>
           <h1>Leiriläiset</h1>
+          <ListOffsetSelector
+            offset={ this.state.participantsOffset }
+            count={ this.state.participantCount }
+            chunkSize={ chunkSize }
+            onOffsetChanged={ this.handleOffsetSelectionChanged }
+          />
           <Table striped>
             <thead>
               <tr>

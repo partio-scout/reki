@@ -38,6 +38,23 @@ export function getParticipantActions(alt, participantResource) {
     participantListUpdateFailed(error) {
       return error;
     }
+
+    loadParticipantCount() {
+      return dispatch => {
+        dispatch();
+        participantResource.raw('get', 'count')
+          .then(response => this.participantCountUpdated(response.count),
+                err => this.participantCountUpdateFailed(err));
+      };
+    }
+
+    participantCountUpdated(newCount) {
+      return newCount;
+    }
+
+    participantCountUpdateFailed(err) {
+      return err;
+    }
   }
 
   return alt.createActions(ParticipantActions);
