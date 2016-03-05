@@ -21,16 +21,26 @@ faker.locale = 'it';
 function createMockParticipants(i) {
   let dob = faker.date.past(30, new Date("Sat Sep 20 2004"));
   dob = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
+  const swimmingSkill = Math.random() < 0.7 ? Math.random() < 0.8 : null;
+
+  let gender = Math.random() < 0.7;
+  const genderName = gender ? 'male' : 'female'
+  gender = Math.random() < 0.1 ? null : gender
+
+  const interestedInHomeHospitality = Math.random() < 0.7 ? Math.random() < 0.1 : null;
 
   const participant = {
-    "firstName": faker.name.firstName(),
+    "firstName": faker.name.firstName(gender ? 'male' : 'female'),
     "lastName": faker.name.lastName(),
     "nonScout": Math.random() < 0.1,
     "memberNumber": Math.floor(Math.random()*10000000),
     "dateOfBirth": dob,
     "phoneNumber": faker.phone.phoneNumber('050 #######'),
     "email": faker.internet.email(),
-    "homeCity": faker.address.city()
+    "homeCity": faker.address.city(),
+    "swimmingSkill": swimmingSkill,
+    "gender": gender,
+    "interestedInHomeHospitality": interestedInHomeHospitality
   }
 
   createParticipant(participant)
@@ -41,7 +51,7 @@ function createMockParticipants(i) {
   .catch(err => {
     console.log(err);
   });
-
 }
+
 console.log('Attempting to create mock data.');
 createMockParticipants(amountToCreate);
