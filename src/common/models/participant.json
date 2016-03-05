@@ -127,7 +127,7 @@
     },
     "gender": {
       "type": "boolean",
-      "description": "FALSE for men, TRUE for female, NULL for undefined",
+      "description": "TRUE for male, FALSE for female, NULL for undefined",
       "postgresql": {
         "columnName": "gender",
         "dataType": "boolean",

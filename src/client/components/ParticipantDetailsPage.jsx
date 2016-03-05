@@ -39,7 +39,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const day = time.substring(0,2);
         dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
 
-        participantPhone = this.state.participantDetails.phoneNumber && `0${this.state.participantDetails.phoneNumber}` || '-';
+        participantPhone = this.state.participantDetails.phoneNumber || '-';
         homeCity = this.state.participantDetails.homeCity || '-';
         email = this.state.participantDetails.email || '-';
       }
