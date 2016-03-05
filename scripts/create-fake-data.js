@@ -18,6 +18,17 @@ const amountToCreate = opts.args.length == 1 ? opts.args[0] : 5;
 
 faker.locale = 'it';
 
+function countParticipants() {
+	ParticipantModel.count((err, sum) => {
+		if  (err) {
+			console.log(err);
+		}
+		else {
+			console.log('Total participants: ' + sum);
+		}
+	});
+}
+
 function createMockParticipants(i) {
   let dob = faker.date.past(30, new Date("Sat Sep 20 2004"));
   dob = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
@@ -35,7 +46,9 @@ function createMockParticipants(i) {
 
   createParticipant(participant)
   .then(createdParticipantInfo => {
-    console.log('Created a participant');
+	if (i === 1){
+		countParticipants()
+	}
     i > 1 ? createMockParticipants(i-1) : '';
   })
   .catch(err => {
@@ -43,5 +56,6 @@ function createMockParticipants(i) {
   });
 
 }
-console.log('Attempting to create mock data.');
+
+console.log(`Attempting to create ${amountToCreate} mock participants.`);
 createMockParticipants(amountToCreate);
