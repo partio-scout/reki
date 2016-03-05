@@ -26,6 +26,7 @@ const app = components.getApp();
 const homepage = components.getHomepage();
 const ParticipantListPage = components.getParticipantListPage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
+const UserManagementPage = components.getUserManagementPage();
 
 const routes = (
   <Router history={ createBrowserHistory() }>
@@ -35,6 +36,7 @@ const routes = (
         <IndexRoute component={ ParticipantListPage } />
         <Route path=":id" component={ ParticipantDetailsPage } />
       </Route>
+      <Route path="admin" component={ UserManagementPage } />
     </Route>
   </Router>
 );
