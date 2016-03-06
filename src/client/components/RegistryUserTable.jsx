@@ -1,10 +1,11 @@
 import React from 'react';
+import { Table } from 'react-bootstrap';
 
 export function getRegistryUserTable() {
   class RegistryUserTable extends React.Component {
     render() {
       return (
-        <table striped>
+        <Table striped bordered condensed>
           <thead>
           <tr>
             <th>
@@ -24,8 +25,16 @@ export function getRegistryUserTable() {
                 { '1234567' }
               </td>
             </tr>
+            <tr>
+              <td>
+                { 'Mordor' }
+              </td>
+              <td>
+                { '1234567' }
+              </td>
+            </tr>
           </tbody>
-        </table>
+        </Table>
       );
     }
   }
