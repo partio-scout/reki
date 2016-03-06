@@ -24,13 +24,13 @@ export default function(Registryuser) {
   Registryuser.observe('before delete', (ctx, next) => {
     const findRegistryuser = Promise.promisify(app.models.Registryuser.find, { context: app.models.Registryuser });
     if (ctx.instance) {
-      const userId = loopback.getCurrentContext().get('accessToken') ? loopback.getCurrentContext().get('accessToken').userId : 0;
+      const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
       app.models.AuditEvent.createEvent.Registryuser(userId, ctx.instance.registryuserId, 'delete');
       next();
     } else {
       findRegistryuser({ where: ctx.where, fields: { id: true } })
         .each(registryuser => {
-          const userId = loopback.getCurrentContext().get('accessToken') ? loopback.getCurrentContext().get('accessToken').userId : 0;
+          const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
           app.models.AuditEvent.createEvent.Registryuser(userId, registryuser.id, 'delete');
         }).nodeify(next);
     }
