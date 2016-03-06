@@ -1,10 +1,16 @@
 import React from 'react';
+import { getRegistryUserTable } from './RegistryUserTable';
+
+const RegistryUserTable = getRegistryUserTable();
 
 export function getUserManagementPage() {
   class UserManagementPage extends React.Component {
     render() {
       return (
-        <h1>Käyttäjät</h1>
+        <div>
+          <h1>Käyttäjät</h1>
+          <RegistryUserTable/>
+        </div>
       );
     }
   }
