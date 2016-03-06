@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
-
 export function getParticipantInCampPage(participantStore, participantActions) {
   class ParticipantInCampPage extends React.Component {
     constructor(props) {
@@ -25,37 +24,40 @@ export function getParticipantInCampPage(participantStore, participantActions) {
     }
 
 		render() {
-      let inCamp = '';
-      let participantName = '';
-      if (this.state.participantDetails) {
-        participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
-
-        if (this.state.participantDetails.inCamp == 0) {
-          inCamp =	'Ei ole leirissä';
-        } else if (this.state.participantDetails.inCamp == 1) {
-          inCamp =	'Poistunut leiristä väliaikaisesti';
-        } else if (this.state.participantDetails.inCamp == 2) {
-          inCamp = 'Leirissä';
-        } else {
-          inCamp = 'Tuntematon arvo';
-        }
-      }
-
-      return (
+  return (
         <div>
           <Grid>
             <Row>
               <Col>
-                <h2><b>{ participantName }</b></h2>
-                <p>{ inCamp }</p>
+                <h2><b>{ this.formatParticipantName() }</b></h2>
+                <p>{ this.inCampStatus() }</p>
               </Col>
             </Row>
           </Grid>
         </div>
 			);
 		}
-  }
 
+    inCampStatus() {
+      if (!this.state.participantDetails) {
+        return '';
+      }
+      const inCamp = this.state.participantDetails.inCamp;
+      if (inCamp == 0) {
+        return 'Ei ole leirissä';
+      } else if (inCamp == 1) {
+        return 'Poistunut leiristä väliaikaisesti';
+      } else if (inCamp == 2) {
+        return 'Leirissä';
+      } else {
+        return 'Tuntematon arvo';
+      }
+    }
+
+    formatParticipantName() {
+      return this.state.participantDetails && `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}` || '';
+    }
+  }
   ParticipantInCampPage.propTypes = {
     params: React.PropTypes.shape({
       id: React.PropTypes.string.isRequired,

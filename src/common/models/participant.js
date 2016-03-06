@@ -8,34 +8,30 @@ export default function (Participant) {
       const create = Promise.promisify(presenceHistoryRelation.create, { context: presenceHistoryRelation } );
       create( { departed: null } )
         .then(result => result.participant(this))
-        .catch(err => err)
+        .catch(err => { console.error('There was an error', err); return;});
     }
-  }
+  };
   Participant.afterUpdate = function(next) {
     const presenceHistoryRelation = this.presenceHistory;
     const presenceHistory = Promise.promisify(this.presenceHistory, { context: this } );
-    if (this.inCamp == 2) {
-      const updateAll = Promise.promisify(app.models.participantHistory.updateAll, { context: app.models.participantHistory } );
+    const create = Promise.promisify(presenceHistoryRelation.create, { context: presenceHistoryRelation } );
+    const updateAll = Promise.promisify(app.models.participantHistory.updateAll, { context: app.models.participantHistory } );
+    const isInCamp = 2;
+    const leftCampTemporarily = 1;
+    const notInCamp = 0;
       //check if latest relation doesn't have arrived value set
-      presenceHistory( { fields: { id:true, departed:false, arrived:false },  where: { arrived:null } } )
-        .then(result =>
-          updateAll( { where: { id: { inq: result.map( id => id.id ) } } } , { arrived:new Date().toISOString() } )
-            .catch(err => err)
-        )
-        .catch(err => err);
-    } else if (this.inCamp == 0 || this.inCamp == 1) {
-      const create = Promise.promisify(presenceHistoryRelation.create, { context: presenceHistoryRelation } );
-			//check if latest relation has arrived value set
-      presenceHistory( { fields: { id:true, departed:false, arrived:false } , where: { arrived:null } } )
-        .then(result => {
-          if (result.length() == 0 ) {
+    presenceHistory( { fields: { id:true, departed:false, arrived:false },  where: { arrived:null } } )
+      .then(result => {
+        if (this.inCamp == isInCamp) {
+          return updateAll( { where: { id: { inq: result.map( id => id.id ) } } } , { arrived:new Date().toISOString() } );
+        } else if (this.inCamp == notInCamp || this.inCamp == leftCampTemporarily) {
+        //check if latest relation has arrived value set
+          if (result.length == 0 ) {
             return create( { departed: new Date().toISOString() } )
-              .then(result => result.participant(this))
-              .catch(err => err);
+              .then(result => result.participant(this));
           }
-        })
-      .catch(err => err);
-    }
-    next();
+        }
+      })
+      .asCallback(next);
   };
 }
