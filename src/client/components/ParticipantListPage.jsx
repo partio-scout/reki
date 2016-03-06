@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
-import { ParticipantRow } from './ParticipantRow';
-import { ListOffsetSelector } from './ListOffsetSelector';
+import { ListOffsetSelector, ParticipantRow } from '../components';
 
 const chunkSize = 20;
 
