@@ -45,13 +45,13 @@ export function getRestfulResource(request) {
       return request.put(this.path(id))
         .accept('application/json')
         .send(obj)
-        .then(this.handleRequest);
+        .then(this.handleResponse);
     }
 
     del(id) {
       return request.del(this.path(id))
         .accept('application/json')
-        .then(this.handleRequest);
+        .then(this.handleResponse);
     }
 
     raw(method, path, body) {
@@ -60,9 +60,9 @@ export function getRestfulResource(request) {
 
       if (body) {
         req = req.send(body);
-
-        return req.then(this.handleRequest);
       }
+
+      return req.then(this.handleResponse);
     }
   }
 
