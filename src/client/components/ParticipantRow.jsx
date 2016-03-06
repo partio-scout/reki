@@ -22,7 +22,7 @@ function getNullableFormatter(finalFormatter) {
   };
 }
 
-const formatGender = getNullableFormatter(gender => gender ? 'nainen' : 'mies');
+const formatGender = getNullableFormatter(gender => gender ? 'mies' : 'nainen');
 const formatSwimmingSkill = getNullableFormatter(swimmingSkill => swimmingSkill ? 'yli 200m' : 'alle 200m');
 const formatNonScout = getNullableFormatter(nonScout => nonScout ? 'EVP' : 'partiolainen');
 const formatNullableBoolean = getNullableFormatter(b => b ? 'kyllä' : 'ei');
