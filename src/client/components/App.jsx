@@ -1,7 +1,7 @@
 import React from 'react';
-import { Navbar, Grid, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Grid, Nav } from 'react-bootstrap';
 import { Link } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
+import { NavLinkItem } from '../components';
 
 export function getApp() {
   class App extends React.Component {
@@ -15,9 +15,7 @@ export function getApp() {
               </Navbar.Brand>
             </Navbar.Header>
             <Nav pullRight>
-              <LinkContainer to="/participants">
-                <NavItem>Leiriläiset</NavItem>
-              </LinkContainer>
+              <NavLinkItem to="/participants">Leiriläiset</NavLinkItem>
             </Nav>
           </Navbar>
           <Grid>
