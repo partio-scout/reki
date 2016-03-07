@@ -4,8 +4,7 @@ require('./styles.scss');
 import React from 'react';
 import Alt from 'alt';
 import { render } from 'react-dom';
-import { Router, Route, IndexRoute } from 'react-router';
-import createBrowserHistory from 'history/lib/createBrowserHistory';
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import superagent from 'superagent';
 import superagentAsPromised from 'superagent-as-promised';
 
@@ -30,7 +29,7 @@ const ParticipantDetailsPage = components.getParticipantDetailsPage(participantS
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
 
 const routes = (
-  <Router history={ createBrowserHistory() }>
+  <Router history={ browserHistory }>
     <Route path="/" component={ app }>
       <IndexRoute component={ homepage } />
       <Route path="participants">
