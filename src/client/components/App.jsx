@@ -1,6 +1,7 @@
 import React from 'react';
-import { Navbar, Grid } from 'react-bootstrap';
+import { Navbar, Grid, Nav } from 'react-bootstrap';
 import { Link } from 'react-router';
+import { NavLinkItem } from '../components';
 
 export function getApp() {
   class App extends React.Component {
@@ -13,6 +14,9 @@ export function getApp() {
                 <Link to="/">REKI</Link>
               </Navbar.Brand>
             </Navbar.Header>
+            <Nav pullRight>
+              <NavLinkItem to="/participants">Leiriläiset</NavLinkItem>
+            </Nav>
           </Navbar>
           <Grid>
             { this.props.children }

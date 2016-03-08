@@ -5,3 +5,4 @@ export { getParticipantListPage } from './components/ParticipantListPage';
 export { getParticipantDetailsPage } from './components/ParticipantDetailsPage';
 export { ParticipantRow } from './components/ParticipantRow';
 export { ListOffsetSelector } from './components/ListOffsetSelector';
+export { NavLinkItem } from './components/NavLinkItem';
