@@ -18,17 +18,18 @@ const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants');
+const registryUserResource = new RestfulResource('/api/registryusers');
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource);
+const participantActions = actions.getParticipantActions(alt, participantResource, registryUserResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
 
 const app = components.getApp();
 const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
-const UserManagementPage = components.getUserManagementPage();
+const UserManagementPage = components.getUserManagementPage(participantStore, participantActions);
 
 const routes = (
   <Router history={ createBrowserHistory() }>

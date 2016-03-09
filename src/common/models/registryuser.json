@@ -7,7 +7,7 @@
   },
   "postgresql": {
     "schema": "public",
-    "table": "purchaseuser"
+    "table": "registryuser"
   },
   "properties": {
     "id": {
@@ -71,7 +71,7 @@
       "precision": null,
       "scale": null,
       "postgresql": {
-        "columnName": "membernumber",
+        "columnName": "member_number",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
@@ -96,6 +96,12 @@
       "principalId": "$everyone",
       "permission": "DENY",
       "property": "create"
+    },
+     {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
     },
     {
       "principalType": "ROLE",

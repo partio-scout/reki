@@ -1,4 +1,4 @@
-export function getParticipantActions(alt, participantResource) {
+export function getParticipantActions(alt, participantResource, registryUserResource) {
   class ParticipantActions {
     fetchParticipantById(participantId) {
       return dispatch => {
@@ -54,6 +54,23 @@ export function getParticipantActions(alt, participantResource) {
 
     participantCountUpdateFailed(err) {
       return err;
+    }
+
+    loadRegistryUserList() {
+      return dispatch => {
+        dispatch();
+        registryUserResource.findAll()
+          .then(registryUserList => this.registryUserListUpdated(registryUserList),
+                err => this.registryUserListUpdatedFailed(err));
+      };
+    }
+
+    registryUserListUpdated(registryUsers) {
+      return registryUsers;
+    }
+
+    registryUserListUpdatedFailed(error) {
+      return error;
     }
   }
 
