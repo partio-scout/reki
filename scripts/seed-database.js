@@ -13,9 +13,7 @@ function createFixtures(modelName) {
   const createModel = Promise.promisify(model.create, { context: model });
 
   return getFixtures(modelName)
-    .then(fixtureData => createModel(fixtureData)
-      .then(() => console.log(`Created ${fixtureData.length} fixtures for model ${modelName}`)))
-    .catch(err => console.error(`Fixture creation for model ${modelName} failed. ${err}`));
+    .then(fixtureData => createModel(fixtureData));
 }
 
 // Pikkukikka joka suorittaa promiseReturningFunctionin peräkkäin jokaiselle values-listan jäsenelle niin,
@@ -25,10 +23,17 @@ function forAll(values, promiseReturningFunction) {
   return values.reduce((cur, next) => cur.then(() => promiseReturningFunction(next)), Promise.resolve());
 }
 
-const db = app.datasources.db;
+export function resetDatabase() {
+  const db = app.datasources.db;
 
-const modelsToCreate = getModelCreationList();
-db.automigrate(modelsToCreate)
-  .then(() => console.log('The following tables were (re-)created: ', modelsToCreate))
-  .then(() => forAll(getFixtureCreationList(), createFixtures))
-  .then(() => db.disconnect(), () => db.disconnect());
+  const modelsToCreate = getModelCreationList();
+  return db.automigrate(modelsToCreate)
+    .then(() => forAll(getFixtureCreationList(), createFixtures))
+    .then(() => db.disconnect(), err => { db.disconnect(); return Promise.reject(err); });
+}
+
+// Ajetaan resetDatabase jos tiedosto ajetaan skriptinä, ei silloin kun importataan
+if (require.main === module) {
+  resetDatabase()
+    .catch(err => console.error('Database reset and seeding failed: ', err));
+}
