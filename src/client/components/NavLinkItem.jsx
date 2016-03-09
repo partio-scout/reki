@@ -1,25 +1,38 @@
 import React from 'react';
 import { NavItem } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { LinkContainer, IndexLinkContainer } from 'react-router-bootstrap';
 
 export class NavLinkItem extends React.Component {
   render() {
     const {
       to,
       children,
+      isIndexLink,
     } = this.props;
 
-    return (
-      <LinkContainer to={ to }>
-        <NavItem>
-          { children }
-        </NavItem>
-      </LinkContainer>
+    const navItem = (
+      <NavItem>
+        { children }
+      </NavItem>
     );
+
+    if (isIndexLink) {
+      return (
+        <IndexLinkContainer to={ to }>
+          { navItem }
+        </IndexLinkContainer>
+      );
+    } else {
+      return (
+        <LinkContainer to={ to }>
+          { navItem }
+        </LinkContainer>
+      );
+    }
   }
 }
 
-const { oneOfType, string, object, node } = React.PropTypes;
+const { oneOfType, string, object, node, bool } = React.PropTypes;
 
 NavLinkItem.propTypes = {
   to: oneOfType([
@@ -27,4 +40,9 @@ NavLinkItem.propTypes = {
     object,
   ]),
   children: node,
+  isIndexLink: bool,
+};
+
+NavLinkItem.defaultProps = {
+  isIndexLink: false,
 };
