@@ -111,6 +111,19 @@
       "property": "create"
     },
     {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW"
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",

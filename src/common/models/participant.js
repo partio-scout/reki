@@ -24,13 +24,13 @@ export default function (Participant) {
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
     if (ctx.instance) {
-      const userId = loopback.getCurrentContext()? loopback.getCurrentContext().get('accessToken').userId : 0;
+      const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
       app.models.AuditEvent.createEvent.Participant(userId, ctx.instance.participantId, 'delete');
       next();
     } else {
       findParticipant({ where: ctx.where, fields: { participantId: true } })
         .each(participant => {
-          const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
+          const userId = (loopback.getCurrentContext() && loopback.getCurrentContext().get('accessToken')) ? loopback.getCurrentContext().get('accessToken').userId : 0;
           app.models.AuditEvent.createEvent.Participant(userId, participant.participantId, 'delete');
         }).nodeify(next);
     }

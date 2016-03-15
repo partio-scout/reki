@@ -30,7 +30,7 @@ export default function(Registryuser) {
     } else {
       findRegistryuser({ where: ctx.where, fields: { id: true } })
         .each(registryuser => {
-          const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
+          const userId = (loopback.getCurrentContext() && loopback.getCurrentContext().get('accessToken')) ? loopback.getCurrentContext().get('accessToken').userId : 0;
           app.models.AuditEvent.createEvent.Registryuser(userId, registryuser.id, 'delete');
         }).nodeify(next);
     }
