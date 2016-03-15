@@ -6,3 +6,5 @@ export { getParticipantDetailsPage } from './components/ParticipantDetailsPage';
 export { ParticipantRow } from './components/ParticipantRow';
 export { ListOffsetSelector } from './components/ListOffsetSelector';
 export { NavLinkItem } from './components/NavLinkItem';
+export { getParticipantListUpdater } from './components/ParticipantListUpdater';
+export { getParticipantCountUpdater } from './components/ParticipantCountUpdater';

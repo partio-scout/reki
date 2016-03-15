@@ -1,43 +1,69 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
-import { ListOffsetSelector, ParticipantRow } from '../components';
-
-const chunkSize = 20;
+import _ from 'lodash';
+import { getParticipantListUpdater, getParticipantCountUpdater, ListOffsetSelector, ParticipantRow } from '../components';
 
 export function getParticipantListPage(participantStore, participantActions) {
+  const ParticipantListUpdater = getParticipantListUpdater(participantStore, participantActions);
+  const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
+
+  function extractState(newState) {
+    const {
+      participants,
+      participantsOffset: offset,
+      participantLimit: limit,
+      participantCount: count,
+    } = newState;
+
+    return {
+      participants,
+      offset,
+      limit,
+      count,
+    };
+  }
+
   class ParticipantListPage extends React.Component {
     constructor(props) {
       super(props);
 
-      this.state = participantStore.getState();
+      this.state = extractState(participantStore.getState());
     }
 
     componentDidMount() {
       participantStore.listen(this.onParticipantStoreChange.bind(this));
-      participantActions.loadParticipantCount();
-      participantActions.loadParticipantList(this.state.participantsOffset, chunkSize);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.onParticipantStoreChange.bind(this));
     }
 
+    shouldComponentUpdate(newProps, newState) {
+      const participantsChanged = !_.isEqual(this.state.participants, newState.participants);
+      const countChanged = this.state.count !== newState.count;
+      return participantsChanged || countChanged;
+    }
+
     onParticipantStoreChange(state) {
-      this.setState(state);
+      const newState = extractState(state);
+      this.setState(newState);
     }
 
     handleOffsetSelectionChanged(newOffset) {
-      participantActions.loadParticipantList(newOffset, chunkSize);
+      participantActions.changeParticipantListOffset(newOffset);
     }
 
     render() {
       return (
         <div>
+          <ParticipantListUpdater />
+          <ParticipantCountUpdater />
+
           <h1>Leiriläiset</h1>
           <ListOffsetSelector
-            offset={ this.state.participantsOffset }
-            count={ this.state.participantCount }
-            chunkSize={ chunkSize }
+            offset={ this.state.offset }
+            count={ this.state.count }
+            chunkSize={ this.state.limit }
             onOffsetChanged={ this.handleOffsetSelectionChanged }
           />
           <Table striped>

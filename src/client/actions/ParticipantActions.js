@@ -26,17 +26,25 @@ export function getParticipantActions(alt, participantResource) {
       return dispatch => {
         dispatch();
         participantResource.findAll(`filter=${JSON.stringify(filters)}`)
-          .then(participantList => this.participantListUpdated(offset, participantList),
+          .then(participantList => this.participantListUpdated(participantList),
                 err => this.participantListUpdateFailed(err));
       };
     }
 
-    participantListUpdated(offset, participants) {
-      return { offset, participants };
+    participantListUpdated(participants) {
+      return participants;
     }
 
     participantListUpdateFailed(error) {
       return error;
+    }
+
+    changeParticipantListOffset(newOffset) {
+      return newOffset;
+    }
+
+    changeParticipantListLimit(newLimit) {
+      return newLimit;
     }
 
     loadParticipantCount() {

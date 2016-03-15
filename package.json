@@ -36,6 +36,7 @@
     "file-loader": "^0.8.5",
     "history": "^2.0.1",
     "http-proxy": "^1.12.0",
+    "lodash": "^4.6.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
