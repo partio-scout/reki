@@ -28,8 +28,7 @@ export function resetDatabase() {
 
   const modelsToCreate = getModelCreationList();
   return db.automigrate(modelsToCreate)
-    .then(() => forAll(getFixtureCreationList(), createFixtures))
-    .catch(err => Promise.reject(err));
+    .then(() => forAll(getFixtureCreationList(), createFixtures));
 }
 
 // Ajetaan resetDatabase jos tiedosto ajetaan skriptinä, ei silloin kun importataan
