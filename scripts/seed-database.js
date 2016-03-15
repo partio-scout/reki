@@ -37,6 +37,6 @@ if (require.main === module) {
   const db = app.datasources.db;
 
   resetDatabase()
-    .then(() => db.disconnect());
-    .catch(err => console.error('Database reset and seeding failed: ', err); db.disconnect(););
+    .catch(err => console.error('Database reset and seeding failed: ', err))
+    .finally(() => db.disconnect());
 }
