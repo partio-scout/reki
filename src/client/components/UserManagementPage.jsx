@@ -27,19 +27,10 @@ export function getUserManagementPage(participantStore, participantActions) {
     }
 
     render() {
-
-      let name = '';
-      if (this.state.registryUsers[0]) {
-        name = this.state.registryUsers[0].name;
-      }
-
       return (
         <div>
           <h1>Käyttäjät</h1>
-          <RegistryUserTable/>
-          <div>
-            { name }
-          </div>
+          <RegistryUserTable registryUsers={ this.state.registryUsers }/>
         </div>
       );
     }
