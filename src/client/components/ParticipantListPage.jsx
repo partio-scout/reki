@@ -1,17 +1,19 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import _ from 'lodash';
-import { getParticipantListUpdater, getParticipantCountUpdater, ListOffsetSelector, ParticipantRow } from '../components';
+import { getParticipantListUpdater, getParticipantCountUpdater, getListSortingSelector, ListOffsetSelector, ParticipantRow } from '../components';
 
 export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantStore, participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
+  const ListSortingSelector = getListSortingSelector();
 
   function extractState(newState) {
     const {
       participants,
       participantsOffset: offset,
       participantLimit: limit,
+      participantListOrder: order,
       participantCount: count,
     } = newState;
 
@@ -19,6 +21,7 @@ export function getParticipantListPage(participantStore, participantActions) {
       participants,
       offset,
       limit,
+      order,
       count,
     };
   }
@@ -53,6 +56,10 @@ export function getParticipantListPage(participantStore, participantActions) {
       participantActions.changeParticipantListOffset(newOffset);
     }
 
+    handleOrderSelectionChanged(newOrder) {
+      participantActions.changeParticipantListOrder(newOrder);
+    }
+
     render() {
       return (
         <div>
@@ -69,17 +76,17 @@ export function getParticipantListPage(participantStore, participantActions) {
           <Table striped>
             <thead>
               <tr>
-                <th>Etunimi</th>
-                <th>Sukunimi</th>
-                <th>Syntymäpäivä</th>
-                <th>Sukupuoli</th>
-                <th>Onko partiolainen?</th>
-                <th>Jäsennumero</th>
-                <th>Kotikaupunki</th>
-                <th>Uimataito</th>
-                <th>Home hospitality</th>
-                <th>Sähköposti</th>
-                <th>Puhelinnumero</th>
+                <th>Etunimi <ListSortingSelector property="firstName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Sukunimi <ListSortingSelector property="lastName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Syntymäpäivä <ListSortingSelector property="dateOfBirth" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Sukupuoli <ListSortingSelector property="gender" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Onko partiolainen? <ListSortingSelector property="nonScout" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Jäsennumero <ListSortingSelector property="memberNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Kotikaupunki <ListSortingSelector property="homeCity" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Uimataito <ListSortingSelector property="swimmingSkill" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Home hospitality <ListSortingSelector property="interestedInHomeHospitality" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Sähköposti <ListSortingSelector property="email" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <th>Puhelinnumero <ListSortingSelector property="phoneNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
               </tr>
             </thead>
             <tbody>

@@ -17,10 +17,25 @@ export function getParticipantActions(alt, participantResource) {
       return err;
     }
 
-    loadParticipantList(offset, limit) {
+    loadParticipantList(offset, limit, order) {
+      function getLoopbackOrderParameter() {
+        if (!order)
+          return undefined;
+
+        const strings = Object.keys(order).map(key => `${key} ${order[key]}`);
+        if (strings.length === 0) {
+          return undefined;
+        } else if (strings.length === 1) {
+          return strings[0];
+        } else {
+          return strings;
+        }
+      }
+
       const filters = {
         skip: offset,
         limit: limit,
+        order: getLoopbackOrderParameter(),
       };
 
       return dispatch => {
@@ -45,6 +60,10 @@ export function getParticipantActions(alt, participantResource) {
 
     changeParticipantListLimit(newLimit) {
       return newLimit;
+    }
+
+    changeParticipantListOrder(newOrder) {
+      return newOrder;
     }
 
     loadParticipantCount() {
