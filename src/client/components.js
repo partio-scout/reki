@@ -9,3 +9,4 @@ export { NavLinkItem } from './components/NavLinkItem';
 export { getParticipantListUpdater } from './components/ParticipantListUpdater';
 export { getParticipantCountUpdater } from './components/ParticipantCountUpdater';
 export { getListSortingSelector } from './components/ListSortingSelector';
+export { getSortableHeaderCell } from './components/SortableHeaderCell';

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import _ from 'lodash';
-import { getParticipantListUpdater, getParticipantCountUpdater, getListSortingSelector, ListOffsetSelector, ParticipantRow } from '../components';
+import { getParticipantListUpdater, getParticipantCountUpdater, getSortableHeaderCell, ListOffsetSelector, ParticipantRow } from '../components';
 
 export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantStore, participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
-  const ListSortingSelector = getListSortingSelector();
+  const SortableHeaderCell = getSortableHeaderCell();
 
   function extractState(newState) {
     const {
@@ -76,17 +76,17 @@ export function getParticipantListPage(participantStore, participantActions) {
           <Table striped>
             <thead>
               <tr>
-                <th>Etunimi <ListSortingSelector property="firstName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Sukunimi <ListSortingSelector property="lastName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Syntymäpäivä <ListSortingSelector property="dateOfBirth" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Sukupuoli <ListSortingSelector property="gender" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Onko partiolainen? <ListSortingSelector property="nonScout" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Jäsennumero <ListSortingSelector property="memberNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Kotikaupunki <ListSortingSelector property="homeCity" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Uimataito <ListSortingSelector property="swimmingSkill" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Home hospitality <ListSortingSelector property="interestedInHomeHospitality" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Sähköposti <ListSortingSelector property="email" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
-                <th>Puhelinnumero <ListSortingSelector property="phoneNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } /></th>
+                <SortableHeaderCell label="Etunimi" property="firstName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Sukunimi" property="lastName" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Syntymäpäivä" property="dateOfBirth" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Sukupuoli" property="gender" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Onko partiolainen?" property="nonScout" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Jäsennumero" property="memberNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Kotikaupunki" property="homeCity" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Uimataito" property="swimmingSkill" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Home hospitality" property="interestedInHomeHospitality" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Sähköposti" property="email" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
+                <SortableHeaderCell label="Puhelinnumero" property="phoneNumber" order={ this.state.order } orderChanged={ this.handleOrderSelectionChanged } />
               </tr>
             </thead>
             <tbody>
