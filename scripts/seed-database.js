@@ -24,10 +24,13 @@ function forAll(values, promiseReturningFunction) {
 }
 
 export function resetDatabase() {
-  const db = app.datasources.db;
+  function automigrate() {
+    const db = app.datasources.db;
+    const modelsToCreate = getModelCreationList();
+    return new Promise((resolve, reject) => db.automigrate(modelsToCreate).then(resolve, reject));
+  }
 
-  const modelsToCreate = getModelCreationList();
-  return db.automigrate(modelsToCreate)
+  return automigrate()
     .then(() => forAll(getFixtureCreationList(), createFixtures));
 }
 
