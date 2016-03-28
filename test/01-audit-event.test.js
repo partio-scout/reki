@@ -4,25 +4,38 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from './utils/test-utils';
 import { resetDatabase } from '../scripts/seed-database';
-import Promise from 'bluebird';
+// import Promise from 'bluebird';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Audit Event', () => {
-  let adminuserId, userId, participantId;
+  let adminuserId, userId, participantId, accessToken;
+  const testUser = {
+    'username': 'testUser',
+    'memberNumber': '1234567',
+    'email': 'testi@testailija.fi',
+    'password': 'salasana',
+    'name': 'Testi Testailija',
+    'phone': 'n/a',
+  };
+  const testParticipant = {
+    'firstName': 'Testi',
+    'lastName': 'Henkilö',
+    'nonScout': false,
+  };
 
-  before(() => resetDatabase());
-
-  beforeEach(done =>
-    testUtils.createFixture('Registryuser', {
-      'username': 'testAdmin',
-      'memberNumber': '7654321',
-      'email': 'testi@adm.in',
-      'password': 'salasana',
-      'name': 'Testi Admin',
-      'phone': 'n/a',
-    }).then(adminUser => {
+  beforeEach(() =>
+    resetDatabase().then(() =>
+      testUtils.createFixture('Registryuser', {
+        'username': 'testAdmin',
+        'memberNumber': '7654321',
+        'email': 'testi@adm.in',
+        'password': 'salasana',
+        'name': 'Testi Admin',
+        'phone': 'n/a',
+      })
+    ).then(adminUser => {
       adminuserId = adminUser.id;
       return testUtils.createFixture('Role', {
         name: 'admin',
@@ -33,171 +46,162 @@ describe('Audit Event', () => {
         principalId: adminuserId,
         roleId: role.id,
       })
-    ).then(unused =>
+    ).then(() =>
       testUtils.loginUser('testAdmin')
-    ).then(accessToken =>
-      request(app)
-        .post(`/api/Registryusers?access_token=${accessToken.id}`)
-        .send({
-          'username': 'testUser',
-          'memberNumber': '1234567',
-          'email': 'testi@testailija.fi',
-          'password': 'salasana',
-          'name': 'Testi Testailija',
-          'phone': 'n/a',
-        })
-        .expect(200)
-        .then(res => {
-          userId = res.body.id;
-          return accessToken;
-        })
-    ).then(accessToken =>
-      request(app)
-      .post(`/api/Participants?access_token=${accessToken.id}`)
-      .send({
-        'firstName': 'Testi',
-        'lastName': 'Henkilö',
-        'nonScout': false,
-      })
-      .expect(200)
-      .then(res => {
-        participantId = res.body.participantId;
-        return accessToken;
-      })
-    ).then(accessToken =>
-      request(app)
-      .put(`/api/Registryusers/${userId}?access_token=${accessToken.id}`)
-      .send({
-        'name': 'Testi',
-      })
-      .expect(200)
-      .then(res => accessToken)
-    ).then(accessToken =>
-      request(app)
-      .get(`/api/Registryusers/${userId}?access_token=${accessToken.id}`)
-      .expect(200)
-      .then(res => accessToken)
-    ).then(accessToken =>
-      request(app)
-      .put(`/api/Participants/${participantId}?access_token=${accessToken.id}`)
-      .send({
-        'nonScout': true,
-      })
-      .expect(200)
-      .then(res => accessToken)
-    ).then(accessToken =>
-      request(app)
-      .get(`/api/Participants/${participantId}?access_token=${accessToken.id}`)
-      .expect(200)
-      .then(res => accessToken)
-    ).then(accessToken =>
-      request(app)
-      .del(`/api/Registryusers/${userId}?access_token=${accessToken.id}`)
-      .expect(200)
-      .then(res => accessToken)
-    ).then(accessToken =>
-      request(app)
-      .del(`/api/Participants/${participantId}?access_token=${accessToken.id}`)
-      .expect(200)
-      .then(res => accessToken)
-    ).nodeify(done)
+    ).then(newAccessToken =>
+      accessToken = newAccessToken
+    )
   );
 
-  afterEach(done => {
-    Promise.join(
-      testUtils.deleteFixturesIfExist('Registryuser'),
-      testUtils.deleteFixturesIfExist('Participant'),
-      testUtils.deleteFixturesIfExist('AuditEvent'),
-      testUtils.deleteFixturesIfExist('RoleMapping'),
-      testUtils.deleteFixturesIfExist('Role')
-    ).nodeify(done);
-  });
+  function expectAuditEventToEventuallyExist(expectedEvent) {
+    return testUtils.find('AuditEvent', expectedEvent)
+    .then(res => {
+      expect(res).to.have.length(1);
+      expect(res[0]).to.have.property('timestamp').that.is.not.null;
+    });
+  }
 
-  function expectAuditEventToEventuallyExist(expectedEvent, cb) {
-    setTimeout(() => {
-      testUtils.find('AuditEvent', expectedEvent).then(res => {
-        try {
-          expect(res).to.have.length(1);
-          expect(res[0]).to.have.property('timestamp').that.is.not.null;
-          cb();
-        } catch (e) {
-          cb(e);
-        }
-      });
-    }, 100);
+  function postInstanceToDb(modelInPlural, instance, accessToken, idProperty) {
+    return request(app)
+      .post(`/api/${modelInPlural}?access_token=${accessToken.id}`)
+      .send(instance)
+      .expect(200)
+      .then(res => res.body[idProperty]);
+  }
+
+  function postChangesToDb(modelInPlural, instanceId, accessToken, changes) {
+    return request(app)
+      .put(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken.id}`)
+      .send(changes)
+      .expect(200);
+  }
+
+  function queryInstanceFromDb(modelInPlural, instanceId, accessToken) {
+    return request(app)
+    .get(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken.id}`)
+    .expect(200);
+  }
+
+  function deleteInstanceFromDb(modelInPlural, instanceId, accessToken) {
+    return request(app)
+    .del(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken.id}`)
+    .expect(200);
   }
 
   // Test registryuser audit logs
-  it('should create audit event when creating registryuser', done => {
-    expectAuditEventToEventuallyExist(
-      {
+  it('should create audit event when creating registryuser', () =>
+    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    .then(id =>
+      expectAuditEventToEventuallyExist({
         'eventType': 'add',
         'model': 'Registryuser',
-        'modelId': userId,
-      }, done);
-  });
+        'modelId': id,
+      })
+    )
+  );
 
-  it('should create audit event when updating registryuser', done => {
-    expectAuditEventToEventuallyExist(
-      {
-        'eventType': 'update',
-        'model': 'Registryuser',
-        'modelId': userId,
-      }, done);
-  });
+  it('should create audit event when updating registryuser', () =>
+    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+      .then(id => {
+        userId = id;
+        return postChangesToDb('Registryusers', userId, accessToken, { 'name': 'Muutos' });
+      })
+      .then(() =>
+        expectAuditEventToEventuallyExist({
+          'eventType': 'update',
+          'model': 'Registryuser',
+          'modelId': userId,
+        })
+      )
+  );
 
-  it('should create audit event when finding registryuser', done => {
-    expectAuditEventToEventuallyExist(
-      {
+  it('should create audit event when finding registryuser', () =>
+    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    .then(id => {
+      userId = id;
+      return queryInstanceFromDb('Registryusers', userId, accessToken);
+    })
+    .then(() =>
+      expectAuditEventToEventuallyExist({
         'eventType': 'find',
         'model': 'Registryuser',
         'modelId': userId,
-      }, done);
-  });
+      })
+    )
+  );
 
-  it('should create audit event when deleting registryuser', done => {
-    expectAuditEventToEventuallyExist(
-      {
-        'eventType': 'delete',
-        'model': 'Registryuser',
-        'modelId': userId,
-      }, done);
-  });
+  it('should create audit event when deleting registryuser', () =>
+    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    .then(id => {
+      userId = id;
+      return deleteInstanceFromDb('Registryusers', userId, accessToken);
+    })
+    .then(() =>
+      expectAuditEventToEventuallyExist(
+        {
+          'eventType': 'delete',
+          'model': 'Registryuser',
+          'modelId': userId,
+        })
+    )
+  );
 
   // Test participant audit logs
-  it('should create audit event when creating participant', done => {
-    expectAuditEventToEventuallyExist(
-      {
+  it('should create audit event when creating participant', () =>
+    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
+    .then(id =>
+      expectAuditEventToEventuallyExist({
         'eventType': 'add',
         'model': 'Participant',
-        'modelId': participantId,
-      }, done);
-  });
+        'modelId': id,
+      })
+    )
+  );
 
-  it('should create audit event when updating participant', done => {
-    expectAuditEventToEventuallyExist(
-      {
-        'eventType': 'update',
-        'model': 'Participant',
-        'modelId': participantId,
-      }, done);
-  });
+  it('should create audit event when updating participant', () =>
+    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
+      .then(id => {
+        participantId = id;
+        return postChangesToDb('Participants', participantId, accessToken, { 'firstName': 'Muutos' });
+      })
+      .then(() =>
+        expectAuditEventToEventuallyExist({
+          'eventType': 'update',
+          'model': 'Participant',
+          'modelId': participantId,
+        })
+      )
+  );
 
-  it('should create audit event when finding participant', done => {
-    expectAuditEventToEventuallyExist(
-      {
+  it('should create audit event when finding participant', () =>
+    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
+    .then(id => {
+      participantId = id;
+      return queryInstanceFromDb('Participants', participantId, accessToken);
+    })
+    .then(() =>
+      expectAuditEventToEventuallyExist({
         'eventType': 'find',
         'model': 'Participant',
         'modelId': participantId,
-      }, done);
-  });
+      })
+    )
+  );
 
-  it('should create audit event when deleting participant', done => {
-    expectAuditEventToEventuallyExist(
-      {
-        'eventType': 'delete',
-        'model': 'Participant',
-        'modelId': participantId,
-      }, done);
-  });
+  it('should create audit event when deleting participant', () =>
+    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
+    .then(id => {
+      participantId = id;
+      return deleteInstanceFromDb('Participants', participantId, accessToken);
+    })
+    .then(() =>
+      expectAuditEventToEventuallyExist(
+        {
+          'eventType': 'delete',
+          'model': 'Participant',
+          'modelId': participantId,
+        })
+    )
+  );
+
 });

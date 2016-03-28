@@ -27,13 +27,10 @@ export function deleteFixturesIfExist(modelName, whereClause) {
 }
 
 export function expectModelToBeDeleted(modelName, id, cb) {
-  return function() {
-    app.models[modelName].findById(id, (err, res) => {
-      expect(err).to.be.undefined;
-      expect(res).to.be.null;
-      cb();
-    });
-  };
+  const find = Promise.promisify(app.models[modelName].findById, { context: app.models[modelName] });
+  return find(id).then(res => {
+    expect(res).to.be.null;
+  }).asCallback(cb);
 }
 
 export function find(modelName, whereClause, includeClause) {
