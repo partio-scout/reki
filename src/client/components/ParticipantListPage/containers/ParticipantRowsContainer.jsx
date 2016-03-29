@@ -1,45 +1,37 @@
 import React from 'react';
-import _ from 'lodash';
+import AltContainer from 'alt-container';
 import { ParticipantRow } from '../../../components';
+import { pureShouldComponentUpdate } from './utils';
+
+function Tbody(props) {
+  const elements = props.elements || [];
+
+  return (
+    <tbody>
+      { elements.map(props.rowCreator) }
+    </tbody>
+  );
+}
+Tbody.propTypes = {
+  elements: React.PropTypes.array,
+  rowCreator: React.PropTypes.func,
+};
 
 export function getParticipantRowsContainer(participantStore) {
-  class ParticipantRowsContainer extends React.Component {
-    constructor(props) {
-      super(props);
-
-      this.state = this.extractState(participantStore.getState());
-    }
-
-    extractState(nextState) {
-      return {
-        participants: nextState.participants,
-      };
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onParticipantStoreChange.bind(this));
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onParticipantStoreChange.bind(this));
-    }
-
-    onParticipantStoreChange(state) {
-      const newState = this.extractState(state);
-      this.setState(newState);
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-      return !_.isEqual(this.state, nextState);
-    }
-
-    render() {
-      return (
-        <tbody>
-          { this.state.participants.map(participant => <ParticipantRow key={ participant.participantId } participant={ participant } />) }
-        </tbody>
-      );
-    }
+  const rowCreator = element => <ParticipantRow key={ element.participantId } participant={ element } />;
+  function ParticipantRowsContainer() {
+    return (
+      <AltContainer
+        stores={
+          {
+            elements: () => ({ store: participantStore, value: participantStore.getState().participants }),
+          }
+        }
+        shouldComponentUpdate={ pureShouldComponentUpdate }
+      >
+        <Tbody rowCreator={ rowCreator } />
+      </AltContainer>
+    );
   }
 
   return ParticipantRowsContainer;
