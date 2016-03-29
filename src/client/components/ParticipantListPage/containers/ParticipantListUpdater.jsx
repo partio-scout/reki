@@ -42,8 +42,9 @@ export function getParticipantListUpdater(participantStore, participantActions) 
     onParticipantStoreChange(state) {
       const newState = this.extractState(state);
 
-      if (!_.isEqual(this.state, newState))
+      if (!_.isEqual(this.state, newState)) {
         this.reloadList(newState);
+      }
 
       this.setState(newState);
     }

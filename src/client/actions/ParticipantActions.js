@@ -19,8 +19,9 @@ export function getParticipantActions(alt, participantResource) {
 
     loadParticipantList(offset, limit, order) {
       function getLoopbackOrderParameter() {
-        if (!order)
+        if (!order) {
           return undefined;
+        }
 
         const strings = Object.keys(order).map(key => `${key} ${order[key]}`);
         if (strings.length === 0) {

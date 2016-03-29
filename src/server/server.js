@@ -21,9 +21,12 @@ app.set('isDev', process.env.NODE_ENV === 'dev');
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, err => {
-  if (err) throw err;
+  if (err) {
+    throw err;
+  }
 
   // start the server if `$ node server.js`
-  if (app.get('standalone'))
+  if (app.get('standalone')) {
     app.start();
+  }
 });

@@ -12,13 +12,17 @@ export function getListSortingSelector() {
       // ASC -> DESC
       // DESC -> unsorted
       // unsorted -> ASC
-      if (!orderChanged) return;
+      if (!orderChanged) {
+        return;
+      }
 
       const newOrder = {};
-      if (currentSort === 'ASC')
+      if (currentSort === 'ASC') {
         newOrder[property] = 'DESC';
-      if (currentSort === '')
+      }
+      if (currentSort === '') {
         newOrder[property] = 'ASC';
+      }
       orderChanged(newOrder);
     }
 
