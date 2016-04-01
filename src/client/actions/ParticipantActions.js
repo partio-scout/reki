@@ -55,18 +55,6 @@ export function getParticipantActions(alt, participantResource) {
       return error;
     }
 
-    changeParticipantListOffset(newOffset) {
-      return newOffset;
-    }
-
-    changeParticipantListLimit(newLimit) {
-      return newLimit;
-    }
-
-    changeParticipantListOrder(newOrder) {
-      return newOrder;
-    }
-
     loadParticipantCount() {
       return dispatch => {
         dispatch();
