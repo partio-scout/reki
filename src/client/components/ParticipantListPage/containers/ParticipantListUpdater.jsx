@@ -1,62 +1,33 @@
 import React from 'react';
-import _ from 'lodash';
+import { pureShouldComponentUpdate } from './utils';
 
-export function getParticipantListUpdater(participantStore, participantActions) {
+export function getParticipantListUpdater(participantActions) {
   class ParticipantListUpdater extends React.Component {
-    constructor(props) {
-      super(props);
-
-      this.state = this.extractState(participantStore.getState());
-    }
-
-    extractState(newState) {
+    reloadList() {
       const {
-        participantsOffset: offset,
-        participantLimit: limit,
-        participantListOrder: order,
-      } = newState;
-
-      return {
         offset,
         limit,
         order,
-      };
+      } = this.props;
+
+      participantActions.loadParticipantList(offset, limit, order);
     }
 
-    reloadList({ offset, limit, order }) {
-      participantActions.loadParticipantList.defer(offset, limit, order);
-    }
-
-    componentWillMount() {
-      this.reloadList(this.state);
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onParticipantStoreChange.bind(this));
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onParticipantStoreChange.bind(this));
-    }
-
-    onParticipantStoreChange(state) {
-      const newState = this.extractState(state);
-
-      if (!_.isEqual(this.state, newState)) {
-        this.reloadList(newState);
-      }
-
-      this.setState(newState);
-    }
-
-    shouldComponentUpdate() {
-      return false;
+    shouldComponentUpdate(nextProps, nextState) {
+      return pureShouldComponentUpdate.call(this, nextProps, nextState);
     }
 
     render() {
+      this.reloadList();
       return null;
     }
   }
+
+  ParticipantListUpdater.propTypes = {
+    offset: React.PropTypes.number.isRequired,
+    limit: React.PropTypes.number.isRequired,
+    order: React.PropTypes.object.isRequired,
+  };
 
   return ParticipantListUpdater;
 }

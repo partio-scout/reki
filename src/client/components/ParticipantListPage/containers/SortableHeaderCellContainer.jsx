@@ -1,34 +1,35 @@
 import React from 'react';
-import AltContainer from 'alt-container';
 import { getSortableHeaderCell } from '../../../components';
-import { pureShouldComponentUpdate } from './utils';
+import { changeQueryParameter } from './utils';
 
-export function getSortableHeaderCellContainer(participantStore, participantActions) {
+export function getSortableHeaderCellContainer() {
   const SortableHeaderCell = getSortableHeaderCell();
 
-  function SortableHeaderCellContainer(props) {
+  function SortableHeaderCellContainer(props, context) {
+    function handleOrderChanged(newOrder) {
+      const stringified = newOrder && Object.keys(newOrder).length > 0 && JSON.stringify(newOrder);
+      const newLocation = changeQueryParameter(props.location, 'order', stringified);
+      context.router.push(newLocation);
+    }
+
     return (
-      <AltContainer
-        stores={
-          {
-            order: () => ({ store: participantStore, value: participantStore.getState().participantListOrder }),
-          }
-        }
-        actions={
-          function() {
-            return {
-              orderChanged: newOrder => participantActions.changeParticipantListOrder(newOrder),
-            };
-          }
-        }
-        shouldComponentUpdate={ pureShouldComponentUpdate }
-      >
-        <SortableHeaderCell
-          { ...props }
-        />
-      </AltContainer>
+      <SortableHeaderCell
+        { ...props }
+        orderChanged={ handleOrderChanged }
+      />
     );
   }
+
+  SortableHeaderCellContainer.propTypes = {
+    location: React.PropTypes.object.isRequired,
+    order: React.PropTypes.object.isRequired,
+    property: React.PropTypes.string.isRequired,
+    label: React.PropTypes.string.isRequired,
+  };
+
+  SortableHeaderCellContainer.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+  };
 
   return SortableHeaderCellContainer;
 }
