@@ -147,13 +147,16 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "inCamp": {
+      "type": "number"
     }
   },
   "validations": [],
   "relations": {
     "presenceHistory": {
       "type": "hasMany",
-      "model": "participant-history",
+      "model": "ParticipantHistory",
       "foreignKey": ""
     }
   },
