@@ -29,11 +29,8 @@ export default {
     loaders: [
       {
         test: /\.js$|\.jsx$/,
-        loader: 'babel',
+        loaders: ['react-hot','babel?{"presets":["react", "es2015"]}'],
         exclude: [nodeModulesPath],
-        query: {
-          presets: ['react', 'es2015'],
-        },
       },
       {
         test: /\.css$/,
