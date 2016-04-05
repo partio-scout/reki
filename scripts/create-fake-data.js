@@ -46,8 +46,127 @@ function getInterestedInHomeHospitality() {
   return Math.random() < 0.7 ? Math.random() < 0.1 : null;
 }
 
+function randomElement(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function getLocalGroup() {
+  const localGroups = [
+    'Euran Peurat ry',
+    'Harjavallan Pirkat',
+    'Henrikin Tapulitytöt',
+    'Honkahukat ry',
+    'Huittisten Eränkävijät ry',
+    'Jokilaakson Ravut ry',
+    'Jämijärven Miilunvartijat ry',
+    'Kaavin Kiehiset',
+    'Kallan Kontiot',
+    'Kallan Tiirat',
+    'Kallan Tytöt',
+    'Kankaanpään Korpiveikot',
+    'Kannonkiertäjät',
+    'Karimo ry',
+    'Karvian Majavapartio ry',
+    'Keikyän Korvenkävijät ry',
+    'Keiteleen Saukot',
+    'Kiikan Leiripeikot',
+    'Kiikoisten Partiopojat',
+    'Kinahmin Kiipijät',
+    'Kirkkonummen Metsänkävijät',
+    'Kirkkonummen Metsäntytöt',
+    'Kirnun Kiertäjät',
+    'Kiukaisten Metsäveikot ry',
+    'Kiuru-Partio',
+    'Klapaset',
+    'Kopardit ry',
+    'Kuilun Kulkijat',
+    'Kuninkaantien Kipinät',
+    'Kuopion Eräversot',
+    'Kuopion Kurjenmiekat',
+    'Kuusiston Linnanyrjänät',
+    'Lahelan Palokärjet',
+    'Lapinjärven Peurat',
+    'Lappohjan Vasat',
+    'Leirisiskot',
+    'Linnajoen Partiolaiset',
+    'Lohjan Eräveikot',
+    'Lohjan Nummitytöt',
+    'Lohjanharjun Vartijat',
+    'Marttilan Martit',
+    'Mellilän Menninkäiset',
+    'Mustavuoren Sissit',
+    'Mäntsälän Metsäkävyt',
+    'Nummen Samoojat',
+    'Nuotiotytöt',
+    'Polaris',
+    'Pornaisten Solmu',
+    'Porvoon Metsänkävijät',
+    'Porvoon Polunlöytäjät',
+    'Pukkilan Partio',
+    'Puskapartiolaiset',
+    'Rajamäen Kekäleet',
+    'Tapiolan Metsänkävijät',
+    'Tavastit',
+    'Tellervoiset',
+    'Tikkurilan Siniset',
+    'Toimen Pojat - Unga Fribyggare',
+    'Toimen tytöt',
+    'Tornikotkat',
+    'Tuikku-tytöt',
+    'Turun Sinikotkat',
+    'Töölön Nuotioveikot',
+    'Töölön Siniset',
+    'Töölön Tähystäjät',
+    'Vaaran Vaeltajat',
+    'Vantaan Jokiversot',
+    'Vantaan Metsänkävijät',
+    'Vartiovuoren Pojat',
+    'Vartiovuoren Tytöt',
+    'Viestitytöt',
+    'Viherlaakson Peurat',
+  ];
+
+  return randomElement(localGroups);
+}
+
+function getSubCampAndCampGroup() {
+  const campGroupsBySubCamp = {
+    humina: ['hautamäki', 'väkiparta'],
+    hurma: ['aalto', 'uhlenius'],
+    polte: ['norokorpi', 'hietanen'],
+    raiku: ['eino', 'jenni'],
+    riehu: ['lehto', 'jylhä'],
+    syke: ['warro', 'toukonen'],
+    unity: ['finelli', 'puntila'],
+  };
+
+  const subCamp = randomElement(Object.keys(campGroupsBySubCamp));
+  const campGroup = randomElement(campGroupsBySubCamp[subCamp]);
+
+  return {
+    subCamp,
+    campGroup,
+  };
+}
+
+function getAgeGroup() {
+  const ageGroups = [
+    'perheleiriläinen',
+    'tarpoja',
+    'samoaja',
+    'vaeltaja',
+    'aikuinen',
+  ];
+
+  return randomElement(ageGroups);
+}
+
 function generateRandomParticipant() {
   const gender = getGender();
+  const {
+    subCamp,
+    campGroup,
+  } = getSubCampAndCampGroup();
 
   return {
     firstName: faker.name.firstName(gender ? 'male' : 'female'),
@@ -59,8 +178,12 @@ function generateRandomParticipant() {
     email: faker.internet.email(),
     homeCity: faker.address.city(),
     swimmingSkill: getSwimmingSkill(),
-    gender: gender,
     interestedInHomeHospitality: getInterestedInHomeHospitality(),
+    ageGroup: getAgeGroup(),
+    localGroup: getLocalGroup(),
+    gender,
+    subCamp,
+    campGroup,
   };
 }
 

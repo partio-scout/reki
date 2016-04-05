@@ -47,6 +47,10 @@ export function getParticipantListPage(participantStore, participantActions) {
       interestedInHomeHospitality: 'Home hospitality',
       email: 'Sähköposti',
       phoneNumber: 'Puhelinnumero',
+      ageGroup: 'Ikäkausi',
+      localGroup: 'Lippukunta',
+      subCamp: 'Alaleiri',
+      campGroup: 'Leirilippukunta',
     };
 
     return (

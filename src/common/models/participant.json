@@ -147,6 +147,54 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "localGroup": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "local_group",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "campGroup": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "camp_group",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "subCamp": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "sub_camp",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "ageGroup": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "age_group",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
     }
   },
   "validations": [],
