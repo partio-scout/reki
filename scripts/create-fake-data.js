@@ -19,40 +19,49 @@ const amountToCreate = opts.args.length == 1 ? opts.args[0] : 5;
 faker.locale = 'it';
 
 function countParticipants() {
-	ParticipantModel.count((err, sum) => {
-		if  (err) {
-			console.log(err);
-		}
-		else {
-			console.log('Total participants: ' + sum);
-		}
-	});
+  ParticipantModel.count((err, sum) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(`Total participants: ${sum}`);
+    }
+  });
+}
+
+function getDateOfBirth() {
+  const  dob = faker.date.past(30, new Date('Sat Sep 20 2004'));
+  return `${dob.getFullYear()}-${dob.getMonth()+1}-${dob.getDate()}`;
+}
+
+function getSwimmingSkill() {
+  return Math.random() < 0.7 ? Math.random() < 0.8 : null;
+}
+
+function getGender() {
+  const gender = Math.random() < 0.7;
+  return Math.random() < 0.1 ? null : gender;
+}
+
+function getInterestedInHomeHospitality() {
+  return Math.random() < 0.7 ? Math.random() < 0.1 : null;
 }
 
 function generateRandomParticipant() {
-  let dob = faker.date.past(30, new Date("Sat Sep 20 2004"));
-  dob = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
-  const swimmingSkill = Math.random() < 0.7 ? Math.random() < 0.8 : null;
-
-  let gender = Math.random() < 0.7;
-  const genderName = gender ? 'male' : 'female'
-  gender = Math.random() < 0.1 ? null : gender
-
-  const interestedInHomeHospitality = Math.random() < 0.7 ? Math.random() < 0.1 : null;
+  const gender = getGender();
 
   return {
-    "firstName": faker.name.firstName(gender ? 'male' : 'female'),
-    "lastName": faker.name.lastName(),
-    "nonScout": Math.random() < 0.1,
-    "memberNumber": Math.floor(Math.random()*10000000),
-    "dateOfBirth": dob,
-    "phoneNumber": faker.phone.phoneNumber('050 #######'),
-    "email": faker.internet.email(),
-    "homeCity": faker.address.city(),
-    "swimmingSkill": swimmingSkill,
-    "gender": gender,
-    "interestedInHomeHospitality": interestedInHomeHospitality
-  }
+    firstName: faker.name.firstName(gender ? 'male' : 'female'),
+    lastName: faker.name.lastName(),
+    nonScout: Math.random() < 0.1,
+    memberNumber: Math.floor(Math.random()*10000000),
+    dateOfBirth: getDateOfBirth(),
+    phoneNumber: faker.phone.phoneNumber('050 #######'),
+    email: faker.internet.email(),
+    homeCity: faker.address.city(),
+    swimmingSkill: getSwimmingSkill(),
+    gender: gender,
+    interestedInHomeHospitality: getInterestedInHomeHospitality(),
+  };
 }
 
 function createMockParticipants(i) {
