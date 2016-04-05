@@ -37,6 +37,7 @@
     "comma-dangle": [ 2, "always-multiline" ],
     "consistent-this": [ 1, "that" ],
     "constructor-super": 2,
+    "curly": [ 2, "all" ],
     "eol-last": 2,
     "handle-callback-err": [ 2, "^(err|.+Err(or)?)$" ],
     "indent": [ 2, 2, { "SwitchCase": 1 } ],

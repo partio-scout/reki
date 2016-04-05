@@ -1,9 +1,9 @@
 export function getParticipantStore(alt, ParticipantActions) {
   class ParticipantStore  {
     constructor() {
-      this.participantsOffset = 0;
       this.participants = [ ];
       this.participantDetails = {};
+
       this.participantCount = 0;
       this.registryUsers = [ ];
 
@@ -19,8 +19,7 @@ export function getParticipantStore(alt, ParticipantActions) {
       this.participantDetails = participant;
     }
 
-    handleParticipantListUpdated({ offset, participants }) {
-      this.participantsOffset = offset;
+    handleParticipantListUpdated(participants) {
       this.participants = participants;
     }
 

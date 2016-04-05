@@ -17,22 +17,38 @@ export function getParticipantActions(alt, participantResource, registryUserReso
       return err;
     }
 
-    loadParticipantList(offset, limit) {
+    loadParticipantList(offset, limit, order) {
+      function getLoopbackOrderParameter() {
+        if (!order) {
+          return undefined;
+        }
+
+        const strings = Object.keys(order).map(key => `${key} ${order[key]}`);
+        if (strings.length === 0) {
+          return undefined;
+        } else if (strings.length === 1) {
+          return strings[0];
+        } else {
+          return strings;
+        }
+      }
+
       const filters = {
         skip: offset,
         limit: limit,
+        order: getLoopbackOrderParameter(),
       };
 
       return dispatch => {
         dispatch();
         participantResource.findAll(`filter=${JSON.stringify(filters)}`)
-          .then(participantList => this.participantListUpdated(offset, participantList),
+          .then(participantList => this.participantListUpdated(participantList),
                 err => this.participantListUpdateFailed(err));
       };
     }
 
-    participantListUpdated(offset, participants) {
-      return { offset, participants };
+    participantListUpdated(participants) {
+      return participants;
     }
 
     participantListUpdateFailed(error) {
