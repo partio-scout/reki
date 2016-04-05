@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Grid, Row, Col } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
 import { getParticipantCountUpdater } from './containers/ParticipantCountUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
@@ -35,32 +35,58 @@ export function getParticipantListPage(participantStore, participantActions) {
     const offset = getOffset(props.location.query);
     const limit = getLimit(props.location.query);
 
+    const columnPropertyToLabelMapping = {
+      firstName: 'Etunimi',
+      lastName: 'lastName',
+      dateOfBirth: 'Syntymäpäivä',
+      gender: 'Sukupuoli',
+      nonScout: 'Onko partiolainen?',
+      memberNumber: 'Jäsennumero',
+      homeCity: 'Kotikaupunki',
+      swimmingSkill: 'Uimataito',
+      interestedInHomeHospitality: 'Home hospitality',
+      email: 'Sähköposti',
+      phoneNumber: 'Puhelinnumero',
+    };
+
     return (
-      <div>
+      <Grid>
         <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } />
         <ParticipantCountUpdater />
 
-        <h1>Leiriläiset</h1>
-        <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
-        <Table striped>
-          <thead>
-            <tr>
-              <SortableHeaderCellContainer label="Etunimi" property="firstName" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Sukunimi" property="lastName" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Syntymäpäivä" property="dateOfBirth" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Sukupuoli" property="gender" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Onko partiolainen?" property="nonScout" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Jäsennumero" property="memberNumber" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Kotikaupunki" property="homeCity" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Uimataito" property="swimmingSkill" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Home hospitality" property="interestedInHomeHospitality" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Sähköposti" property="email" location={ props.location } order={ order } />
-              <SortableHeaderCellContainer label="Puhelinnumero" property="phoneNumber" location={ props.location } order={ order } />
-            </tr>
-          </thead>
-          <ParticipantRowsContainer />
-        </Table>
-      </div>
+        <Row>
+          <Col>
+            <h1>Leiriläiset</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Table striped responsive condensed>
+              <thead>
+                <tr>
+                  {
+                    Object.keys(columnPropertyToLabelMapping).map(property => (
+                      <SortableHeaderCellContainer
+                        key={ property }
+                        property={ property }
+                        label={ columnPropertyToLabelMapping[property] }
+                        location={ props.location }
+                        order={ order }
+                      />
+                    ))
+                  }
+                </tr>
+              </thead>
+              <ParticipantRowsContainer />
+            </Table>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 
