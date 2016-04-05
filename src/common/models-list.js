@@ -9,7 +9,7 @@ const modelList = [
   ['ACL', false],
   ['Role', false],
   ['RoleMapping', false],
-  ['Registryuser', false],
+  ['RegistryUser', false],
   ['Participant', false],
 ];
 
