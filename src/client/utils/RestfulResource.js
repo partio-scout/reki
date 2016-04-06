@@ -54,8 +54,12 @@ export function getRestfulResource(request) {
         .then(this.handleResponse);
     }
 
-    raw(method, path, body) {
-      let req = request(method, this.path(path))
+    raw(method, path, options) {
+      const {
+        body,
+        filters,
+      } = options || {};
+      let req = request(method, this.path(path, filters))
         .accept('application/json');
 
       if (body) {
