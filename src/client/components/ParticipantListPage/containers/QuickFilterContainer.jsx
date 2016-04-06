@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from 'react-bootstrap';
 import { changeQueryParameters } from './utils';
 
-export function getAgeGroupSelectorContainer() {
+export function getQuickFilterContainer() {
   const ageGroupSelectionKeys = [
     '',
     'perheleiriläinen',
@@ -12,7 +12,7 @@ export function getAgeGroupSelectorContainer() {
     'aikuinen',
   ];
 
-  function AgeGroupSelectorContainer(props, context) {
+  function QuickFilterContainer(props, context) {
     function handleChange(event) {
       const newValue = event.target.value;
       const stringified = newValue && JSON.stringify({ ageGroup: newValue });
@@ -33,14 +33,14 @@ export function getAgeGroupSelectorContainer() {
     );
   }
 
-  AgeGroupSelectorContainer.propTypes = {
+  QuickFilterContainer.propTypes = {
     filter: React.PropTypes.object.isRequired,
     location: React.PropTypes.object.isRequired,
   };
 
-  AgeGroupSelectorContainer.contextTypes = {
+  QuickFilterContainer.contextTypes = {
     router: React.PropTypes.object,
   };
 
-  return AgeGroupSelectorContainer;
+  return QuickFilterContainer;
 }
