@@ -5,11 +5,21 @@ import { getParticipantCountUpdater } from './containers/ParticipantCountUpdater
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
+import { getAgeGroupSelectorContainer } from './containers/AgeGroupSelectorContainer';
 
 function getOrder(query) {
   try {
     const order = query.order && JSON.parse(query.order) || {};
     return order;
+  } catch (err) {
+    return {};
+  }
+}
+
+function getFilter(query) {
+  try {
+    const filter = query.filter && JSON.parse(query.filter) || {};
+    return filter;
   } catch (err) {
     return {};
   }
@@ -29,11 +39,13 @@ export function getParticipantListPage(participantStore, participantActions) {
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
+  const AgeGroupSelectorContainer = getAgeGroupSelectorContainer();
 
   function ParticipantListPage(props, context) {
     const order = getOrder(props.location.query);
     const offset = getOffset(props.location.query);
     const limit = getLimit(props.location.query);
+    const filter = getFilter(props.location.query);
 
     const columnPropertyToLabelMapping = {
       firstName: 'Etunimi',
@@ -55,8 +67,8 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     return (
       <Grid>
-        <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } />
-        <ParticipantCountUpdater />
+        <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
+        <ParticipantCountUpdater filter={ filter } />
 
         <Row>
           <Col>
@@ -64,6 +76,9 @@ export function getParticipantListPage(participantStore, participantActions) {
           </Col>
         </Row>
         <Row>
+          <Col>
+            <AgeGroupSelectorContainer location={ props.location } filter={ filter } />
+          </Col>
           <Col>
             <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
