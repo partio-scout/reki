@@ -31,7 +31,7 @@
     "eventType": {
       "type": "string",
       "required": true,
-      "length": 32,
+      "length": 255,
       "precision": null,
       "scale": null,
       "postgresql": {
@@ -48,7 +48,7 @@
     "model": {
       "type": "string",
       "required": true,
-      "length": 32,
+      "length": 255,
       "precision": null,
       "scale": null,
       "postgresql": {
@@ -116,13 +116,13 @@
     "comment": {
       "type": "String",
       "required": false,
-      "length": null,
+      "length": 255,
       "precision": null,
       "scale": null,
       "postgresql": {
         "columnName": "comment",
         "dataType": "character varying",
-        "dataLength": null,
+        "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
@@ -151,7 +151,7 @@
       "principalType": "ROLE",
       "principalId": "$authenticated",
       "permission": "ALLOW"
-    }  
+    }
   ],
   "methods": []
 }
