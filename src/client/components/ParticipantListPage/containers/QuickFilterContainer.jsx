@@ -12,21 +12,38 @@ export function getQuickFilterContainer() {
     'aikuinen',
   ];
 
+  const subCampSelectionKeys = [
+    '',
+    'humina',
+    'hurma',
+    'polte',
+    'raiku',
+    'riehu',
+    'syke',
+    'unity',
+  ];
+
   function QuickFilterContainer(props, context) {
-    function handleChange(event) {
-      const newValue = event.target.value;
-      const stringified = newValue && JSON.stringify({ ageGroup: newValue });
-      context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
+    function getChangeHandler(parameterName) {
+      return function(event) {
+        const newValue = event.target.value;
+        const stringified = newValue && JSON.stringify({ [parameterName]: newValue });
+        context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
+      };
     }
 
     const {
-      ageGroup: selectedValue,
+      ageGroup: selectedAgeGroup = '',
+      subCamp: selectedSubCamp = '',
     } = props.filter;
     return (
       <div>
-        <form>
-          <Input type="select" label="Ikäkausi" value={ selectedValue } onChange={ handleChange }>
+        <form className="form-inline">
+          <Input type="select" label="Ikäkausi" value={ selectedAgeGroup } onChange={ getChangeHandler('ageGroup') }>
             { ageGroupSelectionKeys.map(ageGroup => <option value={ ageGroup } key={ ageGroup }>{ ageGroup }</option>) }
+          </Input>
+          <Input type="select" label="Alaleiri" value={ selectedSubCamp } onChange={ getChangeHandler('subCamp') }>
+            { subCampSelectionKeys.map(subCamp => <option value={ subCamp } key={ subCamp }>{ subCamp }</option>) }
           </Input>
         </form>
       </div>
