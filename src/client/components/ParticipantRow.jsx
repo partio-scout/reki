@@ -47,6 +47,10 @@ export class ParticipantRow extends React.Component {
       interestedInHomeHospitality,
       email,
       phoneNumber,
+      ageGroup,
+      localGroup,
+      subCamp,
+      campGroup,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
@@ -64,6 +68,10 @@ export class ParticipantRow extends React.Component {
         <td>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
         <td>{ formatNullableString(email) }</td>
         <td>{ formatNullableString(phoneNumber) }</td>
+        <td>{ ageGroup }</td>
+        <td>{ localGroup }</td>
+        <td>{ subCamp }</td>
+        <td>{ campGroup }</td>
       </tr>
     );
   }
