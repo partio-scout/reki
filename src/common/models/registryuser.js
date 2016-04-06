@@ -9,15 +9,15 @@ export default function(Registryuser) {
     .asCallback(next);
   });
 
-  Registryuser.afterRemote('findById', (ctx, registryuserInstance, next) => {
+  Registryuser.beforeRemote('findById', (ctx, registryuserInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Registryuser(userId, registryuserInstance.id, 'find')
+    app.models.AuditEvent.createEvent.Registryuser(userId, ctx.req.params.id, 'find')
     .asCallback(next);
   });
 
-  Registryuser.afterRemote('prototype.updateAttributes', (ctx, registryuserInstance, next) => {
+  Registryuser.beforeRemote('prototype.updateAttributes', (ctx, registryuserInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Registryuser(userId, registryuserInstance.id, 'update')
+    app.models.AuditEvent.createEvent.Registryuser(userId, ctx.req.params.id, 'update')
     .asCallback(next);
   });
 

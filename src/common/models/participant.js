@@ -9,15 +9,15 @@ export default function (Participant) {
     .asCallback(next);
   });
 
-  Participant.afterRemote('findById', (ctx, participantInstance, next) => {
+  Participant.beforeRemote('findById', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'find')
+    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'find')
     .asCallback(next);
   });
 
-  Participant.afterRemote('prototype.updateAttributes', (ctx, participantInstance, next) => {
+  Participant.beforeRemote('prototype.updateAttributes', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'update')
+    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'update')
     .asCallback(next);
   });
 
