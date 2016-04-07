@@ -207,6 +207,20 @@
       "permission": "DENY"
     },
     {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "create"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
       "accessType": "READ",
       "principalType": "ROLE",
       "principalId": "$everyone",

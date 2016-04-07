@@ -83,7 +83,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "auditEvents": {
+      "type": "hasMany",
+      "model": "AuditEvent",
+      "foreignKey": "registryuserId"
+    }
+  },
   "acls": [
     {
       "principalType": "ROLE",
@@ -96,6 +102,26 @@
       "principalId": "$everyone",
       "permission": "DENY",
       "property": "create"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "create"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW"
     },
     {
       "principalType": "ROLE",
