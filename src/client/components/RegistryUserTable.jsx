@@ -3,16 +3,17 @@ import { Table } from 'react-bootstrap';
 
 const RegistryUserRow = props => {
   const {
-    name,
+    firstName,
+    lastName,
     memberNumber,
-    phone,
+    phoneNumber,
   } = props.registryUser;
 
   return(
     <tr>
-    <td>{ name }</td>
+    <td>{ `${firstName} ${lastName}` }</td>
     <td>{ memberNumber }</td>
-    <td>{ phone }</td>
+    <td>{ phoneNumber }</td>
   </tr>
   );
 };
@@ -34,7 +35,7 @@ export function getRegistryUserTable() {
             </tr>
           </thead>
           <tbody>
-            { this.props.registryUsers.map(registryUser => <RegistryUserRow key={ registryUser.id } registryUser={ registryUser } />) }
+            { this.props.registryUsers.map(registryUser => <RegistryUserRow key={ registryUser.registryUserId } registryUser={ registryUser } />) }
           </tbody>
         </Table>
       );
