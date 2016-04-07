@@ -1,28 +1,37 @@
 import React from 'react';
 import _ from 'lodash';
-import { Input } from 'react-bootstrap';
+import { getPropertySelect } from '../../../components';
 import { changeQueryParameters } from './utils';
 
 export function getQuickFilterContainer() {
-  const ageGroupSelectionKeys = [
-    '',
-    'perheleiriläinen',
-    'tarpoja',
-    'samoaja',
-    'vaeltaja',
-    'aikuinen',
-  ];
+  const PropertySelect = getPropertySelect();
 
-  const subCampSelectionKeys = [
-    '',
-    'humina',
-    'hurma',
-    'polte',
-    'raiku',
-    'riehu',
-    'syke',
-    'unity',
-  ];
+  const filterableProperties = {
+    ageGroup: {
+      label: 'Ikäkausi',
+      options: [
+        '',
+        'perheleiriläinen',
+        'tarpoja',
+        'samoaja',
+        'vaeltaja',
+        'aikuinen',
+      ],
+    },
+    subCamp: {
+      label: 'Alaleiri',
+      options: [
+        '',
+        'humina',
+        'hurma',
+        'polte',
+        'raiku',
+        'riehu',
+        'syke',
+        'unity',
+      ],
+    },
+  };
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -38,31 +47,37 @@ export function getQuickFilterContainer() {
   function QuickFilterContainer(props, context) {
     const currentSelection = getCurrentSelection(['ageGroup', 'subCamp'], props.filter);
 
-    function getChangeHandler(parameterName) {
-      return function(event) {
-        const newValue = event.target.value;
-        const changedSelection = {
-          [parameterName]: newValue,
-        };
-
-        const newSelection = _.pickBy(_.merge(currentSelection, changedSelection), (value, key) => value);
-        const numberOfFilters = Object.keys(newSelection).length;
-        const loopbackFilter = numberOfFilters > 1 ? { and: _.transform(newSelection, (result, value, key) => result.push({ [key]: value }), []) } : newSelection;
-        const stringified = numberOfFilters > 0 && JSON.stringify(loopbackFilter);
-
-        context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
+    function handleChange(parameterName, newValue) {
+      const changedSelection = {
+        [parameterName]: newValue,
       };
+
+      const newSelection = _.pickBy(_.merge(currentSelection, changedSelection), (value, key) => value);
+      const numberOfFilters = Object.keys(newSelection).length;
+      const loopbackFilter = numberOfFilters > 1 ? { and: _.transform(newSelection, (result, value, key) => result.push({ [key]: value }), []) } : newSelection;
+      const stringified = numberOfFilters > 0 && JSON.stringify(loopbackFilter);
+
+      context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
     }
 
     return (
       <div>
         <form className="form-inline">
-          <Input type="select" label="Ikäkausi" value={ currentSelection.ageGroup } onChange={ getChangeHandler('ageGroup') }>
-            { ageGroupSelectionKeys.map(ageGroup => <option value={ ageGroup } key={ ageGroup }>{ ageGroup }</option>) }
-          </Input>
-          <Input type="select" label="Alaleiri" value={ currentSelection.subCamp } onChange={ getChangeHandler('subCamp') }>
-            { subCampSelectionKeys.map(subCamp => <option value={ subCamp } key={ subCamp }>{ subCamp }</option>) }
-          </Input>
+          {
+            Object.keys(filterableProperties).map(propertyName => {
+              const propertyDefs = filterableProperties[propertyName];
+              return (
+                <PropertySelect
+                  key={ propertyName }
+                  label={ propertyDefs.label }
+                  property={ propertyName }
+                  value={ currentSelection[propertyName] }
+                  onChange={ handleChange }
+                  options={ propertyDefs.options }
+                />
+              );
+            })
+          }
         </form>
       </div>
     );
