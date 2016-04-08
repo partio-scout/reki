@@ -1,37 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
-import { getPropertySelect } from '../../../components';
 import { changeQueryParameters } from './utils';
+import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
+import { getSubCampFilterContainer } from './SubCampFilterContainer';
 
 export function getQuickFilterContainer() {
-  const PropertySelect = getPropertySelect();
-
-  const filterableProperties = {
-    ageGroup: {
-      label: 'Ikäkausi',
-      options: [
-        '',
-        'perheleiriläinen',
-        'tarpoja',
-        'samoaja',
-        'vaeltaja',
-        'aikuinen',
-      ],
-    },
-    subCamp: {
-      label: 'Alaleiri',
-      options: [
-        '',
-        'humina',
-        'hurma',
-        'polte',
-        'raiku',
-        'riehu',
-        'syke',
-        'unity',
-      ],
-    },
-  };
+  const AgeGroupFilterContainer = getAgeGroupFilterContainer();
+  const SubCampFilterContainer = getSubCampFilterContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -63,21 +38,8 @@ export function getQuickFilterContainer() {
     return (
       <div>
         <form className="form-inline">
-          {
-            Object.keys(filterableProperties).map(propertyName => {
-              const propertyDefs = filterableProperties[propertyName];
-              return (
-                <PropertySelect
-                  key={ propertyName }
-                  label={ propertyDefs.label }
-                  property={ propertyName }
-                  value={ currentSelection[propertyName] }
-                  onChange={ handleChange }
-                  options={ propertyDefs.options }
-                />
-              );
-            })
-          }
+          <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+          <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
         </form>
       </div>
     );
