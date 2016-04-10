@@ -4,11 +4,13 @@ import { changeQueryParameters } from './utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
+import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
+  const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -22,7 +24,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['ageGroup', 'subCamp', 'localGroup'], props.filter);
+    const currentSelection = getCurrentSelection(['ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
 
     function handleChange(parameterName, newValue) {
       const changedSelection = {
@@ -43,6 +45,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+          <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
         </form>
       </div>
     );

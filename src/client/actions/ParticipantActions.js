@@ -98,6 +98,30 @@ export function getParticipantActions(alt, participantResource) {
     localGroupLoadingFailed(err) {
       return err;
     }
+
+    loadCampGroups() {
+      function processResults(result) {
+        const campGroupStrings = result.map(obj => obj.campGroup);
+        const uniqueStrings = _.uniq(campGroupStrings);
+        uniqueStrings.sort();
+        return _.concat([''], uniqueStrings);
+      }
+
+      return dispatch => {
+        dispatch();
+        participantResource.findAll('filter[fields][campGroup]=true')
+          .then(response => this.campGroupsLoaded(processResults(response)),
+                err => this.campGroupLoadingFailed(err));
+      };
+    }
+
+    campGroupsLoaded(campGroups) {
+      return campGroups;
+    }
+
+    campGroupLoadingFailed(err) {
+      return err;
+    }
   }
 
   return alt.createActions(ParticipantActions);
