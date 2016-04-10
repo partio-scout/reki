@@ -39,7 +39,7 @@ export function getParticipantListPage(participantStore, participantActions) {
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const QuickFilterContainer = getQuickFilterContainer();
+  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
 
   function ParticipantListPage(props, context) {
     const order = getOrder(props.location.query);
