@@ -79,6 +79,17 @@ td {
   vertical-align: middle !important;
 }
 
+//Sortable table header container
+.sortable span,
+.sortable div {
+  display: table-cell;
+  vertical-align: bottom;
+}
+
+.sortable .btn:hover {
+  text-decoration: none;
+}
+
 /**
  * Buttons
  */

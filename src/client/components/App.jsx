@@ -20,9 +20,9 @@ export function getApp() {
           </Navbar>
           <Grid fluid>
             <Row>
-              <Col md={2} className="sidebar">
+              <Col sm={2} className="sidebar">
               </Col>
-              <Col md={10} mdOffset={2} className="main">
+              <Col sm={10} smOffset={2} className="main">
                 { this.props.children }
               </Col>
             </Row>
