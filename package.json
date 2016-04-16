@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node .",
     "create-user": "babel-node scripts/create-user.js",
+    "delete-user": "babel-node scripts/delete-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
     "postinstall": "scripts/deploy-bundle.sh",
     "test": "npm run linter && npm run test-mocha",
