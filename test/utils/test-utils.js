@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
-  const promiseUserLogin = Promise.promisify(app.models.Registryuser.login, { context: app.models.Registryuser });
+  const promiseUserLogin = Promise.promisify(app.models.RegistryUser.login, { context: app.models.RegistryUser });
   return promiseUserLogin({
     username: username,
     password: userpass,
