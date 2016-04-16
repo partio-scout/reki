@@ -7,6 +7,7 @@ const RegistryUserRow = props => {
     lastName,
     memberNumber,
     phoneNumber,
+    email,
   } = props.registryUser;
 
   return(
@@ -14,6 +15,7 @@ const RegistryUserRow = props => {
     <td>{ `${firstName} ${lastName}` }</td>
     <td>{ memberNumber }</td>
     <td>{ phoneNumber }</td>
+    <td>{ email }</td>
   </tr>
   );
 };
@@ -26,12 +28,13 @@ export function getRegistryUserTable() {
   class RegistryUserTable extends React.Component {
     render() {
       return (
-        <Table striped bordered condensed>
+        <Table striped responsive condensed>
           <thead>
             <tr>
               <th>Nimi</th>
               <th>Jäsennumero</th>
               <th>Puhelinnumero</th>
+              <th>Sähköposti</th>
             </tr>
           </thead>
           <tbody>
