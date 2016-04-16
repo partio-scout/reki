@@ -66,7 +66,7 @@ export function getParticipantListPage(participantStore, participantActions) {
     };
 
     return (
-      <Grid>
+      <Grid fluid>
         <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
         <ParticipantCountUpdater filter={ filter } />
 
