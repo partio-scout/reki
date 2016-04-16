@@ -133,9 +133,9 @@
   },
   "validations": [],
   "relations": {
-    "Registryuser": {
+    "RegistryUser": {
       "type": "belongsTo",
-      "model": "Registryuser",
+      "model": "RegistryUser",
       "foreignKey": "registryuserId"
     }
   },
