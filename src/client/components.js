@@ -5,7 +5,7 @@ export { getParticipantListPage } from './components/ParticipantListPage/Partici
 export { getParticipantDetailsPage } from './components/ParticipantDetailsPage';
 export { ParticipantRow } from './components/ParticipantRow';
 export { ListOffsetSelector } from './components/ListOffsetSelector';
-export { getUserManagementPage } from './components/UserManagementPage';
+export { getUserManagementPage } from './components/RegistryUserListPage/UserManagementPage';
 export { NavLinkItem } from './components/NavLinkItem';
 export { getListSortingSelector } from './components/ListSortingSelector';
 export { getSortableHeaderCell } from './components/SortableHeaderCell';
