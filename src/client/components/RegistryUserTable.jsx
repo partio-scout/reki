@@ -35,7 +35,7 @@ export function getRegistryUserTable() {
             </tr>
           </thead>
           <tbody>
-            { this.props.registryUsers.map(registryUser => <RegistryUserRow key={ registryUser.registryUserId } registryUser={ registryUser } />) }
+            { this.props.registryUsers.map(registryUser => <RegistryUserRow key={ registryUser.id } registryUser={ registryUser } />) }
           </tbody>
         </Table>
       );

@@ -10,12 +10,12 @@
     }
   },
   "properties": {
-    "registryUserId": {
+    "id": {
       "type": "Number",
       "id": true,
       "generated": true,
       "postgresql": {
-        "columnName": "registryuser_id",
+        "columnName": "id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
