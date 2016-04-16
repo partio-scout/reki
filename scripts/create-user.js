@@ -1,43 +1,55 @@
 import Promise from 'bluebird';
 import app from '../src/server/server.js';
 import crypto from 'crypto';
+import inquirer from 'inquirer';
 
-const Registryuser = app.models.Registryuser;
-const createUser = Promise.promisify(Registryuser.create, { context: Registryuser });
+const RegistryUser = app.models.RegistryUser;
+const createUser = Promise.promisify(RegistryUser.create, { context: RegistryUser });
 
-const opts = require('commander')
-  .usage('<member number> <user email>')
-  .parse(process.argv);
-
-if (opts.args.length < 2) {
-  opts.outputHelp();
-  console.error('Please provide the user\'s member number and email.');
-  process.exit(1);
-}
-
-const memberNumber = opts.args[0];
-const email = opts.args[1];
 const password = crypto.randomBytes(24).toString('hex');
-const user = {
-  memberNumber: memberNumber,
-  email: email,
-  password: password,
-  name: 'n/a',
-  phone: 'n/a',
-};
+const questions = [
+  {
+    type: 'input',
+    name: 'firstName',
+    message: 'First name?',
+  },
+  {
+    type: 'input',
+    name: 'lastName',
+    message: 'Last name?',
+  },
+  {
+    type: 'input',
+    name: 'memberNumber',
+    message: 'Member number?',
+  },
+  {
+    type: 'input',
+    name: 'phoneNumber',
+    message: 'Phone number?',
+  },
+  {
+    type: 'input',
+    name: 'email',
+    message: 'Email?',
+  },
+];
 
 function printErrorMessage(err) {
   // Koska template literalit on multiline, alla oleva sisennys on tarkoituksenmukaista
   console.error(`Could not create user:
-  ${err.stack}`);
+    ${err.stack}`);
 }
 
-createUser(user)
-  .then(createdUserInfo => {
-    console.log(`Created user with id ${createdUserInfo.id}`);
-    process.exit(0);
-  })
-  .catch(err => {
-    printErrorMessage(err);
-    process.exit(1);
+inquirer.prompt(questions)
+  .then(answers => {
+    createUser(Object.assign({ password: password }, answers))
+      .then(createdUserInfo => {
+        console.log(`Created user with id ${createdUserInfo.id}`);
+        process.exit(0);
+      })
+      .catch(err => {
+        printErrorMessage(err);
+        process.exit(1);
+      });
   });

@@ -68,30 +68,6 @@
         "dataScale": null,
         "nullable": "YES"
       }
-    },
-    "accessToParticipants": {
-      "type": "boolean",
-      "required": true,
-      "postgresql": {
-        "columnName": "access_to_participants",
-        "dataType": "boolean",
-        "dataLength": null,
-        "dataPrecision": null,
-        "dataScale": null,
-        "nullable": "NO"
-      }
-    },
-    "accessToRegistryUsers": {
-      "type": "boolean",
-      "required": true,
-      "postgresql": {
-        "columnName": "access_to_registryusers",
-        "dataType": "boolean",
-        "dataLength": null,
-        "dataPrecision": null,
-        "dataScale": null,
-        "nullable": "NO"
-      }
     }
   },
   "validations": [],
@@ -110,10 +86,11 @@
       "permission": "ALLOW"
     },
     {
+      "accessType": "WRITE",
       "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY",
-      "property": "login"
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "*"
     }
   ],
   "methods": []
