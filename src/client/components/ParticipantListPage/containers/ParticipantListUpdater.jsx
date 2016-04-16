@@ -8,9 +8,10 @@ export function getParticipantListUpdater(participantActions) {
         offset,
         limit,
         order,
+        filter,
       } = this.props;
 
-      participantActions.loadParticipantList(offset, limit, order);
+      participantActions.loadParticipantList(offset, limit, order, filter);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -27,6 +28,7 @@ export function getParticipantListUpdater(participantActions) {
     offset: React.PropTypes.number.isRequired,
     limit: React.PropTypes.number.isRequired,
     order: React.PropTypes.object.isRequired,
+    filter: React.PropTypes.object.isRequired,
   };
 
   return ParticipantListUpdater;

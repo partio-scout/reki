@@ -17,7 +17,7 @@ export function getParticipantActions(alt, participantResource, registryUserReso
       return err;
     }
 
-    loadParticipantList(offset, limit, order) {
+    loadParticipantList(offset, limit, order, filter) {
       function getLoopbackOrderParameter() {
         if (!order) {
           return undefined;
@@ -34,6 +34,7 @@ export function getParticipantActions(alt, participantResource, registryUserReso
       }
 
       const filters = {
+        where: filter,
         skip: offset,
         limit: limit,
         order: getLoopbackOrderParameter(),
@@ -55,10 +56,10 @@ export function getParticipantActions(alt, participantResource, registryUserReso
       return error;
     }
 
-    loadParticipantCount() {
+    loadParticipantCount(filter) {
       return dispatch => {
         dispatch();
-        participantResource.raw('get', 'count')
+        participantResource.raw('get', 'count', { filters: `where=${JSON.stringify(filter)}` })
           .then(response => this.participantCountUpdated(response.count),
                 err => this.participantCountUpdateFailed(err));
       };
