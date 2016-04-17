@@ -6,6 +6,7 @@ import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellC
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
+import { getParticipantCount } from './containers/ParticipantCount';
 
 function getOrder(query) {
   try {
@@ -40,6 +41,7 @@ export function getParticipantListPage(participantStore, participantActions) {
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
+  const ParticipantCount = getParticipantCount(participantStore);
 
   function ParticipantListPage(props, context) {
     const order = getOrder(props.location.query);
@@ -79,7 +81,10 @@ export function getParticipantListPage(participantStore, participantActions) {
           <Col>
             <QuickFilterContainer location={ props.location } filter={ filter } />
           </Col>
-          <Col>
+          <Col md={ 3 }>
+            <ParticipantCount />
+          </Col>
+          <Col md={ 9 }>
             <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>
