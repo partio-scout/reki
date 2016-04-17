@@ -4,9 +4,10 @@ import { pureShouldComponentUpdate } from './utils';
 
 function Count(props) {
   return (
-    <span>
-      Haulla löytyi { props.count } tulosta
-    </span>
+    <div className="participant-count">
+      Hakutulokset
+      <div className="h2">{ props.count }</div>
+    </div>
   );
 }
 Count.propTypes = {
