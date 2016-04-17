@@ -5,12 +5,14 @@ import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
+import { getTextSearchContainer } from './TextSearchContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
+  const TextSearchContainer = getTextSearchContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -22,11 +24,12 @@ export function getQuickFilterContainer(participantStore, participantActions) {
 
     return currentSelection;
   }
-
+  
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
-
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
+  
     function handleChange(parameterName, newValue) {
+
       const changedSelection = {
         [parameterName]: newValue,
       };
@@ -42,6 +45,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     return (
       <div>
         <form className="form-inline">
+          <TextSearchContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />

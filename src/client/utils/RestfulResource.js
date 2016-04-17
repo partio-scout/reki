@@ -23,6 +23,9 @@ export function getRestfulResource(request) {
     }
 
     findAll(filters) {
+      if(filters.textSearch != undefined && filters.textSearch.length > 0) {
+        filters.textSearch = {};
+      }
       return request.get(this.path('', filters))
         .accept('application/json')
         .then(this.handleResponse);
