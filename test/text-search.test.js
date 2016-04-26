@@ -147,5 +147,19 @@ describe('Text search', () => {
     })
   );
 
+  it('Query with member number', () =>
+    queryParticipants({"textSearch":"859"}, accessToken)
+    .then(res => {
+      expectParticipants([ 'Jussi' ], res.body)
+    })
+  );
+
+  it('Query with first and last name', () =>
+    queryParticipants({"textSearch":"Jukola Jussi"}, accessToken)
+    .then(res => {
+      expectParticipants([ 'Jussi' ], res.body)
+    })
+  );
+
 
 });
