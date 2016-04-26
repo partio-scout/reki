@@ -78,13 +78,15 @@ export function getParticipantListPage(participantStore, participantActions) {
           </Col>
         </Row>
         <Row>
-          <Col md={ 12 }>
+          <Col md={ 12 } className="well">
             <QuickFilterContainer location={ props.location } filter={ filter } />
           </Col>
-          <Col md={ 3 }>
+        </Row>
+        <Row>
+          <Col md={ 2 } className="well">
             <ParticipantCount />
           </Col>
-          <Col md={ 9 }>
+          <Col md={ 10 }>
             <p>&nbsp;</p>
           </Col>
         </Row>
