@@ -23,6 +23,16 @@ export default function (Participant) {
 
   Participant.beforeRemote('find', (ctx, participantInstance, next) => {
 
+    function constructTextSearchArray(string) {
+      let ar = new Array();
+
+      ar.push({ firstName: { like: '%' + string + '%' } });
+      ar.push({ lastName: { like: '%' + string + '%' } });
+      ar.push({ memberNumber: parseInt(string) });
+
+      return ar;
+    }
+
     let filter = JSON.parse(ctx.args.filter);
 
     // if multiple filters
@@ -31,10 +41,7 @@ export default function (Participant) {
       filter.where['and'].map(function(value, index, ar) {
         if(value.textSearch != undefined && value.textSearch.length > 0) {
           let name = {};
-          name.or = new Array();
-
-          name.or.push({ firstName: { like: '%' + value.textSearch + '%' } });
-          name.or.push({ lastName: { like: '%' + value.textSearch + '%' } });
+          name.or = constructTextSearchArray(value.textSearch);
   
           filter.where['and'].splice(index,1);
           filter.where['and'].push(name);
@@ -47,9 +54,7 @@ export default function (Participant) {
 
       delete filter.where.textSearch;
 
-      filter.where.or = new Array();
-      filter.where.or.push({ firstName: { like: '%' + textSearchString + '%' } });
-      filter.where.or.push({ lastName: { like: '%' + textSearchString + '%' } });
+      filter.where.or = constructTextSearchArray(textSearchString);
 
     }
   
