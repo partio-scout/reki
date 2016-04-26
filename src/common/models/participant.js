@@ -24,13 +24,31 @@ export default function (Participant) {
   Participant.beforeRemote('find', (ctx, participantInstance, next) => {
 
     function constructTextSearchArray(string) {
-      let ar = new Array();
+      let or = new Array();
 
-      ar.push({ firstName: { like: '%' + string + '%' } });
-      ar.push({ lastName: { like: '%' + string + '%' } });
-      ar.push({ memberNumber: parseInt(string) });
+      or.push({ firstName: { like: '%' + string + '%' } });
+      or.push({ lastName: { like: '%' + string + '%' } });
+      or.push({ memberNumber: parseInt(string) });
+      
+      const splitted = string.split(' ', 2);
 
-      return ar;
+      if(splitted.length > 1) {
+
+        let and = new Array();
+        and.push({ firstName: { like: '%' + splitted[0] + '%' } });
+        and.push({ lastName: { like: '%' + splitted[1] + '%' } });
+
+        or.push({ and });
+
+        and = new Array();
+        and.push({ firstName: { like: '%' + splitted[1] + '%' } });
+        and.push({ lastName: { like: '%' + splitted[0] + '%' } });
+
+        or.push({ and });
+        
+      }      
+
+      return or;
     }
 
     let filter = JSON.parse(ctx.args.filter);
