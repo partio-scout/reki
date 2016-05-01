@@ -9,10 +9,7 @@ export function getTextField() {
     }
 
     return (
-      // <div>
-        <Input type="text" label={ label } value={ value } onChange={ handleValueChanged }></Input>
-        // <button type="submit">Submit</button>
-      // </div>
+        <Input type="text" label={ label } value={ value } onChange={ handleValueChanged }/>
     );
   }
 

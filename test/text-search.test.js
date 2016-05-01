@@ -1,4 +1,4 @@
-Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
+Object.keys(require.cache).forEach(key => { delete require.cache[key]; });
 
 import app from '../src/server/server';
 import request from 'supertest-as-promised';
@@ -12,10 +12,10 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Text search', () => {
-  let adminuserId, userId, participantId, accessToken;
-  
+  let adminuserId, accessToken;
+
   const testParticipants = new Array();
-  
+
   testParticipants.push({
     'firstName': 'Teemu',
     'lastName': 'Testihenkilö',
@@ -24,7 +24,7 @@ describe('Text search', () => {
     'campGroup': 'Leirilippukunta',
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
-    'memberNumber': 123
+    'memberNumber': 123,
   });
   testParticipants.push({
     'firstName': 'Tero',
@@ -34,7 +34,7 @@ describe('Text search', () => {
     'campGroup': 'Leirilippukunta',
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
-    'memberNumber': 345
+    'memberNumber': 345,
   });
   testParticipants.push({
     'firstName': 'Jussi',
@@ -44,10 +44,10 @@ describe('Text search', () => {
     'campGroup': 'Leirilippukunta',
     'subCamp': 'Alaleiri',
     'ageGroup': 'seikkailija',
-    'memberNumber': 859
+    'memberNumber': 859,
   });
 
-  beforeEach(() =>    
+  beforeEach(() =>
     resetDatabase().then(() =>
       testUtils.createFixture('Registryuser', {
         'username': 'testAdmin',
@@ -72,7 +72,7 @@ describe('Text search', () => {
       testUtils.loginUser('testAdmin')
     ).then(newAccessToken =>
       accessToken = newAccessToken
-    ).then(() => 
+    ).then(() =>
       testUtils.createFixture('Participant', testParticipants)
     )
   );
@@ -83,10 +83,10 @@ describe('Text search', () => {
     // console.log(expectedResult);
     return expect(firstNames).to.have.members(expectedResult);
   }
-  
+
   function queryParticipants(filter, accessToken) {
     return request(app)
-    .get(`/api/Participants?accessToken=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
+    .get(`/api/Participants?accessToken=${accessToken}&filter={ 'where':${JSON.stringify(filter)},'skip':0,'limit':20}`)
     // .expect(500,'');
     .expect(200);
   }
@@ -94,72 +94,71 @@ describe('Text search', () => {
   it('Query without filters', () =>
     queryParticipants({}, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body)
+      expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
     })
   );
-  
+
   it('Query with ageGroup filter', () =>
-    queryParticipants({"ageGroup":"sudenpentu"}, accessToken)
+    queryParticipants({ 'ageGroup':'sudenpentu' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero', 'Teemu' ], res.body)
+      expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
-  
+
   it('Query with search by last name', () =>
-    queryParticipants({"textSearch":"Esimerkki"}, accessToken)
+    queryParticipants({ 'textSearch':'Esimerkki' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero' ], res.body)
+      expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with search by first name', () =>
-    queryParticipants({"textSearch":"Tero"}, accessToken)
+    queryParticipants({ 'textSearch':'Tero' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero' ], res.body)
+      expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with multiple filters', () =>
-    queryParticipants({"and":[{"ageGroup":"sudenpentu"},{"subCamp":"Alaleiri"},{"textSearch":"Teemu"}]}, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'subCamp':'Alaleiri' },{ 'textSearch':'Teemu' }] }, accessToken)
     .then(res => {
-      expectParticipants([ 'Teemu' ], res.body)
+      expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
   it('Query with multiple filters without results', () =>
-    queryParticipants({"and":[{"ageGroup":"seikkailija"},{"textSearch":"Teemu"}]}, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'textSearch':'Teemu' }] }, accessToken)
     .then(res => {
-      expectParticipants([ ], res.body)
+      expectParticipants([ ], res.body);
     })
   );
 
   it('Query with multiple filters without text search', () =>
-    queryParticipants({"and":[{"ageGroup":"seikkailija"},{"subCamp":"Alaleiri"}]}, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'subCamp':'Alaleiri' }] }, accessToken)
     .then(res => {
-      expectParticipants([ 'Jussi' ], res.body)
+      expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with part of name', () =>
-    queryParticipants({"and":[{"ageGroup":"sudenpentu"},{"textSearch":"Te"}]}, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'textSearch':'Te' }] }, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero', 'Teemu' ], res.body)
+      expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
 
   it('Query with member number', () =>
-    queryParticipants({"textSearch":"859"}, accessToken)
+    queryParticipants({ 'textSearch':'859' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Jussi' ], res.body)
+      expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with first and last name', () =>
-    queryParticipants({"textSearch":"Jukola Jussi"}, accessToken)
+    queryParticipants({ 'textSearch':'Jukola Jussi' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Jussi' ], res.body)
+      expectParticipants([ 'Jussi' ], res.body);
     })
   );
-
 
 });

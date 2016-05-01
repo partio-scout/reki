@@ -24,50 +24,49 @@ export default function (Participant) {
   Participant.beforeRemote('find', (ctx, participantInstance, next) => {
 
     function constructTextSearchArray(string) {
-      let or = new Array();
+      const or = new Array();
 
-      or.push({ firstName: { like: '%' + string + '%' } });
-      or.push({ lastName: { like: '%' + string + '%' } });
+      or.push({ firstName: { like: '%${string}%' } });
+      or.push({ lastName: { like: '%${string}%' } });
       or.push({ memberNumber: parseInt(string) });
-      
+
       const splitted = string.split(' ', 2);
 
-      if(splitted.length > 1) {
+      if (splitted.length > 1) {
 
         let and = new Array();
-        and.push({ firstName: { like: '%' + splitted[0] + '%' } });
-        and.push({ lastName: { like: '%' + splitted[1] + '%' } });
+        and.push({ firstName: { like: '%${splitted[0]}%' } });
+        and.push({ lastName: { like: '%${splitted[1]}%' } });
 
         or.push({ and });
 
         and = new Array();
-        and.push({ firstName: { like: '%' + splitted[1] + '%' } });
-        and.push({ lastName: { like: '%' + splitted[0] + '%' } });
+        and.push({ firstName: { like: '%${splitted[1]}%' } });
+        and.push({ lastName: { like: '%${splitted[0]}%' } });
 
         or.push({ and });
-        
-      }      
+      }
 
       return or;
     }
 
-    let filter = JSON.parse(ctx.args.filter);
+    const filter = JSON.parse(ctx.args.filter);
 
     // if multiple filters
-    if(filter.where['and'] != undefined) {
+    if (filter.where['and'] != undefined) {
 
-      filter.where['and'].map(function(value, index, ar) {
-        if(value.textSearch != undefined && value.textSearch.length > 0) {
-          let name = {};
+      filter.where['and'].map((value, index, ar) => {
+        if (value.textSearch != undefined && value.textSearch.length > 0) {
+          const name = {};
           name.or = constructTextSearchArray(value.textSearch);
-  
+
           filter.where['and'].splice(index,1);
           filter.where['and'].push(name);
         }
       });
 
-    } else if(filter.where.textSearch != undefined && filter.where.textSearch.length > 0) {
-      
+    } else if (filter.where.textSearch != undefined && filter.where.textSearch.length > 0) {
+
       const textSearchString = filter.where.textSearch;
 
       delete filter.where.textSearch;
@@ -75,15 +74,11 @@ export default function (Participant) {
       filter.where.or = constructTextSearchArray(textSearchString);
 
     }
-  
+
     ctx.args.filter = JSON.stringify(filter);
 
-    // console.log(ctx.args.filter);
-
     next();
-
   });
-
 
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });

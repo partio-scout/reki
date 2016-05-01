@@ -24,10 +24,10 @@ export function getQuickFilterContainer(participantStore, participantActions) {
 
     return currentSelection;
   }
-  
+
   function QuickFilterContainer(props, context) {
     const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
-  
+
     function handleChange(parameterName, newValue) {
 
       const changedSelection = {
