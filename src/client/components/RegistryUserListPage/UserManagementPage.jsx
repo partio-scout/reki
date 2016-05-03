@@ -1,5 +1,6 @@
 import React from 'react';
 import { RegistryUserTable } from './RegistryUserTable';
+import { Grid, Row } from 'react-bootstrap';
 
 export function getUserManagementPage(registryUserStore, registryUserActions) {
   class UserManagementPage extends React.Component {
@@ -26,10 +27,14 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
 
     render() {
       return (
-        <div>
-          <h1>Käyttäjät</h1>
-          <RegistryUserTable registryUsers={ this.state.registryUsers }/>
-        </div>
+        <Grid>
+          <Row>
+            <h1>Käyttäjät</h1>
+          </Row>
+          <Row>
+            <RegistryUserTable registryUsers={ this.state.registryUsers }/>
+          </Row>
+        </Grid>
       );
     }
   }
