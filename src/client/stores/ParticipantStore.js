@@ -3,9 +3,7 @@ export function getParticipantStore(alt, ParticipantActions) {
     constructor() {
       this.participants = [ ];
       this.participantDetails = {};
-
       this.participantCount = 0;
-      this.registryUsers = [ ];
 
       this.bindListeners({
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
