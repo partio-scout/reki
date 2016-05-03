@@ -1,28 +1,26 @@
 import React from 'react';
-import { getRegistryUserTable } from './RegistryUserTable';
+import { RegistryUserTable } from './RegistryUserTable';
 
-const RegistryUserTable = getRegistryUserTable();
-
-export function getUserManagementPage(participantStore, participantActions) {
+export function getUserManagementPage(registryUserStore, registryUserActions) {
   class UserManagementPage extends React.Component {
     constructor(props) {
       super(props);
-      this.state = participantStore.getState();
+      this.state = registryUserStore.getState();
     }
 
     componentWillMount() {
-      participantActions.loadRegistryUserList();
+      registryUserActions.loadRegistryUserList();
     }
 
     componentDidMount() {
-      participantStore.listen(this.onParticipantStoreChange.bind(this));
+      registryUserStore.listen(this.onregistryUserStoreChange.bind(this));
     }
 
     componentWillUnMount() {
-      participantStore.unlisten(this.onParticipantStoreChange.bind(this));
+      registryUserStore.unlisten(this.onregistryUserStoreChange.bind(this));
     }
 
-    onParticipantStoreChange(state) {
+    onregistryUserStoreChange(state) {
       this.setState(state);
     }
 

@@ -21,14 +21,16 @@ const registryUserResource = new RestfulResource('/api/registryusers');
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource, registryUserResource);
+const participantActions = actions.getParticipantActions(alt, participantResource);
+const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
+const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp();
 const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
-const UserManagementPage = components.getUserManagementPage(participantStore, participantActions);
+const UserManagementPage = components.getUserManagementPage(registryUserStore, registryUserActions);
 
 const routes = (
   <Router history={ browserHistory }>
