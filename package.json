@@ -13,6 +13,7 @@
     "test-mocha": "mocha --compilers js:babel-core/register",
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
+    "fetch-from-kuksa": "babel-node scripts/fetch-from-kuksa.js",
     "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "file-loader": "^0.8.5",
     "history": "^2.0.1",
     "http-proxy": "^1.12.0",
+    "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v2.0.1/kuksa-event-api-client.tar.gz",
     "lodash": "^4.6.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
