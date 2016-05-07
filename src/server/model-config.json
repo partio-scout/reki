@@ -35,5 +35,9 @@
   "SubCamp": {
     "dataSource": "db",
     "public": false
+  },
+  "Village": {
+    "dataSource": "db",
+    "public": false
   }
 }

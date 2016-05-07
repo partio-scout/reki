@@ -13,6 +13,7 @@ const modelList = [
   ['Participant', false],
   ['AuditEvent', false],
   ['SubCamp', false],
+  ['Village', false],
 ];
 
 export function getModelCreationList() {
