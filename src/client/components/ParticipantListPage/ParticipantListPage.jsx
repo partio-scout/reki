@@ -51,7 +51,7 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     const columnPropertyToLabelMapping = {
       firstName: 'Etunimi',
-      lastName: 'lastName',
+      lastName: 'Sukunimi',
       dateOfBirth: 'Syntymäpäivä',
       gender: 'Sukupuoli',
       nonScout: 'Onko partiolainen?',
