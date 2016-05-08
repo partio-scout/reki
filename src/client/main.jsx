@@ -17,16 +17,20 @@ const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants');
+const registryUserResource = new RestfulResource('/api/registryusers');
 
 const alt = new Alt();
 
 const participantActions = actions.getParticipantActions(alt, participantResource);
+const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
+const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp();
 const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
+const UserManagementPage = components.getUserManagementPage(registryUserStore, registryUserActions);
 
 const routes = (
   <Router history={ browserHistory }>
@@ -36,6 +40,7 @@ const routes = (
         <IndexRoute component={ ParticipantListPage } />
         <Route path=":id" component={ ParticipantDetailsPage } />
       </Route>
+      <Route path="admin" component={ UserManagementPage } />
     </Route>
   </Router>
 );

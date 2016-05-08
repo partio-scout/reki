@@ -22,7 +22,7 @@ export default function(Registryuser) {
   });
 
   Registryuser.observe('before delete', (ctx, next) => {
-    const findRegistryuser = Promise.promisify(app.models.Registryuser.find, { context: app.models.Registryuser });
+    const findRegistryuser = Promise.promisify(app.models.RegistryUser.find, { context: app.models.RegistryUser });
     if (ctx.instance) {
       const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
       app.models.AuditEvent.createEvent.Registryuser(userId, ctx.instance.registryuserId, 'delete')

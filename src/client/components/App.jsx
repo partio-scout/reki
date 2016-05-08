@@ -15,6 +15,9 @@ export function getApp() {
               </Navbar.Brand>
             </Navbar.Header>
             <Nav pullRight>
+              <NavLinkItem to="/admin" isIndexLink>Käyttäjät</NavLinkItem>
+            </Nav>
+            <Nav pullRight>
               <NavLinkItem to="/participants" isIndexLink>Leiriläiset</NavLinkItem>
             </Nav>
           </Navbar>
