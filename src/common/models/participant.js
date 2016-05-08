@@ -80,7 +80,6 @@ export default function (Participant) {
     next();
   });
 
-
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
     if (ctx.instance) {
