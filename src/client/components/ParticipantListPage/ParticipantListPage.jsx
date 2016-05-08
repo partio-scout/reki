@@ -5,7 +5,8 @@ import { getParticipantCountUpdater } from './containers/ParticipantCountUpdater
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
-import { getAgeGroupSelectorContainer } from './containers/AgeGroupSelectorContainer';
+import { getQuickFilterContainer } from './containers/QuickFilterContainer';
+import { getParticipantCount } from './containers/ParticipantCount';
 
 function getOrder(query) {
   try {
@@ -39,7 +40,8 @@ export function getParticipantListPage(participantStore, participantActions) {
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const AgeGroupSelectorContainer = getAgeGroupSelectorContainer();
+  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
+  const ParticipantCount = getParticipantCount(participantStore);
 
   function ParticipantListPage(props, context) {
     const order = getOrder(props.location.query);
@@ -49,7 +51,7 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     const columnPropertyToLabelMapping = {
       firstName: 'Etunimi',
-      lastName: 'lastName',
+      lastName: 'Sukunimi',
       dateOfBirth: 'Syntymäpäivä',
       gender: 'Sukupuoli',
       nonScout: 'Onko partiolainen?',
@@ -66,7 +68,7 @@ export function getParticipantListPage(participantStore, participantActions) {
     };
 
     return (
-      <Grid>
+      <Grid fluid>
         <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
         <ParticipantCountUpdater filter={ filter } />
 
@@ -77,9 +79,12 @@ export function getParticipantListPage(participantStore, participantActions) {
         </Row>
         <Row>
           <Col>
-            <AgeGroupSelectorContainer location={ props.location } filter={ filter } />
+            <QuickFilterContainer location={ props.location } filter={ filter } />
           </Col>
-          <Col>
+          <Col md={ 3 }>
+            <ParticipantCount />
+          </Col>
+          <Col md={ 9 }>
             <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>

@@ -1,5 +1,13 @@
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
+// Dimensions
+
+$border-radius-base: 2px;
+$border-radius-large: 2px;
+$border-radius-small: 2px;
+
+$grid-gutter-width: 30px;
+
 // Colors
 $blue: rgb(53, 152, 220);
 $green: rgb(27, 188, 129);
@@ -25,16 +33,19 @@ $brand-danger: $red;
 $navbar-default-bg: $mid-grey;
 $navbar-default-brand-color: $white;
 $navbar-default-brand-hover-color: $white;
-$navbar-border-radius: 0;
 $navbar-default-link-color: $white;
 $navbar-default-link-hover-color: $white;
 $navbar-default-link-hover-bg: lighten($mid-grey, 3%);
 
-$border-radius-base: 2px;
-$border-radius-large: 2px;
-$border-radius-small: 2px;
+$navbar-margin-bottom: 0;
+$navbar-border-radius: 0;
+$navbar-padding-horizontal: 0;
 
 $btn-font-weight: bold;
+
+// Breakpoints
+$screen-xs: 480px;
+$screen-sm: 768px;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
@@ -72,6 +83,19 @@ td {
   vertical-align: middle !important;
 }
 
+//Sortable table header container
+.sortable {
+  span,
+  div {
+    display: table-cell;
+    vertical-align: bottom;
+  }
+
+  .btn:hover {
+    text-decoration: none;
+  }
+}
+
 /**
  * Buttons
  */
@@ -85,9 +109,39 @@ td {
  * Navbar
  */
 
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
-  transition: 150ms background ease-in-out;
+.navbar-default {
+  border: 0;
+  padding-left: floor( $grid-gutter-width / 2 );
+  padding-right: floor( $grid-gutter-width / 2 );
+
+  .navbar-nav > li > a:hover,
+  .navbar-nav > li > a:focus {
+    transition: 150ms background ease-in-out;
+  }
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+/**
+ * Sidebar & Main Container
+ */
+
+.main {}
+
+.sidebar {
+  background-color: $light-grey;
+  bottom: 0;
+  display: block;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  position: fixed;
+  top: 50px;
+  z-index: 20;
 }
 
 /**
@@ -96,10 +150,6 @@ td {
 
 .acceptance-colunms {
   text-align: center;
-}
-
-.purchase-order h2 {
-  margin: 10px 0;
 }
 
 .field p.form-control-static {
@@ -116,4 +166,27 @@ td {
 
 .toolBar {
   margin: 20px 0;
+}
+
+@media screen and (max-width: $screen-sm) {
+  .sidebar {
+    bottom: auto;
+    left: auto;
+    position: relative;
+    top: auto;
+  }
+
+  .navbar-default {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+}
+
+.participant-count {
+  margin: 15px 0;
+
+  .h2 {
+    margin: 0;
+  }
 }

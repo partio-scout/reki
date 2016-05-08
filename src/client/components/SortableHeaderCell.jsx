@@ -6,7 +6,7 @@ export function getSortableHeaderCell() {
 
   function SortableHeaderCell({ label, property, order, orderChanged }) {
     return (
-      <th>{ label }
+      <th className="sortable">{ label }
         <ListSortingSelector property={ property } order={ order } orderChanged={ orderChanged } />
       </th>
     );

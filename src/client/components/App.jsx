@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Grid, Nav } from 'react-bootstrap';
+import { Navbar, Grid, Nav, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { NavLinkItem } from '../components';
 
@@ -8,7 +8,7 @@ export function getApp() {
     render() {
       return (
         <div>
-          <Navbar>
+          <Navbar fluid>
             <Navbar.Header>
               <Navbar.Brand>
                 <Link to="/">REKI</Link>
@@ -21,8 +21,15 @@ export function getApp() {
               <NavLinkItem to="/participants" isIndexLink>Leiriläiset</NavLinkItem>
             </Nav>
           </Navbar>
-          <Grid>
-            { this.props.children }
+          <Grid fluid>
+            <Row>
+              <Col sm={ 2 } className="sidebar">
+                <p>&nbsp;</p>
+              </Col>
+              <Col sm={ 10 } smOffset={ 2 } className="main">
+                { this.props.children }
+              </Col>
+            </Row>
           </Grid>
         </div>
       );
