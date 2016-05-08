@@ -3,9 +3,13 @@ import { Input } from 'react-bootstrap';
 
 export function getTextField() {
   function TextField({ value, label, property, onChange }) {
+
+    let timer = 0;
     function handleValueChanged(event) {
       const newValue = event.target.value;
-      onChange(property, newValue);
+
+      clearTimeout(timer);
+      timer = setTimeout(() => onChange(property, newValue), 400);
     }
 
     return (
