@@ -26,8 +26,8 @@ export default function (Participant) {
     function constructTextSearchArray(string) {
       const or = new Array();
 
-      or.push({ firstName: { like: '%${string}%' } });
-      or.push({ lastName: { like: '%${string}%' } });
+      or.push({ firstName: { like: `%${string}%` } });
+      or.push({ lastName: { like: `%${string}%` } });
       or.push({ memberNumber: parseInt(string) });
 
       const splitted = string.split(' ', 2);
@@ -35,16 +35,17 @@ export default function (Participant) {
       if (splitted.length > 1) {
 
         let and = new Array();
-        and.push({ firstName: { like: '%${splitted[0]}%' } });
-        and.push({ lastName: { like: '%${splitted[1]}%' } });
+        and.push({ firstName: { like: `%${splitted[0]}%` } });
+        and.push({ lastName: { like: `%${splitted[1]}%` } });
 
         or.push({ and });
 
         and = new Array();
-        and.push({ firstName: { like: '%${splitted[1]}%' } });
-        and.push({ lastName: { like: '%${splitted[0]}%' } });
+        and.push({ firstName: { like: `%${splitted[1]}%` } });
+        and.push({ lastName: { like: `%${splitted[0]}%` } });
 
         or.push({ and });
+
       }
 
       return or;
@@ -72,13 +73,13 @@ export default function (Participant) {
       delete filter.where.textSearch;
 
       filter.where.or = constructTextSearchArray(textSearchString);
-
     }
 
     ctx.args.filter = JSON.stringify(filter);
 
     next();
   });
+
 
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
