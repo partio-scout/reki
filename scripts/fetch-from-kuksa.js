@@ -20,7 +20,7 @@ const findCampGroups = Promise.promisify(CampGroup.find, { context: CampGroup })
 const LocalGroup = app.models.LocalGroup;
 const destroyAllLocalGroups = Promise.promisify(LocalGroup.destroyAll, { context: LocalGroup });
 const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalGroup });
-const findLocalGroups = Promise.promise(LocalGroup.find, { context: LocalGroup });
+const findLocalGroups = Promise.promisify(LocalGroup.find, { context: LocalGroup });
 
 if (require.main === module) {
   main().then(
@@ -52,14 +52,12 @@ function getOptionsFromEnvironment() {
     return value;
   }
 
-  return Promise.try(() => {
-    return {
-      endpoint: extractEnvVar('KUKSA_API_ENDPOINT', 'the endpoint url of the kuksa api'),
-      username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
-      password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
-      eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id for Roihu'),
-    };
-  });
+  return Promise.try(() => ({
+    endpoint: extractEnvVar('KUKSA_API_ENDPOINT', 'the endpoint url of the kuksa api'),
+    username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
+    password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
+    eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id for Roihu'),
+  }));
 }
 
 function passthrough(func) {

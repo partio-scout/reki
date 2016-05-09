@@ -25,43 +25,43 @@
     },
     "subCampId": {
       "type": "Number",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "sub_camp_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "villageId": {
       "type": "Number",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "village_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "campGroupId": {
       "type": "Number",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "camp_group_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "name": {
       "type": "string",
-      "required": "true",
+      "required": true,
       "postgresql": {
         "columnName": "name",
         "dataType": "character varying",
@@ -73,50 +73,50 @@
     },
     "scoutOrganization": {
       "type": "string",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "scout_organization",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "locality": {
       "type": "string",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "locality",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "country": {
       "type": "string",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "country",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "countryCode": {
       "type": "string",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "country_code",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     }
   },

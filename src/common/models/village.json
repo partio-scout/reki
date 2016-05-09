@@ -25,19 +25,19 @@
     },
     "subCampId": {
       "type": "Number",
-      "required": "true",
+      "required": false,
       "postgresql": {
         "columnName": "sub_camp_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
     "name": {
       "type": "string",
-      "required": "true",
+      "required": true,
       "postgresql": {
         "columnName": "name",
         "dataType": "character varying",
