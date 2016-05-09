@@ -17,6 +17,11 @@ const destroyAllCampGroups = Promise.promisify(CampGroup.destroyAll, { context: 
 const createCampGroups = Promise.promisify(CampGroup.create, { context: CampGroup });
 const findCampGroups = Promise.promisify(CampGroup.find, { context: CampGroup });
 
+const LocalGroup = app.models.LocalGroup;
+const destroyAllLocalGroups = Promise.promisify(LocalGroup.destroyAll, { context: LocalGroup });
+const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalGroup });
+const findLocalGroups = Promise.promise(LocalGroup.find, { context: LocalGroup });
+
 if (require.main === module) {
   main().then(
     () => { console.log('Finished successfully.'); process.exit(0); },
@@ -30,10 +35,12 @@ function main() {
     .then(passthrough(transferSubCamps))
     .then(passthrough(transferVillages))
     .then(passthrough(transferCampGroups))
+    .then(passthrough(transferLocalGroups))
     .then(() => console.log('Transfer compete'))
     .then(() => findSubCamps().then(res => console.log(res)))
     .then(() => findVillages().then(res => console.log(res)))
-    .then(() => findCampGroups().then(res => console.log(res)));
+    .then(() => findCampGroups().then(res => console.log(res)))
+    .then(() => findLocalGroups().then(res => console.log(res)));
 }
 
 function getOptionsFromEnvironment() {
@@ -87,4 +94,20 @@ function transferCampGroups(eventApi) {
       name: campGroup.name,
     })))
     .then(campGroups => destroyAllCampGroups().then(() => createCampGroups(campGroups)));
+}
+
+function transferLocalGroups(eventApi) {
+  return eventApi.getLocalGroups()
+    .then(localGroups => localGroups.map(localGroup => ({
+      id: localGroup.id,
+      subCampId: localGroup.subCamp,
+      villageId: localGroup.village,
+      campGroupId: localGroup.campGroup,
+      name: localGroup.name,
+      scoutOrganization: localGroup.scoutOrganization,
+      locality: localGroup.locality,
+      country: localGroup.country,
+      countryCode: localGroup.countryCode,
+    })))
+    .then(localGroups => destroyAllLocalGroups().then(() => createLocalGroups(localGroups)));
 }

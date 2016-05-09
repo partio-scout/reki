@@ -43,5 +43,9 @@
   "CampGroup": {
     "dataSource": "db",
     "public": false
+  },
+  "LocalGroup": {
+    "dataSource": "db",
+    "public": false
   }
 }
