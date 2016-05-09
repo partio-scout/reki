@@ -40,7 +40,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     }
 
     return (
-      <div>
+      <div className="well">
         <form className="form-inline">
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
