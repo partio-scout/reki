@@ -86,8 +86,7 @@ describe('Text search', () => {
 
   function queryParticipants(filter, accessToken) {
     return request(app)
-    .get(`/api/Participants?accessToken=${accessToken}&filter={ 'where':${JSON.stringify(filter)},'skip':0,'limit':20}`)
-    // .expect(500,'');
+    .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
     .expect(200);
   }
 
