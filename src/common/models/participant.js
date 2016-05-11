@@ -1,34 +1,22 @@
 import app from '../../server/server.js';
 import Promise from 'bluebird';
 import loopback from 'loopback';
+import _ from 'lodash';
 
 export default function (Participant) {
-  Participant.afterRemote('create', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
-    .asCallback(next);
-  });
 
-  Participant.beforeRemote('findById', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'find')
-    .asCallback(next);
-  });
-
-  Participant.beforeRemote('prototype.updateAttributes', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'update')
-    .asCallback(next);
-  });
-
-  Participant.beforeRemote('find', (ctx, participantInstance, next) => {
+  function handleTextSearch(ctx, participantInstance, next) {
 
     function constructTextSearchArray(string) {
+
       const or = new Array();
 
       or.push({ firstName: { like: `%${string}%` } });
       or.push({ lastName: { like: `%${string}%` } });
-      or.push({ memberNumber: parseInt(string) });
+
+      if (_.isInteger(parseInt(string))) {
+        or.push({ memberNumber: parseInt(string) });
+      }
 
       const splitted = string.split(' ', 2);
 
@@ -51,34 +39,73 @@ export default function (Participant) {
       return or;
     }
 
-    const filter = JSON.parse(ctx.args.filter);
+    function constructTextSearchFilters(where) {
 
-    // if multiple filters
-    if (filter.where['and'] != undefined) {
+      if (_.isString(where)) {
+        where = JSON.parse(where);
+      }
 
-      filter.where['and'].map((value, index, ar) => {
-        if (value.textSearch != undefined && value.textSearch.length > 0) {
-          const name = {};
-          name.or = constructTextSearchArray(value.textSearch);
+      // if multiple filters
+      if (where['and'] && where['and'].length > 0) {
 
-          filter.where['and'].splice(index,1);
-          filter.where['and'].push(name);
-        }
-      });
+        where['and'].map((value, index, ar) => {
+          if (value.textSearch && value.textSearch.length > 0) {
+            const name = {};
+            name.or = constructTextSearchArray(value.textSearch);
 
-    } else if (filter.where.textSearch != undefined && filter.where.textSearch.length > 0) {
+            where['and'].splice(index,1);
+            where['and'].push(name);
+          }
+        });
 
-      const textSearchString = filter.where.textSearch;
+      } else if (where.textSearch && where.textSearch.length > 0) {
 
-      delete filter.where.textSearch;
+        const textSearchString = where.textSearch;
 
-      filter.where.or = constructTextSearchArray(textSearchString);
+        delete where.textSearch;
+        where.or = constructTextSearchArray(textSearchString);
+
+      return (where.length > 0 ? JSON.stringify(where) : where);
     }
 
-    ctx.args.filter = JSON.stringify(filter);
+    if (_.isString(ctx.args.where)) {
+      ctx.args.where = JSON.parse(ctx.args.where);
+    }
+
+    if (_.isString(ctx.args.filter)) {
+      ctx.args.filter = JSON.parse(ctx.args.filter);
+    }
+
+    if (ctx.args.where) {
+      ctx.args.where = constructTextSearchFilters(ctx.args.where);
+    } else if (ctx.args.filter.where) {
+      ctx.args.filter.where = constructTextSearchFilters(ctx.args.filter.where);
+    }
 
     next();
+  }
+
+  Participant.afterRemote('create', (ctx, participantInstance, next) => {
+    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
+    app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
+    .asCallback(next);
   });
+
+  Participant.beforeRemote('findById', (ctx, participantInstance, next) => {
+    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
+    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'find')
+    .asCallback(next);
+  });
+
+  Participant.beforeRemote('prototype.updateAttributes', (ctx, participantInstance, next) => {
+    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
+    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'update')
+    .asCallback(next);
+  });
+
+  Participant.beforeRemote('find', handleTextSearch);
+
+  Participant.beforeRemote('count', handleTextSearch);
 
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
