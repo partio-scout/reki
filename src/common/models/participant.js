@@ -65,6 +65,8 @@ export default function (Participant) {
         delete where.textSearch;
         where.or = constructTextSearchArray(textSearchString);
 
+      }
+
       return (where.length > 0 ? JSON.stringify(where) : where);
     }
 
