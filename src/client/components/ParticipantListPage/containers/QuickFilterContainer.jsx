@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { changeQueryParameters } from './utils';
+import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';

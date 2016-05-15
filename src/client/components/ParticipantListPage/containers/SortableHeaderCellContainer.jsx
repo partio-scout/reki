@@ -1,6 +1,6 @@
 import React from 'react';
 import { getSortableHeaderCell } from '../../../components';
-import { changeQueryParameter } from './utils';
+import { changeQueryParameter } from '../../../utils';
 
 export function getSortableHeaderCellContainer() {
   const SortableHeaderCell = getSortableHeaderCell();

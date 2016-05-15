@@ -1,5 +1,5 @@
 import React from 'react';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 export function getParticipantCountUpdater(participantActions) {
   class ParticipantCountUpdater extends React.Component {

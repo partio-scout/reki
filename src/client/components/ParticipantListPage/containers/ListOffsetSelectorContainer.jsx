@@ -1,7 +1,7 @@
 import React from 'react';
 import AltContainer from 'alt-container';
 import { ListOffsetSelector } from '../../../components';
-import { pureShouldComponentUpdate, changeQueryParameter } from './utils';
+import { pureShouldComponentUpdate, changeQueryParameter } from '../../../utils';
 
 export function getListOffsetSelectorContainer(participantStore) {
   function ListOffsetSelectorContainer(props, context) {

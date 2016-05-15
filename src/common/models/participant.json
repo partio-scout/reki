@@ -223,13 +223,13 @@
     {
       "accessType": "READ",
       "principalType": "ROLE",
-      "principalId": "$everyone",
+      "principalId": "$authenticated",
       "permission": "ALLOW"
     },
     {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$everyone",
+      "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "count"
     }
