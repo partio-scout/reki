@@ -38,7 +38,7 @@ export default function(app) {
             memberNumber: samlResult.membernumber,
           },
         };
-        app.models.Registryuser.findOne(query, (err, user) => {
+        app.models.RegistryUser.findOne(query, (err, user) => {
           if (err) {
             res.send('Kirjautuminen epäonnistui tuntemattomasta syystä.');
             console.error(err);
