@@ -9,7 +9,7 @@
     "dev-login": "babel-node scripts/dev-login.js",
     "postinstall": "scripts/deploy-bundle.sh",
     "test": "npm run linter && npm run test-mocha",
-    "linter": "eslint --ext js --ext jsx src test webpack.development.config.babel.js webpack.production.config.babel.js",
+    "linter": "eslint --ext js --ext jsx src test scripts webpack.development.config.babel.js webpack.production.config.babel.js",
     "test-mocha": "mocha --compilers js:babel-core/register",
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
@@ -67,6 +67,8 @@
     "eslint": "^1.10.2",
     "eslint-plugin-react": "^3.11.2",
     "mocha": "^2.3.4",
+    "supertest": "^1.2.0",
+    "supertest-as-promised": "^3.0.0",
     "react-hot-loader": "^1.3.0"
   },
   "engines": {

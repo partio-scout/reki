@@ -31,5 +31,9 @@
   "ParticipantHistory": {
     "dataSource": "db",
     "public": true
+  },
+  "AuditEvent": {
+    "dataSource": "db",
+    "public": true
   }
 }

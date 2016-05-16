@@ -8,3 +8,4 @@ export { ListOffsetSelector } from './components/ListOffsetSelector';
 export { NavLinkItem } from './components/NavLinkItem';
 export { getListSortingSelector } from './components/ListSortingSelector';
 export { getSortableHeaderCell } from './components/SortableHeaderCell';
+export { getPropertySelect } from './components/PropertySelect';

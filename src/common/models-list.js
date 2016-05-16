@@ -12,6 +12,7 @@ const modelList = [
   ['Registryuser', false],
   ['Participant', false],
   ['ParticipantHistory', false],
+  ['AuditEvent', false],
 ];
 
 export function getModelCreationList() {
