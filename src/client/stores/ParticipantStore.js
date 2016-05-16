@@ -3,7 +3,6 @@ export function getParticipantStore(alt, ParticipantActions) {
     constructor() {
       this.participants = [ ];
       this.participantDetails = {};
-
       this.participantCount = 0;
 
       this.localGroups = [''];

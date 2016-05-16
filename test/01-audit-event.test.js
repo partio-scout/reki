@@ -15,8 +15,9 @@ describe('Audit Event', () => {
     'memberNumber': '1234567',
     'email': 'testi@testailija.fi',
     'password': 'salasana',
-    'name': 'Testi Testailija',
-    'phone': 'n/a',
+    'firstName': 'Testi',
+    'lastName': 'Testailija',
+    'phoneNumber': 'n/a',
   };
   const testParticipant = {
     'firstName': 'Testi',
@@ -30,13 +31,14 @@ describe('Audit Event', () => {
 
   beforeEach(() =>
     resetDatabase().then(() =>
-      testUtils.createFixture('Registryuser', {
+      testUtils.createFixture('RegistryUser', {
         'username': 'testAdmin',
         'memberNumber': '7654321',
         'email': 'testi@adm.in',
         'password': 'salasana',
-        'name': 'Testi Admin',
-        'phone': 'n/a',
+        'firstName': 'Testi',
+        'lastName': 'Testailija',
+        'phoneNumber': 'n/a',
       })
     ).then(adminUser => {
       adminuserId = adminUser.id;
@@ -93,57 +95,57 @@ describe('Audit Event', () => {
 
   // Test registryuser audit logs
   it('should create audit event when creating registryuser', () =>
-    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
     .then(id =>
       expectAuditEventToEventuallyExist({
         'eventType': 'add',
-        'model': 'Registryuser',
+        'model': 'RegistryUser',
         'modelId': id,
       })
     )
   );
 
   it('should create audit event when updating registryuser', () =>
-    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
       .then(id => {
         userId = id;
-        return postChangesToDb('Registryusers', userId, accessToken, { 'name': 'Muutos' });
+        return postChangesToDb('RegistryUsers', userId, accessToken, { 'firstName': 'Muutos' });
       })
       .then(() =>
         expectAuditEventToEventuallyExist({
           'eventType': 'update',
-          'model': 'Registryuser',
+          'model': 'RegistryUser',
           'modelId': userId,
         })
       )
   );
 
   it('should create audit event when finding registryuser', () =>
-    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
     .then(id => {
       userId = id;
-      return queryInstanceFromDb('Registryusers', userId, accessToken);
+      return queryInstanceFromDb('RegistryUsers', userId, accessToken);
     })
     .then(() =>
       expectAuditEventToEventuallyExist({
         'eventType': 'find',
-        'model': 'Registryuser',
+        'model': 'RegistryUser',
         'modelId': userId,
       })
     )
   );
 
   it('should create audit event when deleting registryuser', () =>
-    postInstanceToDb('Registryusers', testUser, accessToken, 'id')
+    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
     .then(id => {
       userId = id;
-      return deleteInstanceFromDb('Registryusers', userId, accessToken);
+      return deleteInstanceFromDb('RegistryUsers', userId, accessToken);
     })
     .then(() =>
       expectAuditEventToEventuallyExist(
         {
           'eventType': 'delete',
-          'model': 'Registryuser',
+          'model': 'RegistryUser',
           'modelId': userId,
         })
     )

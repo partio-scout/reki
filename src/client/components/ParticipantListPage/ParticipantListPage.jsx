@@ -51,7 +51,7 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     const columnPropertyToLabelMapping = {
       firstName: 'Etunimi',
-      lastName: 'lastName',
+      lastName: 'Sukunimi',
       dateOfBirth: 'Syntymäpäivä',
       gender: 'Sukupuoli',
       nonScout: 'Onko partiolainen?',
@@ -73,23 +73,25 @@ export function getParticipantListPage(participantStore, participantActions) {
         <ParticipantCountUpdater filter={ filter } />
 
         <Row>
-          <Col>
+          <Col md={ 12 }>
             <h1>Leiriläiset</h1>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col md={ 12 }>
             <QuickFilterContainer location={ props.location } filter={ filter } />
-          </Col>
-          <Col md={ 3 }>
-            <ParticipantCount />
-          </Col>
-          <Col md={ 9 }>
-            <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col md={ 2 }>
+            <ParticipantCount />
+          </Col>
+          <Col md={ 10 }>
+            <p>&nbsp;</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={ 12 }>
             <Table striped responsive condensed>
               <thead>
                 <tr>
@@ -108,6 +110,11 @@ export function getParticipantListPage(participantStore, participantActions) {
               </thead>
               <ParticipantRowsContainer />
             </Table>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={ 12 }>
+            <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>
       </Grid>

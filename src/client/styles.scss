@@ -2,6 +2,17 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
 // Dimensions
 
+$font-size-base: 14px;
+$font-size-large: ceil($font-size-base * 1.25);
+$font-size-small: ceil($font-size-base * 0.85);
+
+$font-size-h1: floor($font-size-base * 2.6);
+$font-size-h2: floor($font-size-base * 2);
+$font-size-h3: ceil($font-size-base * 1.7);
+$font-size-h4: ceil($font-size-base * 1.25);
+$font-size-h5: $font-size-base;
+$font-size-h6: ceil($font-size-base * 0.85);
+
 $border-radius-base: 2px;
 $border-radius-large: 2px;
 $border-radius-small: 2px;
@@ -40,6 +51,9 @@ $navbar-default-link-hover-bg: lighten($mid-grey, 3%);
 $navbar-margin-bottom: 0;
 $navbar-border-radius: 0;
 $navbar-padding-horizontal: 0;
+
+$well-bg: $light-grey;
+$well-border: darken($light-grey, 3%);
 
 $btn-font-weight: bold;
 
@@ -145,6 +159,36 @@ td {
 }
 
 /**
+ * Wells
+ */
+
+.well {
+  border: 0;
+  border-radius: $border-radius-base;
+  box-shadow: none;
+  padding: 1em;
+}
+
+/**
+ * Forms
+ */
+
+.form-inline {
+  .form-group {
+    margin-right: 1em;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .control-label {
+    margin-right: 0.5em;
+  }
+
+}
+
+/**
  *
  */
 
@@ -184,9 +228,13 @@ td {
 }
 
 .participant-count {
-  margin: 15px 0;
-
+  span {
+    font-size: $font-size-small;
+    font-weight: bold;
+    line-height: 0.8em;
+  }
   .h2 {
+    line-height: 1;
     margin: 0;
   }
 }
