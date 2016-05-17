@@ -7,11 +7,11 @@ export default function (Participant) {
 
   function handleTextSearch(ctx, participantInstance, next) {
 
-    if (_.isString(ctx.args.where)) {
+    if (ctx.args.where && _.isString(ctx.args.where)) {
       ctx.args.where = JSON.parse(ctx.args.where);
     }
 
-    if (_.isString(ctx.args.filter)) {
+    if (ctx.args.filter && _.isString(ctx.args.filter)) {
       ctx.args.filter = JSON.parse(ctx.args.filter);
     }
 
