@@ -7,6 +7,22 @@ export default function (Participant) {
 
   function handleTextSearch(ctx, participantInstance, next) {
 
+    if (_.isString(ctx.args.where)) {
+      ctx.args.where = JSON.parse(ctx.args.where);
+    }
+
+    if (_.isString(ctx.args.filter)) {
+      ctx.args.filter = JSON.parse(ctx.args.filter);
+    }
+
+    if (ctx.args.where) {
+      ctx.args.where = constructTextSearchFilters(ctx.args.where);
+    } else if (ctx.args.filter.where) {
+      ctx.args.filter.where = constructTextSearchFilters(ctx.args.filter.where);
+    }
+
+    next();
+    
     function nameQuery(string, string2) {
       var ar = new Array();
       ar.push({ firstName: { like: `%${string}%` } });
@@ -62,22 +78,6 @@ export default function (Participant) {
 
       return (where.length > 0 ? JSON.stringify(where) : where);
     }
-
-    if (_.isString(ctx.args.where)) {
-      ctx.args.where = JSON.parse(ctx.args.where);
-    }
-
-    if (_.isString(ctx.args.filter)) {
-      ctx.args.filter = JSON.parse(ctx.args.filter);
-    }
-
-    if (ctx.args.where) {
-      ctx.args.where = constructTextSearchFilters(ctx.args.where);
-    } else if (ctx.args.filter.where) {
-      ctx.args.filter.where = constructTextSearchFilters(ctx.args.filter.where);
-    }
-
-    next();
   }
 
   Participant.afterRemote('create', (ctx, participantInstance, next) => {
