@@ -1,12 +1,12 @@
 import React from 'react';
-import { getTextField } from '../../../components';
+import { getTextSearch } from '../../../components';
 
 export function getTextSearchContainer() {
-  const TextField = getTextField();
+  const TextSearch = getTextSearch();
 
   function TextSearchContainer({ onChange, currentTextValue }) {
     return (
-      <TextField
+      <TextSearch
         label="Tekstihaku"
         property="textSearch"
         value={ currentTextValue }
