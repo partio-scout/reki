@@ -41,8 +41,8 @@ export default function (Participant) {
       const splitted = string.split(' ', 2);
 
       if (splitted.length === 2) {
-        or.push(nameQuery(splitted[0], splitted[1]));
-        or.push(nameQuery(splitted[1], splitted[0]));
+        or.push({ and: nameQuery(splitted[0], splitted[1]) });
+        or.push({ and: nameQuery(splitted[1], splitted[0]) });
       }
 
       return or;
