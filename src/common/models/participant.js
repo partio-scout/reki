@@ -22,18 +22,18 @@ export default function (Participant) {
     }
 
     next();
-    
+
     function nameQuery(string, string2) {
-      var ar = new Array();
-      ar.push({ firstName: { like: `%${string}%` } });
-      ar.push({ lastName: { like: `%${string2}%` } });
+      const array = new Array();
+      array.push({ firstName: { like: `%${string}%` } });
+      array.push({ lastName: { like: `%${string2}%` } });
       return array;
     }
 
     function constructTextSearchArray(string) {
 
-      var or = nameQuery(string, string);
-      
+      const or = nameQuery(string, string);
+
       if (_.isInteger(parseInt(string))) {
         or.push({ memberNumber: parseInt(string) });
       }
