@@ -7,33 +7,26 @@ export default function (Participant) {
 
   function handleTextSearch(ctx, participantInstance, next) {
 
+    function nameQuery(string, string2) {
+      var ar = new Array();
+      ar.push({ firstName: { like: `%${string}%` } });
+      ar.push({ lastName: { like: `%${string2}%` } });
+      return array;
+    }
+
     function constructTextSearchArray(string) {
 
-      const or = new Array();
-
-      or.push({ firstName: { like: `%${string}%` } });
-      or.push({ lastName: { like: `%${string}%` } });
-
+      var or = nameQuery(string, string);
+      
       if (_.isInteger(parseInt(string))) {
         or.push({ memberNumber: parseInt(string) });
       }
 
       const splitted = string.split(' ', 2);
 
-      if (splitted.length > 1) {
-
-        let and = new Array();
-        and.push({ firstName: { like: `%${splitted[0]}%` } });
-        and.push({ lastName: { like: `%${splitted[1]}%` } });
-
-        or.push({ and });
-
-        and = new Array();
-        and.push({ firstName: { like: `%${splitted[1]}%` } });
-        and.push({ lastName: { like: `%${splitted[0]}%` } });
-
-        or.push({ and });
-
+      if (splitted.length === 2) {
+        or.push(nameQuery(splitted[0], splitted[1]));
+        or.push(nameQuery(splitted[1], splitted[0]));
       }
 
       return or;
