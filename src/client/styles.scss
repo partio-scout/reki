@@ -34,6 +34,7 @@ $dark-grey: #262626;
 $pale-grey: #f7f7f5;
 
 $body-bg: $pale-grey;
+$text-color: $dark-grey;
 
 $brand-primary: $blue;
 $brand-success: $green;
@@ -62,14 +63,6 @@ $screen-xs: 480px;
 $screen-sm: 768px;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
-
-/**
- * Scaffolding
- */
-
-body {
-  color: $dark-grey;
-}
 
 /**
  * Tables
@@ -142,20 +135,19 @@ td {
  * Sidebar & Main Container
  */
 
+.row {
+  position: relative;
+}
+
 .main {}
 
 .sidebar {
   background-color: $light-grey;
-  bottom: 0;
   display: block;
-  left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  height: 100%;
   padding-top: 20px;
   padding-bottom: 20px;
-  position: fixed;
-  top: 50px;
-  z-index: 20;
+  position: absolute;
 }
 
 /**
