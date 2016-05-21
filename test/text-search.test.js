@@ -112,8 +112,8 @@ describe('Text search', () => {
     })
   );
 
-  it('Query with search by first name', () =>
-    queryParticipants({ 'textSearch':'Tero' }, accessToken)
+  it('Query with search by first name small caps', () =>
+    queryParticipants({ 'textSearch':'tero' }, accessToken)
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })

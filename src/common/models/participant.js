@@ -24,9 +24,12 @@ export default function (Participant) {
     next();
 
     function nameQuery(string, string2) {
+      const escape= function(s) {
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      };
       const array = new Array();
-      array.push({ firstName: { like: `%${string}%` } });
-      array.push({ lastName: { like: `%${string2}%` } });
+      array.push({ firstName: { regexp: `/${escape(string)}/i` } });
+      array.push({ lastName: { regexp: `/${escape(string2)}/i` } });
       return array;
     }
 
