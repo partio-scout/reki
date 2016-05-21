@@ -18,7 +18,9 @@ export function getDebouncedTextField() {
     }
 
     return (
-        <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur }/>
+        <div>
+          <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur }/>
+        </div>
     );
   }
 
