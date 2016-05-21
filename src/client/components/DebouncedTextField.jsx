@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input } from 'react-bootstrap';
 
-export function getTextSearch() {
-  function TextSearch({ value, label, property, onChange }) {
+export function getDebouncedTextField() {
+  function debouncedTextField({ value, label, property, onChange }) {
 
     let timer = 0;
     function handleValueChanged(event) {
@@ -17,12 +17,12 @@ export function getTextSearch() {
     );
   }
 
-  TextSearch.propTypes = {
+  debouncedTextField.propTypes = {
     value: React.PropTypes.any,
     label: React.PropTypes.string.isRequired,
     property: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
   };
 
-  return TextSearch;
+  return debouncedTextField;
 }

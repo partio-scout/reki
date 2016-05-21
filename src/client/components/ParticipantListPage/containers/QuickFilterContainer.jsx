@@ -5,14 +5,14 @@ import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
-import { getTextSearchContainer } from './TextSearchContainer';
+import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
-  const TextSearchContainer = getTextSearchContainer();
+  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -45,7 +45,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     return (
       <div>
         <form className="form-inline">
-          <TextSearchContainer onChange={ handleChange } currentSelection={ currentSelection } />
+          <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
