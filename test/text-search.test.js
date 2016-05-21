@@ -49,13 +49,14 @@ describe('Text search', () => {
 
   beforeEach(() =>
     resetDatabase().then(() =>
-      testUtils.createFixture('Registryuser', {
+      testUtils.createFixture('RegistryUser', {
         'username': 'testAdmin',
         'memberNumber': '7654321',
         'email': 'testi@adm.in',
         'password': 'salasana',
-        'name': 'Testi Admin',
         'phone': 'n/a',
+        'firstName': 'Testi',
+        'lastName': 'Admin',
       })
     ).then(adminUser => {
       adminuserId = adminUser.id;
