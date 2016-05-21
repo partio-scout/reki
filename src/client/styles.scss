@@ -145,14 +145,14 @@ td {
 
 .main {
   background-color: $pale-grey;
-  height: 100%;
+  min-height: 100%;
   position: absolute;
   padding-top: 50px;
 }
 
 .sidebar {
   background-color: $light-grey;
-  height: 100%;
+  min-height: 100%;
   padding-top: 70px;
   padding-bottom: 20px;
   position: absolute;
