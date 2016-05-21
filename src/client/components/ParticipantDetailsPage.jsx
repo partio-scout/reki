@@ -48,7 +48,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         <div>
           <Grid>
             <Row>
-              <Col>
+              <Col md={ 12 }>
                 <h2><b>{ participantName }</b></h2>
                 <p className="text-muted">{ nonScout }</p>
                 <p> <b> Syntymäaika: </b> { dateOfBirth }</p>

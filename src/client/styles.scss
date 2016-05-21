@@ -27,11 +27,10 @@ $red: rgb(236, 64, 75);
 $purple: rgb(184, 21, 112);
 $white: #fff;
 $black: #000;
-$pale-grey: #f7f7f7;
+$pale-grey: #f7f7f5;
 $light-grey: #e9edef;
 $mid-grey: #2b3643;
 $dark-grey: #262626;
-$pale-grey: #f7f7f5;
 
 $body-bg: $light-grey;
 $text-color: $dark-grey;
@@ -46,6 +45,7 @@ $navbar-default-bg: $mid-grey;
 $navbar-default-brand-color: $white;
 $navbar-default-brand-hover-color: $white;
 $navbar-default-link-color: $white;
+$navbar-default-link-active-color: $light-grey;
 $navbar-default-link-hover-color: $white;
 $navbar-default-link-hover-bg: lighten($mid-grey, 3%);
 
@@ -194,9 +194,8 @@ td {
 
 .participant-count {
   span {
-    font-size: $font-size-small;
+    font-size: $font-size-base;
     font-weight: bold;
-    line-height: 0.8em;
   }
   .h2 {
     line-height: 1;
