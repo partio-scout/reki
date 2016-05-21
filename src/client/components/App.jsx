@@ -21,7 +21,7 @@ export function getApp() {
               <NavLinkItem to="/participants" isIndexLink>Leiriläiset</NavLinkItem>
             </Nav>
           </Navbar>
-          <Grid fluid>
+          <Grid fluid className="page-content">
             <Row>
               <Col sm={ 2 } className="sidebar">
                 <p>&nbsp;</p>

@@ -33,7 +33,7 @@ $mid-grey: #2b3643;
 $dark-grey: #262626;
 $pale-grey: #f7f7f5;
 
-$body-bg: $pale-grey;
+$body-bg: $light-grey;
 $text-color: $dark-grey;
 
 $brand-primary: $blue;
@@ -120,6 +120,10 @@ td {
   border: 0;
   padding-left: floor( $grid-gutter-width / 2 );
   padding-right: floor( $grid-gutter-width / 2 );
+  position: absolute;
+  width: 100%;
+  top: 0;
+  z-index: 5;
 
   .navbar-nav > li > a:hover,
   .navbar-nav > li > a:focus {
@@ -135,17 +139,21 @@ td {
  * Sidebar & Main Container
  */
 
-.row {
-  position: relative;
+.page-content {
+  min-height: 100%;
 }
 
-.main {}
+.main {
+  background-color: $pale-grey;
+  height: 100%;
+  position: absolute;
+  padding-top: 50px;
+}
 
 .sidebar {
   background-color: $light-grey;
-  display: block;
   height: 100%;
-  padding-top: 20px;
+  padding-top: 70px;
   padding-bottom: 20px;
   position: absolute;
 }
@@ -181,6 +189,22 @@ td {
 }
 
 /**
+ * Search tools
+ */
+
+.participant-count {
+  span {
+    font-size: $font-size-small;
+    font-weight: bold;
+    line-height: 0.8em;
+  }
+  .h2 {
+    line-height: 1;
+    margin: 0;
+  }
+}
+
+/**
  *
  */
 
@@ -206,27 +230,24 @@ td {
 
 @media screen and (max-width: $screen-sm) {
   .sidebar {
-    bottom: auto;
-    left: auto;
     position: relative;
-    top: auto;
+    padding: floor( $grid-gutter-width / 2 );
+  }
+
+  .main {
+    height: auto;
+    padding: floor( $grid-gutter-width / 2 );
+    position: relative;
   }
 
   .navbar-default {
     padding-left: 0;
     padding-right: 0;
+    position: relative;
   }
 
-}
+  .page-content {
+    min-height: auto;
+  }
 
-.participant-count {
-  span {
-    font-size: $font-size-small;
-    font-weight: bold;
-    line-height: 0.8em;
-  }
-  .h2 {
-    line-height: 1;
-    margin: 0;
-  }
 }
