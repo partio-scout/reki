@@ -184,6 +184,7 @@ function generateRandomParticipant() {
     gender,
     subCamp,
     campGroup,
+    inCamp: Math.floor(Math.random() * 5),
   };
 }
 
