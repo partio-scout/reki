@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node .",
     "create-user": "babel-node scripts/create-user.js",
+    "delete-user": "babel-node scripts/delete-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
     "postinstall": "scripts/deploy-bundle.sh",
     "test": "npm run linter && npm run test-mocha",
@@ -37,6 +38,7 @@
     "file-loader": "^0.8.5",
     "history": "^2.0.1",
     "http-proxy": "^1.12.0",
+    "inquirer": "^1.0.0",
     "lodash": "^4.6.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",

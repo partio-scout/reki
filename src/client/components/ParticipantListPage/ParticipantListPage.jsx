@@ -6,6 +6,7 @@ import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellC
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
+import { getParticipantCount } from './containers/ParticipantCount';
 
 function getOrder(query) {
   try {
@@ -40,6 +41,7 @@ export function getParticipantListPage(participantStore, participantActions) {
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
+  const ParticipantCount = getParticipantCount(participantStore);
 
   function ParticipantListPage(props, context) {
     const order = getOrder(props.location.query);
@@ -49,7 +51,7 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     const columnPropertyToLabelMapping = {
       firstName: 'Etunimi',
-      lastName: 'lastName',
+      lastName: 'Sukunimi',
       dateOfBirth: 'Syntymäpäivä',
       gender: 'Sukupuoli',
       nonScout: 'Onko partiolainen?',
@@ -66,25 +68,30 @@ export function getParticipantListPage(participantStore, participantActions) {
     };
 
     return (
-      <Grid>
+      <Grid fluid>
         <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
         <ParticipantCountUpdater filter={ filter } />
 
         <Row>
-          <Col>
+          <Col md={ 12 }>
             <h1>Leiriläiset</h1>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col md={ 12 }>
             <QuickFilterContainer location={ props.location } filter={ filter } />
-          </Col>
-          <Col>
-            <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col md={ 2 }>
+            <ParticipantCount />
+          </Col>
+          <Col md={ 10 }>
+            <p>&nbsp;</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={ 12 }>
             <Table striped responsive condensed>
               <thead>
                 <tr>
@@ -103,6 +110,11 @@ export function getParticipantListPage(participantStore, participantActions) {
               </thead>
               <ParticipantRowsContainer />
             </Table>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={ 12 }>
+            <ListOffsetSelectorContainer location={ props.location } offset={ offset } limit={ limit } />
           </Col>
         </Row>
       </Grid>

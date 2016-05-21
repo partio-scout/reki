@@ -23,7 +23,7 @@ export default function (AuditEvent) {
     return createAuditEvent(
       {
         'eventType': description,
-        'model': 'Registryuser',
+        'model': 'RegistryUser',
         'modelId': instanceId,
         'timestamp': (new Date()).toISOString(),
         'registryuserId':  userId,

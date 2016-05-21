@@ -43,7 +43,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     }
 
     return (
-      <div>
+      <div className="well">
         <form className="form-inline">
           <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />

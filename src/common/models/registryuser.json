@@ -1,23 +1,19 @@
 {
-  "name": "Registryuser",
+  "name": "RegistryUser",
   "base": "User",
   "idInjection": false,
   "options": {
-    "validateUpsert": true
-  },
-  "postgresql": {
-    "schema": "public",
-    "table": "purchaseuser"
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "registryuser"
+    }
   },
   "properties": {
     "id": {
       "type": "Number",
       "id": true,
       "generated": true,
-      "required": false,
-      "length": null,
-      "precision": 32,
-      "scale": 0,
       "postgresql": {
         "columnName": "id",
         "dataType": "integer",
@@ -25,61 +21,53 @@
         "dataPrecision": 32,
         "dataScale": 0,
         "nullable": "NO"
-      },
-      "_selectable": false,
-      "comments": "henkilönumero"
+      }
     },
-    "name": {
-      "type": "String",
+    "firstName": {
+      "type": "string",
       "required": true,
-      "index": true,
-      "length": 255,
-      "precision": null,
-      "scale": null,
       "postgresql": {
-        "columnName": "name",
+        "columnName": "first_name",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
-      },
-      "_selectable": false,
-      "comments": "nimi"
+      }
     },
-    "phone": {
-      "type": "String",
+    "lastName": {
+      "type": "string",
       "required": true,
-      "length": 255,
-      "precision": null,
-      "scale": null,
       "postgresql": {
-        "columnName": "phone",
+        "columnName": "last_name",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
-      },
-      "_selectable": false,
-      "comments": "puhelinnumero"
+      }
     },
     "memberNumber": {
-      "type": "String",
-      "required": true,
-      "length": 255,
-      "precision": null,
-      "scale": null,
+      "type": "string",
       "postgresql": {
-        "columnName": "membernumber",
+        "columnName": "member_number",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
-      },
-      "_selectable": false,
-      "comments": "jäsennumero"
+      }
+    },
+    "phoneNumber": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "phone_number",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],
@@ -91,24 +79,11 @@
     }
   },
   "acls": [
-    {
+     {
+      "accessType": "READ",
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "DENY"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY",
-      "property": "create"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW",
-      "property": "create"
+      "permission": "ALLOW"
     },
     {
       "accessType": "WRITE",
@@ -116,36 +91,6 @@
       "principalId": "admin",
       "permission": "ALLOW",
       "property": "*"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "login"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "logout"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "updateAttributes"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "confirm"
     }
   ],
   "methods": []
