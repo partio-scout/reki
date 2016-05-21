@@ -25,12 +25,32 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     render() {
+      const inCampStatus = () => {
+        if (!this.state.participantDetails) {
+          return '';
+        }
+        
+        const inCamp = this.state.participantDetails.inCamp;
+        
+        if (inCamp == 0) {
+          return 'Ei ole leirissä';
+        } else if (inCamp == 1) {
+          return 'Poistunut leiristä väliaikaisesti';
+        } else if (inCamp == 2) {
+          return 'Leirissä';
+        } else {
+          return 'Tuntematon arvo';
+        }
+      }
+      
       let participantName = '';
       let nonScout = '';
       let dateOfBirth = '';
       let participantPhone = '';
       let homeCity = '';
       let email = '';
+      let inCampCurrentState = '';
+      
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
         nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
@@ -38,6 +58,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
         const day = time.substring(0,2);
         dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
+        inCampCurrentState = inCampStatus();
 
         participantPhone = this.state.participantDetails.phoneNumber || '-';
         homeCity = this.state.participantDetails.homeCity || '-';
@@ -65,6 +86,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <p >{ email }</p>
                 </Panel>
               </Col>
+                <Col md={ 3 }>
+                  <Panel header="Läsnäolo">
+                    <p>{ inCampCurrentState }</p>
+                  </Panel>
+                </Col>
             </Row>
           </Grid>
         </div>
