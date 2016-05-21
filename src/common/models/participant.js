@@ -10,9 +10,10 @@ function alter_presence(presences) {
   const ParticipantHistory = app.models.ParticipantHistory;
   const updateAllPresence = Promise.promisify(ParticipantHistory.updateAll,
                                               { context: ParticipantHistory });
-  const isInCamp = 2;
-  const leftCampTemporarily = 1;
-  const notInCamp = 0;
+  const notInCamp = 1;
+  const leftCampTemporarily = 2;
+  const isInCamp = 3;
+  
   const presence = presences.filter(presence => presence.arrived == null)
                             .map(presence => presence.id);
   if (participant.inCamp == isInCamp && presence.length == 1) {

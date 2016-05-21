@@ -32,11 +32,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         
         const inCamp = this.state.participantDetails.inCamp;
         
-        if (inCamp == 0) {
+        if (inCamp == 1) {
           return 'Ei ole leirissä';
-        } else if (inCamp == 1) {
-          return 'Poistunut leiristä väliaikaisesti';
         } else if (inCamp == 2) {
+          return 'Poistunut leiristä väliaikaisesti';
+        } else if (inCamp == 3) {
           return 'Leirissä';
         } else {
           return 'Tuntematon arvo';
