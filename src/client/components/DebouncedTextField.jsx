@@ -1,19 +1,24 @@
 import React from 'react';
+import _ from 'lodash';
 import { Input } from 'react-bootstrap';
 
 export function getDebouncedTextField() {
   function debouncedTextField({ value, label, property, onChange }) {
 
-    let timer = 0;
-    function handleValueChanged(event) {
-      const newValue = event.target.value;
+    const delayedOnChange = _.debounce(value => onChange(property, value), 300);
 
-      clearTimeout(timer);
-      timer = setTimeout(() => onChange(property, newValue), 400);
+    function handleValueChanged(event) {
+      event.persist();
+      delayedOnChange(event.target.value);
+    }
+
+    function handleFieldBlur(event) {
+      event.persist();
+      delayedOnChange.flush(event.target.value);
     }
 
     return (
-        <Input type="text" label={ label } value={ value } onChange={ handleValueChanged }/>
+        <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur }/>
     );
   }
 
