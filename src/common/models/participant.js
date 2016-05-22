@@ -13,7 +13,7 @@ function alter_presence(presences) {
   const notInCamp = 1;
   const leftCampTemporarily = 2;
   const isInCamp = 3;
-  
+
   const presence = presences.filter(presence => presence.arrived == null)
                             .map(presence => presence.id);
   if (participant.inCamp == isInCamp && presence.length == 1) {

@@ -97,6 +97,19 @@ td {
   vertical-align: middle !important;
 }
 
+table {
+  div.form-group {
+    margin: 0;
+    div.checkbox {
+      margin: 0;
+      input[type="checkbox"] {
+        position: static;
+        margin: 0;
+      }
+    }
+  }
+}
+
 //Sortable table header container
 .sortable {
   span,

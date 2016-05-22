@@ -3,7 +3,7 @@ import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import { InCampStatus } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
-  
+
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
@@ -34,7 +34,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       let homeCity = '';
       let email = '';
       let inCamp = '';
-      
+
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
         nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';

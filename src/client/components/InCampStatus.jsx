@@ -1,11 +1,11 @@
 import React from 'react';
 
 export class InCampStatus extends React.Component {
-  
+
   render() {
-    
+
     let label = 'Tuntematon arvo';
-    
+
     if (this.props.value == 1) {
       label = 'Ei ole leirissä';
     } else if (this.props.value == 2) {
@@ -13,9 +13,9 @@ export class InCampStatus extends React.Component {
     } else if (this.props.value == 3) {
       label = 'Leirissä';
     }
-    
+
     let color = 'gray';
-    
+
     if (this.props.value == 1) {
       color = 'red';
     } else if (this.props.value == 2) {
@@ -23,9 +23,9 @@ export class InCampStatus extends React.Component {
     } else if (this.props.value == 3) {
       color = 'green';
     }
-    
+
     color = `${color} incamp`;
-    
+
     return (
       <span className={ color } title={ label }>
         <span className="ball"></span>
@@ -34,3 +34,7 @@ export class InCampStatus extends React.Component {
     );
   }
 }
+
+InCampStatus.propTypes = {
+  value: React.PropTypes.number.isRequired,
+};
