@@ -24,12 +24,13 @@ export default function (Participant) {
     next();
 
     function nameQuery(string, string2) {
-      const escape= function(s) {
-        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const stripRegex = function(s) {
+        // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
+        return s.replace(/[^a-zà-úà-ÿ0-9-]/ig, '');
       };
       const array = new Array();
-      array.push({ firstName: { regexp: `/${escape(string)}/i` } });
-      array.push({ lastName: { regexp: `/${escape(string2)}/i` } });
+      array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
+      array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
       return array;
     }
 
