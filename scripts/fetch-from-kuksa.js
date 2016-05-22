@@ -1,6 +1,7 @@
 import app from '../src/server/server';
 import { getEventApi } from 'kuksa-event-api-client';
 import { Promise } from 'bluebird';
+import { _ } from 'lodash';
 
 const SubCamp = app.models.SubCamp;
 const destroyAllSubCamps = Promise.promisify(SubCamp.destroyAll, { context: SubCamp });
@@ -22,6 +23,10 @@ const destroyAllLocalGroups = Promise.promisify(LocalGroup.destroyAll, { context
 const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalGroup });
 const findLocalGroups = Promise.promisify(LocalGroup.find, { context: LocalGroup });
 
+const Participant = app.models.Participant;
+const createParticipants = Promise.promisify(Participant.create, { context: Participant });
+const findParticipants = Promise.promisify(Participant.find, { context: Participant });
+
 if (require.main === module) {
   main().then(
     () => { console.log('Finished successfully.'); process.exit(0); },
@@ -36,11 +41,13 @@ function main() {
     .then(passthrough(transferVillages))
     .then(passthrough(transferCampGroups))
     .then(passthrough(transferLocalGroups))
+    .then(passthrough(transferKuksaParticipants))
     .then(() => console.log('Transfer compete'))
     .then(() => findSubCamps().then(res => console.log(res)))
     .then(() => findVillages().then(res => console.log(res)))
     .then(() => findCampGroups().then(res => console.log(res)))
-    .then(() => findLocalGroups().then(res => console.log(res)));
+    .then(() => findLocalGroups().then(res => console.log(res)))
+    .then(() => findParticipants().then(res => console.log(res)));
 }
 
 function getOptionsFromEnvironment() {
@@ -108,4 +115,27 @@ function transferLocalGroups(eventApi) {
       countryCode: localGroup.countryCode,
     })))
     .then(localGroups => destroyAllLocalGroups().then(() => createLocalGroups(localGroups)));
+}
+
+function transferKuksaParticipants(eventApi) {
+  return eventApi.getParticipants()
+    .then(participants => participants.map(participant => ({
+      firstName: participant.firstName || 'x',
+      lastName: participant.lastName || 'x',
+      nonScout: false,
+      memberNumber: 0,
+      dateOfBirth: new Date(participant.birthDate),
+      phoneNumber: participant.phoneNumber,
+      email: participant.email,
+      homeCity: participant.address.postCode,
+      swimmingSkill: '200 m',
+      localGroup: participant.group || 'Ei tiedossa',
+      campGroup: participant.campGroup || 'Ei tiedossa',
+      subCamp: participant.subCamp || 'Ei tiedossa',
+      ageGroup: 'Aikuinen',
+    })))
+    .then(participants =>
+      _.reduce(participants, (acc, participant) =>
+        acc.then(() => createParticipants(participant)), Promise.resolve())
+    );
 }
