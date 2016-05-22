@@ -27,7 +27,7 @@ export class InCampStatus extends React.Component {
     color = `${color} incamp`;
     
     return (
-      <span className={ color }>
+      <span className={ color } title={ label }>
         <span className="ball"></span>
         <span className="text">{ label }</span>
       </span>
