@@ -23,9 +23,9 @@ const destroyAllLocalGroups = Promise.promisify(LocalGroup.destroyAll, { context
 const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalGroup });
 const findLocalGroups = Promise.promisify(LocalGroup.find, { context: LocalGroup });
 
-const Participant = app.models.Participant;
-const createParticipants = Promise.promisify(Participant.create, { context: Participant });
-const findParticipants = Promise.promisify(Participant.find, { context: Participant });
+const KuksaParticipant = app.models.KuksaParticipant;
+const createKuksaParticipants = Promise.promisify(KuksaParticipant.create, { context: KuksaParticipant });
+const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
 
 if (require.main === module) {
   main().then(
@@ -47,7 +47,7 @@ function main() {
     .then(() => findVillages().then(res => console.log(res)))
     .then(() => findCampGroups().then(res => console.log(res)))
     .then(() => findLocalGroups().then(res => console.log(res)))
-    .then(() => findParticipants().then(res => console.log(res)));
+    .then(() => findKuksaParticipants().then(res => console.log(res)));
 }
 
 function getOptionsFromEnvironment() {
@@ -119,23 +119,21 @@ function transferLocalGroups(eventApi) {
 
 function transferKuksaParticipants(eventApi) {
   return eventApi.getParticipants()
+    .then(participants => { console.log(participants); return participants; })
     .then(participants => participants.map(participant => ({
+      id: participant.id,
       firstName: participant.firstName || 'x',
       lastName: participant.lastName || 'x',
-      nonScout: false,
-      memberNumber: 0,
+      memberNumber: 'XXXXX',
       dateOfBirth: new Date(participant.birthDate),
       phoneNumber: participant.phoneNumber,
       email: participant.email,
-      homeCity: participant.address.postCode,
-      swimmingSkill: '200 m',
-      localGroup: participant.group || 'Ei tiedossa',
-      campGroup: participant.campGroup || 'Ei tiedossa',
-      subCamp: participant.subCamp || 'Ei tiedossa',
-      ageGroup: 'Aikuinen',
+      localGroup: participant.group,
+      campGroup: participant.campGroup,
+      subCamp: participant.subCamp,
     })))
     .then(participants =>
       _.reduce(participants, (acc, participant) =>
-        acc.then(() => createParticipants(participant)), Promise.resolve())
+        acc.then(() => createKuksaParticipants(participant)), Promise.resolve())
     );
 }

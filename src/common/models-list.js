@@ -16,6 +16,7 @@ const modelList = [
   ['Village', false],
   ['CampGroup', false],
   ['LocalGroup', false],
+  ['KuksaParticipant', false],
 ];
 
 export function getModelCreationList() {

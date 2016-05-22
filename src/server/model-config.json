@@ -47,5 +47,9 @@
   "LocalGroup": {
     "dataSource": "db",
     "public": false
+  },
+  "KuksaParticipant": {
+    "dataSource": "db",
+    "public": false
   }
 }
