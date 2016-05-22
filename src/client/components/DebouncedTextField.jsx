@@ -16,16 +16,15 @@ export function getDebouncedTextField() {
       event.persist();
       delayedOnChange.flush(event.target.value);
     }
-    
+
     function disableEnter(event) {
-      if(event.key === 'Enter') {
+      if (event.key === 'Enter') {
         event.preventDefault();
         event.persist();
         delayedOnChange.flush(event.target.value);
         return false;
       }
     }
-    
 
     return (
         <div>
