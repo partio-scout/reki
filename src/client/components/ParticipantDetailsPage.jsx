@@ -1,7 +1,9 @@
 import React from 'react';
 import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { InCampStatus } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
+  
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
@@ -25,31 +27,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     render() {
-      const inCampStatus = () => {
-        if (!this.state.participantDetails) {
-          return '';
-        }
-        
-        const inCamp = this.state.participantDetails.inCamp;
-        
-        if (inCamp == 1) {
-          return 'Ei ole leirissä';
-        } else if (inCamp == 2) {
-          return 'Poistunut leiristä väliaikaisesti';
-        } else if (inCamp == 3) {
-          return 'Leirissä';
-        } else {
-          return 'Tuntematon arvo';
-        }
-      }
-      
       let participantName = '';
       let nonScout = '';
       let dateOfBirth = '';
       let participantPhone = '';
       let homeCity = '';
       let email = '';
-      let inCampCurrentState = '';
+      let inCamp = '';
       
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
@@ -58,7 +42,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
         const day = time.substring(0,2);
         dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
-        inCampCurrentState = inCampStatus();
+        inCamp = this.state.participantDetails.inCamp;
 
         participantPhone = this.state.participantDetails.phoneNumber || '-';
         homeCity = this.state.participantDetails.homeCity || '-';
@@ -88,7 +72,9 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               </Col>
                 <Col md={ 3 }>
                   <Panel header="Läsnäolo">
-                    <p>{ inCampCurrentState }</p>
+                    <p>
+                      <InCampStatus value={ inCamp } />
+                    </p>
                   </Panel>
                 </Col>
             </Row>

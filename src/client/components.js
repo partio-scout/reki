@@ -10,3 +10,4 @@ export { NavLinkItem } from './components/NavLinkItem';
 export { getListSortingSelector } from './components/ListSortingSelector';
 export { getSortableHeaderCell } from './components/SortableHeaderCell';
 export { getPropertySelect } from './components/PropertySelect';
+export { InCampStatus } from './components/InCampStatus';

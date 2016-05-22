@@ -50,9 +50,10 @@ export function getParticipantListPage(participantStore, participantActions) {
     const filter = getFilter(props.location.query);
 
     const columnPropertyToLabelMapping = {
+      inCamp: '',
       firstName: 'Etunimi',
       lastName: 'Sukunimi',
-      dateOfBirth: 'Syntymäpäivä',
+      dateOfBirth: 'Syntymäaika',
       gender: 'Sukupuoli',
       nonScout: 'Onko partiolainen?',
       memberNumber: 'Jäsennumero',

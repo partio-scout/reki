@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { InCampStatus } from '../components';
 
 class LinkCell extends React.Component {
   render() {
@@ -51,12 +52,14 @@ export class ParticipantRow extends React.Component {
       localGroup,
       subCamp,
       campGroup,
+      inCamp,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
 
     return (
       <tr>
+        <td><InCampStatus value={ inCamp } /></td>
         <LinkCell href={ href }>{ firstName }</LinkCell>
         <LinkCell href={ href }>{ lastName }</LinkCell>
         <td>{ formatDate(dateOfBirth) }</td>
