@@ -16,10 +16,20 @@ export function getDebouncedTextField() {
       event.persist();
       delayedOnChange.flush(event.target.value);
     }
+    
+    function disableEnter(event) {
+      if(event.key === 'Enter') {
+        event.preventDefault();
+        event.persist();
+        delayedOnChange.flush(event.target.value);
+        return false;
+      }
+    }
+    
 
     return (
         <div>
-          <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur }/>
+          <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur } onKeyPress={ disableEnter } />
         </div>
     );
   }
