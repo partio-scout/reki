@@ -13,7 +13,6 @@
     "participantId": {
       "type": "Number",
       "id": true,
-      "generated": true,
       "postgresql": {
         "columnName": "participant_id",
         "dataType": "integer",
