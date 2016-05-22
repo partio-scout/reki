@@ -3,7 +3,6 @@ import React from 'react';
 export class InCampStatus extends React.Component {
   
   render() {
-    console.log(this.props.value);
     
     let label = 'Tuntematon arvo';
     
