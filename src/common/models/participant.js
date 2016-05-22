@@ -26,7 +26,7 @@ export default function (Participant) {
     function nameQuery(string, string2) {
       const stripRegex = function(s) {
         // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
-        return s.replace(/[^a-zà-úà-ÿ0-9-]/ig, '');
+        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
       };
       const array = new Array();
       array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
