@@ -74,7 +74,7 @@ export function getMassEdit() {
 
   MassEdit.propTypes = {
     onSubmit: React.PropTypes.func,
-    count: React.PropTypes.int,
+    count: React.PropTypes.number,
   };
 
   return MassEdit;
