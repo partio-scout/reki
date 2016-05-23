@@ -86,4 +86,27 @@ export default function (Participant) {
         }).asCallback(next);
     }
   });
+
+  Participant.massAssignField = (ids, fieldName, newValue, callback) => {
+    Participant.findByIds(ids).then(rows => {
+      const updates = _.map(rows, row => {
+        row[fieldName] = newValue;
+        return row.save();
+      });
+      Promise.all(updates).nodeify(callback);
+    });
+    // todo: white list fields that can be changed
+  };
+
+  Participant.remoteMethod('massAssignField',
+    {
+      http: { path: '/update', verb: 'post' },
+      accepts: [
+        { arg: 'ids', type: 'array', required: 'true' },
+        { arg: 'fieldName', type: 'string', required: 'true' },
+        { arg: 'newValue', type: 'string', required: 'true' },
+      ],
+      returns: { arg: 'result', type: 'string' },
+    }
+  );
 }

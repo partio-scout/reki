@@ -242,6 +242,13 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "count"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "massAssignField"
     }
   ],
   "methods": {}
