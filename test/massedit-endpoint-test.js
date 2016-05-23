@@ -83,9 +83,7 @@ describe('Participant mass edit endpoint test', () => {
   );
 
   function expectParticipantInCampValues(expectedResult, response) {
-    const inCampValues = _.map(response, row => {
-      return row.inCamp;
-    });
+    const inCampValues = _.map(response, row => row.inCamp);
     return expect(inCampValues).to.eql(expectedResult);
   }
 
@@ -101,7 +99,7 @@ describe('Participant mass edit endpoint test', () => {
       .send(changes)
       .expect(200);
   }
-  
+
   it('Should update right rows', () =>
     postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'inCamp' }, accessToken)
     .then( () =>
@@ -111,7 +109,7 @@ describe('Participant mass edit endpoint test', () => {
       )
     )
   );
-    
+
   it('Should not update wrong fields', () =>
     postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'subCamp' }, accessToken)
     .then( () =>
