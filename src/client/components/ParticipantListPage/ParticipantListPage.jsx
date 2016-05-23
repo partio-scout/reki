@@ -32,7 +32,7 @@ function getOffset(query) {
 }
 
 function getLimit(query) {
-  return query.limit && Number(query.limit) || 20;
+  return query.limit && Number(query.limit) || 200;
 }
 
 export function getMassEdit(participantStore, participantActions) {
