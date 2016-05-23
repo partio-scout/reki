@@ -35,7 +35,7 @@ function getLimit(query) {
   return query.limit && Number(query.limit) || 200;
 }
 
-export function getMassEdit(participantStore, participantActions) {
+export function getMassEdit() {
   class MassEdit extends React.Component {
     constructor(props){
       super(props);
@@ -80,6 +80,34 @@ export function getMassEdit(participantStore, participantActions) {
   return MassEdit;
 }
 
+export function getSelectAll() {
+  class SelectAll extends React.Component {
+    constructor(props){
+      super(props);
+      this.state = {};
+      this.onChange = this.onChange.bind(this);
+    }
+
+    onChange(event){
+      event.persist();
+      this.props.onChange(event.target.checked);
+    }
+
+    render() {
+      return (
+        <Input type="checkbox" title="Valitse kaikki" checked={ this.props.checked } onChange={ this.onChange } />
+      );
+    }
+  }
+
+  SelectAll.propTypes = {
+    onChange: React.PropTypes.func,
+    checked: React.PropTypes.bool,
+  };
+
+  return SelectAll;
+}
+
 export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
@@ -88,22 +116,25 @@ export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
   const ParticipantCount = getParticipantCount(participantStore);
-  const MassEdit = getMassEdit(participantStore, participantActions);
+  const MassEdit = getMassEdit();
+  const SelectAll = getSelectAll();
 
   class ParticipantListPage extends React.Component {
     constructor(props) {
       super(props);
-      this.state = { checked: new Array() };
+      this.state = { checked: new Array(), allChecked: false };
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
+      this.checkAll = this.checkAll.bind(this);
     }
 
     handleCheckboxChange(isChecked, participantId) {
-      const stateChange = { checked: new Array() };
+      const stateChange = { checked: new Array(), allChecked: false };
 
       if (isChecked) {
         stateChange.checked = this.state.checked.concat([ participantId ]);
+        console.log(stateChange.checked);
       } else {
         stateChange.checked = _(this.state.checked).without(participantId).value();
       }
@@ -113,6 +144,16 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     isChecked(participantId) {
       return this.state.checked.indexOf(participantId) >= 0;
+    }
+    
+    checkAll(isChecked) {
+      const stateChange = { checked: new Array(), allChecked: isChecked };
+      
+      if (isChecked) {
+        stateChange.checked = _.map(participantStore.state.participants, 'participantId');
+      }
+
+      this.setState(stateChange);
     }
 
     handleMassEdit(newValue) {
@@ -124,10 +165,6 @@ export function getParticipantListPage(participantStore, participantActions) {
         getOrder(this.props.location.query),
         getFilter(this.props.location.query)
       );
-    }
-
-    changeAllCheckboxes() {
-      return;
     }
 
     // this.state = { checked: {} };
@@ -187,7 +224,7 @@ export function getParticipantListPage(participantStore, participantActions) {
               <Table striped responsive condensed>
                 <thead>
                   <tr>
-                    <th><Input type="checkbox" title="Valitse kaikki" onChange={ this.changeAllCheckboxes } /></th>
+                    <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
                     {
                       Object.keys(columnPropertyToLabelMapping).map(property => (
                         <SortableHeaderCellContainer
@@ -204,7 +241,7 @@ export function getParticipantListPage(participantStore, participantActions) {
                 <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } />
                 <tbody className="tfooter">
                   <tr>
-                    <td><Input type="checkbox" title="Valitse kaikki" /></td>
+                    <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
                     <td colSpan={ columnCount }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
