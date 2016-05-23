@@ -2,6 +2,7 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import app from '../src/server/server';
 import Promise from 'bluebird';
+import { resetDatabase } from '../scripts/seed-database';
 
 const expect = chai.expect;
 
@@ -17,9 +18,11 @@ describe('Participant change event', () => {
   const findPresence = Promise.promisify(PresenceHistory.find, { context: PresenceHistory });
   const findParticipant = Promise.promisify(Participant.find, { context: Participant });
   let id;
-  beforeEach(() => createParticipant({ firstName: 'Raimo', lastName:'Vormisto',
+  beforeEach(() => resetDatabase().then(() =>
+                    createParticipant({ firstName: 'Raimo', lastName:'Vormisto',
                         nonScout: false, inCamp: 0,  localGroup: 'testi', campGroup: 'testi',
                         subCamp: 'testi', ageGroup: 'testi' }).then(r => id = r.participantId)
+                  )
   );
 
   afterEach( () => {
