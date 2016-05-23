@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Table, Grid, Row, Col, Input } from 'react-bootstrap';
+import { Table, Grid, Row, Col, Input, Button } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
 import { getParticipantCountUpdater } from './containers/ParticipantCountUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
@@ -35,6 +35,50 @@ function getLimit(query) {
   return query.limit && Number(query.limit) || 20;
 }
 
+export function getMassEdit(participantStore, participantActions) {
+  class MassEdit extends React.Component {
+    constructor(props){
+      super(props);
+      this.state = {};
+      this.onSubmit = this.onSubmit.bind(this);
+      this.onChange = this.onChange.bind(this);
+    }
+
+    onSubmit(event) {
+      event.preventDefault();
+      if (this.state.value !== null && this.state.value !== 'null') {
+        this.props.onSubmit(this.state.value);
+      }
+    }
+
+    onChange(event){
+      event.persist();
+      this.setState({ value: event.target.value });
+    }
+
+    render() {
+      return (
+        <form className="form-inline" onSubmit={ this.onSubmit }>
+          <p>NN henkilöä valittu</p>
+          <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
+            <option value="null">---</option>
+            <option value="1">Poissa leiristä</option>
+            <option value="2">Väliaikaisesti poissa leiristä</option>
+            <option value="3">Leirissä</option>
+          </Input>
+          <Button type="submit" bsStyle="primary">Tallenna</Button>
+        </form>
+      );
+    }
+  }
+
+  MassEdit.propTypes = {
+    onSubmit: React.PropTypes.func,
+  };
+
+  return MassEdit;
+}
+
 export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
@@ -43,6 +87,7 @@ export function getParticipantListPage(participantStore, participantActions) {
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
   const ParticipantCount = getParticipantCount(participantStore);
+  const MassEdit = getMassEdit(participantStore, participantActions);
 
   class ParticipantListPage extends React.Component {
     constructor(props) {
@@ -50,6 +95,7 @@ export function getParticipantListPage(participantStore, participantActions) {
       this.state = { checked: new Array() };
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
+      this.handleMassEdit = this.handleMassEdit.bind(this);
     }
 
     handleCheckboxChange(isChecked, participantId) {
@@ -66,6 +112,17 @@ export function getParticipantListPage(participantStore, participantActions) {
 
     isChecked(participantId) {
       return this.state.checked.indexOf(participantId) >= 0;
+    }
+
+    handleMassEdit(newValue) {
+      participantActions.updateParticipantPresences(
+        this.state.checked,
+        newValue,
+        getOffset(this.props.location.query),
+        getLimit(this.props.location.query),
+        getOrder(this.props.location.query),
+        getFilter(this.props.location.query)
+      );
     }
 
     changeAllCheckboxes() {
@@ -144,10 +201,10 @@ export function getParticipantListPage(participantStore, participantActions) {
                   </tr>
                 </thead>
                 <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } />
-                <tbody>
+                <tbody className="tfooter">
                   <tr>
                     <td><Input type="checkbox" title="Valitse kaikki" /></td>
-                    <td colSpan={ columnCount }>Muokkaa valittuja</td>
+                    <td colSpan={ columnCount }><MassEdit onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
