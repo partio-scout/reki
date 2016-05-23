@@ -59,7 +59,7 @@ export function getMassEdit() {
     render() {
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
-          <p>{this.props.count} { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
+          <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
           <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
             <option value="null">---</option>
             <option value="1">Poissa leiristä</option>
@@ -134,7 +134,6 @@ export function getParticipantListPage(participantStore, participantActions) {
 
       if (isChecked) {
         stateChange.checked = this.state.checked.concat([ participantId ]);
-        console.log(stateChange.checked);
       } else {
         stateChange.checked = _(this.state.checked).without(participantId).value();
       }
@@ -145,10 +144,10 @@ export function getParticipantListPage(participantStore, participantActions) {
     isChecked(participantId) {
       return this.state.checked.indexOf(participantId) >= 0;
     }
-    
+
     checkAll(isChecked) {
       const stateChange = { checked: new Array(), allChecked: isChecked };
-      
+
       if (isChecked) {
         stateChange.checked = _.map(participantStore.state.participants, 'participantId');
       }
