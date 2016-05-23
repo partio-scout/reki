@@ -59,14 +59,14 @@ export function getMassEdit(participantStore, participantActions) {
     render() {
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
-          <p>NN henkilöä valittu</p>
+          <p>{this.props.count} { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
           <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
             <option value="null">---</option>
             <option value="1">Poissa leiristä</option>
             <option value="2">Väliaikaisesti poissa leiristä</option>
             <option value="3">Leirissä</option>
           </Input>
-          <Button type="submit" bsStyle="primary">Tallenna</Button>
+          <Button type="submit" bsStyle="primary" disabled={ (this.props.count > 0 ? false : true) }>Tallenna</Button>
         </form>
       );
     }
@@ -74,6 +74,7 @@ export function getMassEdit(participantStore, participantActions) {
 
   MassEdit.propTypes = {
     onSubmit: React.PropTypes.func,
+    count: React.PropTypes.int,
   };
 
   return MassEdit;
@@ -204,7 +205,7 @@ export function getParticipantListPage(participantStore, participantActions) {
                 <tbody className="tfooter">
                   <tr>
                     <td><Input type="checkbox" title="Valitse kaikki" /></td>
-                    <td colSpan={ columnCount }><MassEdit onSubmit={ this.handleMassEdit } /></td>
+                    <td colSpan={ columnCount }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
