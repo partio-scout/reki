@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Alert } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 export function getLoginPromptPage() {
   return function() {
@@ -14,7 +14,6 @@ export function getLoginPromptPage() {
             Kirjaudu sisään Partio ID:llä
           </Button>
         </p>
-        <Alert bsSize="medium" bsStyle="info">Kirjautumalla hyväksyn henkilötietojeni luovutuksen käsiteltäväksi Euroopan Talousalueen ulkopuolelle.</Alert>
       </div>
     );
   };
