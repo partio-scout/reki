@@ -18,6 +18,9 @@ function processError(req, res, err) {
 }
 
 export default function(app) {
+  const isProduction = !app.get('isDev');
+  const cookieOptions = isProduction ? { secure: true } : undefined;
+
   app.get('/saml/login', (req, res) =>
     partioid.getAuthorizeUrl(req, (err, url) => {
       if (err) {
@@ -49,8 +52,8 @@ export default function(app) {
               if (err) {
                 processError(req, res, err);
               } else {
-                res.cookie('accessToken', JSON.stringify(accessToken));
-                res.cookie('email', user.email);
+                res.cookie('accessToken', JSON.stringify(accessToken), cookieOptions);
+                res.cookie('email', user.email, cookieOptions);
                 res.redirect('/');
               }
             });
