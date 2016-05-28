@@ -3,11 +3,12 @@ import { Link } from 'react-router';
 
 class LinkCell extends React.Component {
   render() {
-    return <td><Link to={ this.props.href }>{ this.props.children }</Link></td>;
+    return <td><Link to={ this.props.href } title={ this.props.title }>{ this.props.children }</Link></td>;
   }
 }
 
 LinkCell.propTypes = {
+  title: React.PropTypes.string,
   href: React.PropTypes.string,
   children: React.PropTypes.node,
 };
@@ -55,10 +56,12 @@ export class ParticipantRow extends React.Component {
 
     const href = `participants/${participantId}`;
 
+    const fullName = `${firstName} ${lastName}`;
+
     return (
       <tr>
-        <LinkCell href={ href }>{ firstName }</LinkCell>
-        <LinkCell href={ href }>{ lastName }</LinkCell>
+        <LinkCell href={ href } title={ fullName }>{ firstName }</LinkCell>
+        <LinkCell href={ href } title={ fullName }>{ lastName }</LinkCell>
         <td>{ formatDate(dateOfBirth) }</td>
         <td>{ formatGender(gender) }</td>
         <td>{ formatNonScout(nonScout) }</td>
