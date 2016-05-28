@@ -251,3 +251,16 @@ td {
   }
 
 }
+
+// Text search field & helper
+
+.textsearch {
+  input {
+    width: 200px;
+  }
+  p {
+    @extend .text-muted;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
