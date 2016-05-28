@@ -92,7 +92,7 @@ export function getParticipantListPage(participantStore, participantActions) {
         </Row>
         <Row>
           <Col md={ 12 }>
-            <Table striped responsive condensed>
+            <Table striped responsive condensed className="participants">
               <thead>
                 <tr>
                   {
