@@ -8,6 +8,7 @@ export default app;
 
 app.start = function() {
   // start the web server
+  //
   return app.listen(() => {
     app.emit('started');
     console.log('Web server listening at: %s', app.get('url'));
