@@ -31,5 +31,9 @@
   "AuditEvent": {
     "dataSource": "db",
     "public": true
+  },
+  "SearchFilter": {
+    "dataSource": "db",
+    "public": true
   }
 }
