@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export function getParticipantActions(alt, participantResource) {
+export function getParticipantActions(alt, participantResource, searchFilterResource) {
   class ParticipantActions {
     fetchParticipantById(participantId) {
       return dispatch => {
@@ -120,6 +120,23 @@ export function getParticipantActions(alt, participantResource) {
     }
 
     campGroupLoadingFailed(err) {
+      return err;
+    }
+
+    saveSearchFilter(name, filter) {
+      return dispatch => {
+        dispatch();
+        searchFilterResource.create({ name: name, filter: filter })
+          .then(response => this.SearchFilterSaved(response),
+                err => this.saveSearhFilterFailed(err));
+      };
+    }
+
+    SearchFilterSaved(response) {
+      return response;
+    }
+
+    saveSearhFilterFailed(err) {
       return err;
     }
   }

@@ -18,10 +18,11 @@ const request = superagentAsPromised(superagent);
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants');
 const registryUserResource = new RestfulResource('/api/registryusers');
+const searchFilterResource = new RestfulResource('api/searchfilters');
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource);
+const participantActions = actions.getParticipantActions(alt, participantResource, searchFilterResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
