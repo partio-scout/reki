@@ -31,7 +31,7 @@ export function getDebouncedTextField(participantActions) {
     }
 
     return (
-        <div>
+        <div className="textsearch">
           <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur } onKeyPress={ disableEnter } />
           <Button bsStyle="primary" onClick={ saveSearch }>Tallenna haku</Button>
         </div>
