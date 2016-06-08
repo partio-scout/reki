@@ -1,7 +1,7 @@
 import React from 'react';
 import AltContainer from 'alt-container';
 import { ParticipantRow } from '../../../components';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 function Tbody(props) {
   const elements = props.elements || [];

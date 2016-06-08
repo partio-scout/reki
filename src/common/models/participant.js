@@ -54,6 +54,87 @@ export default function (Participant) {
     }
   });
 
+export default function (Participant) {
+
+  function handleTextSearch(ctx, participantInstance, next) {
+
+    if (ctx.args.where && _.isString(ctx.args.where)) {
+      ctx.args.where = JSON.parse(ctx.args.where);
+    }
+
+    if (ctx.args.filter && _.isString(ctx.args.filter)) {
+      ctx.args.filter = JSON.parse(ctx.args.filter);
+    }
+
+    if (ctx.args.where) {
+      ctx.args.where = constructTextSearchFilters(ctx.args.where);
+    } else if (ctx.args.filter.where) {
+      ctx.args.filter.where = constructTextSearchFilters(ctx.args.filter.where);
+    }
+
+    next();
+
+    function nameQuery(string, string2) {
+      const stripRegex = function(s) {
+        // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
+        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
+      };
+      const array = new Array();
+      array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
+      array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
+      return array;
+    }
+
+    function constructTextSearchArray(string) {
+
+      const or = nameQuery(string, string);
+
+      if (_.isInteger(parseInt(string))) {
+        or.push({ memberNumber: parseInt(string) });
+      }
+
+      const splitted = string.split(' ', 2);
+
+      if (splitted.length === 2) {
+        or.push({ and: nameQuery(splitted[0], splitted[1]) });
+        or.push({ and: nameQuery(splitted[1], splitted[0]) });
+      }
+
+      return or;
+    }
+
+    function constructTextSearchFilters(where) {
+
+      if (_.isString(where)) {
+        where = JSON.parse(where);
+      }
+
+      // if multiple filters
+      if (where['and'] && where['and'].length > 0) {
+
+        where['and'].map((value, index, ar) => {
+          if (value.textSearch && value.textSearch.length > 0) {
+            const name = {};
+            name.or = constructTextSearchArray(value.textSearch);
+
+            where['and'].splice(index,1);
+            where['and'].push(name);
+          }
+        });
+
+      } else if (where.textSearch && where.textSearch.length > 0) {
+
+        const textSearchString = where.textSearch;
+
+        delete where.textSearch;
+        where.or = constructTextSearchArray(textSearchString);
+
+      }
+
+      return (where.length > 0 ? JSON.stringify(where) : where);
+    }
+  }
+
   Participant.afterRemote('create', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
@@ -71,6 +152,10 @@ export default function (Participant) {
     app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'update')
     .asCallback(next);
   });
+
+  Participant.beforeRemote('find', handleTextSearch);
+
+  Participant.beforeRemote('count', handleTextSearch);
 
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });

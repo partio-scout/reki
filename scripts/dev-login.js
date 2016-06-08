@@ -13,7 +13,7 @@ const query = {
   },
 };
 
-app.models.Registryuser.findOne(query, (err, user) => {
+app.models.RegistryUser.findOne(query, (err, user) => {
   if (err) {
     console.error('Error loading user:', err);
     process.exit(1);

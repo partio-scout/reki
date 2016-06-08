@@ -27,13 +27,13 @@ $red: rgb(236, 64, 75);
 $purple: rgb(184, 21, 112);
 $white: #fff;
 $black: #000;
-$pale-grey: #f7f7f7;
+$pale-grey: #f7f7f5;
 $light-grey: #e9edef;
 $mid-grey: #2b3643;
 $dark-grey: #262626;
-$pale-grey: #f7f7f5;
 
-$body-bg: $pale-grey;
+$body-bg: $light-grey;
+$text-color: $dark-grey;
 
 $brand-primary: $blue;
 $brand-success: $green;
@@ -45,6 +45,7 @@ $navbar-default-bg: $mid-grey;
 $navbar-default-brand-color: $white;
 $navbar-default-brand-hover-color: $white;
 $navbar-default-link-color: $white;
+$navbar-default-link-active-color: $light-grey;
 $navbar-default-link-hover-color: $white;
 $navbar-default-link-hover-bg: lighten($mid-grey, 3%);
 
@@ -62,14 +63,6 @@ $screen-xs: 480px;
 $screen-sm: 768px;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
-
-/**
- * Scaffolding
- */
-
-body {
-  color: $dark-grey;
-}
 
 /**
  * Tables
@@ -152,6 +145,10 @@ table {
   border: 0;
   padding-left: floor( $grid-gutter-width / 2 );
   padding-right: floor( $grid-gutter-width / 2 );
+  position: absolute;
+  width: 100%;
+  top: 0;
+  z-index: 5;
 
   .navbar-nav > li > a:hover,
   .navbar-nav > li > a:focus {
@@ -167,20 +164,23 @@ table {
  * Sidebar & Main Container
  */
 
-.main {}
+.page-content {
+  min-height: 100%;
+}
+
+.main {
+  background-color: $pale-grey;
+  min-height: 100%;
+  position: absolute;
+  padding-top: 50px;
+}
 
 .sidebar {
   background-color: $light-grey;
-  bottom: 0;
-  display: block;
-  left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding-top: 20px;
+  min-height: 100%;
+  padding-top: 70px;
   padding-bottom: 20px;
-  position: fixed;
-  top: 50px;
-  z-index: 20;
+  position: absolute;
 }
 
 /**
@@ -201,6 +201,7 @@ table {
 .form-inline {
   .form-group {
     margin-right: 1em;
+    margin-bottom: 1em;
 
     &:last-child {
       margin-right: 0;
@@ -239,6 +240,20 @@ table .incamp .ball {
 
 table .incamp .text {
   display: none;
+
+/*
+ * Search tools
+ */
+
+.participant-count {
+  span {
+    font-size: $font-size-base;
+    font-weight: bold;
+  }
+  .h2 {
+    line-height: 1;
+    margin: 0;
+  }
 }
 
 /**
@@ -267,27 +282,24 @@ table .incamp .text {
 
 @media screen and (max-width: $screen-sm) {
   .sidebar {
-    bottom: auto;
-    left: auto;
     position: relative;
-    top: auto;
+    padding: floor( $grid-gutter-width / 2 );
+  }
+
+  .main {
+    height: auto;
+    padding: floor( $grid-gutter-width / 2 );
+    position: relative;
   }
 
   .navbar-default {
     padding-left: 0;
     padding-right: 0;
+    position: relative;
   }
 
-}
+  .page-content {
+    min-height: auto;
+  }
 
-.participant-count {
-  span {
-    font-size: $font-size-small;
-    font-weight: bold;
-    line-height: 0.8em;
-  }
-  .h2 {
-    line-height: 1;
-    margin: 0;
-  }
 }
