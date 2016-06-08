@@ -104,8 +104,8 @@ td {
       }
       
       th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) {
-      	position: absolute;
-      	background: inherit;
+        position: absolute;
+        background: inherit;
         width: 150px;
         display: block;
       }
@@ -117,36 +117,24 @@ td {
 
       th:nth-child(1), td:nth-child(1) {
         left: 15px;
-      	border-left: 1px solid #ddd;
+        border-left: 1px solid #ddd;
         padding-left: 10px;
       }
 
       th:nth-child(2), td:nth-child(2) {
-      	left: 165px;
+        left: 165px;
         border-right: 1px solid #ddd;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       td:nth-child(3), th:nth-child(3) {
-      	padding-left: 310px !important;
+        padding-left: 310px !important;
       }
-      
-      // th.sortable:nth-child(1), th.sortable:nth-child(2) {
-      //   background: 
-      // }
     }
-
-    
-    // 	position: absolute;
-    // 	left: 165px;
-    // 	height: 49px;
-    // 	padding-top: 22px;
-    // 	background: #fff;
-    // 	z-index: 20;
-    // }
   }
 }
+
 //Sortable table header container
 .sortable {
   span,
