@@ -8,6 +8,7 @@ import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorC
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
+import { getInCampLabel } from '../InCampStatus';
 
 function getOrder(query) {
   try {
@@ -57,14 +58,17 @@ export function getMassEdit() {
     }
 
     render() {
+      const inCampLabel = getInCampLabel(1);
+      const tmpOutCampLabel = getInCampLabel(2);
+      const outCampLabel = getInCampLabel(3);
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
           <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
           <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
             <option value="null">---</option>
-            <option value="1">Poissa leiristä</option>
-            <option value="2">Väliaikaisesti poissa leiristä</option>
-            <option value="3">Leirissä</option>
+            <option value="1">{ inCampLabel }</option>
+            <option value="2">{ tmpOutCampLabel }</option>
+            <option value="3">{ outCampLabel }</option>
           </Input>
           <Button type="submit" bsStyle="primary" disabled={ (this.props.count > 0 ? false : true) }>Tallenna</Button>
         </form>

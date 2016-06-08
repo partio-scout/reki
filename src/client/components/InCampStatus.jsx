@@ -1,30 +1,33 @@
 import React from 'react';
 
+export function getInCampLabel(value) {
+  if (value == 1) {
+    return 'Ei ole leirissä';
+  } else if (value == 2) {
+    return 'Poistunut leiristä väliaikaisesti';
+  } else if (value == 3) {
+    return 'Leirissä';
+  }
+  return 'Tuntematon arvo';
+}
+
+export function getInCampColor(value) {
+  if (value == 1) {
+    return 'red';
+  } else if (value == 2) {
+    return 'orange';
+  } else if (value == 3) {
+    return 'green';
+  }
+  return 'gray';
+}
+
 export class InCampStatus extends React.Component {
 
   render() {
 
-    let label = 'Tuntematon arvo';
-
-    if (this.props.value == 1) {
-      label = 'Ei ole leirissä';
-    } else if (this.props.value == 2) {
-      label = 'Poistunut leiristä väliaikaisesti';
-    } else if (this.props.value == 3) {
-      label = 'Leirissä';
-    }
-
-    let color = 'gray';
-
-    if (this.props.value == 1) {
-      color = 'red';
-    } else if (this.props.value == 2) {
-      color = 'orange';
-    } else if (this.props.value == 3) {
-      color = 'green';
-    }
-
-    color = `${color} incamp`;
+    const label = getInCampLabel(this.props.value);
+    const color = `${getInCampColor(this.props.value)} incamp`;
 
     return (
       <span className={ color } title={ label }>
