@@ -54,8 +54,6 @@ export default function (Participant) {
     }
   });
 
-export default function (Participant) {
-
   function handleTextSearch(ctx, participantInstance, next) {
 
     if (ctx.args.where && _.isString(ctx.args.where)) {
