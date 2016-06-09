@@ -121,7 +121,18 @@
     }
   },
   "validations": [],
-  "relations": [],
+  "relations": {
+    "campGroup": {
+      "type": "belongsTo",
+      "model": "CampGroup",
+      "foreignKey": "campGroupId"
+    },
+    "subCamp": {
+      "type": "belongsTo",
+      "model": "SubCamp",
+      "foreignKey": "subCampId"
+    }
+  },
   "acls": [],
   "methods": []
 }

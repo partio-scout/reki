@@ -91,7 +91,7 @@
         "nullable": "YES"
       }
     },
-    "localGroup": {
+    "localGroupId": {
       "type": "number",
       "postgresql": {
         "columnName": "local_group",
@@ -102,7 +102,7 @@
         "nullable": "YES"
       }
     },
-    "campGroup": {
+    "campGroupId": {
       "type": "number",
       "postgresql": {
         "columnName": "camp_group",
@@ -113,7 +113,7 @@
         "nullable": "YES"
       }
     },
-    "subCamp": {
+    "subCampId": {
       "type": "number",
       "postgresql": {
         "columnName": "sub_camp",
@@ -123,10 +123,37 @@
         "dataScale": 0,
         "nullable": "YES"
       }
+    },
+    "cancelled": {
+      "type": "boolean",
+      "postgresql": {
+        "columnName": "cancelled",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "localGroup": {
+      "type": "belongsTo",
+      "model": "LocalGroup",
+      "foreignKey": "localGroupId"
+    },
+    "campGroup": {
+      "type": "belongsTo",
+      "model": "CampGroup",
+      "foreignKey": "campGroupId"
+    },
+    "subCamp": {
+      "type": "belongsTo",
+      "model": "SubCamp",
+      "foreignKey": "subCampId"
+    }
+  },
   "acls": [
     {
       "accessType": "*",

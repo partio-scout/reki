@@ -59,14 +59,14 @@
       }
     },
     "memberNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "member_number",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
-        "nullable": "NO"
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "dateOfBirth": {

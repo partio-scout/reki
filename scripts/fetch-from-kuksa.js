@@ -24,8 +24,12 @@ const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalG
 const findLocalGroups = Promise.promisify(LocalGroup.find, { context: LocalGroup });
 
 const KuksaParticipant = app.models.KuksaParticipant;
-const createKuksaParticipants = Promise.promisify(KuksaParticipant.create, { context: KuksaParticipant });
+const upsertKuksaParticipants = Promise.promisify(KuksaParticipant.upsert, { context: KuksaParticipant });
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
+
+const Participant = app.models.Participant;
+const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
+const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
 if (require.main === module) {
   main().then(
@@ -47,7 +51,8 @@ function main() {
     .then(() => findVillages().then(res => console.log(res)))
     .then(() => findCampGroups().then(res => console.log(res)))
     .then(() => findLocalGroups().then(res => console.log(res)))
-    .then(() => findKuksaParticipants().then(res => console.log(res)));
+    .then(() => findKuksaParticipants().then(res => console.log(res)))
+    .then(syncToLiveData);
 }
 
 function getOptionsFromEnvironment() {
@@ -119,7 +124,6 @@ function transferLocalGroups(eventApi) {
 
 function transferKuksaParticipants(eventApi) {
   return eventApi.getParticipants()
-    .then(participants => { console.log(participants); return participants; })
     .then(participants => participants.map(participant => ({
       id: participant.id,
       firstName: participant.firstName || 'x',
@@ -130,10 +134,56 @@ function transferKuksaParticipants(eventApi) {
       email: participant.email,
       localGroup: participant.group,
       campGroup: participant.campGroup,
-      subCamp: participant.subCamp,
+      subCampId: participant.subCamp,
+      cancelled: participant.cancelled,
     })))
     .then(participants =>
       _.reduce(participants, (acc, participant) =>
-        acc.then(() => createKuksaParticipants(participant)), Promise.resolve())
+        acc.then(() => upsertKuksaParticipants(participant)), Promise.resolve())
     );
+}
+
+function syncToLiveData() {
+  console.log('Syncing to live data...');
+  return updateParticipantsTable()
+    .then(deleteCancelledParticipants)
+    .then(res => console.log('Sync complete'))
+    .catch(err => console.error('Problem syncing to live data:', err, err.stack));
+}
+
+function updateParticipantsTable() {
+  console.log('Updating participants table...');
+  return findKuksaParticipants({
+    include: [ { 'localGroup': 'subCamp' }, 'campGroup', 'subCamp' ],
+  })
+  .then(participants => participants.map(participant => participant.toObject()))
+  .then(participants => participants.map(participant => ({
+    participantId: participant.id,
+    firstName: participant.firstName,
+    lastName: participant.lastName,
+    memberNumber: participant.memberNumber,
+    dateOfBirth: participant.dateOfBirth,
+    phoneNumber: participant.phoneNumber,
+    email: participant.email,
+    localGroup: participant.localGroup && participant.localGroup.name ? participant.localGroup.name : 'Muu',
+    campGroup: participant.campGroup && participant.campGroup.name ? participant.campGroup.name : 'Muu',
+    subCamp: participant.subCamp && participant.subCamp.name ? participant.subCamp.name : 'Muu',
+    ageGroup: 'Muu',
+    nonScout: false,
+  })))
+  .then(participants =>
+    _.reduce(
+      participants,
+      (acc, participant) => acc.then(() => upsertParticipant(participant)),
+      Promise.resolve()
+    )
+  ).then(res => console.log(res));
+}
+
+function deleteCancelledParticipants() {
+  console.log('Deleting cancelled participants...');
+  return findKuksaParticipants({ where: { cancelled: true } })
+    .then(participants => _.map(participants, 'id'))
+    .then(idsToDelete => destroyAllParticipants({ participantId: { inq: idsToDelete } }))
+    .then(info => console.log(`Deleted ${info.count} cancelled participants.`));
 }
