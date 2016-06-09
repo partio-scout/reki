@@ -148,6 +148,10 @@
         "nullable": "YES"
       }
     },
+    "inCamp": {
+      "type": "number"
+    },
+
     "localGroup": {
       "type": "string",
       "required": true,
@@ -198,7 +202,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "presenceHistory": {
+      "type": "hasMany",
+      "model": "ParticipantHistory",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",
@@ -232,7 +242,14 @@
       "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "count"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "massAssignField"
     }
   ],
-  "methods": []
+  "methods": {}
 }
