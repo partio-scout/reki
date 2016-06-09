@@ -1,4 +1,4 @@
-import app from '../src/server/server';
+﻿import app from '../src/server/server';
 import _ from 'lodash';
 import request from 'supertest-as-promised';
 import chai from 'chai';
@@ -86,19 +86,4 @@ describe('Participant mass edit endpoint test', () => {
       .send(changes)
       .expect(200);
   }
-
-  it('Should update right rows', () =>
-    postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'inCamp' }, accessToken)
-      .then( () => queryParticipants(accessToken)
-      .then( res => expectParticipantInCampValues([ 3, 3, 0 ], res.body) )
-    )
-  );
-
-  it('Should not update wrong fields', () =>
-    postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'subCamp' }, accessToken)
-      .then( () => queryParticipants(accessToken)
-      .then( res => expectParticipantInCampValues([ 0, 0, 0 ], res.body) )
-    )
-  );
-
 });
