@@ -1,0 +1,80 @@
+{
+  "name": "ParticipantExtraInfo",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "participantextrainfo"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "Number",
+      "id": true,
+      "generated": true,
+      "postgresql": {
+        "columnName": "id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "participantId": {
+      "type": "Number",
+      "id": true,
+      "generated": false,
+      "postgresql": {
+        "columnName": "participant_id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "fieldId": {
+      "type": "Number",
+      "id": true,
+      "generated": false,
+      "postgresql": {
+        "columnName": "field_id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "value": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "value",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "participant": {
+      "type": "belongsTo",
+      "model": "KuksaParticipant",
+      "foreignKey": "participantId"
+    },
+    "field": {
+      "type": "belongsTo",
+      "model": "ExtraInfoField",
+      "foreignKey": "fieldId"
+    }
+  },
+  "acls": [],
+  "methods": []
+}

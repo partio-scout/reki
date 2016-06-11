@@ -17,6 +17,8 @@ const modelList = [
   ['CampGroup', false],
   ['LocalGroup', false],
   ['KuksaParticipant', false],
+  ['ExtraInfoField', false],
+  ['ParticipantExtraInfo', false],
 ];
 
 export function getModelCreationList() {

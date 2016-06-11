@@ -113,6 +113,17 @@
         "nullable": "YES"
       }
     },
+    "staffPosition": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "swimmingSkill": {
       "type": "boolean",
       "postgresql": {

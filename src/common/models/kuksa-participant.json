@@ -152,6 +152,11 @@
       "type": "belongsTo",
       "model": "SubCamp",
       "foreignKey": "subCampId"
+    },
+    "extraInfos": {
+      "type": "hasMany",
+      "model": "ParticipantExtraInfo",
+      "foreignKey": "participantId"
     }
   },
   "acls": [

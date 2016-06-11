@@ -31,6 +31,21 @@ const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
+const ExtraInfoField = app.models.ExtraInfoField;
+const destroyAllExtraInfoFields = Promise.promisify(LocalGroup.destroyAll, { context: ExtraInfoField });
+const createExtraInfoFields = Promise.promisify(LocalGroup.create, { context: ExtraInfoField });
+const findExtraInfoFields = Promise.promisify(LocalGroup.find, { context: ExtraInfoField });
+
+const ParticipantExtraInfo = app.models.ParticipantExtraInfo;
+const destroyAllParticipantExtraInfos = Promise.promisify(LocalGroup.destroyAll, { context: ParticipantExtraInfo });
+const createParticipantExtraInfos = Promise.promisify(LocalGroup.create, { context: ParticipantExtraInfo });
+const findParticipantExtraInfos = Promise.promisify(LocalGroup.find, { context: ParticipantExtraInfo });
+
+function inspect(promiseValue) {
+  console.log(promiseValue);
+  return promiseValue;
+}
+
 if (require.main === module) {
   main().then(
     () => { console.log('Finished successfully.'); process.exit(0); },
@@ -46,12 +61,16 @@ function main() {
     .then(passthrough(transferCampGroups))
     .then(passthrough(transferLocalGroups))
     .then(passthrough(transferKuksaParticipants))
+    .then(passthrough(transferExtraInfofields))
+    .then(passthrough(transferParticipantExtraInfos))
     .then(() => console.log('Transfer compete'))
     .then(() => findSubCamps().then(res => console.log(res)))
     .then(() => findVillages().then(res => console.log(res)))
     .then(() => findCampGroups().then(res => console.log(res)))
     .then(() => findLocalGroups().then(res => console.log(res)))
     .then(() => findKuksaParticipants().then(res => console.log(res)))
+    .then(() => findExtraInfoFields().then(res => console.log(res)))
+    .then(() => findParticipantExtraInfos().then(res => console.log(res)))
     .then(syncToLiveData);
 }
 
@@ -143,6 +162,25 @@ function transferKuksaParticipants(eventApi) {
     );
 }
 
+function transferExtraInfofields(eventApi) {
+  return eventApi.getExtraInfoFields()
+    .then(fields => fields.map(field => ({
+      id: field.id,
+      name: field.name.fi,
+    })))
+    .then(fields => destroyAllExtraInfoFields().then(() => createExtraInfoFields(fields)));
+}
+
+function transferParticipantExtraInfos(eventApi) {
+  return eventApi.getParticipantExtraInfos()
+    .then(answers => answers.map(answer => ({
+      participantId: answer.for,
+      fieldId: answer.extraInfoField,
+      value: answer.value,
+    })))
+    .then(answer => destroyAllParticipantExtraInfos().then(() => createParticipantExtraInfos(answer)));
+}
+
 function syncToLiveData() {
   console.log('Syncing to live data...');
   return updateParticipantsTable()
@@ -151,12 +189,23 @@ function syncToLiveData() {
     .catch(err => console.error('Problem syncing to live data:', err, err.stack));
 }
 
+function getInfoForField(participant, fieldName) {
+  const field = _.find(participant.extraInfos, o => _.get(o, 'field.name') === fieldName);
+  return field ? field.value : null;
+}
+
 function updateParticipantsTable() {
   console.log('Updating participants table...');
   return findKuksaParticipants({
-    include: [ { 'localGroup': 'subCamp' }, 'campGroup', 'subCamp' ],
+    include: [
+      { 'localGroup': 'subCamp' },
+      'campGroup',
+      'subCamp',
+      { 'extraInfos': 'field' },
+    ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
+  .then(inspect)
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
     firstName: participant.firstName,
@@ -165,11 +214,12 @@ function updateParticipantsTable() {
     dateOfBirth: participant.dateOfBirth,
     phoneNumber: participant.phoneNumber,
     email: participant.email,
-    localGroup: participant.localGroup && participant.localGroup.name ? participant.localGroup.name : 'Muu',
-    campGroup: participant.campGroup && participant.campGroup.name ? participant.campGroup.name : 'Muu',
-    subCamp: participant.subCamp && participant.subCamp.name ? participant.subCamp.name : 'Muu',
+    localGroup: _.get(participant, 'localGroup.name') || 'Muu',
+    campGroup: _.get(participant, 'campGroup.name') || 'Muu',
+    subCamp: _.get(participant, 'subCamp.name') || 'Muu',
     ageGroup: 'Muu',
     nonScout: false,
+    staffPosition: getInfoForField(participant, 'Pesti'),
   })))
   .then(participants =>
     _.reduce(
@@ -177,7 +227,7 @@ function updateParticipantsTable() {
       (acc, participant) => acc.then(() => upsertParticipant(participant)),
       Promise.resolve()
     )
-  ).then(res => console.log(res));
+  );
 }
 
 function deleteCancelledParticipants() {
