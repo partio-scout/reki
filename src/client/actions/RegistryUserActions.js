@@ -23,6 +23,10 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return error;
     }
 
+    updateLoginStatus(loggedIn) {
+      return loggedIn;
+    }
+
     loadCurrentUser(id) {
       return dispatch => {
         dispatch();

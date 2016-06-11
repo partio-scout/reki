@@ -8,7 +8,7 @@ export function getParticipantCountUpdater(participantActions) {
     }
 
     render() {
-      participantActions.loadParticipantCount(this.props.filter);
+      participantActions.loadParticipantCount.defer(this.props.filter);
       return null;
     }
   }
