@@ -14,7 +14,8 @@
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
     "fetch-from-kuksa": "babel-node scripts/fetch-from-kuksa.js",
-    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js"
+    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
+    "console": "echo 'Run .load scripts/console-utils.js to use utils' && babel-node"
   },
   "dependencies": {
     "alt": "^0.18.2",
