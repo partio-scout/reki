@@ -57,7 +57,7 @@ export function getParticipantListPage(participantStore, participantActions) {
       nonScout: 'Onko partiolainen?',
       memberNumber: 'Jäsennumero',
       homeCity: 'Kotikaupunki',
-      swimmingSkill: 'Uimataito',
+      staffPosition: 'Pesti',
       interestedInHomeHospitality: 'Home hospitality',
       email: 'Sähköposti',
       phoneNumber: 'Puhelinnumero',
