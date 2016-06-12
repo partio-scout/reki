@@ -245,6 +245,11 @@ function getInfoForField(participant, fieldName) {
   return field ? field.value : null;
 }
 
+function getSelectionForGroup(participant, fieldName) {
+  const selection = _.find(participant.extraSelections, o => _.get(o, 'group.name') === fieldName);
+  return selection ? selection.name : null;
+}
+
 function updateParticipantsTable() {
   console.log('Updating participants table...');
   return findKuksaParticipants({
@@ -253,6 +258,7 @@ function updateParticipantsTable() {
       'campGroup',
       'subCamp',
       { 'extraInfos': 'field' },
+      { 'extraSelections': 'group' },
     ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
@@ -267,7 +273,7 @@ function updateParticipantsTable() {
     localGroup: _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: _.get(participant, 'subCamp.name') || 'Muu',
-    ageGroup: 'Muu',
+    ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     nonScout: false,
     staffPosition: getInfoForField(participant, 'Pesti'),
   })))
