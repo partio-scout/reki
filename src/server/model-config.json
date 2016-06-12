@@ -59,5 +59,17 @@
   "ParticipantExtraInfo": {
     "dataSource": "db",
     "public": false
+  },
+  "ExtraSelectionGroup": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ExtraSelection": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ParticipantExtraSelection": {
+    "dataSource": "db",
+    "public": false
   }
 }

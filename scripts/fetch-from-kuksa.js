@@ -41,6 +41,21 @@ const destroyAllParticipantExtraInfos = Promise.promisify(LocalGroup.destroyAll,
 const createParticipantExtraInfos = Promise.promisify(LocalGroup.create, { context: ParticipantExtraInfo });
 const findParticipantExtraInfos = Promise.promisify(LocalGroup.find, { context: ParticipantExtraInfo });
 
+const ExtraSelectionGroup = app.models.ExtraSelectionGroup;
+const destroyAllExtraSelectionGroups = Promise.promisify(LocalGroup.destroyAll, { context: ExtraSelectionGroup });
+const createExtraSelectionGroups = Promise.promisify(LocalGroup.create, { context: ExtraSelectionGroup });
+const findExtraSelectionGroups = Promise.promisify(LocalGroup.find, { context: ExtraSelectionGroup });
+
+const ExtraSelection = app.models.ExtraSelection;
+const destroyAllExtraSelections = Promise.promisify(LocalGroup.destroyAll, { context: ExtraSelection });
+const createExtraSelections = Promise.promisify(LocalGroup.create, { context: ExtraSelection });
+const findExtraSelections = Promise.promisify(LocalGroup.find, { context: ExtraSelection });
+
+const ParticipantExtraSelection = app.models.ParticipantExtraSelection;
+const destroyAllParticipantExtraSelections = Promise.promisify(LocalGroup.destroyAll, { context: ParticipantExtraSelection });
+const createParticipantExtraSelections = Promise.promisify(LocalGroup.create, { context: ParticipantExtraSelection });
+const findParticipantExtraSelections = Promise.promisify(LocalGroup.find, { context: ParticipantExtraSelection });
+
 function inspect(promiseValue) {
   console.log(promiseValue);
   return promiseValue;
@@ -63,6 +78,9 @@ function main() {
     .then(passthrough(transferKuksaParticipants))
     .then(passthrough(transferExtraInfofields))
     .then(passthrough(transferParticipantExtraInfos))
+    .then(passthrough(transferExtraSelectionGroups))
+    .then(passthrough(transferExtraSelections))
+    .then(passthrough(transferParticipantExtraSelections))
     .then(() => console.log('Transfer compete'))
     .then(() => findSubCamps().then(res => console.log(res)))
     .then(() => findVillages().then(res => console.log(res)))
@@ -71,6 +89,9 @@ function main() {
     .then(() => findKuksaParticipants().then(res => console.log(res)))
     .then(() => findExtraInfoFields().then(res => console.log(res)))
     .then(() => findParticipantExtraInfos().then(res => console.log(res)))
+    .then(() => findExtraSelectionGroups().then(res => console.log(res)))
+    .then(() => findExtraSelections().then(res => console.log(res)))
+    .then(() => findParticipantExtraSelections().then(res => console.log(res)))
     .then(syncToLiveData);
 }
 
@@ -181,6 +202,36 @@ function transferParticipantExtraInfos(eventApi) {
     .then(answer => destroyAllParticipantExtraInfos().then(() => createParticipantExtraInfos(answer)));
 }
 
+function transferExtraSelectionGroups(eventApi) {
+  return eventApi.getExtraSelectionGroups()
+    .then(groups => groups.map(group => ({
+      id: group.id,
+      name: group.name.fi,
+    })))
+    .then(groups => destroyAllExtraSelectionGroups().then(() => createExtraSelectionGroups(groups)));
+}
+
+function transferExtraSelections(eventApi) {
+  return eventApi.getExtraSelections()
+    .then(inspect)
+    .then(selections => selections.map(selection => ({
+      id: selection.id,
+      groupId: selection.extraSelectionGroup,
+      name: selection.name.fi,
+    })))
+    .then(inspect)
+    .then(selections => destroyAllExtraSelections().then(() => createExtraSelections(selections)));
+}
+
+function transferParticipantExtraSelections(eventApi) {
+  return eventApi.getParticipantExtraSelections()
+    .then(selections => selections.map(selection => ({
+      participantId: selection.from,
+      selectionId: selection.to,
+    })))
+    .then(selections => destroyAllParticipantExtraSelections().then(() => createParticipantExtraSelections(selections)));
+}
+
 function syncToLiveData() {
   console.log('Syncing to live data...');
   return updateParticipantsTable()
@@ -205,7 +256,6 @@ function updateParticipantsTable() {
     ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
-  .then(inspect)
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
     firstName: participant.firstName,

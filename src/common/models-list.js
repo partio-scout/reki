@@ -19,6 +19,9 @@ const modelList = [
   ['KuksaParticipant', false],
   ['ExtraInfoField', false],
   ['ParticipantExtraInfo', false],
+  ['ExtraSelectionGroup', false],
+  ['ExtraSelection', false],
+  ['ParticipantExtraSelection', false],
 ];
 
 export function getModelCreationList() {

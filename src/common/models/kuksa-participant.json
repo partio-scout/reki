@@ -157,6 +157,13 @@
       "type": "hasMany",
       "model": "ParticipantExtraInfo",
       "foreignKey": "participantId"
+    },
+    "extraSelections": {
+      "type": "hasMany",
+      "model": "ExtraSelection",
+      "foreignKey": "participantId",
+      "through": "ParticipantExtraSelection",
+      "keyThrough": "selectionId"
     }
   },
   "acls": [
