@@ -63,7 +63,7 @@ export class ParticipantRow extends React.Component {
         <td>{ formatNonScout(nonScout) }</td>
         <td>{ memberNumber }</td>
         <td>{ formatNullableString(homeCity) }</td>
-        <td>{ staffPosition }</td>
+        <td>{ formatNullableString(staffPosition) }</td>
         <td>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
         <td>{ formatNullableString(email) }</td>
         <td>{ formatNullableString(phoneNumber) }</td>
