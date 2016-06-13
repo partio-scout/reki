@@ -45,5 +45,5 @@ export default mock;
 if (require.main === module) {
   mock.serveFixtures('all');
   mock.start();
-  console.log(`Mock Kuksa running at endpoint ${endpoint}`)
+  console.log(`Mock Kuksa running at endpoint ${endpoint}`);
 }
