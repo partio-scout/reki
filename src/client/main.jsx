@@ -54,9 +54,11 @@ const accessTokenValid = accessToken && accessToken.userId && accessToken.ttl > 
 
 if (accessTokenValid) {
   registryUserActions.loadCurrentUser(accessToken.userId);
+  registryUserActions.updateLoginStatus(true);
 } else {
   Cookie.remove('accessToken');
   registryUserActions.loadCurrentUser();
+  registryUserActions.updateLoginStatus(false);
 }
 
 const routes = (

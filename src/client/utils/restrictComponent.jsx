@@ -1,4 +1,5 @@
 import React from 'react';
+import { pureShouldComponentUpdate } from './pureShouldComponentUpdate';
 
 class EmptyComponent extends React.Component {
   render() {
@@ -12,7 +13,13 @@ export function restrictComponent(UserStore, Component, AlternativeComponent) {
   class RestrictedComponent extends React.Component {
     constructor(props) {
       super(props);
+
+      this.selectState = this.selectState.bind(this);
+      this.onChange = this.onChange.bind(this);
+
       this.state = this.selectState(UserStore.getState());
+
+      this.shouldComponentUpdate = pureShouldComponentUpdate.bind(this);
     }
 
     componentDidMount() {
@@ -32,7 +39,7 @@ export function restrictComponent(UserStore, Component, AlternativeComponent) {
     }
 
     render() {
-      if (this.state.currentUser) {
+      if (this.state.loggedIn) {
         return (<Component { ...this.props }/>);
       } else {
         return (<AlternativeComponent />);
