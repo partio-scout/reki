@@ -1,65 +1,15 @@
 import app from '../src/server/server';
+import transfer from '../src/kuksa-integration/transfer';
 import { getEventApi } from 'kuksa-event-api-client';
 import { Promise } from 'bluebird';
 import { _ } from 'lodash';
 
-const SubCamp = app.models.SubCamp;
-const destroyAllSubCamps = Promise.promisify(SubCamp.destroyAll, { context: SubCamp });
-const createSubCamps = Promise.promisify(SubCamp.create, { context: SubCamp });
-const findSubCamps = Promise.promisify(SubCamp.find, { context: SubCamp });
-
-const Village = app.models.Village;
-const destroyAllVillages = Promise.promisify(Village.destroyAll, { context: Village });
-const createVillages = Promise.promisify(Village.create, { context: Village });
-const findVillages = Promise.promisify(Village.find, { context: Village });
-
-const CampGroup = app.models.CampGroup;
-const destroyAllCampGroups = Promise.promisify(CampGroup.destroyAll, { context: CampGroup });
-const createCampGroups = Promise.promisify(CampGroup.create, { context: CampGroup });
-const findCampGroups = Promise.promisify(CampGroup.find, { context: CampGroup });
-
-const LocalGroup = app.models.LocalGroup;
-const destroyAllLocalGroups = Promise.promisify(LocalGroup.destroyAll, { context: LocalGroup });
-const createLocalGroups = Promise.promisify(LocalGroup.create, { context: LocalGroup });
-const findLocalGroups = Promise.promisify(LocalGroup.find, { context: LocalGroup });
-
 const KuksaParticipant = app.models.KuksaParticipant;
-const upsertKuksaParticipants = Promise.promisify(KuksaParticipant.upsert, { context: KuksaParticipant });
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
 
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
-
-const ExtraInfoField = app.models.ExtraInfoField;
-const destroyAllExtraInfoFields = Promise.promisify(LocalGroup.destroyAll, { context: ExtraInfoField });
-const createExtraInfoFields = Promise.promisify(LocalGroup.create, { context: ExtraInfoField });
-const findExtraInfoFields = Promise.promisify(LocalGroup.find, { context: ExtraInfoField });
-
-const ParticipantExtraInfo = app.models.ParticipantExtraInfo;
-const destroyAllParticipantExtraInfos = Promise.promisify(LocalGroup.destroyAll, { context: ParticipantExtraInfo });
-const createParticipantExtraInfos = Promise.promisify(LocalGroup.create, { context: ParticipantExtraInfo });
-const findParticipantExtraInfos = Promise.promisify(LocalGroup.find, { context: ParticipantExtraInfo });
-
-const ExtraSelectionGroup = app.models.ExtraSelectionGroup;
-const destroyAllExtraSelectionGroups = Promise.promisify(LocalGroup.destroyAll, { context: ExtraSelectionGroup });
-const createExtraSelectionGroups = Promise.promisify(LocalGroup.create, { context: ExtraSelectionGroup });
-const findExtraSelectionGroups = Promise.promisify(LocalGroup.find, { context: ExtraSelectionGroup });
-
-const ExtraSelection = app.models.ExtraSelection;
-const destroyAllExtraSelections = Promise.promisify(LocalGroup.destroyAll, { context: ExtraSelection });
-const createExtraSelections = Promise.promisify(LocalGroup.create, { context: ExtraSelection });
-const findExtraSelections = Promise.promisify(LocalGroup.find, { context: ExtraSelection });
-
-const ParticipantExtraSelection = app.models.ParticipantExtraSelection;
-const destroyAllParticipantExtraSelections = Promise.promisify(LocalGroup.destroyAll, { context: ParticipantExtraSelection });
-const createParticipantExtraSelections = Promise.promisify(LocalGroup.create, { context: ParticipantExtraSelection });
-const findParticipantExtraSelections = Promise.promisify(LocalGroup.find, { context: ParticipantExtraSelection });
-
-function inspect(promiseValue) {
-  console.log(promiseValue);
-  return promiseValue;
-}
 
 if (require.main === module) {
   main().then(
@@ -71,27 +21,7 @@ if (require.main === module) {
 function main() {
   return getOptionsFromEnvironment()
     .then(getEventApi)
-    .then(passthrough(transferSubCamps))
-    .then(passthrough(transferVillages))
-    .then(passthrough(transferCampGroups))
-    .then(passthrough(transferLocalGroups))
-    .then(passthrough(transferKuksaParticipants))
-    .then(passthrough(transferExtraInfofields))
-    .then(passthrough(transferParticipantExtraInfos))
-    .then(passthrough(transferExtraSelectionGroups))
-    .then(passthrough(transferExtraSelections))
-    .then(passthrough(transferParticipantExtraSelections))
-    .then(() => console.log('Transfer compete'))
-    .then(() => findSubCamps().then(res => console.log(res)))
-    .then(() => findVillages().then(res => console.log(res)))
-    .then(() => findCampGroups().then(res => console.log(res)))
-    .then(() => findLocalGroups().then(res => console.log(res)))
-    .then(() => findKuksaParticipants().then(res => console.log(res)))
-    .then(() => findExtraInfoFields().then(res => console.log(res)))
-    .then(() => findParticipantExtraInfos().then(res => console.log(res)))
-    .then(() => findExtraSelectionGroups().then(res => console.log(res)))
-    .then(() => findExtraSelections().then(res => console.log(res)))
-    .then(() => findParticipantExtraSelections().then(res => console.log(res)))
+    .then(transferDataFromKuksa)
     .then(syncToLiveData);
 }
 
@@ -112,124 +42,107 @@ function getOptionsFromEnvironment() {
   }));
 }
 
-function passthrough(func) {
-  function execute(arg) {
-    return func(arg).then(() => arg);
-  }
-
-  return execute;
-}
-
-function transferSubCamps(eventApi) {
-  return eventApi.getSubCamps()
-    .then(subCamps => destroyAllSubCamps().then(() => createSubCamps(subCamps)));
-}
-
-function transferVillages(eventApi) {
-  return eventApi.getVillages()
-    .then(villages => villages.map(village => ({
-      id: village.id,
-      subCampId: village.subCamp,
-      name: village.name,
-    })))
-    .then(villages => destroyAllVillages().then(() => createVillages(villages)));
-}
-
-function transferCampGroups(eventApi) {
-  return eventApi.getCampGroups()
-    .then(campGroups => campGroups.map(campGroup => ({
-      id: campGroup.id,
-      subCampId: campGroup.subCamp,
-      villageId: campGroup.village,
-      name: campGroup.name,
-    })))
-    .then(campGroups => destroyAllCampGroups().then(() => createCampGroups(campGroups)));
-}
-
-function transferLocalGroups(eventApi) {
-  return eventApi.getLocalGroups()
-    .then(localGroups => localGroups.map(localGroup => ({
-      id: localGroup.id,
-      subCampId: localGroup.subCamp,
-      villageId: localGroup.village,
-      campGroupId: localGroup.campGroup,
-      name: localGroup.name,
-      scoutOrganization: localGroup.scoutOrganization,
-      locality: localGroup.locality,
-      country: localGroup.country,
-      countryCode: localGroup.countryCode,
-    })))
-    .then(localGroups => destroyAllLocalGroups().then(() => createLocalGroups(localGroups)));
-}
-
-function transferKuksaParticipants(eventApi) {
-  return eventApi.getParticipants()
-    .then(participants => participants.map(participant => ({
-      id: participant.id,
-      firstName: participant.firstName || 'x',
-      lastName: participant.lastName || 'x',
-      memberNumber: 'XXXXX',
-      dateOfBirth: new Date(participant.birthDate),
-      phoneNumber: participant.phoneNumber,
-      email: participant.email,
-      localGroup: participant.group,
-      campGroup: participant.campGroup,
-      subCampId: participant.subCamp,
-      cancelled: participant.cancelled,
-    })))
-    .then(participants =>
-      _.reduce(participants, (acc, participant) =>
-        acc.then(() => upsertKuksaParticipants(participant)), Promise.resolve())
-    );
-}
-
-function transferExtraInfofields(eventApi) {
-  return eventApi.getExtraInfoFields()
-    .then(fields => fields.map(field => ({
-      id: field.id,
-      name: field.name.fi,
-    })))
-    .then(fields => destroyAllExtraInfoFields().then(() => createExtraInfoFields(fields)));
-}
-
-function transferParticipantExtraInfos(eventApi) {
-  return eventApi.getParticipantExtraInfos()
-    .then(answers => answers.map(answer => ({
-      participantId: answer.for,
-      fieldId: answer.extraInfoField,
-      value: answer.value,
-    })))
-    .then(answer => destroyAllParticipantExtraInfos().then(() => createParticipantExtraInfos(answer)));
-}
-
-function transferExtraSelectionGroups(eventApi) {
-  return eventApi.getExtraSelectionGroups()
-    .then(groups => groups.map(group => ({
-      id: group.id,
-      name: group.name.fi,
-    })))
-    .then(groups => destroyAllExtraSelectionGroups().then(() => createExtraSelectionGroups(groups)));
-}
-
-function transferExtraSelections(eventApi) {
-  return eventApi.getExtraSelections()
-    .then(inspect)
-    .then(selections => selections.map(selection => ({
-      id: selection.id,
-      groupId: selection.extraSelectionGroup,
-      name: selection.name.fi,
-    })))
-    .then(inspect)
-    .then(selections => destroyAllExtraSelections().then(() => createExtraSelections(selections)));
-}
-
-function transferParticipantExtraSelections(eventApi) {
-  return eventApi.getParticipantExtraSelections()
-    .then(selections => selections.map(selection => ({
-      participantId: selection.from,
-      selectionId: selection.to,
-    })))
-    .then(selections => destroyAllParticipantExtraSelections().then(() => createParticipantExtraSelections(selections)));
+function transferDataFromKuksa(eventApi) {
+  console.log('Transferring data from Kuksa...');
+  return transfer([
+    {
+      getFromSource: eventApi.getSubCamps,
+      targetModel: app.models.SubCamp,
+    },
+    {
+      getFromSource: eventApi.getVillages,
+      targetModel: app.models.Village,
+      transform: village => ({
+        id: village.id,
+        subCampId: village.subCamp,
+        name: village.name,
+      }),
+    },
+    {
+      getFromSource: eventApi.getCampGroups,
+      targetModel: app.models.CampGroup,
+      transform: campGroup => ({
+        id: campGroup.id,
+        subCampId: campGroup.subCamp,
+        villageId: campGroup.village,
+        name: campGroup.name,
+      }),
+    },
+    {
+      getFromSource: eventApi.getLocalGroups,
+      targetModel: app.models.LocalGroup,
+      transform: localGroup => ({
+        id: localGroup.id,
+        subCampId: localGroup.subCamp,
+        villageId: localGroup.village,
+        campGroupId: localGroup.campGroup,
+        name: localGroup.name,
+        scoutOrganization: localGroup.scoutOrganization,
+        locality: localGroup.locality,
+        country: localGroup.country,
+        countryCode: localGroup.countryCode,
+      }),
+    },
+    {
+      getFromSource: eventApi.getParticipants,
+      targetModel: app.models.KuksaParticipant,
+      transform: participant => ({
+        id: participant.id,
+        firstName: participant.firstName || 'x',
+        lastName: participant.lastName || 'x',
+        memberNumber: 'XXXXX',
+        dateOfBirth: new Date(participant.birthDate),
+        phoneNumber: participant.phoneNumber,
+        email: participant.email,
+        localGroup: participant.group,
+        campGroup: participant.campGroup,
+        subCampId: participant.subCamp,
+        cancelled: participant.cancelled,
+      }),
+    },
+    {
+      getFromSource: eventApi.getExtraInfoFields,
+      targetModel: app.models.ExtraInfoField,
+      transform: field => ({
+        id: field.id,
+        name: field.name.fi,
+      }),
+    },
+    {
+      getFromSource: eventApi.getParticipantExtraInfos,
+      targetModel: app.models.ParticipantExtraInfo,
+      transform: answer => ({
+        participantId: answer.for,
+        fieldId: answer.extraInfoField,
+        value: answer.value,
+      }),
+    },
+    {
+      getFromSource: eventApi.getExtraSelectionGroups,
+      targetModel: app.models.ExtraSelectionGroup,
+      transform: group => ({
+        id: group.id,
+        name: group.name.fi,
+      }),
+    },
+    {
+      getFromSource: eventApi.getExtraSelections,
+      targetModel: app.models.ExtraSelection,
+      transform: selection => ({
+        id: selection.id,
+        groupId: selection.extraSelectionGroup,
+        name: selection.name.fi,
+      }),
+    },
+    {
+      getFromSource: eventApi.getParticipantExtraSelections,
+      targetModel: app.models.ParticipantExtraSelection,
+      transform: selection => ({
+        participantId: selection.from,
+        selectionId: selection.to,
+      }),
+    },
+  ]).then(() => console.log('Transfer complete.'));
 }
 
 function syncToLiveData() {
