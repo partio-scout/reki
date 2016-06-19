@@ -42,8 +42,22 @@ function getOptionsFromEnvironment() {
   }));
 }
 
+function getDateFromArg(index) {
+  if (process.argv.length > index) {
+    return new Date(process.argv[index]);
+  }
+}
+
 function transferDataFromKuksa(eventApi) {
   console.log('Transferring data from Kuksa...');
+  let dateRange;
+
+  if (process.argv.length > 2) {
+    dateRange = {
+      startDate: getDateFromArg(2),
+      endDate: getDateFromArg(3) || new Date(),
+    };
+  }
   return transfer([
     {
       getFromSource: eventApi.getSubCamps,
@@ -99,6 +113,7 @@ function transferDataFromKuksa(eventApi) {
         subCampId: participant.subCamp,
         cancelled: participant.cancelled,
       }),
+      dateRange: dateRange,
     },
     {
       getFromSource: eventApi.getExtraInfoFields,
@@ -116,6 +131,7 @@ function transferDataFromKuksa(eventApi) {
         fieldId: answer.extraInfoField,
         value: answer.value,
       }),
+      dateRange: dateRange,
     },
     {
       getFromSource: eventApi.getExtraSelectionGroups,
@@ -141,6 +157,7 @@ function transferDataFromKuksa(eventApi) {
         participantId: selection.from,
         selectionId: selection.to,
       }),
+      dateRange: dateRange,
     },
   ]).then(() => console.log('Transfer complete.'));
 }
