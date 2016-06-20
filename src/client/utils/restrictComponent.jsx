@@ -35,7 +35,10 @@ export function restrictComponent(UserStore, Component, AlternativeComponent) {
     }
 
     selectState(state) {
-      return { currentUser: state.currentUser };
+      return {
+        currentUser: state.currentUser,
+        loggedIn: state.loggedIn,
+      };
     }
 
     render() {
