@@ -23,7 +23,8 @@ function main() {
   return getOptionsFromEnvironment()
     .then(getEventApi)
     .then(transferDataFromKuksa)
-    .then(syncToLiveData);
+    .then(rebuildParticipantsTable)
+    .then(deleteCancelledParticipants);
 }
 
 function getOptionsFromEnvironment() {
@@ -43,14 +44,15 @@ function getOptionsFromEnvironment() {
   }));
 }
 
-function getDateFromArg(index) {
-  if (process.argv.length > index) {
-    return new Date(process.argv[index]);
-  }
-}
-
 function transferDataFromKuksa(eventApi) {
+  function getDateFromArg(index) {
+    if (process.argv.length > index) {
+      return new Date(process.argv[index]);
+    }
+  }
+
   console.log('Transferring data from Kuksa...');
+
   const dateRange = {
     startDate: getDateFromArg(2) || moment().subtract(36, 'hours').toDate(),
     endDate: getDateFromArg(3) || moment().toDate(),
@@ -160,26 +162,19 @@ function transferDataFromKuksa(eventApi) {
   ]).then(() => console.log('Transfer complete.'));
 }
 
-function syncToLiveData() {
-  console.log('Syncing to live data...');
-  return updateParticipantsTable()
-    .then(deleteCancelledParticipants)
-    .then(res => console.log('Sync complete'))
-    .catch(err => console.error('Problem syncing to live data:', err, err.stack));
-}
+function rebuildParticipantsTable() {
+  function getInfoForField(participant, fieldName) {
+    const field = _.find(participant.extraInfos, o => _.get(o, 'field.name') === fieldName);
+    return field ? field.value : null;
+  }
 
-function getInfoForField(participant, fieldName) {
-  const field = _.find(participant.extraInfos, o => _.get(o, 'field.name') === fieldName);
-  return field ? field.value : null;
-}
+  function getSelectionForGroup(participant, fieldName) {
+    const selection = _.find(participant.extraSelections, o => _.get(o, 'group.name') === fieldName);
+    return selection ? selection.name : null;
+  }
 
-function getSelectionForGroup(participant, fieldName) {
-  const selection = _.find(participant.extraSelections, o => _.get(o, 'group.name') === fieldName);
-  return selection ? selection.name : null;
-}
+  console.log('Rebuilding participants table...');
 
-function updateParticipantsTable() {
-  console.log('Updating participants table...');
   return findKuksaParticipants({
     include: [
       { 'localGroup': 'subCamp' },
@@ -211,7 +206,7 @@ function updateParticipantsTable() {
       (acc, participant) => acc.then(() => upsertParticipant(participant)),
       Promise.resolve()
     )
-  );
+  ).then(() => console.log('Rebuild complete.'));
 }
 
 function deleteCancelledParticipants() {
