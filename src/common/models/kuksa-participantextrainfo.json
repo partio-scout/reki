@@ -1,15 +1,28 @@
 {
-  "name": "ParticipantExtraSelection",
+  "name": "KuksaParticipantExtraInfo",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "participantextraselection"
+      "table": "kuksa_participantextrainfo"
     }
   },
   "properties": {
+    "id": {
+      "type": "Number",
+      "id": true,
+      "generated": true,
+      "postgresql": {
+        "columnName": "id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
     "participantId": {
       "type": "Number",
       "id": true,
@@ -23,16 +36,28 @@
         "nullable": "NO"
       }
     },
-    "selectionId": {
+    "fieldId": {
       "type": "Number",
       "id": true,
       "generated": false,
       "postgresql": {
-        "columnName": "selection_id",
+        "columnName": "field_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "value": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "value",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
         "nullable": "NO"
       }
     }
@@ -44,10 +69,10 @@
       "model": "KuksaParticipant",
       "foreignKey": "participantId"
     },
-    "selection": {
+    "field": {
       "type": "belongsTo",
-      "model": "ExtraSelection",
-      "foreignKey": "selectionId"
+      "model": "KuksaExtraInfoField",
+      "foreignKey": "fieldId"
     }
   },
   "acls": [],

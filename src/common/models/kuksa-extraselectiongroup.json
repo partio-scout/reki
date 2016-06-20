@@ -1,12 +1,12 @@
 {
-  "name": "ExtraInfoField",
+  "name": "KuksaExtraSelectionGroup",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "extrainfofield"
+      "table": "kuksa_extraselectiongroup"
     }
   },
   "properties": {

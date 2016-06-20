@@ -61,11 +61,11 @@ function transferDataFromKuksa(eventApi) {
   return transfer([
     {
       getFromSource: eventApi.getSubCamps,
-      targetModel: app.models.SubCamp,
+      targetModel: app.models.KuksaSubCamp,
     },
     {
       getFromSource: eventApi.getVillages,
-      targetModel: app.models.Village,
+      targetModel: app.models.KuksaVillage,
       transform: village => ({
         id: village.id,
         subCampId: village.subCamp,
@@ -74,7 +74,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getCampGroups,
-      targetModel: app.models.CampGroup,
+      targetModel: app.models.KuksaCampGroup,
       transform: campGroup => ({
         id: campGroup.id,
         subCampId: campGroup.subCamp,
@@ -84,7 +84,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getLocalGroups,
-      targetModel: app.models.LocalGroup,
+      targetModel: app.models.KuksaLocalGroup,
       transform: localGroup => ({
         id: localGroup.id,
         subCampId: localGroup.subCamp,
@@ -117,7 +117,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraInfoFields,
-      targetModel: app.models.ExtraInfoField,
+      targetModel: app.models.KuksaExtraInfoField,
       transform: field => ({
         id: field.id,
         name: field.name.fi,
@@ -125,7 +125,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getParticipantExtraInfos,
-      targetModel: app.models.ParticipantExtraInfo,
+      targetModel: app.models.KuksaParticipantExtraInfo,
       transform: answer => ({
         participantId: answer.for,
         fieldId: answer.extraInfoField,
@@ -135,7 +135,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraSelectionGroups,
-      targetModel: app.models.ExtraSelectionGroup,
+      targetModel: app.models.KuksaExtraSelectionGroup,
       transform: group => ({
         id: group.id,
         name: group.name.fi,
@@ -143,7 +143,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraSelections,
-      targetModel: app.models.ExtraSelection,
+      targetModel: app.models.KuksaExtraSelection,
       transform: selection => ({
         id: selection.id,
         groupId: selection.extraSelectionGroup,
@@ -152,7 +152,7 @@ function transferDataFromKuksa(eventApi) {
     },
     {
       getFromSource: eventApi.getParticipantExtraSelections,
-      targetModel: app.models.ParticipantExtraSelection,
+      targetModel: app.models.KuksaParticipantExtraSelection,
       transform: selection => ({
         participantId: selection.from,
         selectionId: selection.to,

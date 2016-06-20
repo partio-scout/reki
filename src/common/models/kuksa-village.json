@@ -1,12 +1,12 @@
 {
-  "name": "ExtraSelectionGroup",
+  "name": "KuksaVillage",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "extraselectiongroup"
+      "table": "kuksa_village"
     }
   },
   "properties": {
@@ -21,6 +21,18 @@
         "dataPrecision": 32,
         "dataScale": 0,
         "nullable": "NO"
+      }
+    },
+    "subCampId": {
+      "type": "Number",
+      "required": false,
+      "postgresql": {
+        "columnName": "sub_camp_id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "name": {
@@ -41,3 +53,4 @@
   "acls": [],
   "methods": []
 }
+

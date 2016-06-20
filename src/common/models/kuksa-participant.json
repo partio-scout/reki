@@ -140,29 +140,29 @@
   "relations": {
     "localGroup": {
       "type": "belongsTo",
-      "model": "LocalGroup",
+      "model": "KuksaLocalGroup",
       "foreignKey": "localGroupId"
     },
     "campGroup": {
       "type": "belongsTo",
-      "model": "CampGroup",
+      "model": "KuksaCampGroup",
       "foreignKey": "campGroupId"
     },
     "subCamp": {
       "type": "belongsTo",
-      "model": "SubCamp",
+      "model": "KuksaSubCamp",
       "foreignKey": "subCampId"
     },
     "extraInfos": {
       "type": "hasMany",
-      "model": "ParticipantExtraInfo",
+      "model": "KuksaParticipantExtraInfo",
       "foreignKey": "participantId"
     },
     "extraSelections": {
       "type": "hasMany",
-      "model": "ExtraSelection",
+      "model": "KuksaExtraSelection",
       "foreignKey": "participantId",
-      "through": "ParticipantExtraSelection",
+      "through": "KuksaParticipantExtraSelection",
       "keyThrough": "selectionId"
     }
   },

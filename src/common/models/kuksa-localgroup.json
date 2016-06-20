@@ -1,12 +1,12 @@
 {
-  "name": "LocalGroup",
+  "name": "KuksaLocalGroup",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "localgroup"
+      "table": "kuksa_localgroup"
     }
   },
   "properties": {
@@ -124,12 +124,12 @@
   "relations": {
     "campGroup": {
       "type": "belongsTo",
-      "model": "CampGroup",
+      "model": "KuksaCampGroup",
       "foreignKey": "campGroupId"
     },
     "subCamp": {
       "type": "belongsTo",
-      "model": "SubCamp",
+      "model": "KuksaSubCamp",
       "foreignKey": "subCampId"
     }
   },

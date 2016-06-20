@@ -36,19 +36,19 @@
     "dataSource": "db",
     "public": true
   },
-  "SubCamp": {
+  "KuksaSubCamp": {
     "dataSource": "db",
     "public": false
   },
-  "Village": {
+  "KuksaVillage": {
     "dataSource": "db",
     "public": false
   },
-  "CampGroup": {
+  "KuksaCampGroup": {
     "dataSource": "db",
     "public": false
   },
-  "LocalGroup": {
+  "KuksaLocalGroup": {
     "dataSource": "db",
     "public": false
   },
@@ -56,23 +56,23 @@
     "dataSource": "db",
     "public": false
   },
-  "ExtraInfoField": {
+  "KuksaExtraInfoField": {
     "dataSource": "db",
     "public": false
   },
-  "ParticipantExtraInfo": {
+  "KuksaParticipantExtraInfo": {
     "dataSource": "db",
     "public": false
   },
-  "ExtraSelectionGroup": {
+  "KuksaExtraSelectionGroup": {
     "dataSource": "db",
     "public": false
   },
-  "ExtraSelection": {
+  "KuksaExtraSelection": {
     "dataSource": "db",
     "public": false
   },
-  "ParticipantExtraSelection": {
+  "KuksaParticipantExtraSelection": {
     "dataSource": "db",
     "public": false
   }

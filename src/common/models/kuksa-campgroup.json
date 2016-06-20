@@ -1,19 +1,19 @@
 {
-  "name": "ParticipantExtraInfo",
+  "name": "KuksaCampGroup",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "participantextrainfo"
+      "table": "kuksa_campgroup"
     }
   },
   "properties": {
     "id": {
       "type": "Number",
       "id": true,
-      "generated": true,
+      "generated": false,
       "postgresql": {
         "columnName": "id",
         "dataType": "integer",
@@ -23,37 +23,35 @@
         "nullable": "NO"
       }
     },
-    "participantId": {
+    "subCampId": {
       "type": "Number",
-      "id": true,
-      "generated": false,
+      "required": false,
       "postgresql": {
-        "columnName": "participant_id",
+        "columnName": "sub_camp_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
-    "fieldId": {
+    "villageId": {
       "type": "Number",
-      "id": true,
-      "generated": false,
+      "required": false,
       "postgresql": {
-        "columnName": "field_id",
+        "columnName": "village_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
-    "value": {
+    "name": {
       "type": "string",
       "required": true,
       "postgresql": {
-        "columnName": "value",
+        "columnName": "name",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
@@ -63,18 +61,7 @@
     }
   },
   "validations": [],
-  "relations": {
-    "participant": {
-      "type": "belongsTo",
-      "model": "KuksaParticipant",
-      "foreignKey": "participantId"
-    },
-    "field": {
-      "type": "belongsTo",
-      "model": "ExtraInfoField",
-      "foreignKey": "fieldId"
-    }
-  },
+  "relations": [],
   "acls": [],
   "methods": []
 }

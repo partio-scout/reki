@@ -1,21 +1,21 @@
 {
-  "name": "Village",
+  "name": "KuksaParticipantExtraSelection",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "village"
+      "table": "kuksa_participantextraselection"
     }
   },
   "properties": {
-    "id": {
+    "participantId": {
       "type": "Number",
       "id": true,
       "generated": false,
       "postgresql": {
-        "columnName": "id",
+        "columnName": "participant_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
@@ -23,34 +23,33 @@
         "nullable": "NO"
       }
     },
-    "subCampId": {
+    "selectionId": {
       "type": "Number",
-      "required": false,
+      "id": true,
+      "generated": false,
       "postgresql": {
-        "columnName": "sub_camp_id",
+        "columnName": "selection_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
         "dataScale": 0,
-        "nullable": "YES"
-      }
-    },
-    "name": {
-      "type": "string",
-      "required": true,
-      "postgresql": {
-        "columnName": "name",
-        "dataType": "character varying",
-        "dataLength": 255,
-        "dataPrecision": null,
-        "dataScale": null,
         "nullable": "NO"
       }
     }
   },
   "validations": [],
-  "relations": [],
+  "relations": {
+    "participant": {
+      "type": "belongsTo",
+      "model": "KuksaParticipant",
+      "foreignKey": "participantId"
+    },
+    "selection": {
+      "type": "belongsTo",
+      "model": "KuksaExtraSelection",
+      "foreignKey": "selectionId"
+    }
+  },
   "acls": [],
   "methods": []
 }
-

@@ -1,12 +1,12 @@
 {
-  "name": "ExtraSelection",
+  "name": "KuksaExtraInfoField",
   "base": "PersistedModel",
   "idInjection": false,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "extraselection"
+      "table": "kuksa_extrainfofield"
     }
   },
   "properties": {
@@ -16,19 +16,6 @@
       "generated": false,
       "postgresql": {
         "columnName": "id",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
-        "nullable": "NO"
-      }
-    },
-    "groupId": {
-      "type": "Number",
-      "id": true,
-      "generated": false,
-      "postgresql": {
-        "columnName": "group_id",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
@@ -50,20 +37,7 @@
     }
   },
   "validations": [],
-  "relations": {
-    "group": {
-      "type": "belongsTo",
-      "model": "ExtraSelectionGroup",
-      "foreignKey": "groupId"
-    },
-    "participants": {
-      "type": "hasMany",
-      "model": "KuksaParticipant",
-      "through": "ParticipantExtraSelection",
-      "foreignKey": "selectionId",
-      "keyThrough": "participantId"
-    }
-  },
+  "relations": [],
   "acls": [],
   "methods": []
 }
