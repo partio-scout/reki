@@ -3,6 +3,7 @@ import transfer from '../src/kuksa-integration/transfer';
 import { getEventApi } from 'kuksa-event-api-client';
 import { Promise } from 'bluebird';
 import { _ } from 'lodash';
+import moment from 'moment';
 
 const KuksaParticipant = app.models.KuksaParticipant;
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
@@ -50,14 +51,11 @@ function getDateFromArg(index) {
 
 function transferDataFromKuksa(eventApi) {
   console.log('Transferring data from Kuksa...');
-  let dateRange;
+  const dateRange = {
+    startDate: getDateFromArg(2) || moment().subtract(36, 'hours').toDate(),
+    endDate: getDateFromArg(3) || moment().toDate(),
+  };
 
-  if (process.argv.length > 2) {
-    dateRange = {
-      startDate: getDateFromArg(2),
-      endDate: getDateFromArg(3) || new Date(),
-    };
-  }
   return transfer([
     {
       getFromSource: eventApi.getSubCamps,
