@@ -14,6 +14,7 @@ chai.use(chaiAsPromised);
 describe('Text search', () => {
   const testParticipants = [
     {
+      'participantId': 1,
       'firstName': 'Teemu',
       'lastName': 'Testihenkilö',
       'nonScout': false,
@@ -24,6 +25,7 @@ describe('Text search', () => {
       'memberNumber': 123,
     },
     {
+      'participantId': 2,
       'firstName': 'Tero',
       'lastName': 'Esimerkki',
       'nonScout': false,
@@ -34,6 +36,7 @@ describe('Text search', () => {
       'memberNumber': 345,
     },
     {
+      'participantId': 3,
       'firstName': 'Jussi',
       'lastName': 'Jukola',
       'nonScout': false,
