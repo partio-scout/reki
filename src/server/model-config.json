@@ -20,11 +20,15 @@
     "dataSource": "db",
     "public": false
   },
-  "Registryuser": {
+  "RegistryUser": {
     "dataSource": "db",
     "public": true
   },
   "Participant": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ParticipantHistory": {
     "dataSource": "db",
     "public": true
   },

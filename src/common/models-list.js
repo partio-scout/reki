@@ -7,10 +7,11 @@
 const modelList = [
   ['AccessToken', false],
   ['ACL', false],
-  ['Role', false],
+  ['Role', true],
   ['RoleMapping', false],
-  ['Registryuser', false],
+  ['RegistryUser', false],
   ['Participant', false],
+  ['ParticipantHistory', false],
   ['AuditEvent', false],
   ['SubCamp', false],
   ['Village', false],

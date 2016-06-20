@@ -122,6 +122,12 @@ export function getParticipantActions(alt, participantResource) {
     campGroupLoadingFailed(err) {
       return err;
     }
+
+    updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
+      participantResource.raw('post', 'update', { body: { ids: ids, newValue: newValue, fieldName: 'inCamp' } })
+        .then(response => this.loadParticipantList(offset, limit, order, filter),
+              err => this.participantListUpdateFailed(err));
+    }
   }
 
   return alt.createActions(ParticipantActions);

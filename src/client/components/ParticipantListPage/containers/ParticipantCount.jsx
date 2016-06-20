@@ -1,10 +1,10 @@
 import React from 'react';
 import AltContainer from 'alt-container';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 function Count(props) {
   return (
-    <div className="participant-count">
+    <div className="participant-count well">
       Hakutulokset
       <div className="h2">{ props.count }</div>
     </div>
