@@ -10,18 +10,21 @@ const eventid = 'c3ef7c48-1df4-4bf8-b1d0-d523d601a3e1';
 const endpoint = `http://localhost:${PORT}`;
 let server;
 
+app.logInfo = info => info;
+app.logError = err => err;
+
 function serveFixtures(type) {
   const collections = fs.readdirSync(path.resolve(__dirname, `../fixtures/${type}`));
   collections.forEach(collection => {
     app.get(`/${collection}`, (req, res) => {
       if (req.query.Guid !== eventid) {
         res.status(400).send('Wrong or no event id given');
-        console.error('Wrong or no event id given', req.query);
+        app.logError('Wrong or no event id given', req.query);
       } else {
         res.set('Content-Type', 'application/json');
         const file = path.resolve(__dirname, `../fixtures/${type}/${collection}`);
         res.send(fs.readFileSync(file));
-        console.log('OK:', req.path);
+        app.logInfo(req.path);
       }
     });
   });
@@ -43,6 +46,8 @@ const mock = {
 export default mock;
 
 if (require.main === module) {
+  app.logInfo = info => console.log('OK:', info);
+  app.logError = err => console.error('ERR:', err);
   mock.serveFixtures('all');
   mock.start();
   console.log(`Mock Kuksa running at endpoint ${endpoint}`);
