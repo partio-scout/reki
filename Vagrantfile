@@ -12,7 +12,7 @@ SCRIPT
 # Installs absolute minimun for building/running
 $install_packages = <<SCRIPT
 curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
-apt-get install -y --no-install-recommends build-essential git postgresql nodejs
+apt-get install -y --no-install-recommends build-essential git postgresql nodejs xvfb firefox openjdk-7-jre-headless
 SCRIPT
 
 # Some configuration changes need to be made to postgres to allow local
@@ -20,6 +20,42 @@ SCRIPT
 $configure_postgres = <<SCRIPT
 cp /vagrant/vagrant/pg_hba.conf /etc/postgresql/9.3/main/
 service postgresql reload
+SCRIPT
+
+# Configure xvfb to start at boot
+$configure_xvfb = <<SCRIPT
+echo "Copying xvfb service script"
+cp /vagrant/vagrant/xvfb /etc/init.d/
+chmod a+x /etc/init.d/xvfb
+echo "Setting xvfb to startup"
+update-rc.d xvfb defaults
+echo "Starting xvfb"
+service xvfb start
+SCRIPT
+
+# Download selenium and configure it to start at boot
+$configure_selenium = <<SCRIPT
+selenium_dir=/selenium
+selenium_version_minor="2.48"
+selenium_version_patch="2"
+
+echo "Removing old selenium directory and creating new"
+rm -rf "$selenium_dir"
+mkdir "$selenium_dir"
+cd "$selenium_dir"
+
+echo "Downloading selenium server"
+wget --no-verbose -O "selenium-server-standalone.jar" "http://selenium-release.storage.googleapis.com/$selenium_version_minor/selenium-server-standalone-$selenium_version_minor.$selenium_version_patch.jar"
+echo "Download complete"
+
+echo "Copying selenium service script"
+cp /vagrant/vagrant/selenium /etc/init.d/
+chmod a+x /etc/init.d/selenium
+
+echo "Set selenium to startup"
+update-rc.d selenium defaults
+echo "Starting selenium"
+service selenium start
 SCRIPT
 
 # To enable global installations with npm without using sudo, change
@@ -53,6 +89,7 @@ export_env_if_unset "NODE_ENV" "dev"
 export_env_if_unset "LANG" "$locale"
 export_env_if_unset "LANGUAGE" "$locale"
 export_env_if_unset "LC_ALL" "$locale"
+export_env_if_unset "DISPLAY" ":1"
 export_env_if_unset "DATABASE_URL" "postgres://vagrant:vagrant@localhost/vagrant"
 export_env_if_unset "TEST_DATABASE_URL" "postgres://vagrant:vagrant@localhost/test"
 export_env_if_unset "PORT" "3000"
@@ -96,6 +133,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: $generate_locales
   config.vm.provision "shell", inline: $install_packages
   config.vm.provision "shell", inline: $configure_postgres
+  config.vm.provision "shell", inline: $configure_xvfb
+  config.vm.provision "shell", inline: $configure_selenium
   config.vm.provision "shell", inline: $ensure_permissions
   # environment setup, npm installations and project setup need to be run
   # as the development user
