@@ -10,7 +10,7 @@
       "xml": false
     },
     "json": {
-      "strict": false,
+      "strict": true,
       "limit": "100kb"
     },
     "urlencoded": {
