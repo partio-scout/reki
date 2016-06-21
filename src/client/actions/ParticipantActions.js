@@ -139,6 +139,23 @@ export function getParticipantActions(alt, participantResource, searchFilterReso
     saveSearhFilterFailed(err) {
       return err;
     }
+
+    loadSearchFilterList() {
+      return dispatch => {
+        dispatch();
+        searchFilterResource.findAll()
+          .then(searchFilterList => this.searchFilterListUpdated(searchFilterList),
+                err => this.searchFilterListUpdatedFailed(err));
+      };
+    }
+
+    searchFilterListUpdated(searchFilters) {
+      return searchFilters;
+    }
+
+    searchFilterListUpdatedFailed(error) {
+      return error;
+    }
   }
 
   return alt.createActions(ParticipantActions);

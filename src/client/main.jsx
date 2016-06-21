@@ -27,7 +27,7 @@ const registryUserActions = actions.getRegistryUserActions(alt, registryUserReso
 const participantStore = stores.getParticipantStore(alt, participantActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
-const app = components.getApp();
+const app = components.getApp(participantActions);
 const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);

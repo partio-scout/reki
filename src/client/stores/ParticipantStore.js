@@ -8,12 +8,15 @@ export function getParticipantStore(alt, ParticipantActions) {
       this.localGroups = [''];
       this.campGroups = [''];
 
+      this.searchFilters = [ ];
+
       this.bindListeners({
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantCountUpdated: ParticipantActions.PARTICIPANT_COUNT_UPDATED,
         handleLocalGroupsLoaded: ParticipantActions.LOCAL_GROUPS_LOADED,
         handleCampGroupsLoaded: ParticipantActions.CAMP_GROUPS_LOADED,
+        handleSearchFilterListUpdated: ParticipantActions.SEARCH_FILTER_LIST_UPDATED,
       });
     }
 
@@ -35,6 +38,10 @@ export function getParticipantStore(alt, ParticipantActions) {
 
     handleCampGroupsLoaded(campGroups) {
       this.campGroups = campGroups;
+    }
+
+    handleSearchFilterListUpdated(searchFilters) {
+      this.searchFilters = searchFilters;
     }
   }
 

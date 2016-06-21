@@ -3,7 +3,7 @@ import { Navbar, Grid, Nav, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { NavLinkItem } from '../components';
 
-export function getApp() {
+export function getApp(participantActions) {
   class App extends React.Component {
     render() {
       return (
