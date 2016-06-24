@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Input, Button } from 'react-bootstrap';
 
 export function getDebouncedTextField(participantActions) {
-  function debouncedTextField({ value, label, property, onChange }) {
+  function debouncedTextField({ value, label, property, onChange, location }) {
 
     const delayedOnChange = _.debounce(value => onChange(property, value), 300);
 
@@ -43,7 +43,7 @@ export function getDebouncedTextField(participantActions) {
     label: React.PropTypes.string.isRequired,
     property: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
-    location: React.PropTypes.string.isRequired,
+    location: React.PropTypes.object,
   };
 
   return debouncedTextField;
