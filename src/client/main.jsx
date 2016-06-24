@@ -32,16 +32,18 @@ const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
 const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
 const UserManagementPage = components.getUserManagementPage(registryUserStore, registryUserActions);
+const participantSidebar = components.getParticipantSidebar(participantStore, participantActions);
+const defaultSidebar = components.defaultSidebar;
 
 const routes = (
   <Router history={ browserHistory }>
     <Route path="/" component={ app }>
-      <IndexRoute component={ homepage } />
+      <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
       <Route path="participants">
-        <IndexRoute component={ ParticipantListPage } />
-        <Route path=":id" component={ ParticipantDetailsPage } />
+        <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
+        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
       </Route>
-      <Route path="admin" component={ UserManagementPage } />
+      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
     </Route>
   </Router>
 );
