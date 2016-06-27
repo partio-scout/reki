@@ -95,43 +95,86 @@ td {
 @media (min-width: 1024px) {
 
   table.participants {
+    tbody:not(.tfooter), thead {
+      tr {
+        position: relative;
 
-    tr {
-      position: relative;
-      
-      td, th {
-        white-space: nowrap;
-      }
-      
-      th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) {
-        position: absolute;
-        background: inherit;
-        width: 150px;
-        display: block;
-      }
-      
-      th:nth-child(1), th:nth-child(2) {
-        background: #fff !important;
-        z-index: 10;
-      }
+        td, th {
+          white-space: nowrap;
+        }
 
-      th:nth-child(1), td:nth-child(1) {
-        left: 15px;
-        border-left: 1px solid #ddd;
-        padding-left: 10px;
-      }
+        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4),
+        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) {
+          position: absolute;
+          background: inherit;
+          width: 150px;
+          display: block;
+        }
 
-      th:nth-child(2), td:nth-child(2) {
-        left: 165px;
-        border-right: 1px solid #ddd;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) {
+          background: #fff !important;
+          z-index: 10;
+          min-height: 32px;
+        }
 
-      td:nth-child(3), th:nth-child(3) {
-        padding-left: 310px !important;
+        th:nth-child(1), td:nth-child(1) {
+          left: 15px;
+          border-left: 1px solid #ddd;
+          padding-left: 10px;
+          width: 35px;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+          left: 50px;
+          border-left: 1px solid #ddd;
+          padding-left: 10px;
+          width: 70px;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+          left: 120px;
+          border-left: 1px solid #ddd;
+          padding-left: 10px;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+          left: 270px;
+          border-right: 1px solid #ddd;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        td:nth-child(5), th:nth-child(5) {
+          padding-left: 410px !important;
+        }
       }
-    }
+    }  
+    tbody.tfooter {
+      tr {
+        position: relative;
+
+        td {
+          height: 90px;
+
+          form {
+            position: absolute;
+            bottom: 20px;
+            left: 68px;
+          }
+
+          .checkbox {
+            position: absolute;
+            left: 26px;
+            bottom: 79px;
+          }
+
+          button {
+            position: relative;
+            top: -7px;
+          }
+        }
+      }
+    }  
   }
 }
 
@@ -144,18 +187,6 @@ table {
         position: static;
         margin: 0;
       }
-    }
-  }
-}
-
-.tfooter {
-  td {
-    padding-top: 1em !important;
-    padding-bottom: 1em !important;
-    
-    input[type="checkbox"] {
-      position: absolute !important;
-      top: -28px;
     }
   }
 }
