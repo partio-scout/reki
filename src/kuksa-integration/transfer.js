@@ -1,12 +1,13 @@
 import { Promise } from 'bluebird';
 import { _ } from 'lodash';
 
+function waterfall(funcs) {
+  return _.reduce(funcs, (previous, func) => previous.then(func), Promise.resolve());
+}
+
 export default function transfer(models) {
-  let p = Promise.resolve();
-  _.each(models, model => {
-    p = p.then(() => transferModel(model));
-  });
-  return p;
+  const transfers = _.map(models, model => () => transferModel(model));
+  return waterfall(transfers);
 }
 
 function transferModel(model) {
@@ -25,11 +26,8 @@ function transferModel(model) {
 
 function upsertObjects(model, objects) {
   const upsertObject = Promise.promisify(model.upsert, { context: model });
-  let p = Promise.resolve();
-  _.each(objects, object => {
-    p = p.then(() => upsertObject(object));
-  });
-  return p;
+  const upserts = _.map(objects, obj => () => upsertObject(obj));
+  return waterfall(upserts);
 }
 
 function transformWith(fn) {
