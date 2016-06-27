@@ -32,9 +32,9 @@ describe('Kuksa integration', () => {
     });
   });
 
-  it('produces the expected amount of results in the database', () => {
-    expect(countParticipants()).to.eventually.equal(53);
-  });
+  it('produces the expected amount of results in the database',
+    () => expect(countParticipants()).to.eventually.equal(53)
+  );
 
   after(() => {
     mockKuksa.stop();
