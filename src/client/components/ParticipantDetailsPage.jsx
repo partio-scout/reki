@@ -1,7 +1,9 @@
 import React from 'react';
 import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { InCampStatus } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
+
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
@@ -31,6 +33,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       let participantPhone = '';
       let homeCity = '';
       let email = '';
+      let inCamp = '';
+
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
         nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
@@ -38,6 +42,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
         const day = time.substring(0,2);
         dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
+        inCamp = this.state.participantDetails.inCamp;
 
         participantPhone = this.state.participantDetails.phoneNumber || '-';
         homeCity = this.state.participantDetails.homeCity || '-';
@@ -65,6 +70,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <p >{ email }</p>
                 </Panel>
               </Col>
+                <Col md={ 3 }>
+                  <Panel header="Läsnäolo">
+                    <p>
+                      <InCampStatus value={ inCamp } />
+                    </p>
+                  </Panel>
+                </Col>
             </Row>
           </Grid>
         </div>

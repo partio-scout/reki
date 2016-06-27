@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
@@ -28,6 +29,11 @@ export function getQuickFilterContainer(participantStore, participantActions) {
   function QuickFilterContainer(props, context) {
     const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
 
+    function resetFilters(event) {
+      event.preventDefault();
+      context.router.push(changeQueryParameters(props.location, { filter: '', offset: 0 }));
+    }
+
     function handleChange(parameterName, newValue) {
 
       const changedSelection = {
@@ -44,13 +50,18 @@ export function getQuickFilterContainer(participantStore, participantActions) {
 
     return (
       <div className="well">
-        <form className="form-inline">
-          <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-        </form>
+        <div>
+          <form className="form-inline">
+            <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+          </form>
+        </div>
+        <div>
+          <Button type="submit" bsStyle="primary" onClick={ resetFilters }>Nollaa haku</Button>
+        </div>
       </div>
     );
   }

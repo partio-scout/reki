@@ -1,0 +1,32 @@
+{
+  "name": "ParticipantHistory",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "participant_history"
+    }
+  },
+  "properties": {
+    "departed": {
+      "type": "date",
+      "required": true
+    },
+    "arrived": {
+      "type": "date",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {
+    "participant": {
+      "type": "belongsTo",
+      "model": "Participant",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

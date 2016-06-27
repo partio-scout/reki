@@ -11,6 +11,7 @@ const modelList = [
   ['RoleMapping', false],
   ['RegistryUser', false],
   ['Participant', false],
+  ['ParticipantHistory', false],
   ['AuditEvent', false],
 ];
 

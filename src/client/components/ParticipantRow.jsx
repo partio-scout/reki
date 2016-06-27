@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { Input } from 'react-bootstrap';
+import { InCampStatus } from '../components';
 
 class LinkCell extends React.Component {
   render() {
@@ -52,14 +54,26 @@ export class ParticipantRow extends React.Component {
       localGroup,
       subCamp,
       campGroup,
+      inCamp,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
-
     const fullName = `${firstName} ${lastName}`;
+
+    const checkboxCallback = this.props.checkboxCallback;
+    const isChecked = this.props.isChecked;
+
+    const onChange = function(event) {
+      event.persist();
+      checkboxCallback(event.target.checked, participantId);
+    };
+
+    const checked = isChecked(participantId);
 
     return (
       <tr>
+        <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
+        <td><InCampStatus value={ inCamp } /></td>
         <LinkCell href={ href } title={ fullName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ fullName }>{ lastName }</LinkCell>
         <td>{ formatDate(dateOfBirth) }</td>
@@ -82,4 +96,6 @@ export class ParticipantRow extends React.Component {
 
 ParticipantRow.propTypes = {
   participant: React.PropTypes.object.isRequired,
+  isChecked: React.PropTypes.func,
+  checkboxCallback: React.PropTypes.func,
 };

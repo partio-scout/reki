@@ -12,7 +12,7 @@ export function getCampGroupFilterContainer(participantStore, participantActions
     }
 
     componentWillMount() {
-      participantActions.loadCampGroups();
+      participantActions.loadCampGroups.defer();
     }
 
     componentDidMount() {
