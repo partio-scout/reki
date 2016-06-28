@@ -161,7 +161,7 @@ function getAgeGroup() {
   return randomElement(ageGroups);
 }
 
-function generateRandomParticipant() {
+function generateRandomParticipant(id) {
   const gender = getGender();
   const {
     subCamp,
@@ -169,6 +169,7 @@ function generateRandomParticipant() {
   } = getSubCampAndCampGroup();
 
   return {
+    participantId: id,
     firstName: faker.name.firstName(gender ? 'male' : 'female'),
     lastName: faker.name.lastName(),
     nonScout: Math.random() < 0.1,
@@ -192,7 +193,7 @@ function createMockParticipants(i) {
   if (i < 1) {
     countParticipants();
   } else {
-    createParticipant(generateRandomParticipant())
+    createParticipant(generateRandomParticipant(i))
       .then(createdParticipantInfo => {
         createMockParticipants(i-1);
       })
