@@ -170,8 +170,6 @@ export function getParticipantListPage(participantStore, participantActions) {
       );
     }
 
-    // this.state = { checked: {} };
-
     render() {
       const order = getOrder(this.props.location.query);
       const offset = getOffset(this.props.location.query);
@@ -223,7 +221,7 @@ export function getParticipantListPage(participantStore, participantActions) {
           </Row>
           <Row>
             <Col md={ 12 }>
-              <Table striped responsive condensed>
+              <Table striped responsive condensed className="participants">
                 <thead>
                   <tr>
                     <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
@@ -247,6 +245,7 @@ export function getParticipantListPage(participantStore, participantActions) {
                     <td colSpan={ columnCount }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
+
               </Table>
             </Col>
           </Row>
