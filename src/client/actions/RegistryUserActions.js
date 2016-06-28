@@ -6,6 +6,10 @@ function deleteAccessTokenCookie() {
 
 export function getRegistryUserActions(alt, registryUserResource) {
   class RegistryUserActions {
+    resetAllData() {
+      return null;
+    }
+
     loadRegistryUserList() {
       return dispatch => {
         dispatch();
@@ -54,7 +58,8 @@ export function getRegistryUserActions(alt, registryUserResource) {
         registryUserResource.raw('POST', 'logout')
           .then(() => {
             deleteAccessTokenCookie();
-            this.currentUserUpdated(null);
+
+            this.resetAllData();
           });
       };
     }
