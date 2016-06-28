@@ -1,8 +1,8 @@
 import React from 'react';
 import { getDebouncedTextField } from '../../../components';
 
-export function getDebouncedTextFieldContainer(participantActions) {
-  const DebouncedTextField = getDebouncedTextField(participantActions);
+export function getDebouncedTextFieldContainer() {
+  const DebouncedTextField = getDebouncedTextField();
 
   function debouncedTextFieldContainer({ onChange, currentTextValue, location }) {
     return (

@@ -6,6 +6,7 @@ import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
@@ -13,6 +14,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer(participantActions);
+  const SaveSearchButtonContainer = getSaveSearchButtonContainer(participantActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -43,7 +45,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     }
 
     return (
-      <div className="well">
+      <div className="well clearfix">
         <form className="form-inline">
           <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection }
             location={ props.location }
@@ -52,6 +54,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+          <SaveSearchButtonContainer/>
         </form>
       </div>
     );

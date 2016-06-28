@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import { Input, Button } from 'react-bootstrap';
+import { Input } from 'react-bootstrap';
 
-export function getDebouncedTextField(participantActions) {
-  function debouncedTextField({ value, label, property, onChange, location }) {
+export function getDebouncedTextField() {
+  function debouncedTextField({ value, label, property, onChange }) {
 
     const delayedOnChange = _.debounce(value => onChange(property, value), 300);
 
@@ -26,14 +26,9 @@ export function getDebouncedTextField(participantActions) {
       }
     }
 
-    function saveSearch() {
-      participantActions.saveSearchFilter('Tiikeri-haku', location.search);
-    }
-
     return (
         <div className="textsearch">
           <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur } onKeyPress={ disableEnter } />
-          <Button bsStyle="primary" onClick={ saveSearch }>Tallenna haku</Button>
         </div>
     );
   }
@@ -43,7 +38,6 @@ export function getDebouncedTextField(participantActions) {
     label: React.PropTypes.string.isRequired,
     property: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
-    location: React.PropTypes.object,
   };
 
   return debouncedTextField;

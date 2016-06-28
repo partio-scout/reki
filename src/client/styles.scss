@@ -179,7 +179,6 @@ td {
 
 .form-inline {
   .form-group {
-    margin-right: 1em;
     margin-bottom: 1em;
 
     &:last-child {
@@ -189,6 +188,12 @@ td {
 
   .control-label {
     margin-right: 0.5em;
+  }
+}
+
+@media screen and (min-width: $screen-sm-min) {
+  .form-inline .form-group {
+    margin-right: 1em;
   }
 }
 
@@ -259,4 +264,12 @@ td {
     min-height: auto;
   }
 
+}
+
+@media screen and (min-width: $screen-sm-min) {
+  .sm-position-right-top {
+    position: absolute;
+    top: 1em;
+    right: 2em;
+  }
 }
