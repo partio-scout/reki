@@ -35,4 +35,42 @@ export default function(Registryuser) {
         }).asCallback(next);
     }
   });
+
+  Registryuser.isBlocked = function(user) {
+    return user.status === 'blocked';
+  };
+
+  Registryuser.block = function(userId, callback) {
+    const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
+    const deleteAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
+
+    Promise.join(
+      updateRegistryUser({ id: userId }, { status: 'blocked' }),
+      deleteAccessTokens({ userId: userId })
+    ).asCallback(callback);
+  };
+
+  Registryuser.unblock = function(userId, callback) {
+    const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
+
+    updateRegistryUser({ id: userId }, { status: null }).asCallback(callback);
+  };
+
+  Registryuser.remoteMethod('block',
+    {
+      http: { path: '/:id/block', verb: 'post' },
+      accepts: [
+        { arg: 'id', type: 'number', required: 'true' },
+      ],
+    }
+  );
+
+  Registryuser.remoteMethod('unblock',
+    {
+      http: { path: '/:id/unblock', verb: 'post' },
+      accepts: [
+        { arg: 'id', type: 'number', required: 'true' },
+      ],
+    }
+  );
 }
