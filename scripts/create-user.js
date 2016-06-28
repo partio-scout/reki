@@ -58,7 +58,7 @@ function printErrorMessage(err) {
 }
 
 function addRolesToUser(userId, roleNames) {
-  return findRoles({ name: { inq: roleNames } })
+  return findRoles({ where: { name: { inq: roleNames } } })
     .then(roles => {
       const roleMappings = _.map(roles, role => ({
         'principalType': 'USER',
