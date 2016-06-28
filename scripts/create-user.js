@@ -2,9 +2,17 @@ import Promise from 'bluebird';
 import app from '../src/server/server.js';
 import crypto from 'crypto';
 import inquirer from 'inquirer';
+import _ from 'lodash';
 
-const RegistryUser = app.models.RegistryUser;
+const {
+  RegistryUser,
+  Role,
+  RoleMapping,
+} = app.models;
+
 const createUser = Promise.promisify(RegistryUser.create, { context: RegistryUser });
+const findRoles = Promise.promisify(Role.find, { context: Role });
+const createRoleMapping = Promise.promisify(RoleMapping.create, { context: RoleMapping });
 
 const password = crypto.randomBytes(24).toString('hex');
 const questions = [
@@ -33,21 +41,47 @@ const questions = [
     name: 'email',
     message: 'Email?',
   },
+  {
+    type: 'checkbox',
+    name: 'roles',
+    message: 'Choose the roles this user should have',
+    choices: [
+      { name: 'user', value:'registryUser', checked: true },
+      { name: 'admin', value: 'registryAdmin' },
+    ],
+  },
 ];
 
 function printErrorMessage(err) {
-  // Koska template literalit on multiline, alla oleva sisennys on tarkoituksenmukaista
   console.error(`Could not create user:
     ${err.stack}`);
 }
 
+function addRolesToUser(userId, roleNames) {
+  return findRoles({ name: { inq: roleNames } })
+    .then(roles => {
+      const roleMappings = _.map(roles, role => ({
+        'principalType': 'USER',
+        'principalId': userId,
+        'roleId': role.id,
+      }));
+
+      return createRoleMapping(roleMappings);
+    });
+}
+
 inquirer.prompt(questions)
   .then(answers => {
+    const roles = answers.roles;
+    delete answers.roles;
+
     createUser(Object.assign({ password: password }, answers))
-      .then(createdUserInfo => {
-        console.log(`Created user with id ${createdUserInfo.id}`);
-        process.exit(0);
-      })
+      .then(createdUserInfo => addRolesToUser(createdUserInfo.id, roles)
+        .then(() => {
+          console.log(`Created user with id ${createdUserInfo.id} with roles ${roles}`);
+          process.exit(0);
+        })
+      )
       .catch(err => {
         printErrorMessage(err);
         process.exit(1);
