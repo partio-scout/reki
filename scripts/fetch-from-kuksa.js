@@ -157,6 +157,7 @@ function transferDataFromKuksa(eventApi) {
         participantId: selection.from,
         selectionId: selection.to,
       }),
+      dateRange: dateRange,
     },
   ]).then(() => console.log('Transfer complete.'));
 }
