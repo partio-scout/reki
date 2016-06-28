@@ -1,6 +1,7 @@
 import loopback from 'loopback';
 import boot from 'loopback-boot';
 import path from 'path';
+import expressEnforcesSsl from 'express-enforces-ssl';
 import hsts from 'hsts';
 
 const app = loopback();
@@ -15,15 +16,20 @@ app.start = function() {
   });
 };
 
+const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
+app.set('standalone', require.main.filename === bootstrapFileName);
+app.set('isDev', process.env.NODE_ENV === 'dev');
+
+if( !app.get('isDev') ) {
+  app.enable('trust proxy');
+  app.use(expressEnforcesSsl());
+}
+
 app.use(hsts({
   maxAge: 365 * 24 * 60 * 60 * 1000,
   includeSubDomains: true,
   preload: true
 }));
-
-const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
-app.set('standalone', require.main.filename === bootstrapFileName);
-app.set('isDev', process.env.NODE_ENV === 'dev');
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
