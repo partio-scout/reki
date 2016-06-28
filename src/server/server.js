@@ -18,7 +18,7 @@ app.start = function() {
 
 const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
 app.set('standalone', require.main.filename === bootstrapFileName);
-app.set('isDev', process.env.NODE_ENV === 'dev');
+app.set('isDev', process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' );
 
 if ( !app.get('isDev') ) {
   app.enable('trust proxy');
