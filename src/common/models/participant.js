@@ -173,14 +173,19 @@ export default function (Participant) {
   });
 
   Participant.massAssignField = (ids, fieldName, newValue, callback) => {
-    Participant.findByIds(ids).then(rows => {
-      const updates = _.map(rows, row => {
-        row[fieldName] = newValue;
-        return row.save();
+    const allowedFields = [ 'inCamp' ]; // fields that can be edited
+
+    if (allowedFields.indexOf(fieldName) > -1) {
+      Participant.findByIds(ids).then(rows => {
+        const updates = _.map(rows, row => {
+          row[fieldName] = newValue;
+          return row.save();
+        });
+        Promise.all(updates).nodeify(callback);
       });
-      Promise.all(updates).nodeify(callback);
-    });
-    // todo: white list fields that can be changed
+    } else {
+      callback();
+    }
   };
 
   Participant.remoteMethod('massAssignField',
