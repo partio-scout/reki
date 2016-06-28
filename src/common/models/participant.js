@@ -55,19 +55,21 @@ export default function (Participant) {
   });
 
   function handleTextSearch(ctx, participantInstance, next) {
+    const args = ctx && ctx.args || null;
+    if (args) {
+      if (args.where && _.isString(args.where)) {
+        args.where = JSON.parse(args.where);
+      }
 
-    if (ctx.args.where && _.isString(ctx.args.where)) {
-      ctx.args.where = JSON.parse(ctx.args.where);
-    }
+      if (args.filter && _.isString(args.filter)) {
+        args.filter = JSON.parse(args.filter);
+      }
 
-    if (ctx.args.filter && _.isString(ctx.args.filter)) {
-      ctx.args.filter = JSON.parse(ctx.args.filter);
-    }
-
-    if (ctx.args.where) {
-      ctx.args.where = constructTextSearchFilters(ctx.args.where);
-    } else if (ctx.args.filter.where) {
-      ctx.args.filter.where = constructTextSearchFilters(ctx.args.filter.where);
+      if (args.where) {
+        args.where = constructTextSearchFilters(args.where);
+      } else if (args.filter && args.filter.where) {
+        args.filter.where = constructTextSearchFilters(args.filter.where);
+      }
     }
 
     next();

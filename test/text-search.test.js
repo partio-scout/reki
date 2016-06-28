@@ -62,7 +62,7 @@ describe('Text search', () => {
 
   beforeEach(() =>
     resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['admin'], adminUserFixture))
+      .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
       .then(() => testUtils.createFixture('Participant', testParticipants))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)

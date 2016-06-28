@@ -34,7 +34,7 @@
   },
   "AuditEvent": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "KuksaSubCamp": {
     "dataSource": "db",
