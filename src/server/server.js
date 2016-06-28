@@ -20,13 +20,31 @@ const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
 app.set('standalone', require.main.filename === bootstrapFileName);
 app.set('isDev', process.env.NODE_ENV === 'dev');
 
-if( !app.get('isDev') ) {
+if ( !app.get('isDev') ) {
   app.enable('trust proxy');
   app.use(expressEnforcesSsl());
 }
 
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
+
+let validConnectSrc;
+
+if ( app.get('isDev') ) {
+  validConnectSrc = ["*"];
+} else {
+  validConnectSrc = ["'self'", `'ws://${asd}'`];
+}
+
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    connectSrc: validConnectSrc,
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: ["'self'"],
+  },
+}));
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
