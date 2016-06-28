@@ -2,7 +2,7 @@ import loopback from 'loopback';
 import boot from 'loopback-boot';
 import path from 'path';
 import expressEnforcesSsl from 'express-enforces-ssl';
-import hsts from 'hsts';
+import helmet from 'helmet';
 
 const app = loopback();
 
@@ -25,11 +25,8 @@ if( !app.get('isDev') ) {
   app.use(expressEnforcesSsl());
 }
 
-app.use(hsts({
-  maxAge: 365 * 24 * 60 * 60 * 1000,
-  includeSubDomains: true,
-  preload: true
-}));
+app.use(helmet());
+app.use(helmet.noCache()); // noCache disabled by default
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
