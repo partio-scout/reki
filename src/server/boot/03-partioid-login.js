@@ -33,7 +33,7 @@ export default function(app) {
       .then(getWhereFilter)
       .then(findOneUser)
       .then(loginUser)
-      .tap(([accessToken]) => destroyAccessTokens({ id: { neq: accessToken.id } }))
+      .tap(([accessToken]) => destroyAccessTokens({ and: [{ id: { neq: accessToken.id } }, { userId: accessToken.userId }] }))
       .spread((accessToken, user) => setCookieAndFinishRequest(accessToken, user, cookieOptions, res))
       .catch(err => processError(req, res, err))
   );
