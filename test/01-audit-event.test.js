@@ -42,7 +42,7 @@ describe('Audit Event', () => {
 
   beforeEach(() =>
     resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['admin'], adminUserFixture))
+      .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
   );
@@ -73,12 +73,6 @@ describe('Audit Event', () => {
   function queryInstanceFromDb(modelInPlural, instanceId, accessToken) {
     return request(app)
       .get(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken}`)
-      .expect(200);
-  }
-
-  function deleteInstanceFromDb(modelInPlural, instanceId, accessToken) {
-    return request(app)
-      .del(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken}`)
       .expect(200);
   }
 
@@ -116,58 +110,13 @@ describe('Audit Event', () => {
       )
   );
 
-  it('should create audit event when deleting registryuser', () =>
-    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
-      .then(userId => deleteInstanceFromDb('RegistryUsers', userId, accessToken)
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'delete',
-          'model': 'RegistryUser',
-          'modelId': userId,
-        }))
-      )
-  );
-
-  // Test participant audit logs
-  it('should create audit event when creating participant', () =>
-    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
-      .then(id =>
-        expectAuditEventToEventuallyExist({
-          'eventType': 'add',
-          'model': 'Participant',
-          'modelId': id,
-        })
-      )
-  );
-
-  it('should create audit event when updating participant', () =>
-    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
-      .then(participantId => postChangesToDb('Participants', participantId, accessToken, { 'firstName': 'Muutos' })
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'update',
-          'model': 'Participant',
-          'modelId': participantId,
-        }))
-      )
-  );
-
   it('should create audit event when finding participant', () =>
-    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
-      .then(participantId => queryInstanceFromDb('Participants', participantId, accessToken)
+    testUtils.createFixture('Participant', testParticipant)
+      .then(participant => queryInstanceFromDb('Participants', participant.participantId, accessToken)
         .then(() => expectAuditEventToEventuallyExist({
           'eventType': 'find',
           'model': 'Participant',
-          'modelId': participantId,
-        }))
-      )
-  );
-
-  it('should create audit event when deleting participant', () =>
-    postInstanceToDb('Participants', testParticipant, accessToken, 'participantId')
-      .then(participantId => deleteInstanceFromDb('Participants', participantId, accessToken)
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'delete',
-          'model': 'Participant',
-          'modelId': participantId,
+          'modelId': participant.participantId,
         }))
       )
   );
