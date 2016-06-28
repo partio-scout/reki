@@ -20,6 +20,7 @@ export default function(app) {
   const getAuthorizeUrl = Promise.promisify(partioid.getAuthorizeUrl, { context: partioid });
   const validatePostResponse = Promise.promisify(partioid.validatePostResponse, { context: partioid });
   const findOneUser = Promise.promisify(app.models.RegistryUser.findOne, { context: app.models.RegistryUser });
+  const destroyAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
 
   app.get('/saml/login', (req, res) =>
     getAuthorizeUrl(req)
@@ -32,6 +33,7 @@ export default function(app) {
       .then(getWhereFilter)
       .then(findOneUser)
       .then(loginUser)
+      .tap(([accessToken]) => destroyAccessTokens({ id: { neq: accessToken.id } }))
       .spread((accessToken, user) => setCookieAndFinishRequest(accessToken, user, cookieOptions, res))
       .catch(err => processError(req, res, err))
   );
@@ -55,7 +57,6 @@ function getWhereFilter(samlResult) {
 }
 
 function loginUser(user) {
-  console.log(user);
   if (user === null) {
     throw new Error('PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.');
   }
