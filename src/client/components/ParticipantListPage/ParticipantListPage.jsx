@@ -182,12 +182,12 @@ export function getParticipantListPage(participantStore, participantActions) {
         inCamp: 'Tila',
         firstName: 'Etunimi',
         lastName: 'Sukunimi',
-        dateOfBirth: 'Syntymäaika',
+        dateOfBirth: 'Syntymäpäivä',
         gender: 'Sukupuoli',
         nonScout: 'Onko partiolainen?',
         memberNumber: 'Jäsennumero',
         homeCity: 'Kotikaupunki',
-        swimmingSkill: 'Uimataito',
+        staffPosition: 'Pesti',
         interestedInHomeHospitality: 'Home hospitality',
         email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
@@ -203,7 +203,6 @@ export function getParticipantListPage(participantStore, participantActions) {
         <Grid fluid>
           <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
           <ParticipantCountUpdater filter={ filter } />
-
           <Row>
             <Col md={ 12 }>
               <h1>Leiriläiset</h1>

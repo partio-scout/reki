@@ -13,7 +13,6 @@
     "participantId": {
       "type": "Number",
       "id": true,
-      "generated": true,
       "postgresql": {
         "columnName": "participant_id",
         "dataType": "integer",
@@ -60,14 +59,14 @@
       }
     },
     "memberNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "member_number",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
-        "nullable": "NO"
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "dateOfBirth": {
@@ -107,6 +106,17 @@
       "type": "string",
       "postgresql": {
         "columnName": "home_city",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "staffPosition": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,

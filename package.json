@@ -14,7 +14,10 @@
     "test-mocha": "NODE_ENV=test mocha --compilers js:babel-core/register",
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
-    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js"
+    "fetch-from-kuksa": "babel-node scripts/fetch-from-kuksa.js",
+    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
+    "console": "echo 'Run .load scripts/console-utils.js to use utils' && babel-node",
+    "mock-kuksa": "babel-node test/kuksa-integration/mock/mock-kuksa.js"
   },
   "dependencies": {
     "alt": "^0.18.2",
@@ -40,11 +43,13 @@
     "http-proxy": "^1.12.0",
     "inquirer": "^1.0.0",
     "js-cookie": "^2.1.1",
+    "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v2.0.1/kuksa-event-api-client.tar.gz",
     "lodash": "^4.6.1",
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "^2.43.0",
+    "moment": "^2.13.0",
     "node-sass": "^3.4.2",
     "passport-saml": "^0.14.0",
     "react": "^0.14.3",
@@ -69,6 +74,7 @@
     "commander": "^2.9.0",
     "eslint": "^1.10.2",
     "eslint-plugin-react": "^3.11.2",
+    "express": "^4.14.0",
     "mocha": "^2.3.4",
     "supertest": "^1.2.0",
     "supertest-as-promised": "^3.0.0",

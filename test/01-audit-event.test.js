@@ -30,6 +30,7 @@ describe('Audit Event', () => {
     'phoneNumber': 'n/a',
   };
   const testParticipant = {
+    'participantId': 42,
     'firstName': 'Testi',
     'lastName': 'Henkilö',
     'nonScout': false,

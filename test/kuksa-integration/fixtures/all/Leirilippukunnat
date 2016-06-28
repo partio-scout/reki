@@ -1,0 +1,26 @@
+[
+    {
+        "AlaleiriId": null,
+        "Id": 11,
+        "KylaId": null,
+        "Nimi": "Leirilippukunta Savu"
+    },
+    {
+        "AlaleiriId": 1,
+        "Id": 10,
+        "KylaId": 2,
+        "Nimi": "Tako"
+    },
+    {
+        "AlaleiriId": null,
+        "Id": 9,
+        "KylaId": null,
+        "Nimi": "Testimesta"
+    },
+    {
+        "AlaleiriId": null,
+        "Id": 8,
+        "KylaId": null,
+        "Nimi": "Rambot"
+    }
+]

@@ -17,11 +17,11 @@ describe('Participant change event', () => {
   const destroyAllPresence = Promise.promisify(PresenceHistory.destroyAll, { context: PresenceHistory });
   const findPresence = Promise.promisify(PresenceHistory.find, { context: PresenceHistory });
   const findParticipant = Promise.promisify(Participant.find, { context: Participant });
-  let id;
+  const id = 1;
   beforeEach(() => resetDatabase().then(() =>
-                    createParticipant({ firstName: 'Raimo', lastName:'Vormisto',
+                    createParticipant({ participantId: 1, firstName: 'Raimo', lastName:'Vormisto',
                         nonScout: false, inCamp: 0,  localGroup: 'testi', campGroup: 'testi',
-                        subCamp: 'testi', ageGroup: 'testi' }).then(r => id = r.participantId)
+                        subCamp: 'testi', ageGroup: 'testi' })
                   )
   );
 
