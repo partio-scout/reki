@@ -28,7 +28,7 @@ if ( !app.get('isDev') ) {
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
 
-const validConnectSrc = ( app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`] );
+const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
