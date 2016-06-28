@@ -1,6 +1,7 @@
 import loopback from 'loopback';
 import boot from 'loopback-boot';
 import path from 'path';
+import hsts from 'hsts';
 
 const app = loopback();
 
@@ -13,6 +14,12 @@ app.start = function() {
     console.log('Web server listening at: %s', app.get('url'));
   });
 };
+
+app.use(hsts({
+  maxAge: 365 * 24 * 60 * 60 * 1000,
+  includeSubDomains: true,
+  preload: true
+}));
 
 const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
 app.set('standalone', require.main.filename === bootstrapFileName);
