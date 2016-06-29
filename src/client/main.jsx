@@ -28,7 +28,7 @@ const alt = new Alt();
 
 const participantActions = actions.getParticipantActions(alt, participantResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
-const participantStore = stores.getParticipantStore(alt, participantActions);
+const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp(registryUserStore, registryUserActions);
