@@ -162,7 +162,7 @@ function transferDataFromKuksa(eventApi) {
         participantId: { inq: ids },
       });
     }
-    return eventApi.getParticipantExtraSelections()
+    return eventApi.getParticipantExtraSelections(dateRange)
       .then(selections => _.groupBy(selections, 'from'))
       .then(selectionsByParticipant =>
         destroySelectionsForParticipants(_.keys(selectionsByParticipant))
