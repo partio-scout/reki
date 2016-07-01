@@ -7,11 +7,22 @@
 const modelList = [
   ['AccessToken', false],
   ['ACL', false],
-  ['Role', false],
+  ['Role', true],
   ['RoleMapping', false],
   ['RegistryUser', false],
   ['Participant', false],
+  ['ParticipantHistory', false],
   ['AuditEvent', false],
+  ['KuksaSubCamp', false],
+  ['KuksaVillage', false],
+  ['KuksaCampGroup', false],
+  ['KuksaLocalGroup', false],
+  ['KuksaParticipant', false],
+  ['KuksaExtraInfoField', false],
+  ['KuksaParticipantExtraInfo', false],
+  ['KuksaExtraSelectionGroup', false],
+  ['KuksaExtraSelection', false],
+  ['KuksaParticipantExtraSelection', false],
 ];
 
 export function getModelCreationList() {

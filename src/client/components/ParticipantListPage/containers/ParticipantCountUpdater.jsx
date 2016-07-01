@@ -1,5 +1,5 @@
 import React from 'react';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 export function getParticipantCountUpdater(participantActions) {
   class ParticipantCountUpdater extends React.Component {
@@ -8,7 +8,7 @@ export function getParticipantCountUpdater(participantActions) {
     }
 
     render() {
-      participantActions.loadParticipantCount(this.props.filter);
+      participantActions.loadParticipantCount.defer(this.props.filter);
       return null;
     }
   }

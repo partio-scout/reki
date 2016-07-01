@@ -1,6 +1,6 @@
 import React from 'react';
 import AltContainer from 'alt-container';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 function Count(props) {
   return (

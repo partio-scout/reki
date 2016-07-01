@@ -13,7 +13,6 @@
     "participantId": {
       "type": "Number",
       "id": true,
-      "generated": true,
       "postgresql": {
         "columnName": "participant_id",
         "dataType": "integer",
@@ -60,14 +59,14 @@
       }
     },
     "memberNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "member_number",
-        "dataType": "integer",
-        "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
-        "nullable": "NO"
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "dateOfBirth": {
@@ -114,6 +113,17 @@
         "nullable": "YES"
       }
     },
+    "staffPosition": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "swimmingSkill": {
       "type": "boolean",
       "postgresql": {
@@ -148,6 +158,10 @@
         "nullable": "YES"
       }
     },
+    "inCamp": {
+      "type": "number"
+    },
+
     "localGroup": {
       "type": "string",
       "required": true,
@@ -198,7 +212,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "presenceHistory": {
+      "type": "hasMany",
+      "model": "ParticipantHistory",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",
@@ -207,32 +227,19 @@
       "permission": "DENY"
     },
     {
-      "accessType": "WRITE",
+      "accessType": "READ",
       "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW",
-      "property": "create"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "admin",
+      "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "*"
     },
     {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW"
-    },
-    {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$everyone",
+      "principalId": "registryUser",
       "permission": "ALLOW",
-      "property": "count"
+      "property": "massAssignField"
     }
   ],
-  "methods": []
+  "methods": {}
 }
