@@ -2,9 +2,6 @@ import app from '../../src/server/server';
 import Promise from 'bluebird';
 import _ from 'lodash';
 import { expect } from 'chai';
-import EventEmitter from 'events';
-
-EventEmitter.prototype._maxListeners = 20;
 
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
