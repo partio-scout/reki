@@ -85,22 +85,22 @@ describe('Participant mass edit endpoint test', () => {
     .expect(200);
   }
 
-  function postInstanceToDb(modelInPlural, changes, accessToken) {
+  function postInstanceToDb(modelInPlural, changes, accessToken, expectStatus) {
     return request(app)
       .post(`/api/${modelInPlural}?access_token=${accessToken}`)
       .send(changes)
-      .expect(200);
+      .expect(expectStatus);
   }
 
   it('Should update whitelisted fields', () =>
-    postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'inCamp' }, accessToken)
+    postInstanceToDb('participants/update', { ids: [1,2], newValue: 3, fieldName: 'inCamp' }, accessToken, 200)
      .then( () => queryParticipants(accessToken)
      .then( res => expectParticipantInCampValues([ 3, 3, 2 ], res.body) )
    )
   );
 
   it('Should not update fields that are not whitelisted', () =>
-    postInstanceToDb('participants/update', { ids: [1,2], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken)
+    postInstanceToDb('participants/update', { ids: [1,2], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken, 400)
      .then( () => queryParticipants(accessToken)
      .then( res => expectParticipantSubCampValues([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ], res.body) )
     )
