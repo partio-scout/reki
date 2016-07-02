@@ -39,12 +39,12 @@
       "type": "string",
       "required": true,
       "postgresql": {
-        "columnName": "last_name",
+        "columnName": "filter",
         "dataType": "character varying",
-        "dataLength": 255,
+        "dataLength": null,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     }
   },
