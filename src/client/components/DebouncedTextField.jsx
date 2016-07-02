@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Input } from 'react-bootstrap';
+import { Input, Glyphicon } from 'react-bootstrap';
 
 export function getDebouncedTextField() {
   function debouncedTextField({ value, label, property, onChange }) {
@@ -27,8 +27,9 @@ export function getDebouncedTextField() {
     }
 
     return (
-        <div>
+        <div className="textsearch">
           <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur } onKeyPress={ disableEnter } />
+          <p><Glyphicon glyph="question-sign" /> Voit hakea henkilön nimen tai jäsennumeron perusteella.</p>
         </div>
     );
   }
