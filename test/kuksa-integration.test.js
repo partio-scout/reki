@@ -45,6 +45,10 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
   );
 
+  it('correctly transfers participant villages',
+    () => expect(findParticipantById(508)).to.eventually.have.property('village', 'Testikylä')
+  );
+
   after(() => {
     mockKuksa.stop();
   });
