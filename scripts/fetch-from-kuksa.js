@@ -150,15 +150,31 @@ function transferDataFromKuksa(eventApi) {
         name: selection.name.fi,
       }),
     },
-    {
-      getFromSource: eventApi.getParticipantExtraSelections,
-      targetModel: app.models.KuksaParticipantExtraSelection,
-      transform: selection => ({
+  ])
+  .then(() => {
+    // In order to remove deleted extra selections we need to delete all extra selections
+    // for the participant before inserting. Thus we need special treatment.
+    const ExtraSelection = app.models.KuksaParticipantExtraSelection;
+    const destroyAll = Promise.promisify(ExtraSelection.destroyAll, { context: ExtraSelection });
+    const create = Promise.promisify(ExtraSelection.create, { context: ExtraSelection });
+    function destroySelectionsForParticipants(ids) {
+      return destroyAll({
+        participantId: { inq: ids },
+      });
+    }
+    return eventApi.getParticipantExtraSelections(dateRange)
+      .then(selections => _.groupBy(selections, 'from'))
+      .then(selectionsByParticipant =>
+        destroySelectionsForParticipants(_.keys(selectionsByParticipant))
+          .then(() => _.flatMap(selectionsByParticipant))
+      )
+      .then(selections => _.map(selections, selection => ({
         participantId: selection.from,
         selectionId: selection.to,
-      }),
-    },
-  ]).then(() => console.log('Transfer complete.'));
+      })))
+      .then(selections => create(selections));
+  })
+  .then(() => console.log('Transfer complete.'));
 }
 
 function rebuildParticipantsTable() {

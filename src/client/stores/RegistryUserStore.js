@@ -1,14 +1,13 @@
 export function getRegistryUserStore(alt, RegistryUserActions) {
   class RegistryUserStore  {
     constructor() {
-      this.registryUsers = [ ];
-      this.currentUser = null;
-      this.loggedIn = false;
+      this.resetAllData();
 
       this.bindListeners({
         handleRegistryUserListUpdated: RegistryUserActions.REGISTRY_USER_LIST_UPDATED,
         handleCurrentUserUpdated: RegistryUserActions.CURRENT_USER_UPDATED,
         handleLoginStatusUpdated: RegistryUserActions.UPDATE_LOGIN_STATUS,
+        resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
     }
 
@@ -22,6 +21,12 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
 
     handleLoginStatusUpdated(loggedIn) {
       this.loggedIn = loggedIn;
+    }
+
+    resetAllData() {
+      this.loggedIn = false;
+      this.currentUser = null;
+      this.registryUsers = [];
     }
   }
 
