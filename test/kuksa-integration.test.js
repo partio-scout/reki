@@ -15,7 +15,7 @@ describe('Kuksa integration', () => {
   const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
 
   before(function(done) {
-    this.timeout(20000);
+    this.timeout(30000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();
