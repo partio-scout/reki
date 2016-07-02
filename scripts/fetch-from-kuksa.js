@@ -214,6 +214,11 @@ function rebuildParticipantsTable() {
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     nonScout: false,
     staffPosition: getInfoForField(participant, 'Pesti'),
+    staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
+    willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),
+    willOfTheWispWave: getSelectionForGroup(participant, 'Virvatulen aalto'),
+    guardianOne: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 1)'),
+    guardianTwo: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 2)'),
   })))
   .then(participants =>
     _.reduce(

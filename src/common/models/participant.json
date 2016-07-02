@@ -124,6 +124,17 @@
         "nullable": "YES"
       }
     },
+    "staffPositionInGenerator": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position_in_generator",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "swimmingSkill": {
       "type": "boolean",
       "postgresql": {
@@ -208,6 +219,54 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
+      }
+    },
+    "willOfTheWisp": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "will_of_the_wisp",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "willOfTheWispWave": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "will_of_the_wisp_wave",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "guardianOne": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "guardian_one",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "guardianTwo": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "guardian_two",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     }
   },
