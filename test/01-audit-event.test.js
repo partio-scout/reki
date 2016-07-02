@@ -36,6 +36,7 @@ describe('Audit Event', () => {
     'nonScout': false,
     'localGroup': 'Testilippukunta',
     'campGroup': 'Leirilippukunta',
+    'village': 'Kylä',
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
   };
