@@ -184,7 +184,9 @@ export default function (Participant) {
         Promise.all(updates).nodeify(callback);
       });
     } else {
-      callback();
+      var err = new Error(`Editing ${fieldName} not allowed.`);
+      err.status = 400;
+      return callback(err);
     }
   };
 
