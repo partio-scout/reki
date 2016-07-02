@@ -47,14 +47,12 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     return (
       <div className="well clearfix">
         <form className="form-inline">
-          <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection }
-            location={ props.location }
-          />
+          <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection }/>
           <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
           <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <SaveSearchButtonContainer/>
+          <SaveSearchButtonContainer location={ props.location } />
         </form>
       </div>
     );
