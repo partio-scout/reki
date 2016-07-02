@@ -133,6 +133,7 @@ export function getParticipantActions(alt, participantResource, searchFilterReso
     }
 
     SearchFilterSaved(response) {
+      this.loadSearchFilterList();
       return response;
     }
 

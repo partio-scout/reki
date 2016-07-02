@@ -18,7 +18,7 @@ const request = superagentAsPromised(superagent);
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants');
 const registryUserResource = new RestfulResource('/api/registryusers');
-const searchFilterResource = new RestfulResource('api/searchfilters');
+const searchFilterResource = new RestfulResource('/api/searchfilters');
 
 const alt = new Alt();
 
