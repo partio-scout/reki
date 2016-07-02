@@ -18,6 +18,10 @@
     "timestamp": {
       "type": "date",
       "required": true
+    },
+    "authorId": {
+      "type": "Number",
+      "required": true
     }
   },
   "validations": [],
@@ -25,6 +29,11 @@
     "participant": {
       "type": "belongsTo",
       "model": "Participant"
+    },
+    "author": {
+      "type": "belongsTo",
+      "model": "RegistryUser",
+      "foreignKey": "authorId"
     }
   },
   "acls": [

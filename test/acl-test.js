@@ -277,6 +277,7 @@ describe('http api access control', () => {
       participantId: 1,
       presence: 3,
       timestamp: new Date(),
+      authorId: 1,
     };
 
     beforeEach(() =>

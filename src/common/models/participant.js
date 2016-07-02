@@ -126,6 +126,8 @@ export default function (Participant) {
   Participant.observe('before save', (ctx, next) => {
     const PresenceHistory = app.models.PresenceHistory;
 
+    const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
+
     let data;
 
     if (ctx.instance) {
@@ -140,7 +142,7 @@ export default function (Participant) {
     getParticipantById(data.participantId)
       .then( currentParticipant => {
         if ( currentParticipant != null && currentParticipant.presence != data.presence ) {
-          return createPresenceHistory({ participantId: data.participantId, presence: data.presence, timestamp: new Date() });
+          return createPresenceHistory({ participantId: data.participantId, presence: data.presence, timestamp: new Date(), authorId: userId });
         }
       }).asCallback(next);
   });

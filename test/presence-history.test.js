@@ -83,6 +83,19 @@ describe('Presence history', () => {
     );
   }
 
+  function expectPresenceAuthorValue(expectedAuthors, participantId, response) {
+    const PresenceHistory = app.models.PresenceHistory;
+
+    const findHistory = Promise.promisify(PresenceHistory.find, { context: PresenceHistory } );
+
+    return findHistory({ where: { participantId: participantId } })
+      .then( rows => {
+        const AuthorHistory = _.map(rows, row => row.authorId);
+        expect(AuthorHistory).to.eql(expectedAuthors);
+      }
+    );
+  }
+
   function postInstanceToDb(modelInPlural, changes, accessToken) {
     return request(app)
       .post(`/api/${modelInPlural}?access_token=${accessToken}`)
@@ -93,6 +106,12 @@ describe('Presence history', () => {
   it('Should save history when updating one presence', () =>
     postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
       .then( () => expectPresenceHistoryValues([ 3 ], 1 ) )
+  );
+
+  it('Should save author correctly when updating presence', () =>
+    postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
+      .then( () => postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 2, fieldName: 'presence' }, accessToken))
+      .then( () => expectPresenceAuthorValue([ 1, 1 ], 1 ) )
   );
 
   it('Should save history when updating two presences', () =>
