@@ -29,7 +29,7 @@ describe('Kuksa integration', () => {
           KUKSA_API_EVENTID: mockKuksa.eventid,
         }),
       };
-      exec('npm run fetch-from-kuksa', options, () => { console.log('jee'); done(); });
+      exec('npm run fetch-from-kuksa', options, () => done());
     });
   });
 
