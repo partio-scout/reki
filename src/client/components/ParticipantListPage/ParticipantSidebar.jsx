@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { Button, Glyphicon } from 'react-bootstrap';
 
 class SearchFilterListItem extends React.Component {
   render() {
@@ -11,6 +12,9 @@ class SearchFilterListItem extends React.Component {
     return (
       <li>
         <Link to={ `participants/${filter}` }>{ name }</Link>
+        <Button bsStyle="link">
+          <Glyphicon glyph="remove" />
+        </Button>
       </li>
     );
   }
@@ -48,11 +52,14 @@ export function getParticipantSidebar(participantStore, participantActions) {
       );
 
       return (
-        <ul className="sidebar-list">
-          {
-            this.state.searchFilters.map(createListItem)
-          }
-        </ul>
+        <div>
+          <b>Tallennetut haut</b>
+          <ul className="sidebar-list">
+            {
+              this.state.searchFilters.map(createListItem)
+            }
+          </ul>
+        </div>
       );
     }
   }
