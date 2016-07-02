@@ -218,7 +218,7 @@ table {
  *  in camp status
  */
  
-.incamp {
+.presence {
   .ball {
     display: inline-block;
     height: 10px;
@@ -234,11 +234,11 @@ table {
   &.green .ball { background: $brand-success; }
 }
 
-table .incamp .ball {
+table .presence .ball {
   margin-left: 0.5em;
 }
 
-table .incamp .text {
+table .presence .text {
   display: none;
 }
 

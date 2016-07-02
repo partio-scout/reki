@@ -158,7 +158,7 @@
         "nullable": "YES"
       }
     },
-    "inCamp": {
+    "presence": {
       "type": "number"
     },
 
@@ -215,7 +215,7 @@
   "relations": {
     "presenceHistory": {
       "type": "hasMany",
-      "model": "ParticipantHistory",
+      "model": "PresenceHistory",
       "foreignKey": ""
     }
   },
