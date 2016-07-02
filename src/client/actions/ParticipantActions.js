@@ -141,6 +141,24 @@ export function getParticipantActions(alt, participantResource, searchFilterReso
       return err;
     }
 
+    deleteSearchFilter(id) {
+      return dispatch => {
+        dispatch();
+        searchFilterResource.del(id)
+          .then(res => this.searchFilterDeleted(res),
+                err => this.searchFilterDeletingFailed(err));
+      };
+    }
+
+    searchFilterDeleted(res) {
+      this.loadSearchFilterList();
+      return res;
+    }
+
+    searchFilterDeletingFailed(err) {
+      return err;
+    }
+
     loadSearchFilterList() {
       return dispatch => {
         dispatch();

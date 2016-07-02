@@ -3,6 +3,15 @@ import { Link } from 'react-router';
 import { Button, Glyphicon } from 'react-bootstrap';
 
 class SearchFilterListItem extends React.Component {
+  constructor() {
+    super();
+    this.remove = this.remove.bind(this);
+  }
+
+  remove() {
+    this.props.remove(this.props.searchFilter.id);
+  }
+
   render() {
     const {
       name,
@@ -12,7 +21,7 @@ class SearchFilterListItem extends React.Component {
     return (
       <li>
         <Link to={ `participants/${filter}` }>{ name }</Link>
-        <Button bsStyle="link">
+        <Button bsStyle="link" onClick={ this.remove } >
           <Glyphicon glyph="remove" />
         </Button>
       </li>
@@ -22,9 +31,14 @@ class SearchFilterListItem extends React.Component {
 
 SearchFilterListItem.propTypes = {
   searchFilter: React.PropTypes.object.isRequired,
+  remove: React.PropTypes.func,
 };
 
 export function getParticipantSidebar(participantStore, participantActions) {
+  function removeSearchFilter(id) {
+    participantActions.deleteSearchFilter(id);
+  }
+
   class ParticipantSidebar extends React.Component {
     constructor(props) {
       super(props);
@@ -46,9 +60,14 @@ export function getParticipantSidebar(participantStore, participantActions) {
     onParticipantStoreChange(state) {
       this.setState(state);
     }
+
     render() {
       const createListItem = element => (
-        <SearchFilterListItem key={ element.id } searchFilter={ element }/>
+        <SearchFilterListItem
+          key={ element.id }
+          searchFilter={ element }
+          remove={ removeSearchFilter }
+        />
       );
 
       return (
