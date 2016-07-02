@@ -22,17 +22,19 @@ const searchFilterResource = new RestfulResource('/api/searchfilters');
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource, searchFilterResource);
+const participantActions = actions.getParticipantActions(alt, participantResource);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 const participantStore = stores.getParticipantStore(alt, participantActions);
+const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp(participantActions);
 const homepage = components.getHomepage();
 const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
-const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions);
+const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions, searchFilterActions);
 const UserManagementPage = components.getUserManagementPage(registryUserStore, registryUserActions);
-const participantSidebar = components.getParticipantSidebar(participantStore, participantActions);
+const participantSidebar = components.getParticipantSidebar(searchFilterStore, searchFilterActions);
 const defaultSidebar = components.defaultSidebar;
 
 const routes = (

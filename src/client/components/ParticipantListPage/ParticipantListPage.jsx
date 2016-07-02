@@ -34,13 +34,13 @@ function getLimit(query) {
   return query.limit && Number(query.limit) || 20;
 }
 
-export function getParticipantListPage(participantStore, participantActions) {
+export function getParticipantListPage(participantStore, participantActions, searchFilterActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
+  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions);
   const ParticipantCount = getParticipantCount(participantStore);
 
   function ParticipantListPage(props, context) {

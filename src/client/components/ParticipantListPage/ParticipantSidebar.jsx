@@ -34,30 +34,30 @@ SearchFilterListItem.propTypes = {
   remove: React.PropTypes.func,
 };
 
-export function getParticipantSidebar(participantStore, participantActions) {
+export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
   function removeSearchFilter(id) {
-    participantActions.deleteSearchFilter(id);
+    searchFilterActions.deleteSearchFilter(id);
   }
 
   class ParticipantSidebar extends React.Component {
     constructor(props) {
       super(props);
-      this.state = participantStore.getState();
+      this.state = searchFilterStore.getState();
     }
 
     componentWillMount() {
-      participantActions.loadSearchFilterList();
+      searchFilterActions.loadSearchFilterList();
     }
 
     componentDidMount() {
-      participantStore.listen(this.onParticipantStoreChange.bind(this));
+      searchFilterStore.listen(this.onSearchFilterStoreChange.bind(this));
     }
 
     componentWillUnMount() {
-      participantStore.unlisten(this.onParticipantStoreChange.bind(this));
+      searchFilterStore.unlisten(this.onSearchFilterStoreChange.bind(this));
     }
 
-    onParticipantStoreChange(state) {
+    onSearchFilterStoreChange(state) {
       this.setState(state);
     }
 

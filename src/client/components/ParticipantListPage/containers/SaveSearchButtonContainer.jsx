@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Modal, Input } from 'react-bootstrap';
 
-export function getSaveSearchButtonContainer(participantActions) {
+export function getSaveSearchButtonContainer(searchFilterActions) {
   function saveSearchFilter(name, filter) {
-    participantActions.saveSearchFilter(name, filter);
+    searchFilterActions.saveSearchFilter(name, filter);
   }
 
   class SaveSearchButtonContainer extends React.Component {

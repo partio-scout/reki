@@ -8,13 +8,13 @@ import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions) {
+export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer(participantActions);
-  const SaveSearchButtonContainer = getSaveSearchButtonContainer(participantActions);
+  const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
