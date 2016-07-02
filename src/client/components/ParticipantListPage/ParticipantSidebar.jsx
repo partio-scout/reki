@@ -20,7 +20,7 @@ class SearchFilterListItem extends React.Component {
 
     return (
       <li>
-        <Link to={ `participants/${filter}` }>{ name }</Link>
+        <Link to={ `/participants/${filter}` }>{ name }</Link>
         <Button bsStyle="link" onClick={ this.remove } >
           <Glyphicon glyph="remove" />
         </Button>
