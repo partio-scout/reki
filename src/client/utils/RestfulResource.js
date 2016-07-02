@@ -29,8 +29,8 @@ export function getRestfulResource(request) {
         .then(this.handleResponse);
     }
 
-    findById(id) {
-      return request.get(this.path(id))
+    findById(id, filters) {
+      return request.get(this.path(id, filters))
         .accept('application/json')
         .set('Authorization', this.accessToken)
         .then(this.handleResponse);

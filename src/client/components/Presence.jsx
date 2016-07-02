@@ -2,11 +2,11 @@ import React from 'react';
 
 export function getPresenceLabel(value) {
   if (value == 1) {
-    return 'Ei ole leirissä';
+    return 'Poistunut leiristä';
   } else if (value == 2) {
     return 'Poistunut leiristä väliaikaisesti';
   } else if (value == 3) {
-    return 'Leirissä';
+    return 'Saapunut leiriin';
   }
   return 'Tuntematon arvo';
 }
@@ -30,10 +30,10 @@ export class Presence extends React.Component {
     const color = `${getPresenceColor(this.props.value)} presence`;
 
     return (
-      <span className={ color } title={ label }>
+      <p className={ color } title={ label }>
         <span className="ball"></span>
         <span className="text">{ label }</span>
-      </span>
+      </p>
     );
   }
 }
