@@ -12,6 +12,7 @@ chai.use(chaiAsPromised);
 
 describe('Kuksa integration', () => {
   const countParticipants = Promise.promisify(app.models.Participant.count, { context: app.models.Participant });
+  const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
 
   before(function(done) {
     this.timeout(20000);
@@ -34,6 +35,14 @@ describe('Kuksa integration', () => {
 
   it('produces the expected amount of results in the database',
     () => expect(countParticipants()).to.eventually.equal(53)
+  );
+
+  it('correctly transfers participant extra info (free-text fields)',
+    () => expect(findParticipantById(541)).to.eventually.have.property('staffPosition', 'Perunankuorija')
+  );
+
+  it('correctly transfers participant extra selection (multiple choice fields)',
+    () => expect(findParticipantById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
   );
 
   after(() => {
