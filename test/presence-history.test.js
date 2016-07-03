@@ -147,4 +147,10 @@ describe('Presence history', () => {
       .then( () => expectPresenceHistoryValues([ ], 2 ) )
   );
 
+  it('Should not save history when unvalid presence data', () =>
+    postOverRest('participants/update', { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }, accessToken)
+      .expect(500) // to do: edit right response codes
+      .then( () => expectPresenceHistoryValues([ ], 1 ) )
+  );
+
 });

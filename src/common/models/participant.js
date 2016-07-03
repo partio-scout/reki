@@ -124,32 +124,42 @@ export default function (Participant) {
   });
 
   Participant.observe('before save', (ctx, next) => {
-    const PresenceHistory = app.models.PresenceHistory;
+
+    if ( ctx.isNewInstance || !ctx.instance ) {
+      return next();
+    }
 
     const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
 
-    let data;
-
-    if (ctx.instance) {
-      data = ctx.instance;
-    } else {
-      data = ctx.data;
-    }
-
     const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
-    const createPresenceHistory = Promise.promisify(PresenceHistory.create, { context: PresenceHistory });
 
-    findParticipantById(data.participantId)
+    findParticipantById(ctx.instance.participantId)
       .then( currentParticipant => {
-        if ( currentParticipant != null && currentParticipant.presence != data.presence ) {
-          return createPresenceHistory({
-            participantId: data.participantId,
-            presence: data.presence,
-            timestamp: new Date(),
-            authorId: userId,
-          });
+        if ( currentParticipant != null && currentParticipant.presence != ctx.instance.presence ) {
+          ctx.instance.presenceUpdated = true;
+          ctx.instance.presenceUpdateAuthor = userId;
         }
       }).asCallback(next);
+
+  });
+
+  Participant.observe('after save', (ctx, next) => {
+
+    if ( !ctx.instance || !ctx.instance.presenceUpdated ) {
+      return next();
+    }
+
+    const PresenceHistory = app.models.PresenceHistory;
+
+    const createPresenceHistory = Promise.promisify(PresenceHistory.create, { context: PresenceHistory });
+
+    createPresenceHistory({
+      participantId: ctx.instance.participantId,
+      presence: ctx.instance.presence,
+      timestamp: new Date(),
+      authorId: ctx.instance.presenceUpdateAuthor,
+    }).asCallback(next);
+
   });
 
   Participant.massAssignField = (ids, fieldName, newValue, callback) => {
