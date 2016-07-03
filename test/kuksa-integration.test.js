@@ -57,6 +57,18 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(38)).to.eventually.have.property('subCamp', 'Unity')
   );
 
+  it('sets nonScout status as true for participants with no memberNumber and no localGroup',
+    () => expect(findParticipantById(515)).to.eventually.have.property('nonScout', true)
+  );
+
+  it('sets nonScout status as false if memberNumber is set',
+    () => expect(findParticipantById(541)).to.eventually.have.property('nonScout', false)
+  );
+
+  it('sets nonScout status as false if localGroup is set',
+    () => expect(findParticipantById(42)).to.eventually.have.property('nonScout', false)
+  );
+
   after(() => {
     mockKuksa.stop();
   });

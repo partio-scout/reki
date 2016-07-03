@@ -212,7 +212,8 @@ function rebuildParticipantsTable() {
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: _.get(participant, 'subCamp.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
-    nonScout: false,
+    // Not a scout if a) no finnish member number 2) not part of international group ("local group")
+    nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
     staffPosition: getInfoForField(participant, 'Pesti'),
     staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
     willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),
