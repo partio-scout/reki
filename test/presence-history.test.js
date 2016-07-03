@@ -13,6 +13,10 @@ chai.use(chaiAsPromised);
 describe('Presence history', () => {
   let accessToken;
 
+  const inCamp = 3;
+  const tmpLeftCamp = 2;
+  const leftCamp = 1;
+
   const testParticipants = [
     {
       'participantId': 1,
@@ -96,45 +100,50 @@ describe('Presence history', () => {
     );
   }
 
-  function postInstanceToDb(modelInPlural, changes, accessToken) {
+  function postOverRest(modelInPlural, changes, accessToken) {
     return request(app)
       .post(`/api/${modelInPlural}?access_token=${accessToken}`)
-      .send(changes)
-      .expect(200);
+      .send(changes);
   }
 
   it('Should save history when updating one presence', () =>
-    postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
-      .then( () => expectPresenceHistoryValues([ 3 ], 1 ) )
+    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
+      .then( () => expectPresenceHistoryValues([ inCamp ], 1 ) )
   );
 
   it('Should save author correctly when updating presence', () =>
-    postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
-      .then( () => postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 2, fieldName: 'presence' }, accessToken))
+    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
+      .then( () => postOverRest('participants/update', { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
       .then( () => expectPresenceAuthorValue([ 1, 1 ], 1 ) )
   );
 
   it('Should save history when updating two presences', () =>
-    postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
-      .then( () => postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 2, fieldName: 'presence' }, accessToken))
-      .then( () => expectPresenceHistoryValues([ 3, 2 ], 1 ) )
+    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
+      .then( () => postOverRest('participants/update', { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => expectPresenceHistoryValues([ inCamp, leftCamp ], 1 ) )
   );
 
   it('Should save history when updating two participants presences at once', () =>
-    postInstanceToDb('participants/update', { ids: [ 2, 3 ], newValue: 3, fieldName: 'presence' }, accessToken)
-      .then( () => postInstanceToDb('participants/update', { ids: [ 2, 3 ], newValue: 2, fieldName: 'presence' }, accessToken))
-      .then( () => expectPresenceHistoryValues([ 3, 2 ], 2 ) )
-      .then( () => expectPresenceHistoryValues([ 3, 2 ], 3 ) )
+    postOverRest('participants/update', { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
+      .then( () => postOverRest('participants/update', { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 2 ) )
+      .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 3 ) )
   );
 
   it('Should not save history when saving value doesn\'t change', () =>
-    postInstanceToDb('participants/update', { ids: [ 2 ], newValue: 3, fieldName: 'presence' }, accessToken)
-    .then( () => postInstanceToDb('participants/update', { ids: [ 2 ], newValue: 3, fieldName: 'presence' }, accessToken))
-      .then( () => expectPresenceHistoryValues([ 3 ], 2 ) )
+    postOverRest('participants/update', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
+    .then( () => postOverRest('participants/update', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => expectPresenceHistoryValues([ inCamp ], 2 ) )
   );
 
   it('Should not update wrong participants presence', () =>
-    postInstanceToDb('participants/update', { ids: [ 1 ], newValue: 3, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+      .expect(200)
       .then( () => expectPresenceHistoryValues([ ], 2 ) )
   );
 

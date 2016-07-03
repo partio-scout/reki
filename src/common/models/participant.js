@@ -136,13 +136,18 @@ export default function (Participant) {
       data = ctx.data;
     }
 
-    const getParticipantById = Promise.promisify(Participant.findById, { context: Participant });
+    const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
     const createPresenceHistory = Promise.promisify(PresenceHistory.create, { context: PresenceHistory });
 
-    getParticipantById(data.participantId)
+    findParticipantById(data.participantId)
       .then( currentParticipant => {
         if ( currentParticipant != null && currentParticipant.presence != data.presence ) {
-          return createPresenceHistory({ participantId: data.participantId, presence: data.presence, timestamp: new Date(), authorId: userId });
+          return createPresenceHistory({
+            participantId: data.participantId,
+            presence: data.presence,
+            timestamp: new Date(),
+            authorId: userId,
+          });
         }
       }).asCallback(next);
   });
