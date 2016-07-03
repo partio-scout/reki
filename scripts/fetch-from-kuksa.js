@@ -104,7 +104,7 @@ function transferDataFromKuksa(eventApi) {
         id: participant.id,
         firstName: participant.firstName || 'x',
         lastName: participant.lastName || 'x',
-        memberNumber: 'XXXXX',
+        memberNumber: participant.memberNumber,
         dateOfBirth: new Date(participant.birthDate),
         phoneNumber: participant.phoneNumber,
         email: participant.email,
