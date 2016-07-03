@@ -5,7 +5,7 @@ export function getParticipantActions(alt, participantResource) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId)
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: { presenceHistory: 'author' } })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err => this.loadingParticipantByIdFailed(err));
       };
@@ -124,7 +124,7 @@ export function getParticipantActions(alt, participantResource) {
     }
 
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
-      participantResource.raw('post', 'update', { body: { ids: ids, newValue: newValue, fieldName: 'inCamp' } })
+      participantResource.raw('post', 'update', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
               err => this.participantListUpdateFailed(err));
     }

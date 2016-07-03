@@ -1,17 +1,17 @@
 import React from 'react';
 
-export function getInCampLabel(value) {
+export function getPresenceLabel(value) {
   if (value == 1) {
-    return 'Ei ole leirissä';
+    return 'Poistunut leiristä';
   } else if (value == 2) {
     return 'Poistunut leiristä väliaikaisesti';
   } else if (value == 3) {
-    return 'Leirissä';
+    return 'Saapunut leiriin';
   }
   return 'Tuntematon arvo';
 }
 
-export function getInCampColor(value) {
+export function getPresenceColor(value) {
   if (value == 1) {
     return 'red';
   } else if (value == 2) {
@@ -22,22 +22,22 @@ export function getInCampColor(value) {
   return 'gray';
 }
 
-export class InCampStatus extends React.Component {
+export class Presence extends React.Component {
 
   render() {
 
-    const label = getInCampLabel(this.props.value);
-    const color = `${getInCampColor(this.props.value)} incamp`;
+    const label = getPresenceLabel(this.props.value);
+    const color = `${getPresenceColor(this.props.value)} presence`;
 
     return (
-      <span className={ color } title={ label }>
+      <p className={ color } title={ label }>
         <span className="ball"></span>
         <span className="text">{ label }</span>
-      </span>
+      </p>
     );
   }
 }
 
-InCampStatus.propTypes = {
-  value: React.PropTypes.number.isRequired,
+Presence.propTypes = {
+  value: React.PropTypes.number,
 };

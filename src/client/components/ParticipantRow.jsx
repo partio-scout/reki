@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Input } from 'react-bootstrap';
-import { InCampStatus } from '../components';
+import { Presence } from '../components';
 
 class LinkCell extends React.Component {
   render() {
@@ -52,7 +52,7 @@ export class ParticipantRow extends React.Component {
       localGroup,
       subCamp,
       campGroup,
-      inCamp,
+      presence,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
@@ -70,7 +70,7 @@ export class ParticipantRow extends React.Component {
     return (
       <tr>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
-        <td><InCampStatus value={ inCamp } /></td>
+        <td><Presence value={ presence } /></td>
         <LinkCell href={ href }>{ firstName }</LinkCell>
         <LinkCell href={ href }>{ lastName }</LinkCell>
         <td>{ formatDate(dateOfBirth) }</td>
