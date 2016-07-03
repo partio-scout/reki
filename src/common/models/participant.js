@@ -163,7 +163,7 @@ export default function (Participant) {
   });
 
   Participant.massAssignField = (ids, fieldName, newValue, callback) => {
-    const allowedFields = [ 'inCamp' ];
+    const allowedFields = [ 'presence' ];
 
     if (_.includes(allowedFields, fieldName)) {
       Participant.findByIds(ids).then(rows => {
