@@ -168,7 +168,9 @@ export default function (Participant) {
       presence: value => _.includes([ 1, 2, 3 ], +value),
     };
 
-    if ( allowedFields[fieldName] && allowedFields[fieldName](newValue) ) {
+    const fieldIsValid = (field, value) => allowedFields[field] && allowedFields[field](value);
+
+    if (fieldIsValid(fieldName, newValue)) {
       Participant.findByIds(ids).then(rows => {
         const updates = _.map(rows, row => {
           row[fieldName] = newValue;
