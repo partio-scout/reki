@@ -1,31 +1,39 @@
 {
-  "name": "ParticipantHistory",
+  "name": "PresenceHistory",
   "base": "PersistedModel",
-  "plural": "ParticipantHistories",
+  "plural": "PresenceHistories",
   "idInjection": true,
   "options": {
     "validateUpsert": true,
     "postgresql": {
       "schema": "public",
-      "table": "participant_history"
+      "table": "presence_history"
     }
   },
   "properties": {
-    "departed": {
+    "presence": {
+      "type": "Number",
+      "required": true
+    },
+    "timestamp": {
       "type": "date",
       "required": true
     },
-    "arrived": {
-      "type": "date",
-      "required": false
+    "authorId": {
+      "type": "Number",
+      "required": true
     }
   },
   "validations": [],
   "relations": {
     "participant": {
       "type": "belongsTo",
-      "model": "Participant",
-      "foreignKey": ""
+      "model": "Participant"
+    },
+    "author": {
+      "type": "belongsTo",
+      "model": "RegistryUser",
+      "foreignKey": "authorId"
     }
   },
   "acls": [
