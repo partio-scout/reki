@@ -34,8 +34,10 @@ describe('Audit Event', () => {
     'firstName': 'Testi',
     'lastName': 'Henkilö',
     'nonScout': false,
+    'internationalGuest': true,
     'localGroup': 'Testilippukunta',
     'campGroup': 'Leirilippukunta',
+    'village': 'Kylä',
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
   };

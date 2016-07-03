@@ -70,6 +70,13 @@ $screen-sm: 768px;
 
 table {
   border: 1px solid $table-border-color;
+  
+  &.noborder {
+    border: none;
+    
+    & td:first-child, & th:first-child { padding-left: 0; }
+    & td:last-child, & th:last-child { padding-right: 0; }
+  }
 }
 
 .table thead tr th {
@@ -241,7 +248,7 @@ table {
  *  in camp status
  */
  
-.incamp {
+.presence {
   .ball {
     display: inline-block;
     height: 10px;
@@ -257,13 +264,17 @@ table {
   &.green .ball { background: $brand-success; }
 }
 
-table .incamp .ball {
-  margin-left: 0.5em;
+table .presence {
+  margin-bottom: 0;
+  
+  .ball {
+    margin-left: 0.5em;
+  }
+  .text {
+    display: none;
+  }
 }
 
-table .incamp .text {
-  display: none;
-}
 
 /*
  * Search tools

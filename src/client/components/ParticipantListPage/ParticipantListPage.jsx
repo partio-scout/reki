@@ -8,7 +8,7 @@ import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorC
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
-import { getInCampLabel } from '../InCampStatus';
+import { getPresenceLabel } from '../Presence';
 
 function getOrder(query) {
   try {
@@ -58,15 +58,15 @@ export function getMassEdit() {
     }
 
     render() {
-      const inCampLabel = getInCampLabel(1);
-      const tmpOutCampLabel = getInCampLabel(2);
-      const outCampLabel = getInCampLabel(3);
+      const presenceLabel = getPresenceLabel(1);
+      const tmpOutCampLabel = getPresenceLabel(2);
+      const outCampLabel = getPresenceLabel(3);
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
           <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
           <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
             <option value="null">---</option>
-            <option value="1">{ inCampLabel }</option>
+            <option value="1">{ presenceLabel }</option>
             <option value="2">{ tmpOutCampLabel }</option>
             <option value="3">{ outCampLabel }</option>
           </Input>
@@ -170,8 +170,6 @@ export function getParticipantListPage(participantStore, participantActions, sea
       );
     }
 
-    // this.state = { checked: {} };
-
     render() {
       const order = getOrder(this.props.location.query);
       const offset = getOffset(this.props.location.query);
@@ -179,7 +177,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
       const filter = getFilter(this.props.location.query);
 
       const columnPropertyToLabelMapping = {
-        inCamp: 'Tila',
+        presence: 'Tila',
         firstName: 'Etunimi',
         lastName: 'Sukunimi',
         dateOfBirth: 'Syntymäpäivä',

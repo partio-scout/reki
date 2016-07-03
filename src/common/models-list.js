@@ -11,7 +11,7 @@ const modelList = [
   ['RoleMapping', false],
   ['RegistryUser', false],
   ['Participant', false],
-  ['ParticipantHistory', false],
+  ['PresenceHistory', false],
   ['AuditEvent', false],
   ['SearchFilter', false],
   ['KuksaSubCamp', false],

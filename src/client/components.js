@@ -16,4 +16,5 @@ export { getDebouncedTextField } from './components/DebouncedTextField';
 export { getMainNavigation } from './components/MainNavigation';
 export { getNavigationItem } from './components/NavigationItem';
 export { getLoginPromptPage } from './components/LoginPromptPage';
-export { InCampStatus } from './components/InCampStatus';
+export { Presence } from './components/Presence';
+export { PresenceHistory } from './components/PresenceHistory';
