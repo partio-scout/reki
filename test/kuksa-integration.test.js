@@ -15,7 +15,7 @@ describe('Kuksa integration', () => {
   const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
 
   before(function(done) {
-    this.timeout(20000);
+    this.timeout(30000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();
@@ -43,6 +43,18 @@ describe('Kuksa integration', () => {
 
   it('correctly transfers participant extra selection (multiple choice fields)',
     () => expect(findParticipantById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
+  );
+
+  it('correctly transfers participant camp group',
+    () => expect(findParticipantById(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
+  );
+
+  it('correctly transfers participant local group',
+    () => expect(findParticipantById(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
+  );
+
+  it('correctly transfers participant subcamp',
+    () => expect(findParticipantById(38)).to.eventually.have.property('subCamp', 'Unity')
   );
 
   after(() => {
