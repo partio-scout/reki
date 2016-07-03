@@ -112,13 +112,13 @@ export function getSelectAll() {
   return SelectAll;
 }
 
-export function getParticipantListPage(participantStore, participantActions) {
+export function getParticipantListPage(participantStore, participantActions, searchFilterActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions);
+  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions);
   const ParticipantCount = getParticipantCount(participantStore);
   const MassEdit = getMassEdit();
   const SelectAll = getSelectAll();

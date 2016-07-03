@@ -7,13 +7,15 @@ import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions) {
+export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
-  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
+  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer(participantActions);
+  const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -49,7 +51,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     }
 
     return (
-      <div className="well">
+      <div className="well clearfix">
         <div>
           <form className="form-inline">
             <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
@@ -57,6 +59,7 @@ export function getQuickFilterContainer(participantStore, participantActions) {
             <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <SaveSearchButtonContainer location={ props.location } />
           </form>
         </div>
         <div>

@@ -27,7 +27,7 @@ export function getDebouncedTextField() {
     }
 
     return (
-        <div>
+        <div className="textsearch">
           <Input type="text" label={ label } value={ value } onChange={ handleValueChanged } onBlur={ handleFieldBlur } onKeyPress={ disableEnter } />
         </div>
     );
