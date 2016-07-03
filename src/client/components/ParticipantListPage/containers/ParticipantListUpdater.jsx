@@ -1,5 +1,5 @@
 import React from 'react';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 export function getParticipantListUpdater(participantActions) {
   class ParticipantListUpdater extends React.Component {
@@ -11,7 +11,7 @@ export function getParticipantListUpdater(participantActions) {
         filter,
       } = this.props;
 
-      participantActions.loadParticipantList(offset, limit, order, filter);
+      participantActions.loadParticipantList.defer(offset, limit, order, filter);
     }
 
     shouldComponentUpdate(nextProps, nextState) {

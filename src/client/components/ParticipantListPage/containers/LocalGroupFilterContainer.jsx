@@ -12,7 +12,7 @@ export function getLocalGroupFilterContainer(participantStore, participantAction
     }
 
     componentWillMount() {
-      participantActions.loadLocalGroups();
+      participantActions.loadLocalGroups.defer();
     }
 
     componentDidMount() {

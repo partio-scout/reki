@@ -90,6 +90,31 @@ td {
   vertical-align: middle !important;
 }
 
+table {
+  div.form-group {
+    margin: 0;
+    div.checkbox {
+      margin: 0;
+      input[type="checkbox"] {
+        position: static;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.tfooter {
+  td {
+    padding-top: 1em !important;
+    padding-bottom: 1em !important;
+    
+    input[type="checkbox"] {
+      position: absolute !important;
+      top: -28px;
+    }
+  }
+}
+
 //Sortable table header container
 .sortable {
   span,
@@ -213,6 +238,34 @@ td {
 }
 
 /**
+ *  in camp status
+ */
+ 
+.incamp {
+  .ball {
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    margin-right: 0.5em;
+    vertical-align: baseline;
+  }
+  &.gray { color: $text-muted; }
+  &.gray .ball { background: $text-muted; }
+  &.red .ball { background: $brand-danger; }
+  &.orange .ball { background: $brand-warning; }
+  &.green .ball { background: $brand-success; }
+}
+
+table .incamp .ball {
+  margin-left: 0.5em;
+}
+
+table .incamp .text {
+  display: none;
+}
+
+/*
  * Search tools
  */
 

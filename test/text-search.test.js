@@ -12,83 +12,71 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Text search', () => {
-  let adminuserId, accessToken;
+  const testParticipants = [
+    {
+      'participantId': 1,
+      'firstName': 'Teemu',
+      'lastName': 'Testihenkilö',
+      'nonScout': false,
+      'localGroup': 'Testilippukunta',
+      'campGroup': 'Leirilippukunta',
+      'subCamp': 'Alaleiri',
+      'ageGroup': 'sudenpentu',
+      'memberNumber': 123,
+    },
+    {
+      'participantId': 2,
+      'firstName': 'Tero',
+      'lastName': 'Esimerkki',
+      'nonScout': false,
+      'localGroup': 'Testilippukunta',
+      'campGroup': 'Leirilippukunta',
+      'subCamp': 'Alaleiri',
+      'ageGroup': 'sudenpentu',
+      'memberNumber': 345,
+    },
+    {
+      'participantId': 3,
+      'firstName': 'Jussi',
+      'lastName': 'Jukola',
+      'nonScout': false,
+      'localGroup': 'Testilippukunta',
+      'campGroup': 'Leirilippukunta',
+      'subCamp': 'Alaleiri',
+      'ageGroup': 'seikkailija',
+      'memberNumber': 859,
+    },
+  ];
 
-  const testParticipants = new Array();
+  const adminUserFixture = {
+    'username': 'testAdmin',
+    'memberNumber': '7654321',
+    'email': 'testi@adm.in',
+    'password': 'salasana',
+    'phone': 'n/a',
+    'firstName': 'Testi',
+    'lastName': 'Admin',
+  };
 
-  testParticipants.push({
-    'firstName': 'Teemu',
-    'lastName': 'Testihenkilö',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'sudenpentu',
-    'memberNumber': 123,
-  });
-  testParticipants.push({
-    'firstName': 'Tero',
-    'lastName': 'Esimerkki',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'sudenpentu',
-    'memberNumber': 345,
-  });
-  testParticipants.push({
-    'firstName': 'Jussi',
-    'lastName': 'Jukola',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'seikkailija',
-    'memberNumber': 859,
-  });
+  let accessToken = null;
 
   beforeEach(() =>
-    resetDatabase().then(() =>
-      testUtils.createFixture('RegistryUser', {
-        'username': 'testAdmin',
-        'memberNumber': '7654321',
-        'email': 'testi@adm.in',
-        'password': 'salasana',
-        'phone': 'n/a',
-        'firstName': 'Testi',
-        'lastName': 'Admin',
-      })
-    ).then(adminUser => {
-      adminuserId = adminUser.id;
-      return testUtils.createFixture('Role', {
-        name: 'admin',
-      });
-    }).then(role =>
-      testUtils.createFixture('RoleMapping', {
-        principalType: 'USER',
-        principalId: adminuserId,
-        roleId: role.id,
-      })
-    ).then(() =>
-      testUtils.loginUser('testAdmin')
-    ).then(newAccessToken =>
-      accessToken = newAccessToken
-    ).then(() =>
-      testUtils.createFixture('Participant', testParticipants)
-    )
+    resetDatabase()
+      .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
+      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
+      .then(newAccessToken => accessToken = newAccessToken.id)
   );
 
   function expectParticipants(expectedResult, response) {
     const firstNames = _.map(response, 'firstName');
-    // console.log(firstNames);
-    // console.log(expectedResult);
     return expect(firstNames).to.have.members(expectedResult);
   }
 
   function queryParticipants(filter, accessToken) {
     return request(app)
-    .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
-    .expect(200);
+      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
+      .expect(200);
   }
 
   it('Query without filters', () =>

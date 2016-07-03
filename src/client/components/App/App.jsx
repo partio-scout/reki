@@ -1,11 +1,13 @@
 import React from 'react';
-import { Navbar, Grid, Nav, Row, Col } from 'react-bootstrap';
+import { Navbar, Grid, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
-import { NavLinkItem } from '../components';
+import { getMainNavigationContainer } from './containers/MainNavigationContainer';
 
-export function getApp(participantActions) {
+export function getApp(registryUserStore, registryUserActions) {
   class App extends React.Component {
     render() {
+      const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
+
       return (
         <div>
           <Navbar fluid>
@@ -14,12 +16,7 @@ export function getApp(participantActions) {
                 <Link to="/">REKI</Link>
               </Navbar.Brand>
             </Navbar.Header>
-            <Nav pullRight>
-              <NavLinkItem to="/admin" isIndexLink>Käyttäjät</NavLinkItem>
-            </Nav>
-            <Nav pullRight>
-              <NavLinkItem to="/participants" isIndexLink>Leiriläiset</NavLinkItem>
-            </Nav>
+            <MainNavigationContainer />
           </Navbar>
           <Grid fluid className="page-content">
             <Row>

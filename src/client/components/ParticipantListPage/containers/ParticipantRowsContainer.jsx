@@ -1,7 +1,7 @@
 import React from 'react';
 import AltContainer from 'alt-container';
 import { ParticipantRow } from '../../../components';
-import { pureShouldComponentUpdate } from './utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 function Tbody(props) {
   const elements = props.elements || [];
@@ -18,8 +18,9 @@ Tbody.propTypes = {
 };
 
 export function getParticipantRowsContainer(participantStore) {
-  const rowCreator = element => <ParticipantRow key={ element.participantId } participant={ element } />;
-  function ParticipantRowsContainer() {
+  function ParticipantRowsContainer({ isChecked, checkboxCallback }) {
+    const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
+
     return (
       <AltContainer
         stores={
@@ -33,6 +34,11 @@ export function getParticipantRowsContainer(participantStore) {
       </AltContainer>
     );
   }
+
+  ParticipantRowsContainer.propTypes = {
+    isChecked: React.PropTypes.func,
+    checkboxCallback: React.PropTypes.func,
+  };
 
   return ParticipantRowsContainer;
 }
