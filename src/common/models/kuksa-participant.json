@@ -124,6 +124,17 @@
         "nullable": "YES"
       }
     },
+    "villageId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "village",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
     "subCampId": {
       "type": "number",
       "postgresql": {
@@ -158,6 +169,11 @@
       "type": "belongsTo",
       "model": "KuksaCampGroup",
       "foreignKey": "campGroupId"
+    },
+    "village": {
+      "type": "belongsTo",
+      "model": "KuksaVillage",
+      "foreignKey": "villageId"
     },
     "subCamp": {
       "type": "belongsTo",

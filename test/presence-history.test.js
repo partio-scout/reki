@@ -25,6 +25,7 @@ describe('Presence history', () => {
       'nonScout': false,
       'localGroup': 'Testilippukunta',
       'campGroup': 'Leirilippukunta',
+      'village': 'Testikylä',
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
@@ -37,6 +38,7 @@ describe('Presence history', () => {
       'nonScout': false,
       'localGroup': 'Testilippukunta',
       'campGroup': 'Leirilippukunta',
+      'village': 'Testikylä',
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
@@ -49,6 +51,7 @@ describe('Presence history', () => {
       'nonScout': false,
       'localGroup': 'Testilippukunta',
       'campGroup': 'Leirilippukunta',
+      'village': 'Testikylä',
       'subCamp': 'Alaleiri',
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
@@ -149,7 +152,7 @@ describe('Presence history', () => {
 
   it('Should not save history when unvalid presence data', () =>
     postOverRest('participants/update', { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }, accessToken)
-      .expect(500) // to do: edit right response codes
+      .expect(400)
       .then( () => expectPresenceHistoryValues([ ], 1 ) )
   );
 

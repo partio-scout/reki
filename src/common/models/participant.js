@@ -163,9 +163,14 @@ export default function (Participant) {
   });
 
   Participant.massAssignField = (ids, fieldName, newValue, callback) => {
-    const allowedFields = [ 'presence' ];
+    // field name : validation function
+    const allowedFields = {
+      presence: value => _.includes([ 1, 2, 3 ], +value),
+    };
 
-    if (_.includes(allowedFields, fieldName)) {
+    const fieldIsValid = (field, value) => allowedFields[field] && allowedFields[field](value);
+
+    if (fieldIsValid(fieldName, newValue)) {
       Participant.findByIds(ids).then(rows => {
         const updates = _.map(rows, row => {
           row[fieldName] = newValue;

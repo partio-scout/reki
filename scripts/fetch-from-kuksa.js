@@ -110,6 +110,7 @@ function transferDataFromKuksa(eventApi) {
         email: participant.email,
         representedParty: participant.representedParty,
         localGroupId: participant.group,
+        villageId: participant.village,
         campGroupId: participant.campGroup,
         subCampId: participant.subCamp,
         cancelled: participant.cancelled,
@@ -196,6 +197,7 @@ function rebuildParticipantsTable() {
       { 'localGroup': 'subCamp' },
       'campGroup',
       'subCamp',
+      'village',
       { 'extraInfos': 'field' },
       { 'extraSelections': 'group' },
     ],
@@ -213,6 +215,7 @@ function rebuildParticipantsTable() {
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: _.get(participant, 'subCamp.name') || 'Muu',
+    village: _.get(participant, 'village.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
     nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),

@@ -164,6 +164,7 @@ describe('http api access control', () => {
       email: 'derp@example.com',
       localGroup: 'localgroup',
       campGroup: 'campGroup',
+      village: 'village',
       subCamp: 'subCamp',
       ageGroup: 'vaeltaja',
     };
@@ -178,6 +179,7 @@ describe('http api access control', () => {
       email: 'derp@example.com',
       localGroup: 'localgroup',
       campGroup: 'campGroup',
+      village: 'village',
       subCamp: 'subCamp',
       ageGroup: 'vaeltaja',
     };
@@ -273,6 +275,7 @@ describe('http api access control', () => {
       email: 'derp@example.com',
       localGroup: 'localgroup',
       campGroup: 'campGroup',
+      village: 'village',
       subCamp: 'subCamp',
       ageGroup: 'vaeltaja',
     };
