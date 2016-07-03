@@ -21,7 +21,7 @@ describe('Participant change event', () => {
   beforeEach(() => resetDatabase().then(() =>
                     createParticipant({ participantId: 1, firstName: 'Raimo', lastName:'Vormisto',
                         nonScout: false, inCamp: 0,  localGroup: 'testi', campGroup: 'testi',
-                        subCamp: 'testi', ageGroup: 'testi' })
+                        subCamp: 'testi', internationalGuest: false, ageGroup: 'testi' })
                   )
   );
 

@@ -91,6 +91,17 @@
         "nullable": "YES"
       }
     },
+    "representedParty": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "represented_party",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "localGroupId": {
       "type": "number",
       "postgresql": {

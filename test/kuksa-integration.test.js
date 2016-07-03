@@ -69,6 +69,14 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(42)).to.eventually.have.property('nonScout', false)
   );
 
+  it('sets internationalGuest status as true if localGroup is set',
+    () => expect(findParticipantById(42)).to.eventually.have.property('internationalGuest', true)
+  );
+
+  it('sets internationalGuest status as false if no localGroup is set',
+    () => expect(findParticipantById(542)).to.eventually.have.property('internationalGuest', false)
+  );
+
   after(() => {
     mockKuksa.stop();
   });
