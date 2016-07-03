@@ -28,7 +28,7 @@
     "dataSource": "db",
     "public": true
   },
-  "ParticipantHistory": {
+  "PresenceHistory": {
     "dataSource": "db",
     "public": true
   },

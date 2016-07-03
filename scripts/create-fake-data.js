@@ -185,7 +185,7 @@ function generateRandomParticipant(id) {
     gender,
     subCamp,
     campGroup,
-    inCamp: Math.floor(Math.random() * 4),
+    presence: 0,
   };
 }
 

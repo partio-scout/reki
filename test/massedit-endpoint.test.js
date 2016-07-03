@@ -28,7 +28,7 @@ describe('Participant mass edit endpoint test', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
-      'inCamp': leftCamp,
+      'presence': leftCamp,
     },
     {
       'participantId': 2,
@@ -41,7 +41,7 @@ describe('Participant mass edit endpoint test', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
-      'inCamp': leftCamp,
+      'presence': leftCamp,
     },
     {
       'participantId': 3,
@@ -54,7 +54,7 @@ describe('Participant mass edit endpoint test', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
-      'inCamp': tmpLeftCamp,
+      'presence': tmpLeftCamp,
     },
   ];
 
@@ -77,7 +77,7 @@ describe('Participant mass edit endpoint test', () => {
   );
 
   function expectParticipantInCampValues(expectedResult, response) {
-    const inCampValues = _.map(response, row => row.inCamp);
+    const inCampValues = _.map(response, row => row.presence);
     return expect(inCampValues).to.eql(expectedResult);
   }
 
@@ -99,7 +99,7 @@ describe('Participant mass edit endpoint test', () => {
   }
 
   it('Should update whitelisted fields', () =>
-    postInstanceToDb('participants/update', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'inCamp' }, accessToken)
+    postInstanceToDb('participants/update', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
       .then( () => queryParticipants(accessToken)
       .then( res => expectParticipantInCampValues([ inCamp, inCamp, tmpLeftCamp ], res.body) )
