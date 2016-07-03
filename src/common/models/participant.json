@@ -197,6 +197,18 @@
         "nullable": "NO"
       }
     },
+    "village": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "village",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
     "subCamp": {
       "type": "string",
       "required": true,

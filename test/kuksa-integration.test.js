@@ -45,12 +45,16 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
   );
 
+  it('correctly transfers participant local group',
+    () => expect(findParticipantById(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
+  );
+
   it('correctly transfers participant camp group',
     () => expect(findParticipantById(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
   );
 
-  it('correctly transfers participant local group',
-    () => expect(findParticipantById(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
+  it('correctly transfers participant village',
+    () => expect(findParticipantById(508)).to.eventually.have.property('village', 'Testikylä')
   );
 
   it('correctly transfers participant subcamp',
