@@ -21,9 +21,9 @@ const accessToken = Cookie.getJSON('accessToken');
 const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
-const participantResource = new RestfulResource('/api/participants');
-const registryUserResource = new RestfulResource('/api/registryusers');
-const searchFilterResource = new RestfulResource('/api/searchfilters');
+const participantResource = new RestfulResource('/api/participants', accessToken);
+const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
+const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
 
 const alt = new Alt();
 
@@ -40,12 +40,12 @@ const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
   registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions, searchFilterActions),
+  components.getParticipantDetailsPage(participantStore, participantActions),
   LoginPromptPage
 );
 const ParticipantListPage = restrictComponent(
   registryUserStore,
-  components.getParticipantListPage(participantStore, participantActions),
+  components.getParticipantListPage(participantStore, participantActions, searchFilterActions),
   LoginPromptPage
 );
 const UserManagementPage = restrictComponent(
@@ -54,11 +54,10 @@ const UserManagementPage = restrictComponent(
   LoginPromptPage
 );
 const participantSidebar = restrictComponent(
-  searchFilterStore,
-  components.getParticipantSidebar(searchFilterStore, searchFilterActions),
-  LoginPromptPage
+  registryUserStore,
+  components.getParticipantSidebar(searchFilterStore, searchFilterActions)
 );
-const defaultSidebar = components.defaultSidebar;
+const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
 
 const accessTokenValid = accessToken && accessToken.userId && accessToken.ttl > ((Date.now() - new Date(accessToken.created)) / 1000);
 
