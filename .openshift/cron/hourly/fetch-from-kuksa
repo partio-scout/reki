@@ -1,0 +1,5 @@
+#!/bin/bash
+echo '*** Fetch data from Kuksa ***' >> ${OPENSHIFT_LOG_DIR}/fetch-from-kuksa.log
+date >> ${OPENSHIFT_LOG_DIR}/fetch-from-kuksa.log
+npm run fetch-from-kuksa >> ${OPENSHIFT_LOG_DIR}/fetch-from-kuksa.log
+echo '*** Fetch complete ***' >> ${OPENSHIFT_LOG_DIR}/fetch-from-kuksa.log
