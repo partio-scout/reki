@@ -86,7 +86,7 @@ export default function (Participant) {
     }
   }
 
-  Participant.afterRemote('upsert', (ctx, participantInstance, next) => {
+  Participant.observe('after save', (ctx, next) => {
     // Add allergies and diets to participant
     const findKuksaParticipantById = Promise.promisify(app.models.KuksaParticipant.findById, { context: app.models.KuksaParticipant });
     const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
@@ -108,13 +108,13 @@ export default function (Participant) {
       .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
     }
 
-    if (participantInstance) {
-      return findKuksaParticipantById(participantInstance.participantId, {
+    if (ctx.instance) {
+      return findKuksaParticipantById(ctx.instance.participantId, {
         include: { 'extraSelections': 'group' },
       }).then(participant => {
         const selections = getAllSelectionsForGroups(participant.toJSON(), ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.']);
         return Promise.join(
-          findParticipantById(participantInstance.participantId),
+          findParticipantById(ctx.instance.participantId),
           getIdsForAllergies(_.flatten(selections)),
           (p, allergies) => removeOldAndAddNewAllergies(p, allergies)
         );

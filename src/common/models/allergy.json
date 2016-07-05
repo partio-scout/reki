@@ -59,7 +59,7 @@
       "principalId": "registryAdmin",
       "permission": "ALLOW",
       "property": "*"
-    }    
+    }
   ],
   "methods": []
 }
