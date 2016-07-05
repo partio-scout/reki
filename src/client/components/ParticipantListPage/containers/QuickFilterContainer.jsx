@@ -14,7 +14,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
-  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer(participantActions);
+  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {

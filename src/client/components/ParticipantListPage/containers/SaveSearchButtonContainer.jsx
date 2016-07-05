@@ -2,10 +2,6 @@ import React from 'react';
 import { Button, Modal, Input } from 'react-bootstrap';
 
 export function getSaveSearchButtonContainer(searchFilterActions) {
-  function saveSearchFilter(name, filter) {
-    searchFilterActions.saveSearchFilter(name, filter);
-  }
-
   class SaveSearchButtonContainer extends React.Component {
     constructor(props) {
       super(props);
@@ -29,7 +25,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
 
     saveAndClose() {
-      saveSearchFilter(this.state.searchFilterName, this.props.location.search);
+      searchFilterActions.saveSearchFilter(this.state.searchFilterName, this.props.location.search);
       this.close();
     }
 
@@ -40,7 +36,6 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     saveOnEnter(event) {
       if (event.key === 'Enter') {
         this.saveAndClose();
-
       }
     }
 

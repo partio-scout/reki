@@ -4,14 +4,13 @@ import { getDebouncedTextField } from '../../../components';
 export function getDebouncedTextFieldContainer() {
   const DebouncedTextField = getDebouncedTextField();
 
-  function debouncedTextFieldContainer({ onChange, currentTextValue, location }) {
+  function debouncedTextFieldContainer({ onChange, currentTextValue }) {
     return (
       <DebouncedTextField
         label="Tekstihaku"
         property="textSearch"
         value={ currentTextValue }
         onChange={ onChange }
-        location= { location }
       />
     );
   }

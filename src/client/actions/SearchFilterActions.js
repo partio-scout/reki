@@ -4,17 +4,17 @@ export function getSearchFilterActions(alt, searchFilterResource) {
       return dispatch => {
         dispatch();
         searchFilterResource.create({ name: name, filter: filter })
-          .then(response => this.SearchFilterSaved(response),
-                err => this.saveSearhFilterFailed(err));
+          .then(response => this.searchFilterSaved(response),
+                err => this.searchFilterActionFailed(err));
       };
     }
 
-    SearchFilterSaved(response) {
+    searchFilterSaved(response) {
       this.loadSearchFilterList();
       return response;
     }
 
-    saveSearhFilterFailed(err) {
+    searchFilterActionFailed(err) {
       return err;
     }
 
@@ -23,7 +23,7 @@ export function getSearchFilterActions(alt, searchFilterResource) {
         dispatch();
         searchFilterResource.del(id)
           .then(res => this.searchFilterDeleted(res),
-                err => this.searchFilterDeletingFailed(err));
+                err => this.searchFilterActionFailed(err));
       };
     }
 
@@ -32,25 +32,17 @@ export function getSearchFilterActions(alt, searchFilterResource) {
       return res;
     }
 
-    searchFilterDeletingFailed(err) {
-      return err;
-    }
-
     loadSearchFilterList() {
       return dispatch => {
         dispatch();
         searchFilterResource.findAll()
           .then(searchFilterList => this.searchFilterListUpdated(searchFilterList),
-                err => this.searchFilterListUpdatedFailed(err));
+                err => this.searchFilterActionFailed(err));
       };
     }
 
     searchFilterListUpdated(searchFilters) {
       return searchFilters;
-    }
-
-    searchFilterListUpdatedFailed(error) {
-      return error;
     }
   }
 

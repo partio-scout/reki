@@ -72,7 +72,7 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
 
       return (
         <div>
-          <b>Tallennetut haut</b>
+          <strong>Tallennetut haut</strong>
           <ul className="sidebar-list">
             {
               this.state.searchFilters.map(createListItem)
