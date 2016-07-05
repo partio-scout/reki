@@ -21,7 +21,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
 
     close() {
-      this.setState({ showModal: false });
+      this.setState({ showModal: false, searchFilterName: '' });
     }
 
     saveAndClose() {
@@ -34,7 +34,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
 
     saveOnEnter(event) {
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && this.state.searchFilterName) {
         this.saveAndClose();
       }
     }
@@ -60,7 +60,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button bsStyle="primary" onClick={ this.saveAndClose }>Tallenna</Button>
+              <Button bsStyle="primary" disabled={ this.state.searchFilterName === '' } onClick={ this.saveAndClose }>Tallenna</Button>
             </Modal.Footer>
           </Modal>
         </div>
