@@ -36,6 +36,10 @@
     "dataSource": "db",
     "public": false
   },
+  "Allergy": {
+    "dataSource": "db",
+    "public": true
+  },
   "KuksaSubCamp": {
     "dataSource": "db",
     "public": false

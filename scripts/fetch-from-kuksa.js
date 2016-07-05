@@ -152,6 +152,17 @@ function transferDataFromKuksa(eventApi) {
     },
   ])
   .then(() => {
+    // Get all the possible allergies as Allergy-instances
+    const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
+    const findExtraSelectionGroups = Promise.promisify(app.models.KuksaExtraSelectionGroup.find, { context: app.models.KuksaExtraSelectionGroup });
+    const findExtraSelections = Promise.promisify(app.models.KuksaExtraSelection.find, { context: app.models.KuksaExtraSelection });
+
+    return findExtraSelectionGroups({ where: { name: { inq: ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'] } } })
+      .then(selGroups => findExtraSelections({ where: { groupId: { inq: [selGroups[0].id, selGroups[1].id] } } }))
+      .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
+      .then(selections => Promise.each(selections, s => upsertAllergy(s)));
+  })
+  .then(() => {
     // In order to remove deleted extra selections we need to delete all extra selections
     // for the participant before inserting. Thus we need special treatment.
     const ExtraSelection = app.models.KuksaParticipantExtraSelection;

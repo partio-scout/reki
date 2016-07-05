@@ -276,6 +276,10 @@
       "type": "hasMany",
       "model": "PresenceHistory",
       "foreignKey": ""
+    },
+    "allergies": {
+      "type": "hasAndBelongsToMany",
+      "model": "Allergy"
     }
   },
   "acls": [
