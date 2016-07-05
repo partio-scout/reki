@@ -91,6 +91,17 @@
         "nullable": "YES"
       }
     },
+    "representedParty": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "represented_party",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "localGroupId": {
       "type": "number",
       "postgresql": {
@@ -106,6 +117,17 @@
       "type": "number",
       "postgresql": {
         "columnName": "camp_group",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "villageId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "village",
         "dataType": "integer",
         "dataLength": null,
         "dataPrecision": 32,
@@ -147,6 +169,11 @@
       "type": "belongsTo",
       "model": "KuksaCampGroup",
       "foreignKey": "campGroupId"
+    },
+    "village": {
+      "type": "belongsTo",
+      "model": "KuksaVillage",
+      "foreignKey": "villageId"
     },
     "subCamp": {
       "type": "belongsTo",

@@ -58,6 +58,19 @@
         "nullable": "NO"
       }
     },
+    "internationalGuest": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "postgresql": {
+        "columnName": "international_guest",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
     "memberNumber": {
       "type": "string",
       "postgresql": {
@@ -190,6 +203,18 @@
       "required": true,
       "postgresql": {
         "columnName": "camp_group",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "village": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "village",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,

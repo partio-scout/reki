@@ -45,16 +45,40 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
   );
 
-  it('correctly transfers participant camp group',
-    () => expect(findParticipantById(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
-  );
-
   it('correctly transfers participant local group',
     () => expect(findParticipantById(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
   );
 
+  it('correctly transfers participant camp group',
+    () => expect(findParticipantById(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
+  );
+
+  it('correctly transfers participant village',
+    () => expect(findParticipantById(508)).to.eventually.have.property('village', 'Testikylä')
+  );
+
   it('correctly transfers participant subcamp',
     () => expect(findParticipantById(38)).to.eventually.have.property('subCamp', 'Unity')
+  );
+
+  it('sets nonScout status as true for participants with no memberNumber and no localGroup',
+    () => expect(findParticipantById(515)).to.eventually.have.property('nonScout', true)
+  );
+
+  it('sets nonScout status as false if memberNumber is set',
+    () => expect(findParticipantById(541)).to.eventually.have.property('nonScout', false)
+  );
+
+  it('sets nonScout status as false if localGroup is set',
+    () => expect(findParticipantById(42)).to.eventually.have.property('nonScout', false)
+  );
+
+  it('sets internationalGuest status as true if localGroup is set',
+    () => expect(findParticipantById(42)).to.eventually.have.property('internationalGuest', true)
+  );
+
+  it('sets internationalGuest status as false if no localGroup is set',
+    () => expect(findParticipantById(542)).to.eventually.have.property('internationalGuest', false)
   );
 
   after(() => {
