@@ -429,6 +429,7 @@ describe('http api access control', () => {
       campGroup: 'campGroup',
       subCamp: 'subCamp',
       ageGroup: 'vaeltaja',
+      village: 'Kylä',
     };
     const allergyFixture = {
       allergyId: 1,

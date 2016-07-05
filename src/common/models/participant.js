@@ -108,16 +108,20 @@ export default function (Participant) {
       .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
     }
 
-    if (ctx.instance) {
+    if (ctx.instance && ctx.instance.participantId) {
       return findKuksaParticipantById(ctx.instance.participantId, {
         include: { 'extraSelections': 'group' },
       }).then(participant => {
-        const selections = getAllSelectionsForGroups(participant.toJSON(), ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.']);
-        return Promise.join(
-          findParticipantById(ctx.instance.participantId),
-          getIdsForAllergies(_.flatten(selections)),
-          (p, allergies) => removeOldAndAddNewAllergies(p, allergies)
-        );
+        if (participant) { // We can only add allergies here to participants whose info is from kuksa
+          const selections = getAllSelectionsForGroups(participant.toJSON(), ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.']);
+          return Promise.join(
+            findParticipantById(ctx.instance.participantId),
+            getIdsForAllergies(_.flatten(selections)),
+            (p, allergies) => removeOldAndAddNewAllergies(p, allergies)
+          );
+        } else {
+          next();
+        }
       }).asCallback(next);
     } else {
       next();
