@@ -24,6 +24,7 @@ function main() {
     .then(getEventApi)
     .then(transferDataFromKuksa)
     .then(rebuildParticipantsTable)
+    .then(addAllergiesToParticipants)
     .then(deleteCancelledParticipants);
 }
 
@@ -246,6 +247,33 @@ function rebuildParticipantsTable() {
       Promise.resolve()
     )
   ).then(() => console.log('Rebuild complete.'));
+}
+
+function addAllergiesToParticipants() {
+  const findParticipants = Promise.promisify(Participant.find, { context: Participant });
+
+  function removeOldAndAddNewAllergies(participant, newAllergies) {
+    Promise.promisifyAll(participant);
+    return participant.allergies.destroyAll()
+    .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
+  }
+
+  function findParticipantsAllergies(participant) {
+    const findAllergies = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
+    const findSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
+
+    return findAllergies()
+    .then(allergies => _.map(allergies, 'allergyId'))
+    .then(allergies => findSelections({ where: { and: [{ participantId: participant.participantId }, { selectionId: { inq: allergies } }] } }))
+    .then(participantsAllergies => _.map(participantsAllergies, 'selectionId'));
+  }
+
+  console.log('Adding allergies and diets to participants...');
+
+  return findParticipants()
+  .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
+    .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
+    .then(() => console.log('Allergies and diets added.'));
 }
 
 function deleteCancelledParticipants() {

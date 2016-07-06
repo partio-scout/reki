@@ -86,48 +86,6 @@ export default function (Participant) {
     }
   }
 
-  Participant.observe('after save', (ctx, next) => {
-    // Add allergies and diets to participant
-    const findKuksaParticipantById = Promise.promisify(app.models.KuksaParticipant.findById, { context: app.models.KuksaParticipant });
-    const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
-
-    function getAllSelectionsForGroups(participant, fieldNames) {
-      const selections = _.filter(participant.extraSelections, o => _.includes(fieldNames, _.get(o, 'group.name')));
-      return selections ? _.map(selections, 'name') : null;
-    }
-
-    function getIdsForAllergies(names) {
-      const findAllergy = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
-      return Promise.map(names, name => findAllergy({ where: { name: name } }))
-      .then(allergies => _.map(_.flatten(allergies), 'allergyId'));
-    }
-
-    function removeOldAndAddNewAllergies(participant, newAllergies) {
-      Promise.promisifyAll(participant);
-      return participant.allergies.destroyAll()
-      .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
-    }
-
-    if (ctx.instance && ctx.instance.participantId) {
-      return findKuksaParticipantById(ctx.instance.participantId, {
-        include: { 'extraSelections': 'group' },
-      }).then(participant => {
-        if (participant) { // We can only add allergies here to participants whose info is from kuksa
-          const selections = getAllSelectionsForGroups(participant.toJSON(), ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.']);
-          return Promise.join(
-            findParticipantById(ctx.instance.participantId),
-            getIdsForAllergies(_.flatten(selections)),
-            (p, allergies) => removeOldAndAddNewAllergies(p, allergies)
-          );
-        } else {
-          next();
-        }
-      }).asCallback(next);
-    } else {
-      next();
-    }
-  });
-
   Participant.afterRemote('create', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
