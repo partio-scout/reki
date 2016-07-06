@@ -543,7 +543,7 @@ describe('http api access control', () => {
         beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
 
         it('find: ok', () => get('/api/participants/1/allergies', accessToken).expect(OK));
-        it('findById: ok', () => get('/api/participants/1/allergies/1', accessToken).expect(OK));  // ei löydy, koska suhdetta ei ole olemassa
+        it('findById: ok', () => get('/api/participants/1/allergies/1', accessToken).expect(OK));
         it('count: ok', () => get('/api/participants/1/allergies/count', accessToken).expect(OK));
 
         it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
