@@ -185,6 +185,34 @@ export default function (Participant) {
     }
   };
 
+  Participant.getUserInformationForApp = (memberNumber, cb) => {
+    const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
+
+    findParticipant({
+      where: {
+        memberNumber: memberNumber,
+      },
+      fields: [
+        'firstName',
+        'lastName',
+        'phoneNumber',
+        'localGroup',
+        'campGroup',
+        'subCamp',
+        'village',
+        'ageGroup',
+        'memberNumber',
+      ],
+    }).then(user => {
+      cb(null, user);
+    }).catch(e => {
+      const err = new Error('Participant not found');
+      err.originalError = e;
+      err.status = 404;
+      cb(err);
+    });
+  };
+
   Participant.remoteMethod('massAssignField',
     {
       http: { path: '/update', verb: 'post' },
@@ -194,6 +222,16 @@ export default function (Participant) {
         { arg: 'newValue', type: 'string', required: 'true' },
       ],
       returns: { arg: 'result', type: 'string' },
+    }
+  );
+
+  Participant.remoteMethod('getUserInformationForApp',
+    {
+      http: { path: '/appInformation', verb: 'get' },
+      accepts: [
+        { arg: 'memberNumber', type: 'string', required: 'true' },
+      ],
+      returns: { type: 'object', root: true },
     }
   );
 }

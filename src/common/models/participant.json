@@ -323,6 +323,13 @@
       "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "massAssignField"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "roihuapp",
+      "permission": "ALLOW",
+      "property": "getUserInformationForApp"
     }
   ],
   "methods": {}
