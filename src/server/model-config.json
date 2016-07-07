@@ -64,6 +64,10 @@
     "dataSource": "db",
     "public": false
   },
+  "KuksaParticipantPaymentStatus": {
+    "dataSource": "db",
+    "public": false
+  },
   "KuksaExtraSelectionGroup": {
     "dataSource": "db",
     "public": false
