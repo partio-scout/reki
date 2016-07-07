@@ -43,6 +43,7 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
     constructor(props) {
       super(props);
       this.state = searchFilterStore.getState();
+      this.onChange = this.onChange.bind(this);
     }
 
     componentWillMount() {
@@ -50,14 +51,14 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
     }
 
     componentDidMount() {
-      searchFilterStore.listen(this.onSearchFilterStoreChange.bind(this));
+      searchFilterStore.listen(this.onChange);
     }
 
     componentWillUnMount() {
-      searchFilterStore.unlisten(this.onSearchFilterStoreChange.bind(this));
+      searchFilterStore.unlisten(this.onChange);
     }
 
-    onSearchFilterStoreChange(state) {
+    onChange(state) {
       this.setState(state);
     }
 
