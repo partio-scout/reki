@@ -49,6 +49,17 @@
     }
   },
   "validations": [],
-  "acls": [],
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "registryUser",
+      "permission": "ALLOW"
+    }
+  ],
   "methods": []
 }
