@@ -81,6 +81,30 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(542)).to.eventually.have.property('internationalGuest', false)
   );
 
+  it('sets the billed date as null if participant has not been billed',
+    () => expect(findParticipantById(1)).to.eventually.have.property('billedDate', null)
+  );
+
+  it('sets the paid date as null if participant has not paid the bill',
+    () => expect(findParticipantById(6)).to.eventually.have.property('paidDate', null)
+  );
+
+  it('sets the billed date if participant has been billed',
+    () => expect(findParticipantById(6)).to.eventually.have.property('billedDate').that.is.a('date')
+  );
+
+  it('sets the paid date if participant has paid',
+    () => expect(findParticipantById(497)).to.eventually.have.property('paidDate').that.is.a('date')
+  );
+
+  it('sets the billed date as null if payment status is missing',
+    () => expect(findParticipantById(38)).to.eventually.have.property('billedDate', null)
+  );
+
+  it('sets the paid date as null if payment status is missing',
+    () => expect(findParticipantById(38)).to.eventually.have.property('paidDate', null)
+  );
+
   after(() => {
     mockKuksa.stop();
   });

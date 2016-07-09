@@ -22,6 +22,7 @@ const modelList = [
   ['KuksaParticipant', false],
   ['KuksaExtraInfoField', false],
   ['KuksaParticipantExtraInfo', false],
+  ['KuksaParticipantPaymentStatus', false],
   ['KuksaExtraSelectionGroup', false],
   ['KuksaExtraSelection', false],
   ['KuksaParticipantExtraSelection', false],

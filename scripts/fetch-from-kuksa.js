@@ -133,7 +133,17 @@ function transferDataFromKuksa(eventApi) {
       transform: answer => ({
         participantId: answer.for,
         fieldId: answer.extraInfoField,
-        value: answer.value,
+        value: answer.value && answer.value.substring(0, 254),
+      }),
+      dateRange: dateRange,
+    },
+    {
+      getFromSource: eventApi.getParticipantPaymentStatus,
+      targetModel: app.models.KuksaParticipantPaymentStatus,
+      transform: status => ({
+        participantId: status.for,
+        billed: status.billed,
+        paid: status.paid,
       }),
       dateRange: dateRange,
     },
@@ -203,6 +213,13 @@ function rebuildParticipantsTable() {
     return selection ? selection.name : null;
   }
 
+  function getPaymentStatus(statuses, type) {
+    if (!statuses) {
+      return null;
+    }
+    return statuses[type] || null;
+  }
+
   console.log('Rebuilding participants table...');
 
   return findKuksaParticipants({
@@ -213,6 +230,7 @@ function rebuildParticipantsTable() {
       'village',
       { 'extraInfos': 'field' },
       { 'extraSelections': 'group' },
+      'paymentStatus',
     ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
@@ -222,6 +240,8 @@ function rebuildParticipantsTable() {
     lastName: participant.lastName,
     memberNumber: participant.memberNumber,
     dateOfBirth: participant.dateOfBirth,
+    billedDate: getPaymentStatus(participant.paymentStatus, 'billed'),
+    paidDate: getPaymentStatus(participant.paymentStatus, 'paid'),
     phoneNumber: participant.phoneNumber,
     email: participant.email,
     internationalGuest: !!participant.localGroup,
