@@ -131,7 +131,7 @@ function transferDataFromKuksa(eventApi) {
       transform: answer => ({
         participantId: answer.for,
         fieldId: answer.extraInfoField,
-        value: answer.value,
+        value: answer.value && answer.value.substring(0, 254),
       }),
       dateRange: dateRange,
     },
