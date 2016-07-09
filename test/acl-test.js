@@ -140,6 +140,10 @@ describe('http api access control', () => {
     it('Should not be exposed through http', () => get('/api/kuksaparticipantextrainfos').expect(NOT_FOUND));
   });
 
+  describe('KuksaParticipantPaymentStatus', () => {
+    it('Should not be exposed through http', () => get('/api/kuksaparticipantpaymentstatuses').expect(NOT_FOUND));
+  });
+
   describe('KuksaExtraSelectionGroup', () => {
     it('Should not be exposed through http', () => get('/api/kuksaextraselectiongroups').expect(NOT_FOUND));
   });

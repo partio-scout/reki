@@ -82,6 +82,28 @@
         "nullable": "YES"
       }
     },
+    "billedDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "billed_date",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "paidDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "paid_date",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "dateOfBirth": {
       "type": "date",
       "postgresql": {
