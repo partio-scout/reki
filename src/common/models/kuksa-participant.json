@@ -196,6 +196,11 @@
       "model": "KuksaParticipantExtraInfo",
       "foreignKey": "participantId"
     },
+    "paymentStatus": {
+      "type": "hasOne",
+      "model": "KuksaParticipantPaymentStatus",
+      "foreignKey": "participantId"
+    },
     "extraSelections": {
       "type": "hasMany",
       "model": "KuksaExtraSelection",
