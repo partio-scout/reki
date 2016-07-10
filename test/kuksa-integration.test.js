@@ -13,6 +13,8 @@ chai.use(chaiAsPromised);
 describe('Kuksa integration', () => {
   const countParticipants = Promise.promisify(app.models.Participant.count, { context: app.models.Participant });
   const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
+  const countAllergies = Promise.promisify(app.models.Allergy.count, { context: app.models.Allergy });
+  const findAllergyById = Promise.promisify(app.models.Allergy.findById, { context: app.models.Allergy });
 
   before(function(done) {
     this.timeout(30000);
@@ -79,6 +81,18 @@ describe('Kuksa integration', () => {
 
   it('sets internationalGuest status as false if no localGroup is set',
     () => expect(findParticipantById(542)).to.eventually.have.property('internationalGuest', false)
+  );
+
+  it('produces the expected amount of allergies in the database',
+    () => expect(countAllergies()).to.eventually.equal(26)
+  );
+
+  it('correctly transfers allergies',
+    () => expect(findAllergyById(415)).to.eventually.have.property('name', 'Herne, kypsä')
+  );
+
+  it('correctly transfers diets',
+    () => expect(findAllergyById(406)).to.eventually.have.property('name', 'Gluteeniton')
   );
 
   after(() => {
