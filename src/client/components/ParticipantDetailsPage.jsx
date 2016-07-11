@@ -9,7 +9,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     constructor(props) {
       super(props);
       this.state = participantStore.getState();
-      this.onChange = this.onChange.bind(this);
+      this.onStoreChanged = this.onStoreChanged.bind(this);
     }
 
     componentWillMount() {
@@ -17,14 +17,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     componentDidMount() {
-      participantStore.listen(this.onChange);
+      participantStore.listen(this.onStoreChanged);
     }
 
     componentWillUnMount() {
-      participantStore.unlisten(this.onChange);
+      participantStore.unlisten(this.onStoreChanged);
     }
 
-    onChange(state) {
+    onStoreChanged(state) {
       this.setState(state);
     }
 

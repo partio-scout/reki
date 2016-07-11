@@ -12,7 +12,7 @@ const options = [
   'unity',
 ];
 
-export function getSubCampFilterContainer() {
+export function getSubCampFilterContainer(participantStore, participantActions) {
   const PropertySelect = getPropertySelect();
 
   function SubCampFilterContainer({ onChange, currentSelection }) {
