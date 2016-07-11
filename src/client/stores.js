@@ -2,3 +2,4 @@
 
 export { getParticipantStore } from './stores/ParticipantStore';
 export { getRegistryUserStore } from './stores/RegistryUserStore';
+export { getSearchFilterStore } from './stores/SearchFilterStore';

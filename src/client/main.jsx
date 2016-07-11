@@ -23,12 +23,16 @@ const request = superagentAsPromised(superagent);
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants', accessToken);
 const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
+const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
 
 const alt = new Alt();
 
 const participantActions = actions.getParticipantActions(alt, participantResource);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
+
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
+const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp(registryUserStore, registryUserActions);
@@ -41,7 +45,7 @@ const ParticipantDetailsPage = restrictComponent(
 );
 const ParticipantListPage = restrictComponent(
   registryUserStore,
-  components.getParticipantListPage(participantStore, participantActions),
+  components.getParticipantListPage(participantStore, participantActions, searchFilterActions),
   LoginPromptPage
 );
 const UserManagementPage = restrictComponent(
@@ -49,6 +53,11 @@ const UserManagementPage = restrictComponent(
   components.getUserManagementPage(registryUserStore, registryUserActions),
   LoginPromptPage
 );
+const participantSidebar = restrictComponent(
+  registryUserStore,
+  components.getParticipantSidebar(searchFilterStore, searchFilterActions)
+);
+const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
 
 const accessTokenValid = accessToken && accessToken.userId && accessToken.ttl > ((Date.now() - new Date(accessToken.created)) / 1000);
 
@@ -64,12 +73,12 @@ if (accessTokenValid) {
 const routes = (
   <Router history={ browserHistory }>
     <Route path="/" component={ app }>
-      <IndexRoute component={ homepage } />
+      <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
       <Route path="participants">
-        <IndexRoute component={ ParticipantListPage } />
-        <Route path=":id" component={ ParticipantDetailsPage } />
+        <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
+        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
       </Route>
-      <Route path="admin" component={ UserManagementPage } />
+      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
     </Route>
   </Router>
 );
