@@ -38,6 +38,7 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.participantDetails = {};
       this.participantCount = 0;
 
+      this.subCamps = [''];
       this.localGroups = [''];
       this.campGroups = [''];
     }
