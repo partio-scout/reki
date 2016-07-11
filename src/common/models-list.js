@@ -13,6 +13,7 @@ const modelList = [
   ['Participant', false],
   ['PresenceHistory', false],
   ['AuditEvent', false],
+  ['SearchFilter', false],
   ['KuksaSubCamp', false],
   ['KuksaVillage', false],
   ['KuksaCampGroup', false],

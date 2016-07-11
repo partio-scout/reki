@@ -554,4 +554,52 @@ describe('http api access control', () => {
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));
     });
   });
+
+  describe('SearchFilter', () => {
+    const searchFilterFixture1 = {
+      id: 1,
+      name: 'derp',
+      filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
+    };
+
+    const searchFilterFixture2 = {
+      id: 2,
+      name: 'durp',
+      filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
+    };
+
+    beforeEach(() =>
+      testUtils.createFixture('SearchFilter', searchFilterFixture1)
+    );
+
+    describe('Unauthenticated user', () => {
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2)
+        .expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1').expect(UNAUTHORIZED));
+    });
+
+    describe('registryUser', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
+
+      it('find: ok', () => get('/api/searchfilters', accessToken)
+        .expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterFixture2, accessToken)
+        .expect(OK));
+      it('deleteById: ok', () => del('/api/searchfilters/1', accessToken).expect(OK));
+    });
+
+    describe('registryAdmin', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryAdmin().tap(at => accessToken = at.id));
+
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters', accessToken)
+        .expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2, accessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', accessToken).expect(UNAUTHORIZED));
+    });
+  });
 });

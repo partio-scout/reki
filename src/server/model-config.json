@@ -32,6 +32,10 @@
     "dataSource": "db",
     "public": true
   },
+  "SearchFilter": {
+    "dataSource": "db",
+    "public": true
+  },
   "AuditEvent": {
     "dataSource": "db",
     "public": false
