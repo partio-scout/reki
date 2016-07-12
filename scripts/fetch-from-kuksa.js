@@ -24,6 +24,7 @@ function main() {
     .then(getEventApi)
     .then(transferDataFromKuksa)
     .then(rebuildParticipantsTable)
+    .then(addAllergiesToParticipants)
     .then(deleteCancelledParticipants);
 }
 
@@ -114,6 +115,7 @@ function transferDataFromKuksa(eventApi) {
         campGroupId: participant.campGroup,
         subCampId: participant.subCamp,
         cancelled: participant.cancelled,
+        diet: participant.diet,
       }),
       dateRange: dateRange,
     },
@@ -163,6 +165,17 @@ function transferDataFromKuksa(eventApi) {
       }),
     },
   ])
+  .then(() => {
+    // Get all the possible allergies as Allergy-instances
+    const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
+    const findExtraSelectionGroups = Promise.promisify(app.models.KuksaExtraSelectionGroup.find, { context: app.models.KuksaExtraSelectionGroup });
+    const findExtraSelections = Promise.promisify(app.models.KuksaExtraSelection.find, { context: app.models.KuksaExtraSelection });
+
+    return findExtraSelectionGroups({ where: { name: { inq: ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'] } } })
+      .then(selGroups => findExtraSelections({ where: { groupId: { inq: [selGroups[0].id, selGroups[1].id] } } }))
+      .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
+      .then(selections => Promise.each(selections, s => upsertAllergy(s)));
+  })
   .then(() => {
     // In order to remove deleted extra selections we need to delete all extra selections
     // for the participant before inserting. Thus we need special treatment.
@@ -232,6 +245,7 @@ function rebuildParticipantsTable() {
     phoneNumber: participant.phoneNumber,
     email: participant.email,
     internationalGuest: !!participant.localGroup,
+    diet: participant.diet,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: _.get(participant, 'subCamp.name') || 'Muu',
@@ -253,6 +267,33 @@ function rebuildParticipantsTable() {
       Promise.resolve()
     )
   ).then(() => console.log('Rebuild complete.'));
+}
+
+function addAllergiesToParticipants() {
+  const findParticipants = Promise.promisify(Participant.find, { context: Participant });
+
+  function removeOldAndAddNewAllergies(participant, newAllergies) {
+    Promise.promisifyAll(participant);
+    return participant.allergies.destroyAll()
+    .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
+  }
+
+  function findParticipantsAllergies(participant) {
+    const findAllergies = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
+    const findSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
+
+    return findAllergies()
+    .then(allergies => _.map(allergies, 'allergyId'))
+    .then(allergies => findSelections({ where: { and: [{ participantId: participant.participantId }, { selectionId: { inq: allergies } }] } }))
+    .then(participantsAllergies => _.map(participantsAllergies, 'selectionId'));
+  }
+
+  console.log('Adding allergies and diets to participants...');
+
+  return findParticipants()
+  .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
+    .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
+    .then(() => console.log('Allergies and diets added.'));
 }
 
 function deleteCancelledParticipants() {

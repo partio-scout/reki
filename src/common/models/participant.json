@@ -315,6 +315,18 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "diet": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "diet",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],
@@ -323,6 +335,10 @@
       "type": "hasMany",
       "model": "PresenceHistory",
       "foreignKey": ""
+    },
+    "allergies": {
+      "type": "hasAndBelongsToMany",
+      "model": "Allergy"
     }
   },
   "acls": [
