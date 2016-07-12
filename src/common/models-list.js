@@ -23,6 +23,8 @@ const modelList = [
   ['KuksaExtraSelectionGroup', false],
   ['KuksaExtraSelection', false],
   ['KuksaParticipantExtraSelection', false],
+  ['KuksaPayment', false],
+  ['KuksaParticipantPayment', false],
 ];
 
 export function getModelCreationList() {

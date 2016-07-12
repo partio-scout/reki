@@ -75,5 +75,13 @@
   "KuksaParticipantExtraSelection": {
     "dataSource": "db",
     "public": false
+  },
+  "KuksaPayment": {
+    "dataSource": "db",
+    "public": false
+  },
+  "KuksaParticipantPayment": {
+    "dataSource": "db",
+    "public": false
   }
 }
