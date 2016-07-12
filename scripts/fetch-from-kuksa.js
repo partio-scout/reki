@@ -117,6 +117,22 @@ function transferDataFromKuksa(eventApi) {
       dateRange: dateRange,
     },
     {
+      getFromSource: eventApi.getPayments,
+      targetModel: app.models.KuksaPayment,
+      transform: field => ({
+        id: field.id,
+        name: field.name.fi,
+      }),
+    },
+    {
+      getFromSource: eventApi.getParticipantPayments,
+      targetModel: app.models.KuksaParticipantPayment,
+      transform: field => ({
+        participantId: field.from,
+        paymentId: field.to,
+      }),
+    },
+    {
       getFromSource: eventApi.getExtraInfoFields,
       targetModel: app.models.KuksaExtraInfoField,
       transform: field => ({
