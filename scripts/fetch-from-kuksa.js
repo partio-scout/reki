@@ -108,6 +108,7 @@ function transferDataFromKuksa(eventApi) {
         dateOfBirth: new Date(participant.birthDate),
         phoneNumber: participant.phoneNumber,
         email: participant.email,
+        representedParty: participant.representedParty,
         localGroupId: participant.group,
         villageId: participant.village,
         campGroupId: participant.campGroup,
@@ -146,7 +147,17 @@ function transferDataFromKuksa(eventApi) {
       transform: answer => ({
         participantId: answer.for,
         fieldId: answer.extraInfoField,
-        value: answer.value,
+        value: answer.value && answer.value.substring(0, 254),
+      }),
+      dateRange: dateRange,
+    },
+    {
+      getFromSource: eventApi.getParticipantPaymentStatus,
+      targetModel: app.models.KuksaParticipantPaymentStatus,
+      transform: status => ({
+        participantId: status.for,
+        billed: status.billed,
+        paid: status.paid,
       }),
       dateRange: dateRange,
     },
@@ -205,6 +216,13 @@ function rebuildParticipantsTable() {
     return selection ? selection.name : null;
   }
 
+  function getPaymentStatus(statuses, type) {
+    if (!statuses) {
+      return null;
+    }
+    return statuses[type] || null;
+  }
+
   console.log('Rebuilding participants table...');
 
   return findKuksaParticipants({
@@ -215,6 +233,7 @@ function rebuildParticipantsTable() {
       'village',
       { 'extraInfos': 'field' },
       { 'extraSelections': 'group' },
+      'paymentStatus',
     ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
@@ -224,14 +243,18 @@ function rebuildParticipantsTable() {
     lastName: participant.lastName,
     memberNumber: participant.memberNumber,
     dateOfBirth: participant.dateOfBirth,
+    billedDate: getPaymentStatus(participant.paymentStatus, 'billed'),
+    paidDate: getPaymentStatus(participant.paymentStatus, 'paid'),
     phoneNumber: participant.phoneNumber,
     email: participant.email,
-    localGroup: _.get(participant, 'localGroup.name') || 'Muu',
+    internationalGuest: !!participant.localGroup,
+    localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: _.get(participant, 'subCamp.name') || 'Muu',
     village: _.get(participant, 'village.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
-    nonScout: false,
+    // Not a scout if a) no finnish member number 2) not part of international group ("local group")
+    nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
     staffPosition: getInfoForField(participant, 'Pesti'),
     staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
     willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),

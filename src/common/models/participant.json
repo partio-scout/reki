@@ -58,12 +58,47 @@
         "nullable": "NO"
       }
     },
+    "internationalGuest": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "postgresql": {
+        "columnName": "international_guest",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
     "memberNumber": {
       "type": "string",
       "postgresql": {
         "columnName": "member_number",
         "dataType": "character varying",
         "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "billedDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "billed_date",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "paidDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "paid_date",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"

@@ -190,6 +190,19 @@ table {
   position: absolute;
 }
 
+.sidebar-list {
+  list-style-type: none;
+  margin-top: 10px;
+  padding-left: 0px;
+  li {
+    overflow: auto;
+  }
+  button {
+    color: $red;
+    float: right;
+  }
+}
+
 /**
  * Wells
  */
@@ -207,7 +220,6 @@ table {
 
 .form-inline {
   .form-group {
-    margin-right: 1em;
     margin-bottom: 1em;
 
     &:last-child {
@@ -218,13 +230,18 @@ table {
   .control-label {
     margin-right: 0.5em;
   }
+}
 
+@media screen and (min-width: $screen-sm-min) {
+  .form-inline .form-group {
+    margin-right: 1em;
+  }
 }
 
 /**
  *  in camp status
  */
- 
+
 .presence {
   .ball {
     display: inline-block;
@@ -251,7 +268,6 @@ table .presence {
     display: none;
   }
 }
-
 
 /*
  * Search tools
@@ -314,4 +330,12 @@ table .presence {
     min-height: auto;
   }
 
+}
+
+@media screen and (min-width: $screen-sm-min) {
+  .sm-position-right-top {
+    position: absolute;
+    top: 1em;
+    right: 2em;
+  }
 }

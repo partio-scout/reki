@@ -140,6 +140,10 @@ describe('http api access control', () => {
     it('Should not be exposed through http', () => get('/api/kuksaparticipantextrainfos').expect(NOT_FOUND));
   });
 
+  describe('KuksaParticipantPaymentStatus', () => {
+    it('Should not be exposed through http', () => get('/api/kuksaparticipantpaymentstatuses').expect(NOT_FOUND));
+  });
+
   describe('KuksaExtraSelectionGroup', () => {
     it('Should not be exposed through http', () => get('/api/kuksaextraselectiongroups').expect(NOT_FOUND));
   });
@@ -158,6 +162,7 @@ describe('http api access control', () => {
       firstName: 'derp',
       lastName: 'durp',
       nonScout: false,
+      internationalGuest: false,
       memberNumber: '1234',
       dateOfBirth: new Date(),
       email: 'derp@example.com',
@@ -172,6 +177,7 @@ describe('http api access control', () => {
       firstName: 'derp',
       lastName: 'durp',
       nonScout: false,
+      internationalGuest: false,
       memberNumber: '1234',
       dateOfBirth: new Date(),
       email: 'derp@example.com',
@@ -267,6 +273,7 @@ describe('http api access control', () => {
       firstName: 'derp',
       lastName: 'durp',
       nonScout: false,
+      internationalGuest: false,
       memberNumber: '1234',
       dateOfBirth: new Date(),
       email: 'derp@example.com',
@@ -296,11 +303,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists').expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count').expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1').expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1').expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }).expect(NOT_FOUND));
       });
 
       describe('Authenticated user without roles', () => {
@@ -314,11 +321,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
 
       describe('registryUser', () => {
@@ -332,11 +339,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
 
       describe('registryAdmin', () => {
@@ -350,11 +357,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
     });
 
@@ -545,6 +552,54 @@ describe('http api access control', () => {
       it('logout: OK', () => post('/api/registryusers/logout', null, accessToken).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, accessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));
+    });
+  });
+
+  describe('SearchFilter', () => {
+    const searchFilterFixture1 = {
+      id: 1,
+      name: 'derp',
+      filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
+    };
+
+    const searchFilterFixture2 = {
+      id: 2,
+      name: 'durp',
+      filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
+    };
+
+    beforeEach(() =>
+      testUtils.createFixture('SearchFilter', searchFilterFixture1)
+    );
+
+    describe('Unauthenticated user', () => {
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2)
+        .expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1').expect(UNAUTHORIZED));
+    });
+
+    describe('registryUser', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
+
+      it('find: ok', () => get('/api/searchfilters', accessToken)
+        .expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterFixture2, accessToken)
+        .expect(OK));
+      it('deleteById: ok', () => del('/api/searchfilters/1', accessToken).expect(OK));
+    });
+
+    describe('registryAdmin', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryAdmin().tap(at => accessToken = at.id));
+
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters', accessToken)
+        .expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2, accessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', accessToken).expect(UNAUTHORIZED));
     });
   });
 });

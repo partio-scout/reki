@@ -21,10 +21,10 @@ export function getApp(registryUserStore, registryUserActions) {
           <Grid fluid className="page-content">
             <Row>
               <Col sm={ 2 } className="sidebar">
-                <p>&nbsp;</p>
+                { this.props.sidebar }
               </Col>
               <Col sm={ 10 } smOffset={ 2 } className="main">
-                { this.props.children }
+                { this.props.main }
               </Col>
             </Row>
           </Grid>
@@ -34,7 +34,8 @@ export function getApp(registryUserStore, registryUserActions) {
   }
 
   App.propTypes = {
-    children: React.PropTypes.node,
+    sidebar: React.PropTypes.node,
+    main: React.PropTypes.node,
   };
 
   return App;

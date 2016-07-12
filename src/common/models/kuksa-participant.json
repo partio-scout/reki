@@ -91,6 +91,17 @@
         "nullable": "YES"
       }
     },
+    "representedParty": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "represented_party",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "localGroupId": {
       "type": "number",
       "postgresql": {
@@ -172,6 +183,11 @@
     "extraInfos": {
       "type": "hasMany",
       "model": "KuksaParticipantExtraInfo",
+      "foreignKey": "participantId"
+    },
+    "paymentStatus": {
+      "type": "hasOne",
+      "model": "KuksaParticipantPaymentStatus",
       "foreignKey": "participantId"
     },
     "extraSelections": {

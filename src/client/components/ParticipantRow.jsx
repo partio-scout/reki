@@ -24,11 +24,13 @@ function getNullableFormatter(finalFormatter) {
   };
 }
 
-const formatGender = getNullableFormatter(gender => gender ? 'mies' : 'nainen');
 const formatNonScout = getNullableFormatter(nonScout => nonScout ? 'EVP' : 'partiolainen');
 const formatNullableBoolean = getNullableFormatter(b => b ? 'kyllä' : 'ei');
 const formatNullableString = getNullableFormatter();
 const formatDate = dateString => {
+  if (!dateString) {
+    return null;
+  }
   const date = new Date(dateString);
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
 };
@@ -40,8 +42,9 @@ export class ParticipantRow extends React.Component {
       firstName,
       lastName,
       dateOfBirth,
-      gender,
       nonScout,
+      billedDate,
+      paidDate,
       memberNumber,
       homeCity,
       staffPosition,
@@ -74,9 +77,10 @@ export class ParticipantRow extends React.Component {
         <LinkCell href={ href }>{ firstName }</LinkCell>
         <LinkCell href={ href }>{ lastName }</LinkCell>
         <td>{ formatDate(dateOfBirth) }</td>
-        <td>{ formatGender(gender) }</td>
         <td>{ formatNonScout(nonScout) }</td>
         <td>{ memberNumber }</td>
+        <td>{ formatDate(billedDate) || 'Ei' }</td>
+        <td>{ formatDate(paidDate) || 'Ei' }</td>
         <td>{ formatNullableString(homeCity) }</td>
         <td>{ formatNullableString(staffPosition) }</td>
         <td>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
