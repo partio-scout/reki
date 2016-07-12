@@ -28,6 +28,10 @@
     "dataSource": "db",
     "public": true
   },
+  "ParticipantDate": {
+    "dataSource": "db",
+    "public": true
+  },
   "PresenceHistory": {
     "dataSource": "db",
     "public": true
