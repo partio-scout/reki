@@ -95,6 +95,10 @@ describe('Kuksa integration', () => {
     () => expect(findAllergyById(406)).to.eventually.have.property('name', 'Gluteeniton')
   );
 
+  it('correctly transfers participants allergies',
+    () => expect(findParticipantById(448, { include: 'allergies' }).then(p => p.toJSON())).to.eventually.have.deep.property('allergies[0].name', 'Porkkana, kypsä')
+  );
+
   it('sets the billed date as null if participant has not been billed',
     () => expect(findParticipantById(1)).to.eventually.have.property('billedDate', null)
   );
