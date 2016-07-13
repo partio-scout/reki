@@ -4,7 +4,6 @@ import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
-import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
@@ -12,7 +11,6 @@ import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
-  const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
@@ -57,7 +55,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Lippukunta"
+              property="localGroup"
+            />
             <PropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
