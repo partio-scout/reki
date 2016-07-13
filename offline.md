@@ -1,18 +1,18 @@
 #Our server went offline, what to do
 ##Step 1
-Create ACL for registryUser
+Allow (modify) ACL login for registryUser into
 '''json
     {
-      "accessType": "WRITE",
+      "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$unauthenticated",
+      "principalId": "$everyone",
       "permission": "ALLOW",
-      "property": "updateAttributes"
+      "property": "login"
     },
 '''
 ##Step 2
 Run 'npm run set-password <email> <password>' for each user
 ##Step 3
-Delete ACL created in step 1
+Update ACL modified in step 1 back to its original form.
 ##Loggin in
 User can log in in pathname '/login'.

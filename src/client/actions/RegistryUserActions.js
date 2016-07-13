@@ -52,7 +52,13 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return dispatch => {
         dispatch();
         return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
-          .then(data => Cookie.set('accessToken', data.id, { secure: true }))
+          .then(data =>{
+            if (window.location.protocol === 'https:') {
+              Cookie.set('accessToken', data.id, { secure: true });
+            } else {
+              Cookie.set('accessToken', data.id);
+            }
+          })
           .then(() => location.reload());
       };
     }
