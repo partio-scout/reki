@@ -6,6 +6,7 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
     constructor(props) {
       super(props);
       this.state = registryUserStore.getState();
+      this.onStoreChanged = this.onStoreChanged.bind(this);
     }
 
     componentWillMount() {
@@ -13,14 +14,14 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
     }
 
     componentDidMount() {
-      registryUserStore.listen(this.onregistryUserStoreChange.bind(this));
+      registryUserStore.listen(this.onStoreChanged);
     }
 
     componentWillUnMount() {
-      registryUserStore.unlisten(this.onregistryUserStoreChange.bind(this));
+      registryUserStore.unlisten(this.onStoreChanged);
     }
 
-    onregistryUserStoreChange(state) {
+    onStoreChanged(state) {
       this.setState(state);
     }
 

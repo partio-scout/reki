@@ -145,6 +145,10 @@ describe('http api access control', () => {
     it('Should not be exposed through http', () => get('/api/kuksaparticipantextrainfos').expect(NOT_FOUND));
   });
 
+  describe('KuksaParticipantPaymentStatus', () => {
+    it('Should not be exposed through http', () => get('/api/kuksaparticipantpaymentstatuses').expect(NOT_FOUND));
+  });
+
   describe('KuksaExtraSelectionGroup', () => {
     it('Should not be exposed through http', () => get('/api/kuksaextraselectiongroups').expect(NOT_FOUND));
   });
@@ -334,11 +338,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists').expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count').expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1').expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1').expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }).expect(NOT_FOUND));
       });
 
       describe('Authenticated user without roles', () => {
@@ -352,11 +356,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
 
       describe('registryUser', () => {
@@ -370,11 +374,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
 
       describe('registryAdmin', () => {
@@ -388,11 +392,11 @@ describe('http api access control', () => {
         it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', accessToken).expect(UNAUTHORIZED));
         it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', accessToken).expect(UNAUTHORIZED));
 
-        it('create: UNAUTHORIZED', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/PresenceHistories/1', accessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
-        it('upsert (insert): UNAUTHORIZED', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
-        it('upsert (update): UNAUTHORIZED', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', accessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, accessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, accessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, accessToken).expect(NOT_FOUND));
       });
 
       describe('roihuapp user', () => {
@@ -479,6 +483,157 @@ describe('http api access control', () => {
         it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, accessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', accessToken).expect(UNAUTHORIZED));
         it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
+      });
+    });
+  });
+
+  describe('Allergy', () => {
+    const participantFixture = {
+      participantId: 1,
+      firstName: 'derp',
+      lastName: 'durp',
+      nonScout: false,
+      memberNumber: '1234',
+      dateOfBirth: new Date(),
+      email: 'derp@example.com',
+      localGroup: 'localgroup',
+      campGroup: 'campGroup',
+      subCamp: 'subCamp',
+      ageGroup: 'vaeltaja',
+      village: 'Kylä',
+    };
+    const allergyFixture = {
+      allergyId: 1,
+      name: 'allergia',
+    };
+
+    beforeEach(() =>
+      testUtils.createFixture('Allergy', allergyFixture)
+        .then(() => testUtils.createFixture('Participant', participantFixture))
+        .then(participant => testUtils.find('Participant', { where: { participantId: participant.participantId } }))
+        .then(participants => participants[0].allergies.add(allergyFixture.allergyId))
+    );
+
+    describe('Directly', () => {
+      describe('Unauthenticated user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/Allergies').expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Allergies/1').expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Allergies/findOne').expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Allergies/1/exists').expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Allergies/count').expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/Allergies', allergyFixture).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Allergies/1').expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Allergies/1', { arrived: new Date() }).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }).expect(UNAUTHORIZED));
+      });
+
+      describe('Authenticated user without roles', () => {
+        let accessToken;
+
+        beforeEach(() => logInUserWithoutRoles().tap(at => accessToken = at.id));
+
+        it('find: UNAUTHORIZED', () => get('/api/Allergies', accessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Allergies/findOne', accessToken).expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Allergies/1/exists', accessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Allergies/count', accessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Allergies/1', { arrived: new Date() }, accessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryUser', () => {
+        let accessToken;
+
+        beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
+
+        it('find: AUTHORIZED', () => get('/api/Allergies', accessToken).expect(OK));
+        it('findById: AUTHORIZED', () => get('/api/Allergies/1', accessToken).expect(OK));
+        it('findOne: AUTHORIZED', () => get('/api/Allergies/findOne', accessToken).expect(OK));
+        it('exists: AUTHORIZED', () => get('/api/Allergies/1/exists', accessToken).expect(OK));
+        it('count: AUTHORIZED', () => get('/api/Allergies/count', accessToken).expect(OK));
+        it('create: UNAUTHORIZED', () => post('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Allergies/1', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryAdmin', () => {
+        let accessToken;
+
+        beforeEach(() => logInRegistryAdmin().tap(at => accessToken = at.id));
+
+        it('find: AUTHORIZED', () => get('/api/Allergies', accessToken).expect(OK));
+        it('findById: AUTHORIZED', () => get('/api/Allergies/1', accessToken).expect(OK));
+        it('findOne: AUTHORIZED', () => get('/api/Allergies/findOne', accessToken).expect(OK));
+        it('exists: AUTHORIZED', () => get('/api/Allergies/1/exists', accessToken).expect(OK));
+        it('count: AUTHORIZED', () => get('/api/Allergies/count', accessToken).expect(OK));
+
+        it('create: UNAUTHORIZED', () => post('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Allergies/1', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+      });
+    });
+
+    describe('Through the participant', () => {
+      describe('Unauthenticated user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/allergies').expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/allergies/1').expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/allergies/count').expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1').expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }).expect(UNAUTHORIZED));
+      });
+
+      describe('Authenticated user without roles', () => {
+        let accessToken;
+
+        beforeEach(() => logInUserWithoutRoles().tap(at => accessToken = at.id));
+
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/allergies', accessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/allergies/count', accessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryUser', () => {
+        let accessToken;
+
+        beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
+
+        it('find: ok', () => get('/api/participants/1/allergies', accessToken).expect(OK));
+        it('findById: ok', () => get('/api/participants/1/allergies/1', accessToken).expect(OK));
+        it('count: ok', () => get('/api/participants/1/allergies/count', accessToken).expect(OK));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryAdmin', () => {
+        let accessToken;
+
+        beforeEach(() => logInRegistryAdmin().tap(at => accessToken = at.id));
+
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/allergies', accessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/allergies/count', accessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, accessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', accessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, accessToken).expect(UNAUTHORIZED));
       });
     });
   });
@@ -646,6 +801,54 @@ describe('http api access control', () => {
       it('logout: OK', () => post('/api/registryusers/logout', null, accessToken).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, accessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));
+    });
+  });
+
+  describe('SearchFilter', () => {
+    const searchFilterFixture1 = {
+      id: 1,
+      name: 'derp',
+      filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
+    };
+
+    const searchFilterFixture2 = {
+      id: 2,
+      name: 'durp',
+      filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
+    };
+
+    beforeEach(() =>
+      testUtils.createFixture('SearchFilter', searchFilterFixture1)
+    );
+
+    describe('Unauthenticated user', () => {
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2)
+        .expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1').expect(UNAUTHORIZED));
+    });
+
+    describe('registryUser', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryUser().tap(at => accessToken = at.id));
+
+      it('find: ok', () => get('/api/searchfilters', accessToken)
+        .expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterFixture2, accessToken)
+        .expect(OK));
+      it('deleteById: ok', () => del('/api/searchfilters/1', accessToken).expect(OK));
+    });
+
+    describe('registryAdmin', () => {
+      let accessToken;
+
+      beforeEach(() => logInRegistryAdmin().tap(at => accessToken = at.id));
+
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters', accessToken)
+        .expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2, accessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', accessToken).expect(UNAUTHORIZED));
     });
   });
 });

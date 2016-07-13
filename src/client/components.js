@@ -2,6 +2,8 @@
 export { getApp } from './components/App/App';
 export { getHomepage } from './components/Homepage';
 export { getParticipantListPage } from './components/ParticipantListPage/ParticipantListPage';
+export { getParticipantSidebar } from './components/ParticipantListPage/ParticipantSidebar';
+export { defaultSidebar } from './components/DefaultSidebar';
 export { getParticipantDetailsPage } from './components/ParticipantDetailsPage';
 export { ParticipantRow } from './components/ParticipantRow';
 export { ListOffsetSelector } from './components/ListOffsetSelector';

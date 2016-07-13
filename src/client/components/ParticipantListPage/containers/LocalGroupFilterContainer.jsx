@@ -9,6 +9,7 @@ export function getLocalGroupFilterContainer(participantStore, participantAction
       super(props);
 
       this.state = this.extractState();
+      this.onStoreChanged = this.onStoreChanged.bind(this);
     }
 
     componentWillMount() {
@@ -16,11 +17,11 @@ export function getLocalGroupFilterContainer(participantStore, participantAction
     }
 
     componentDidMount() {
-      participantStore.listen(this.onStoreChanged.bind(this));
+      participantStore.listen(this.onStoreChanged);
     }
 
     componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChanged.bind(this));
+      participantStore.unlisten(this.onStoreChanged);
     }
 
     onStoreChanged() {

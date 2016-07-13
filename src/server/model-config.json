@@ -32,9 +32,17 @@
     "dataSource": "db",
     "public": true
   },
+  "SearchFilter": {
+    "dataSource": "db",
+    "public": true
+  },
   "AuditEvent": {
     "dataSource": "db",
     "public": false
+  },
+  "Allergy": {
+    "dataSource": "db",
+    "public": true
   },
   "KuksaSubCamp": {
     "dataSource": "db",
@@ -61,6 +69,10 @@
     "public": false
   },
   "KuksaParticipantExtraInfo": {
+    "dataSource": "db",
+    "public": false
+  },
+  "KuksaParticipantPaymentStatus": {
     "dataSource": "db",
     "public": false
   },
