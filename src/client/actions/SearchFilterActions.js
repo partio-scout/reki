@@ -48,19 +48,19 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
     }
 
     loadOptions(property) {
-      function processResults(result) {
-        const optionStrings = result.map(obj => obj[property]);
-        const uniqueStrings = _.uniq(optionStrings);
-        uniqueStrings.sort();
-        return _.concat([''], uniqueStrings);
-      }
-
       return dispatch => {
         dispatch();
         participantResource.findAll(`filter[fields][${property}]=true`)
           .then(response => this.optionsLoaded(property, processResults(response)),
                 err => this.optionsLoadingFailed(err));
       };
+
+      function processResults(result) {
+        const optionStrings = result.map(obj => obj[property]);
+        const uniqueStrings = _.uniq(optionStrings);
+        uniqueStrings.sort();
+        return _.concat([''], uniqueStrings);
+      }
     }
 
     optionsLoaded(property, options) {
