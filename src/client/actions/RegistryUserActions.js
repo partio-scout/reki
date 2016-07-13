@@ -48,6 +48,14 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return newCurrentUser;
     }
 
+    loginOffline(email, pass) {
+      return dispatch => {
+        dispatch();
+        registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
+          .then(data => Cookie.set('accessToken', data));
+      };
+    }
+
     currentUserUpdateFailed(error) {
       return error;
     }
