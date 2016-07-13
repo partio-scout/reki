@@ -51,8 +51,9 @@ export function getRegistryUserActions(alt, registryUserResource) {
     loginOffline(email, pass) {
       return dispatch => {
         dispatch();
-        registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
-          .then(data => Cookie.set('accessToken', data));
+        return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
+          .then(data => Cookie.set('accessToken', data.id, { secure: true }))
+          .then(() => location.reload());
       };
     }
 
