@@ -75,6 +75,30 @@ export function getParticipantActions(alt, participantResource) {
       return err;
     }
 
+    loadSubCamps() {
+      function processResults(result) {
+        const subCampStrings = result.map(obj => obj.subCamp);
+        const uniqueStrings = _.uniq(subCampStrings);
+        uniqueStrings.sort();
+        return _.concat([''], uniqueStrings);
+      }
+
+      return dispatch => {
+        dispatch();
+        participantResource.findAll('filter[fields][subCamp]=true')
+          .then(response => this.subCampsLoaded(processResults(response)),
+                err => this.participantActionFailed(err));
+      };
+    }
+
+    subCampsLoaded(subCamps) {
+      return subCamps;
+    }
+
+    participantActionFailed() {
+      return err;
+    }
+
     loadLocalGroups() {
       function processResults(result) {
         const localGroupStrings = result.map(obj => obj.localGroup);
