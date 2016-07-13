@@ -48,7 +48,10 @@ export function getQuickFilterContainer(participantStore, participantActions, se
       <div className="well clearfix">
         <div>
           <form className="form-inline">
-            <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <DebouncedTextFieldContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+            />
             <PropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
