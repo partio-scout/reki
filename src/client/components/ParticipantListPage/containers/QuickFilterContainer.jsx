@@ -2,13 +2,11 @@ import React from 'react';
 import _ from 'lodash';
 import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
-import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
-  const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
@@ -51,7 +49,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
         <div>
           <form className="form-inline">
             <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Ikäkausi"
+              property="ageGroup"
+            />
             <PropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
