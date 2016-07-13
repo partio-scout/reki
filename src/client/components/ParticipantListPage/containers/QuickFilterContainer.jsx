@@ -5,17 +5,17 @@ import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
-import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
+import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
+export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
-  const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
+  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -58,7 +58,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Leirilippukunta"
+              property="campGroup"
+            />
             <SaveSearchButtonContainer location={ props.location } />
           </form>
         </div>

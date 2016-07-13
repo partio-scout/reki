@@ -45,7 +45,7 @@ const ParticipantDetailsPage = restrictComponent(
 );
 const ParticipantListPage = restrictComponent(
   registryUserStore,
-  components.getParticipantListPage(participantStore, participantActions, searchFilterActions),
+  components.getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore),
   LoginPromptPage
 );
 const UserManagementPage = restrictComponent(

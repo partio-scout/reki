@@ -99,30 +99,6 @@ export function getParticipantActions(alt, participantResource) {
       return err;
     }
 
-    loadCampGroups() {
-      function processResults(result) {
-        const campGroupStrings = result.map(obj => obj.campGroup);
-        const uniqueStrings = _.uniq(campGroupStrings);
-        uniqueStrings.sort();
-        return _.concat([''], uniqueStrings);
-      }
-
-      return dispatch => {
-        dispatch();
-        participantResource.findAll('filter[fields][campGroup]=true')
-          .then(response => this.campGroupsLoaded(processResults(response)),
-                err => this.campGroupLoadingFailed(err));
-      };
-    }
-
-    campGroupsLoaded(campGroups) {
-      return campGroups;
-    }
-
-    campGroupLoadingFailed(err) {
-      return err;
-    }
-
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
       participantResource.raw('post', 'update', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
