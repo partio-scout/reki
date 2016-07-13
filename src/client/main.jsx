@@ -28,7 +28,7 @@ const searchFilterResource = new RestfulResource('/api/searchfilters', accessTok
 const alt = new Alt();
 
 const participantActions = actions.getParticipantActions(alt, participantResource);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
