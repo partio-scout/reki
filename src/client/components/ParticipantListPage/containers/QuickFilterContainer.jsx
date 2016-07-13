@@ -3,14 +3,12 @@ import _ from 'lodash';
 import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
-import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
-  const SubCampFilterContainer = getSubCampFilterContainer();
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
@@ -54,7 +52,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
           <form className="form-inline">
             <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
             <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Alaleiri"
+              property="subCamp"
+            />
             <PropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
