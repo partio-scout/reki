@@ -75,6 +75,26 @@ export function getParticipantActions(alt, participantResource) {
       return err;
     }
 
+    loadAgeGroups() {
+      function processResults(result) {
+        const ageGroupStrings = result.map(obj => obj.ageGroup);
+        const uniqueStrings = _.uniq(ageGroupStrings);
+        uniqueStrings.sort();
+        return _.concat([''], uniqueStrings);
+      }
+
+      return dispatch => {
+        dispatch();
+        participantResource.findAll('filter[fields][ageGroup]=true')
+          .then(response => this.ageGroupsLoaded(processResults(response)),
+                err => this.participantActionFailed(err));
+      };
+    }
+
+    ageGroupsLoaded(ageGroups) {
+      return ageGroups;
+    }
+
     loadSubCamps() {
       function processResults(result) {
         const subCampStrings = result.map(obj => obj.subCamp);
@@ -95,7 +115,7 @@ export function getParticipantActions(alt, participantResource) {
       return subCamps;
     }
 
-    participantActionFailed() {
+    participantActionFailed(err) {
       return err;
     }
 

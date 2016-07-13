@@ -10,7 +10,7 @@ import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
-  const AgeGroupFilterContainer = getAgeGroupFilterContainer();
+  const AgeGroupFilterContainer = getAgeGroupFilterContainer(participantStore, participantActions);
   const SubCampFilterContainer = getSubCampFilterContainer(participantStore, participantActions);
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);

@@ -7,6 +7,7 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantCountUpdated: ParticipantActions.PARTICIPANT_COUNT_UPDATED,
+        handleAgeGroupLoaded: ParticipantActions.AGE_GROUPS_LOADED,
         handleSubCampsLoaded: ParticipantActions.SUB_CAMPS_LOADED,
         handleLocalGroupsLoaded: ParticipantActions.LOCAL_GROUPS_LOADED,
         handleCampGroupsLoaded: ParticipantActions.CAMP_GROUPS_LOADED,
@@ -26,6 +27,10 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.participantCount = newCount;
     }
 
+    handleAgeGroupLoaded(ageGroups) {
+      this.ageGroups = ageGroups;
+    }
+
     handleSubCampsLoaded(subCamps) {
       this.subCamps = subCamps;
     }
@@ -43,7 +48,8 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.participantDetails = {};
       this.participantCount = 0;
 
-      this.subCamps = ['']
+      this.ageGroups = [''];
+      this.subCamps = [''];
       this.localGroups = [''];
       this.campGroups = [''];
     }
