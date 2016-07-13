@@ -1,6 +1,7 @@
 import app from '../../server/server.js';
 import Promise from 'bluebird';
 import loopback from 'loopback';
+import crypto from 'crypto';
 
 export default function(Registryuser) {
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
@@ -44,8 +45,10 @@ export default function(Registryuser) {
     const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
     const deleteAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
 
+    const newPassword = crypto.randomBytes(24).toString('hex');
+
     Promise.join(
-      updateRegistryUser({ id: userId }, { status: 'blocked' }),
+      updateRegistryUser({ id: userId }, { status: 'blocked', password: newPassword }),
       deleteAccessTokens({ userId: userId })
     ).asCallback(callback);
   };
