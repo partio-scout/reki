@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input } from 'react-bootstrap';
-import { getPresenceLabel } from '../../Presence';
+import { getPresenceLabel } from '../../../components';
 
 export function getPresenceFilterContainer() {
   const property = 'presence';

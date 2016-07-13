@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, Row, Col, Panel, Button } from 'react-bootstrap';
-import { Presence } from '../components';
-import { PresenceHistory } from '../components';
-import { PropertyTextArea } from '../components';
+import { Presence } from '../../components';
+import { PresenceHistory } from '../../components';
+import { PropertyTextArea } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 

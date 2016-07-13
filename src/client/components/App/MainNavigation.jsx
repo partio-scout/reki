@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Nav } from 'react-bootstrap';
-import { getNavigationItem } from '../components';
+import { getNavigationItem } from '../../components';
 
 export function getMainNavigation() {
   const NavigationItem = getNavigationItem();

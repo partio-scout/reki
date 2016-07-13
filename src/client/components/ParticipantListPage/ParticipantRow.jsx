@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Input } from 'react-bootstrap';
-import { Presence } from '../components';
+import { Presence } from '../../components';
 
 class LinkCell extends React.Component {
   render() {
