@@ -13,6 +13,7 @@ const modelList = [
   ['Allergy', false],
   ['Participant', false],
   ['ParticipantAllergy', false],
+  ['ParticipantDate', false],
   ['PresenceHistory', false],
   ['AuditEvent', false],
   ['SearchFilter', false],
