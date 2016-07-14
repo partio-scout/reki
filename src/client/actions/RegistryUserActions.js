@@ -54,9 +54,9 @@ export function getRegistryUserActions(alt, registryUserResource) {
         return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
           .then(data =>{
             if (window.location.protocol === 'https:') {
-              Cookie.set('accessToken', data.id, { secure: true });
+              Cookie.set('accessToken', data, { secure: true });
             } else {
-              Cookie.set('accessToken', data.id);
+              Cookie.set('accessToken', data);
             }
           })
           .then(() => location.reload());
