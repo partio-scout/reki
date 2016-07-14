@@ -13,7 +13,6 @@
     "participantId": {
       "type": "Number",
       "id": true,
-      "generated": true,
       "postgresql": {
         "columnName": "participant_id",
         "dataType": "integer",
@@ -59,15 +58,50 @@
         "nullable": "NO"
       }
     },
+    "internationalGuest": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "postgresql": {
+        "columnName": "international_guest",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
     "memberNumber": {
-      "type": "number",
+      "type": "string",
       "postgresql": {
         "columnName": "member_number",
-        "dataType": "integer",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "billedDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "billed_date",
+        "dataType": "timestamp with time zone",
         "dataLength": null,
-        "dataPrecision": 32,
-        "dataScale": 0,
-        "nullable": "NO"
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "paidDate": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "paid_date",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "dateOfBirth": {
@@ -114,6 +148,28 @@
         "nullable": "YES"
       }
     },
+    "staffPosition": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "staffPositionInGenerator": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "staff_position_in_generator",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "swimmingSkill": {
       "type": "boolean",
       "postgresql": {
@@ -148,6 +204,10 @@
         "nullable": "YES"
       }
     },
+    "presence": {
+      "type": "number"
+    },
+
     "localGroup": {
       "type": "string",
       "required": true,
@@ -165,6 +225,18 @@
       "required": true,
       "postgresql": {
         "columnName": "camp_group",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "village": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "village",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
@@ -195,10 +267,80 @@
         "dataScale": null,
         "nullable": "NO"
       }
+    },
+    "willOfTheWisp": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "will_of_the_wisp",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "willOfTheWispWave": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "will_of_the_wisp_wave",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "guardianOne": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "guardian_one",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "guardianTwo": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "guardian_two",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "diet": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "diet",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "presenceHistory": {
+      "type": "hasMany",
+      "model": "PresenceHistory",
+      "foreignKey": ""
+    },
+    "allergies": {
+      "type": "hasAndBelongsToMany",
+      "model": "Allergy"
+    }
+  },
   "acls": [
     {
       "accessType": "*",
@@ -207,32 +349,19 @@
       "permission": "DENY"
     },
     {
-      "accessType": "WRITE",
+      "accessType": "READ",
       "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW",
-      "property": "create"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "admin",
+      "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "*"
     },
     {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW"
-    },
-    {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$everyone",
+      "principalId": "registryUser",
       "permission": "ALLOW",
-      "property": "count"
+      "property": "massAssignField"
     }
   ],
-  "methods": []
+  "methods": {}
 }

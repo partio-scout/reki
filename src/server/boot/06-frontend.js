@@ -50,7 +50,7 @@ function redirectBuildPathToDevServer(server) {
 
 export default function(server) {
   server.on('started', () => {
-    if (server.get('isDev')) {
+    if (server.get('isDev') && server.get('standalone') ) {
       startDevServer();
       redirectBuildPathToDevServer(server);
     }

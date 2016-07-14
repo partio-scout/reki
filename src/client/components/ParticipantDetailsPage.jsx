@@ -1,11 +1,15 @@
 import React from 'react';
 import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Presence } from '../components';
+import { PresenceHistory } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
+
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
       this.state = participantStore.getState();
+      this.onStoreChanged = this.onStoreChanged.bind(this);
     }
 
     componentWillMount() {
@@ -13,14 +17,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     componentDidMount() {
-      participantStore.listen(this.onChange.bind(this));
+      participantStore.listen(this.onStoreChanged);
     }
 
     componentWillUnMount() {
-      participantStore.unlisten(this.onChange.bind(this));
+      participantStore.unlisten(this.onStoreChanged);
     }
 
-    onChange(state) {
+    onStoreChanged(state) {
       this.setState(state);
     }
 
@@ -31,6 +35,9 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       let participantPhone = '';
       let homeCity = '';
       let email = '';
+      let presence = '';
+      let presenceHistory = '';
+
       if (this.state.participantDetails) {
         participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
         nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
@@ -38,6 +45,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
         const day = time.substring(0,2);
         dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
+        presence = this.state.participantDetails.presence;
+        presenceHistory = this.state.participantDetails.presenceHistory || [];
 
         participantPhone = this.state.participantDetails.phoneNumber || '-';
         homeCity = this.state.participantDetails.homeCity || '-';
@@ -48,10 +57,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         <div>
           <Grid>
             <Row>
-              <Col>
+              <Col md={ 12 }>
                 <h2><b>{ participantName }</b></h2>
                 <p className="text-muted">{ nonScout }</p>
-                <p> <b> Syntymäaika: </b> { dateOfBirth }</p>
+                <p><b>Syntymäaika: </b> { dateOfBirth }</p>
               </Col>
             </Row>
             <Row>
@@ -65,6 +74,12 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <p >{ email }</p>
                 </Panel>
               </Col>
+                <Col md={ 6 }>
+                  <Panel header="Läsnäolo">
+                    <Presence value={ presence } />
+                    <PresenceHistory value={ presenceHistory } />
+                  </Panel>
+                </Col>
             </Row>
           </Grid>
         </div>

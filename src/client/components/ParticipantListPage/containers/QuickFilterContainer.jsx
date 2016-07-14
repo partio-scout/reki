@@ -1,16 +1,21 @@
 import React from 'react';
 import _ from 'lodash';
-import { changeQueryParameters } from './utils';
+import { Button } from 'react-bootstrap';
+import { changeQueryParameters } from '../../../utils';
 import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
 import { getSubCampFilterContainer } from './SubCampFilterContainer';
 import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
 import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
+import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions) {
+export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
   const AgeGroupFilterContainer = getAgeGroupFilterContainer();
   const SubCampFilterContainer = getSubCampFilterContainer();
   const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
   const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
+  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
+  const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -24,9 +29,15 @@ export function getQuickFilterContainer(participantStore, participantActions) {
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
+
+    function resetFilters(event) {
+      event.preventDefault();
+      context.router.push(changeQueryParameters(props.location, { filter: '', offset: 0 }));
+    }
 
     function handleChange(parameterName, newValue) {
+
       const changedSelection = {
         [parameterName]: newValue,
       };
@@ -40,13 +51,20 @@ export function getQuickFilterContainer(participantStore, participantActions) {
     }
 
     return (
-      <div className="well">
-        <form className="form-inline">
-          <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-          <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-        </form>
+      <div className="well clearfix">
+        <div>
+          <form className="form-inline">
+            <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <SaveSearchButtonContainer location={ props.location } />
+          </form>
+        </div>
+        <div>
+          <Button type="submit" bsStyle="primary" onClick={ resetFilters }>Nollaa haku</Button>
+        </div>
       </div>
     );
   }

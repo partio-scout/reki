@@ -13,6 +13,7 @@ SCRIPT
 $install_packages = <<SCRIPT
 curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
 apt-get install -y --no-install-recommends build-essential git postgresql nodejs
+npm install -g npm
 SCRIPT
 
 # Some configuration changes need to be made to postgres to allow local
@@ -33,6 +34,8 @@ mkdir -p "$bin"
 mkdir -p "$node_modules"
 chown "$vagrant_user" "$bin"
 chown -R "$vagrant_user" "$node_modules"
+
+echo "127.0.0.1 demo.kehatieto.fi" >> /etc/hosts
 SCRIPT
 
 # Set the NODE_ENV environment variable, and the default login location
@@ -59,6 +62,7 @@ export_env_if_unset "PORT" "3000"
 
 if [ $(pwd) != "/vagrant" ]; then
   echo "cd /vagrant" >> "$profile_dir"
+  echo ". /vagrant/vagrant/set-env.sh" >> "$profile_dir"
 fi
 SCRIPT
 

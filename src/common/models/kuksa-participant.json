@@ -1,0 +1,221 @@
+{
+  "name": "KuksaParticipant",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "kuksa_participant"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "Number",
+      "id": true,
+      "generated": false,
+      "postgresql": {
+        "columnName": "participant_id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "firstName": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "first_name",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "lastName": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "last_name",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "memberNumber": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "member_number",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "dateOfBirth": {
+      "type": "date",
+      "postgresql": {
+        "columnName": "date_of_birth",
+        "dataType": "timestamp with time zone",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+    "phoneNumber": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "phone_number",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "email": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "email",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "representedParty": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "represented_party",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "localGroupId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "local_group",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "campGroupId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "camp_group",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "villageId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "village",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "subCampId": {
+      "type": "number",
+      "postgresql": {
+        "columnName": "sub_camp",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "YES"
+      }
+    },
+    "cancelled": {
+      "type": "boolean",
+      "postgresql": {
+        "columnName": "cancelled",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "diet": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "diet",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "localGroup": {
+      "type": "belongsTo",
+      "model": "KuksaLocalGroup",
+      "foreignKey": "localGroupId"
+    },
+    "campGroup": {
+      "type": "belongsTo",
+      "model": "KuksaCampGroup",
+      "foreignKey": "campGroupId"
+    },
+    "village": {
+      "type": "belongsTo",
+      "model": "KuksaVillage",
+      "foreignKey": "villageId"
+    },
+    "subCamp": {
+      "type": "belongsTo",
+      "model": "KuksaSubCamp",
+      "foreignKey": "subCampId"
+    },
+    "extraInfos": {
+      "type": "hasMany",
+      "model": "KuksaParticipantExtraInfo",
+      "foreignKey": "participantId"
+    },
+    "paymentStatus": {
+      "type": "hasOne",
+      "model": "KuksaParticipantPaymentStatus",
+      "foreignKey": "participantId"
+    },
+    "extraSelections": {
+      "type": "hasMany",
+      "model": "KuksaExtraSelection",
+      "foreignKey": "participantId",
+      "through": "KuksaParticipantExtraSelection",
+      "keyThrough": "selectionId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": []
+}

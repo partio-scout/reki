@@ -1,8 +1,10 @@
 import path from 'path';
 import Promise from 'bluebird';
-
+import EventEmitter from 'events';
 import app from '../src/server/server';
 import { getModelCreationList, getFixtureCreationList } from '../src/common/models-list';
+
+EventEmitter.prototype._maxListeners = 20;
 
 function getFixtures(modelName) {
   return Promise.try(() => require(path.resolve(__dirname, `../src/common/fixtures/${modelName}`)));

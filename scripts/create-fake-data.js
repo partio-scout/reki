@@ -129,22 +129,40 @@ function getLocalGroup() {
   return randomElement(localGroups);
 }
 
-function getSubCampAndCampGroup() {
-  const campGroupsBySubCamp = {
-    humina: ['hautamäki', 'väkiparta'],
-    hurma: ['aalto', 'uhlenius'],
-    polte: ['norokorpi', 'hietanen'],
-    raiku: ['eino', 'jenni'],
-    riehu: ['lehto', 'jylhä'],
-    syke: ['warro', 'toukonen'],
-    unity: ['finelli', 'puntila'],
+function getSubCampVillageAndCampGroup() {
+  const campStructure = {
+    humina: {
+      'Rankki': ['Hautamäki', 'Väkiparta'],
+      'Ruuna': ['Holmisto', 'Kauranen'],
+    },
+    hurma: {
+      'Riimu': ['Aalto', 'Uhlenius'],
+    },
+    polte: {
+      'Rauha': ['Norokorpi', 'Hietanen'],
+    },
+    raiku: {
+      'Raukola': ['Eino', 'Jenni'],
+    },
+    riehu: {
+      'Rouhe': ['Lehto', 'Jylhä'],
+      'Revontuli': ['Lehto', 'Jylhä'],
+    },
+    syke: {
+      'Rantala': ['Warro', 'Toukonen'],
+    },
+    unity: {
+      'Ruukki': ['Finelli', 'Puntila'],
+    },
   };
 
-  const subCamp = randomElement(Object.keys(campGroupsBySubCamp));
-  const campGroup = randomElement(campGroupsBySubCamp[subCamp]);
+  const subCamp = randomElement(Object.keys(campStructure));
+  const village = randomElement(Object.keys(campStructure[subCamp]));
+  const campGroup = randomElement(campStructure[subCamp][village]);
 
   return {
     subCamp,
+    village,
     campGroup,
   };
 }
@@ -161,14 +179,16 @@ function getAgeGroup() {
   return randomElement(ageGroups);
 }
 
-function generateRandomParticipant() {
+function generateRandomParticipant(id) {
   const gender = getGender();
   const {
     subCamp,
+    village,
     campGroup,
-  } = getSubCampAndCampGroup();
+  } = getSubCampVillageAndCampGroup();
 
   return {
+    participantId: id,
     firstName: faker.name.firstName(gender ? 'male' : 'female'),
     lastName: faker.name.lastName(),
     nonScout: Math.random() < 0.1,
@@ -183,7 +203,9 @@ function generateRandomParticipant() {
     localGroup: getLocalGroup(),
     gender,
     subCamp,
+    village,
     campGroup,
+    presence: 0,
   };
 }
 
@@ -191,7 +213,7 @@ function createMockParticipants(i) {
   if (i < 1) {
     countParticipants();
   } else {
-    createParticipant(generateRandomParticipant())
+    createParticipant(generateRandomParticipant(i))
       .then(createdParticipantInfo => {
         createMockParticipants(i-1);
       })
