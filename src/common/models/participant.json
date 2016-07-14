@@ -339,6 +339,10 @@
     "allergies": {
       "type": "hasAndBelongsToMany",
       "model": "Allergy"
+    },
+    "dates": {
+      "type": "hasMany",
+      "model": "ParticipantDate"
     }
   },
   "acls": [
