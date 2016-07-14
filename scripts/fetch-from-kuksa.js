@@ -4,6 +4,7 @@ import { getEventApi } from 'kuksa-event-api-client';
 import { Promise } from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
+import paymentToDateMappings from '../conf/payment-date-mappings.json';
 
 const KuksaParticipant = app.models.KuksaParticipant;
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
@@ -25,6 +26,7 @@ function main() {
     .then(transferDataFromKuksa)
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
+    .then(addDatesToParticipants)
     .then(deleteCancelledParticipants);
 }
 
@@ -299,6 +301,34 @@ function addAllergiesToParticipants() {
   .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
     .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
     .then(() => console.log('Allergies and diets added.'));
+}
+
+function addDatesToParticipants() {
+  const ParticipantDate = app.models.ParticipantDate;
+  const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
+  const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
+  const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
+
+  console.log('Adding dates to participants...');
+  return findKuksaParticipants({ include: 'payments' }).each(setParticipantDates);
+
+  function setParticipantDates(kuksaParticipantInstance) {
+    const kuksaParticipant = kuksaParticipantInstance.toJSON();
+    destroyParticipantDates({ where: { participantId: kuksaParticipant.id } })
+      .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
+  }
+
+  function mapPaymentsToDates(kuksaParticipant) {
+    const x = _(kuksaParticipant.payments)
+      .flatMap(payment => paymentToDateMappings[payment.name])
+      .uniq()
+      .map(date => ({
+        participantId: kuksaParticipant.id,
+        date: moment(date).toDate(),
+      }))
+      .value();
+    return x;
+  }
 }
 
 function deleteCancelledParticipants() {
