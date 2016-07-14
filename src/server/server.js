@@ -4,6 +4,8 @@ import path from 'path';
 import expressEnforcesSsl from 'express-enforces-ssl';
 import helmet from 'helmet';
 
+const morgan = require('morgan');
+
 const app = loopback();
 
 export default app;
@@ -28,6 +30,9 @@ if ( !app.get('isDev') ) {
 
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
+
+//const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
+app.middleware('routes:before', morgan('combined'));
 
 const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
 
