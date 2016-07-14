@@ -4,13 +4,14 @@ import path from 'path';
 import expressEnforcesSsl from 'express-enforces-ssl';
 import helmet from 'helmet';
 
+const morgan = require('morgan');
+
 const app = loopback();
 
 export default app;
 
 app.start = function() {
   // start the web server
-  //
   return app.listen(() => {
     app.emit('started');
     console.log('Web server listening at: %s', app.get('url'));
@@ -28,6 +29,8 @@ if ( !app.get('isDev') ) {
 
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
+
+app.middleware('routes:before', morgan('combined'));
 
 const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
 
