@@ -5,7 +5,7 @@ export function getParticipantActions(alt, participantResource) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId, `filter=${JSON.stringify({ include: { presenceHistory: 'author' } })}` )
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'dates' ] })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err => this.loadingParticipantByIdFailed(err));
       };

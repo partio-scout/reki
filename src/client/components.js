@@ -18,3 +18,4 @@ export { getNavigationItem } from './components/NavigationItem';
 export { getLoginPromptPage } from './components/LoginPromptPage';
 export { Presence } from './components/Presence';
 export { PresenceHistory } from './components/PresenceHistory';
+export { ParticipantDates } from './components/ParticipantDates';
