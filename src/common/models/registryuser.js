@@ -35,4 +35,6 @@ export default function(Registryuser) {
         }).asCallback(next);
     }
   });
+
+  Registryuser.disableRemoteMethod('login', !(process.env.ENABLE_OFFLINE_LOGIN === 'true'));
 }

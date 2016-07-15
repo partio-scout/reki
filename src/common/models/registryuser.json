@@ -106,7 +106,7 @@
       "accessType": "EXECUTE",
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "DENY",
+      "permission": "ALLOW",
       "property": "login"
     },
     {
