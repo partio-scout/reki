@@ -22,3 +22,7 @@ By default file change events do not propagate between the host and virtual mach
 
 ## ES6
 ES6 syntax is supported and should be used in all files, including the module syntax.
+
+## Kuksa-integration
+### Adding new properties to Participant-model
+First create a new property to Participant-model in src/common/models/participant.json. After that, edit scripts/fetch-from-kuksa.js. If the desired property is in Kuksa as an extra selection or extra info field, map the info for participant in rebuildParticipantsTable with the correct function (getSelectionForGroup or getInfoForField). If the property is given in participant's information, make sure it is mapped to KuksaParticipant in transferDataFromKuksa-function. You can check the name of the property from [Kuksa event api](https://github.com/partio-scout/kuksa-event-api-client/blob/master/src/eventApi.ts). After that, map the property to participant in rebuildParticipantsTable.
