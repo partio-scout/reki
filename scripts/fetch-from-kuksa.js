@@ -314,7 +314,7 @@ function addDatesToParticipants() {
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    destroyParticipantDates({ where: { participantId: kuksaParticipant.id } })
+    destroyParticipantDates({ participantId: kuksaParticipant.id })
       .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
   }
 
