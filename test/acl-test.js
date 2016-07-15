@@ -455,7 +455,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixture2).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }).expect(NOT_FOUND));
       it('logout: UNAUTHORIZED', () => post('/api/registryusers/logout').expect(UNAUTHORIZED));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm').expect(UNAUTHORIZED));
@@ -486,7 +486,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(NOT_FOUND));
       it('logout: OK', () => post('/api/registryusers/logout', null, accessToken).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, accessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));
@@ -517,7 +517,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(NOT_FOUND));
       it('logout: OK', () => post('/api/registryusers/logout', null,  accessToken).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, accessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));
@@ -548,7 +548,7 @@ describe('http api access control', () => {
       it('upsert (insert): ok', () => put('/api/registryusers', userFixture2, accessToken).expect(OK));
       it('upsert (update): ok', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, accessToken).expect(OK));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, accessToken).expect(NOT_FOUND));
       it('logout: OK', () => post('/api/registryusers/logout', null, accessToken).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, accessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', accessToken).expect(UNAUTHORIZED));

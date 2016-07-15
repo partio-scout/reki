@@ -1,15 +1,6 @@
 #Our server went offline, what to do
 ##Step 1
-Allow (modify) ACL login for registryUser into
-'''json
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "login"
-    },
-'''
+Set environment variable ENABLE_OFFLINE_LOGIN=true.
 ##Step 2
 Run 'npm run set-password <email> <password>' for each user
 ##Step 3
