@@ -13,6 +13,7 @@ const modelList = [
   ['Allergy', false],
   ['Participant', false],
   ['ParticipantAllergy', false],
+  ['ParticipantDate', false],
   ['PresenceHistory', false],
   ['AuditEvent', false],
   ['SearchFilter', false],
@@ -27,6 +28,8 @@ const modelList = [
   ['KuksaExtraSelectionGroup', false],
   ['KuksaExtraSelection', false],
   ['KuksaParticipantExtraSelection', false],
+  ['KuksaPayment', false],
+  ['KuksaParticipantPayment', false],
 ];
 
 export function getModelCreationList() {
