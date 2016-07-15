@@ -65,16 +65,14 @@ describe('Roihuapp interface', () => {
 
   describe('roihuapp user role', () => {
 
-    before(done => {
-      resetDatabase()
-        .then(() => testUtils.createUserWithRoles(['roihuapp'], appUser))
-        .then(() => testUtils.createFixture('Participant', testParticipants))
-        .then(() => testUtils.loginUser(appUser.username, appUser.password))
-        .then(newAccessToken => accessToken = newAccessToken.id)
-        .nodeify(done);
-    });
+    before(() => resetDatabase()
+      .then(() => testUtils.createUserWithRoles(['roihuapp'], appUser))
+      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.loginUser(appUser.username, appUser.password))
+      .then(newAccessToken => accessToken = newAccessToken.id)
+    );
 
-    it('returns only selected fields', done => {
+    it('returns only selected fields', () => {
       const filedsToExpect = [
         'firstName',
         'lastName',
@@ -87,28 +85,26 @@ describe('Roihuapp interface', () => {
         'memberNumber',
       ];
 
-      request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
-      .query({ memberNumber: 123 })
-      .expect(200)
-      .expect(res => {
-        expect(res.body).to.have.keys(filedsToExpect);
-      }).end(done);
+      return request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
+        .query({ memberNumber: 123 })
+        .expect(200)
+        .expect(res => expect(res.body).to.have.keys(filedsToExpect));
     });
 
-    it('returns correct user by membernumber', done => {
+    it('returns correct user by membernumber', () =>
       request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
       .query({ memberNumber: 123 })
       .expect(200)
       .expect(res => {
         expect(res.body).to.have.property('firstName', 'Teemu');
         expect(res.body).to.have.property('lastName', 'Testihenkilö');
-      }).end(done);
-    });
+      })
+    );
 
-    it('returns error when user is not found', () => {
+    it('returns error when user is not found', () =>
       request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
       .query({ memberNumber: 123456789 })
-      .expect(404);
-    });
+      .expect(404)
+    );
   });
 });

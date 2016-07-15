@@ -367,7 +367,7 @@
       "principalType": "ROLE",
       "principalId": "roihuapp",
       "permission": "ALLOW",
-      "property": "getUserInformationForApp"
+      "property": "getParticipantInformationForApp"
     }
   ],
   "methods": {}

@@ -185,7 +185,7 @@ export default function (Participant) {
     }
   };
 
-  Participant.getUserInformationForApp = (memberNumber, cb) => {
+  Participant.getParticipantInformationForApp = (memberNumber, cb) => {
     const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
 
     findParticipant({
@@ -203,14 +203,17 @@ export default function (Participant) {
         'ageGroup',
         'memberNumber',
       ],
-    }).then(user => {
-      cb(null, user);
-    }).catch(e => {
-      const err = new Error('Participant not found');
-      err.originalError = e;
-      err.status = 404;
-      cb(err);
+    }).asCallback((e, participant) => {
+      if (e || !participant) {
+        const err = new Error('Participant not found');
+        err.originalError = e;
+        err.status = 404;
+        cb(err);
+      } else {
+        cb(null, participant);
+      }
     });
+
   };
 
   Participant.remoteMethod('massAssignField',
@@ -225,7 +228,7 @@ export default function (Participant) {
     }
   );
 
-  Participant.remoteMethod('getUserInformationForApp',
+  Participant.remoteMethod('getParticipantInformationForApp',
     {
       http: { path: '/appInformation', verb: 'get' },
       accepts: [
