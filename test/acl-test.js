@@ -208,9 +208,8 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/update', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
-
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation', { memberNumber: 1234 }).expect(UNAUTHORIZED));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
     });
 
     describe('Authenticated user without roles', () => {
@@ -230,9 +229,8 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
 
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/update', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(UNAUTHORIZED));
-
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation', { memberNumber: 1234 }, accessToken).expect(UNAUTHORIZED));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
@@ -252,9 +250,8 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
 
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/update', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(OK));
-
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation', { memberNumber: 1234 }, accessToken).expect(UNAUTHORIZED));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(OK));
     });
 
     describe('registryAdmin', () => {
@@ -273,8 +270,6 @@ describe('http api access control', () => {
       it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
-
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/update', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(UNAUTHORIZED));
 
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation', { memberNumber: 1234 }, accessToken).expect(UNAUTHORIZED));
     });
@@ -296,9 +291,8 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, accessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, accessToken).expect(UNAUTHORIZED));
 
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/update', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(UNAUTHORIZED));
-
       it('appInformation: OK', () => get('/api/participants/appInformation?memberNumber=1234', accessToken).expect(OK));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, accessToken).expect(UNAUTHORIZED));
     });
   });
 

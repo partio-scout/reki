@@ -218,7 +218,7 @@ export default function (Participant) {
 
   Participant.remoteMethod('massAssignField',
     {
-      http: { path: '/update', verb: 'post' },
+      http: { path: '/massAssign', verb: 'post' },
       accepts: [
         { arg: 'ids', type: 'array', required: 'true' },
         { arg: 'fieldName', type: 'string', required: 'true' },
