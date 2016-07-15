@@ -42,22 +42,13 @@ function findOrCreateAppUser(name) {
         password: crypto.randomBytes(24).toString('hex'),
         lastModified: new Date(),
       })
-      .catch(err => console.log(err));
+      .then(user => addRolesToUser(user.id, 'roihuapp'));
     }
   });
 }
 
 findOrCreateAppUser('roihuapp-user')
-.then(user => {
-  addRolesToUser(user.id, 'roihuapp')
-  .then(() => {
-    user.createAccessToken(lifeTime, (err, accessToken) => {
-      if (err) {
-        console.error('Can\'t generate access token:', err);
-      } else {
-        console.log(`Accesstoken: ${accessToken.id} lifetime ${lifeTime} seconds`);
-        process.exit(0);
-      }
-    });
-  });
-});
+.then(user => Promise.fromCallback(callback => user.createAccessToken(lifeTime, callback)))
+.then(accessToken => console.log(`Accesstoken: ${accessToken.id} lifetime ${lifeTime} seconds`))
+.catch(err => console.error('Can\'t generate access token:', err))
+.finally(() => process.exit(0));
