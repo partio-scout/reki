@@ -7,8 +7,6 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantCountUpdated: ParticipantActions.PARTICIPANT_COUNT_UPDATED,
-        handleLocalGroupsLoaded: ParticipantActions.LOCAL_GROUPS_LOADED,
-        handleCampGroupsLoaded: ParticipantActions.CAMP_GROUPS_LOADED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
     }
@@ -23,14 +21,6 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
 
     handleParticipantCountUpdated(newCount) {
       this.participantCount = newCount;
-    }
-
-    handleLocalGroupsLoaded(localGroups) {
-      this.localGroups = localGroups;
-    }
-
-    handleCampGroupsLoaded(campGroups) {
-      this.campGroups = campGroups;
     }
 
     resetAllData() {

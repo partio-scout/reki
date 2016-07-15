@@ -4,6 +4,7 @@ import { getEventApi } from 'kuksa-event-api-client';
 import { Promise } from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
+import paymentToDateMappings from '../conf/payment-date-mappings.json';
 
 const KuksaParticipant = app.models.KuksaParticipant;
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
@@ -25,6 +26,7 @@ function main() {
     .then(transferDataFromKuksa)
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
+    .then(addDatesToParticipants)
     .then(deleteCancelledParticipants);
 }
 
@@ -120,6 +122,24 @@ function transferDataFromKuksa(eventApi) {
       dateRange: dateRange,
     },
     {
+      getFromSource: eventApi.getPayments,
+      targetModel: app.models.KuksaPayment,
+      transform: field => ({
+        id: field.id,
+        name: field.name.fi,
+      }),
+    },
+    {
+      getFromSource: eventApi.getParticipantPayments,
+      targetModel: app.models.KuksaParticipantPayment,
+      transform: field => ({
+        participantId: field.from,
+        paymentId: field.to,
+      }),
+      joinTable: true,
+      dateRange: dateRange,
+    },
+    {
       getFromSource: eventApi.getExtraInfoFields,
       targetModel: app.models.KuksaExtraInfoField,
       transform: field => ({
@@ -164,6 +184,16 @@ function transferDataFromKuksa(eventApi) {
         name: selection.name.fi,
       }),
     },
+    {
+      getFromSource: eventApi.getParticipantExtraSelections,
+      targetModel: app.models.KuksaParticipantExtraSelection,
+      transform: selection => ({
+        participantId: selection.from,
+        selectionId: selection.to,
+      }),
+      joinTable: true,
+      dateRange: dateRange,
+    },
   ])
   .then(() => {
     // Get all the possible allergies as Allergy-instances
@@ -172,32 +202,9 @@ function transferDataFromKuksa(eventApi) {
     const findExtraSelections = Promise.promisify(app.models.KuksaExtraSelection.find, { context: app.models.KuksaExtraSelection });
 
     return findExtraSelectionGroups({ where: { name: { inq: ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'] } } })
-      .then(selGroups => findExtraSelections({ where: { groupId: { inq: [selGroups[0].id, selGroups[1].id] } } }))
+      .then(selGroups => findExtraSelections({ where: { groupId: { inq: _.map(selGroups, group => group.id) } } }))
       .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
       .then(selections => Promise.each(selections, s => upsertAllergy(s)));
-  })
-  .then(() => {
-    // In order to remove deleted extra selections we need to delete all extra selections
-    // for the participant before inserting. Thus we need special treatment.
-    const ExtraSelection = app.models.KuksaParticipantExtraSelection;
-    const destroyAll = Promise.promisify(ExtraSelection.destroyAll, { context: ExtraSelection });
-    const create = Promise.promisify(ExtraSelection.create, { context: ExtraSelection });
-    function destroySelectionsForParticipants(ids) {
-      return destroyAll({
-        participantId: { inq: ids },
-      });
-    }
-    return eventApi.getParticipantExtraSelections(dateRange)
-      .then(selections => _.groupBy(selections, 'from'))
-      .then(selectionsByParticipant =>
-        destroySelectionsForParticipants(_.keys(selectionsByParticipant))
-          .then(() => _.flatMap(selectionsByParticipant))
-      )
-      .then(selections => _.map(selections, selection => ({
-        participantId: selection.from,
-        selectionId: selection.to,
-      })))
-      .then(selections => create(selections));
   })
   .then(() => console.log('Transfer complete.'));
 }
@@ -294,6 +301,33 @@ function addAllergiesToParticipants() {
   .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
     .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
     .then(() => console.log('Allergies and diets added.'));
+}
+
+function addDatesToParticipants() {
+  const ParticipantDate = app.models.ParticipantDate;
+  const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
+  const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
+  const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
+
+  console.log('Adding dates to participants...');
+  return findKuksaParticipants({ include: 'payments' }).each(setParticipantDates);
+
+  function setParticipantDates(kuksaParticipantInstance) {
+    const kuksaParticipant = kuksaParticipantInstance.toJSON();
+    destroyParticipantDates({ participantId: kuksaParticipant.id })
+      .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
+  }
+
+  function mapPaymentsToDates(kuksaParticipant) {
+    return _(kuksaParticipant.payments)
+      .flatMap(payment => paymentToDateMappings[payment.name])
+      .uniq()
+      .map(date => ({
+        participantId: kuksaParticipant.id,
+        date: moment(date).toDate(),
+      }))
+      .value();
+  }
 }
 
 function deleteCancelledParticipants() {

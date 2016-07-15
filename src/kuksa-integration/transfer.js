@@ -14,14 +14,31 @@ function transferModel(model) {
   const opts = { context: model.targetModel };
   const create = Promise.promisify(model.targetModel.create, opts);
   const destroyExisting = Promise.promisify(model.targetModel.destroyAll, opts);
+  const recreate = objects => recreateObjects(model.targetModel, objects);
   const upsert = objects => upsertObjects(model.targetModel, objects);
   const recreateAll = objects => destroyExisting().then(() => create(objects));
 
   return model.getFromSource(model.dateRange)
     .then(transformWith(model.transform))
-    //If date range is set we can't delete all items first or we would lose the items
-    //outside the given date range. Thus we must upsert instead.
-    .then(model.dateRange ? upsert : recreateAll);
+    .then(items => {
+      if (model.joinTable) {
+        //LoopBack can't upsert join tables for some reason, let's delete the possible old object first
+        return recreate(items);
+      } else if (model.dateRange) {
+        //If date range is set we can't delete all items first or we would lose the items
+        //outside the given date range. Thus we must upsert instead.
+        return upsert(items);
+      } else {
+        return recreateAll(items);
+      }
+    });
+}
+
+function recreateObjects(model, objects) {
+  const destroy = Promise.promisify(model.destroyAll, { context: model });
+  const create = Promise.promisify(model.create, { context: model });
+  const recreates = _.map(objects, obj => () => destroy(obj).then(() => create(obj)));
+  return waterfall(recreates);
 }
 
 function upsertObjects(model, objects) {

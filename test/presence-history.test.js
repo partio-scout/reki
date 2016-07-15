@@ -110,48 +110,48 @@ describe('Presence history', () => {
   }
 
   it('Should save history when updating one presence', () =>
-    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
       .then( () => expectPresenceHistoryValues([ inCamp ], 1 ) )
   );
 
   it('Should save author correctly when updating presence', () =>
-    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
-      .then( () => postOverRest('participants/update', { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => postOverRest('participants/massAssign', { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
       .then( () => expectPresenceAuthorValue([ 1, 1 ], 1 ) )
   );
 
   it('Should save history when updating two presences', () =>
-    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
-      .then( () => postOverRest('participants/update', { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => postOverRest('participants/massAssign', { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }, accessToken).expect(200) )
       .then( () => expectPresenceHistoryValues([ inCamp, leftCamp ], 1 ) )
   );
 
   it('Should save history when updating two participants presences at once', () =>
-    postOverRest('participants/update', { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
-      .then( () => postOverRest('participants/update', { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
+      .then( () => postOverRest('participants/massAssign', { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
       .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 2 ) )
       .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 3 ) )
   );
 
   it('Should not save history when saving value doesn\'t change', () =>
-    postOverRest('participants/update', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
-    .then( () => postOverRest('participants/update', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken).expect(200) )
+    .then( () => postOverRest('participants/massAssign', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken).expect(200) )
       .then( () => expectPresenceHistoryValues([ inCamp ], 2 ) )
   );
 
   it('Should not update wrong participants presence', () =>
-    postOverRest('participants/update', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
       .then( () => expectPresenceHistoryValues([ ], 2 ) )
   );
 
   it('Should not save history when unvalid presence data', () =>
-    postOverRest('participants/update', { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }, accessToken)
+    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }, accessToken)
       .expect(400)
       .then( () => expectPresenceHistoryValues([ ], 1 ) )
   );
