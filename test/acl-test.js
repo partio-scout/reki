@@ -104,10 +104,13 @@ describe('http api access control', () => {
   let noRolesAccessToken;
   let registryUserAccessToken;
   let registryAdminAccessToken;
-  let userId; //TODO Rename to otherUserId
+  let otherUserId;
   let noRolesUserId;
   let registryUserId;
   let registryAdminUserId;
+
+  // Create fixtures for use in all tests - do not modify these in your tests!
+  // These fixtures are created only once for performance reasons.
 
   before(() => resetDatabase());
   before(() => logInUserWithoutRoles().tap(at => {
@@ -123,7 +126,7 @@ describe('http api access control', () => {
     registryAdminUserId = at.userId;
   }));
 
-  const participantFixture1 = {
+  const participantFixture = {
     participantId: 1,
     firstName: 'derp',
     lastName: 'durp',
@@ -138,22 +141,7 @@ describe('http api access control', () => {
     subCamp: 'subCamp',
     ageGroup: 'vaeltaja',
   };
-  const participantFixture2 = {
-    participantId: 2,
-    firstName: 'derp',
-    lastName: 'durp',
-    nonScout: false,
-    internationalGuest: false,
-    memberNumber: '1234',
-    dateOfBirth: new Date(),
-    email: 'derp@example.com',
-    localGroup: 'localgroup',
-    campGroup: 'campGroup',
-    village: 'village',
-    subCamp: 'subCamp',
-    ageGroup: 'vaeltaja',
-  };
-  before(() => testUtils.createFixture('Participant', participantFixture1));
+  before(() => testUtils.createFixture('Participant', participantFixture));
 
   const presenceHistoryFixture = {
     participantId: 1,
@@ -171,11 +159,11 @@ describe('http api access control', () => {
   };
   before(() =>
     testUtils.createFixture('Allergy', allergyFixture)
-      .then(participant => testUtils.find('Participant', { where: { participantId: participantFixture1.participantId } }))
+      .then(participant => testUtils.find('Participant', { where: { participantId: participantFixture.participantId } }))
       .then(participants => participants[0].allergies.add(allergyFixture.allergyId))
   );
 
-  const userFixture1 = {
+  const userFixture = {
     firstName: 'derp',
     lastName: 'durp',
     password: 'password',
@@ -183,20 +171,15 @@ describe('http api access control', () => {
     email: 'derp@example.com',
     phoneNumber: '123456',
   };
-  before(() => testUtils.createFixture('RegistryUser', userFixture1).tap(user => userId = user.id));
+  before(() => testUtils.createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
 
-  const searchFilterFixture1 = {
+  const searchFilterFixture = {
     id: 1,
     name: 'derp',
     filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
   };
-  const searchFilterFixture2 = {
-    id: 2,
-    name: 'durp',
-    filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
-  };
   before(() =>
-    testUtils.createFixture('SearchFilter', searchFilterFixture1)
+    testUtils.createFixture('SearchFilter', searchFilterFixture)
   );
 
   describe('AuditEvent', () => {
@@ -264,6 +247,23 @@ describe('http api access control', () => {
   });
 
   describe('Participant', () => {
+    const participantFixtureToCreate = {
+      participantId: 2,
+      firstName: 'derp',
+      lastName: 'durp',
+      nonScout: false,
+      internationalGuest: false,
+      memberNumber: '1234',
+      dateOfBirth: new Date(),
+      email: 'derp@example.com',
+      localGroup: 'localgroup',
+      campGroup: 'campGroup',
+      village: 'village',
+      subCamp: 'subCamp',
+      ageGroup: 'vaeltaja',
+    };
+    afterEach(() => testUtils.deleteFixturesIfExist('Participant', { participantId: 2 }));
+
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants').expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1').expect(UNAUTHORIZED));
@@ -271,10 +271,10 @@ describe('http api access control', () => {
       it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists').expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count').expect(UNAUTHORIZED));
 
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixture2).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/participants/1').expect(UNAUTHORIZED));
       it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
@@ -287,10 +287,10 @@ describe('http api access control', () => {
       it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', noRolesAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', noRolesAccessToken).expect(UNAUTHORIZED));
 
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixture2, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', noRolesAccessToken).expect(UNAUTHORIZED));
       it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
 
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
@@ -303,10 +303,10 @@ describe('http api access control', () => {
       it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', registryUserAccessToken).expect(OK));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', registryUserAccessToken).expect(OK));
 
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixture2, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', registryUserAccessToken).expect(UNAUTHORIZED));
       it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
 
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
@@ -319,10 +319,10 @@ describe('http api access control', () => {
       it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', registryAdminAccessToken).expect(UNAUTHORIZED));
 
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixture2, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixture2, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
 
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
@@ -546,18 +546,18 @@ describe('http api access control', () => {
 
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers').expect(UNAUTHORIZED));
-      it('findById: UNAUTHORIZED', () => get(`/api/registryusers/${userId}`).expect(UNAUTHORIZED));
+      it('findById: UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`).expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne').expect(UNAUTHORIZED));
-      it('exists: UNAUTHORIZED', () => get(`/api/registryusers/${userId}/exists`).expect(UNAUTHORIZED));
+      it('exists: UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/registryusers/count').expect(UNAUTHORIZED));
 
       it('create: UNAUTHORIZED', () => post('/api/registryusers', userFixtureToCreate).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del(`/api/registryusers/${userId}`).expect(UNAUTHORIZED));
-      it('update: UNAUTHORIZED', () => put(`/api/registryusers/${userId}`, { firstName: 'updated' }).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`).expect(UNAUTHORIZED));
+      it('update: UNAUTHORIZED', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }).expect(UNAUTHORIZED));
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }).expect(UNAUTHORIZED));
+      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }).expect(UNAUTHORIZED));
       it('logout: UNAUTHORIZED', () => post('/api/registryusers/logout').expect(UNAUTHORIZED));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm').expect(UNAUTHORIZED));
@@ -568,22 +568,23 @@ describe('http api access control', () => {
       before(() => testUtils.loginUser('noRoles', 'salasana').tap(at => accessTokenForLogout = at.id));
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${userId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${userId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/registryusers/count', noRolesAccessToken).expect(UNAUTHORIZED));
 
       it('create: UNAUTHORIZED', () => post('/api/registryusers', userFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${userId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('deleteById (own): UNAUTHORIZED', () => del(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('update (other user): UNAUTHORIZED', () => put(`/api/registryusers/${userId}`, { firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('update (other user): UNAUTHORIZED', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
       it('update (own): UNAUTHORIZED', () => put(`/api/registryusers/${noRolesUserId}`, { firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, noRolesAccessToken).expect(UNAUTHORIZED));
+      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, noRolesAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', noRolesAccessToken).expect(UNAUTHORIZED));
@@ -594,22 +595,23 @@ describe('http api access control', () => {
       before(() => testUtils.loginUser('registryUser', 'salasana').tap(at => accessTokenForLogout = at.id));
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', registryUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${userId}`, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', registryUserAccessToken).expect(UNAUTHORIZED));
-      it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${userId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/registryusers/count', registryUserAccessToken).expect(UNAUTHORIZED));
 
       it('create: UNAUTHORIZED', () => post('/api/registryusers', userFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${userId}`, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('deleteById (own): UNAUTHORIZED', () => del(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('update (other user): UNAUTHORIZED', () => put(`/api/registryusers/${userId}`, { firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('update (other user): UNAUTHORIZED', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
       it('update (own): UNAUTHORIZED', () => put(`/api/registryusers/${registryUserId}`, { firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryUserAccessToken).expect(UNAUTHORIZED));
+      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null,  accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryUserAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryUserAccessToken).expect(UNAUTHORIZED));
@@ -620,22 +622,23 @@ describe('http api access control', () => {
       before(() => testUtils.loginUser('registryAdmin', 'salasana').tap(at => accessTokenForLogout = at.id));
 
       it('find: ok', () => get('/api/registryusers', registryAdminAccessToken).expect(OK));
-      it('findById (other user): ok', () => get(`/api/registryusers/${userId}`, registryAdminAccessToken).expect(OK));
+      it('findById (other user): ok', () => get(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(OK));
       it('findById (own): ok', () => get(`/api/registryusers/${registryAdminUserId}`, registryAdminAccessToken).expect(OK));
       it('findOne: ok', () => get('/api/registryusers/findOne', registryAdminAccessToken).expect(OK));
-      it('exists (other user): ok', () => get(`/api/registryusers/${userId}/exists`, registryAdminAccessToken).expect(OK));
+      it('exists (other user): ok', () => get(`/api/registryusers/${otherUserId}/exists`, registryAdminAccessToken).expect(OK));
       it('exists (own): ok', () => get(`/api/registryusers/${registryAdminUserId}/exists`, registryAdminAccessToken).expect(OK));
       it('count: ok', () => get('/api/registryusers/count', registryAdminAccessToken).expect(OK));
 
       it('create: ok', () => post('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(OK));
-      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${userId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('deleteById (own): UNAUTHORIZED', () => del(`/api/registryusers/${registryAdminUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('update (other user): ok', () => put(`/api/registryusers/${userId}`, { firstName: 'updated' }, registryAdminAccessToken).expect(OK));
+      it('update (other user): ok', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }, registryAdminAccessToken).expect(OK));
       it('update (own): ok', () => put(`/api/registryusers/${registryAdminUserId}`, { firstName: 'updated' }, registryAdminAccessToken).expect(OK));
       it('upsert (insert): ok', () => put('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(OK));
       it('upsert (update): ok', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, registryAdminAccessToken).expect(OK));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture1.email, password: userFixture1.password }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryAdminAccessToken).expect(UNAUTHORIZED));
@@ -643,21 +646,28 @@ describe('http api access control', () => {
   });
 
   describe('SearchFilter', () => {
+    const searchFilterFixtureToCreate = {
+      id: 2,
+      name: 'durp',
+      filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
+    };
+    afterEach(() => testUtils.deleteFixturesIfExist('SearchFilter', { name: 'durp' }));
+
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1').expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
       it('find: ok', () => get('/api/searchfilters', registryUserAccessToken).expect(OK));
-      it('create: ok', () => post('/api/searchfilters', searchFilterFixture2, registryUserAccessToken).expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryUserAccessToken).expect(OK));
       it('deleteById: ok', () => del('/api/searchfilters/1', registryUserAccessToken).expect(OK));
     });
 
     describe('registryAdmin', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixture2, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', registryAdminAccessToken).expect(UNAUTHORIZED));
     });
   });
