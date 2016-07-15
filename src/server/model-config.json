@@ -28,6 +28,10 @@
     "dataSource": "db",
     "public": true
   },
+  "ParticipantDate": {
+    "dataSource": "db",
+    "public": true
+  },
   "PresenceHistory": {
     "dataSource": "db",
     "public": true
@@ -39,6 +43,10 @@
   "AuditEvent": {
     "dataSource": "db",
     "public": false
+  },
+  "Allergy": {
+    "dataSource": "db",
+    "public": true
   },
   "KuksaSubCamp": {
     "dataSource": "db",
@@ -81,6 +89,14 @@
     "public": false
   },
   "KuksaParticipantExtraSelection": {
+    "dataSource": "db",
+    "public": false
+  },
+  "KuksaPayment": {
+    "dataSource": "db",
+    "public": false
+  },
+  "KuksaParticipantPayment": {
     "dataSource": "db",
     "public": false
   }

@@ -1,0 +1,42 @@
+{
+  "name": "KuksaPayment",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "kuksa_payment"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "Number",
+      "id": true,
+      "postgresql": {
+        "columnName": "id",
+        "dataType": "integer",
+        "dataLength": null,
+        "dataPrecision": 32,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "columnName": "name",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    }
+  },
+  "validations": [],
+  "relations": [],
+  "acls": [],
+  "methods": []
+}

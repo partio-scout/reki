@@ -1,0 +1,1 @@
+pg_dump $OPENSHIFT_APP_NAME -h $OPENSHIFT_POSTGRESQL_DB_HOST | gzip > $OPENSHIFT_DATA_DIR/$OPENSHIFT_APP_NAME.$(date +"%Y-%m-%d").backup.sql.gz

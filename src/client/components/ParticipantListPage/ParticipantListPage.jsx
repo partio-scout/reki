@@ -112,13 +112,13 @@ export function getSelectAll() {
   return SelectAll;
 }
 
-export function getParticipantListPage(participantStore, participantActions, searchFilterActions) {
+export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions);
+  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore);
   const ParticipantCount = getParticipantCount(participantStore);
   const MassEdit = getMassEdit();
   const SelectAll = getSelectAll();
@@ -126,11 +126,17 @@ export function getParticipantListPage(participantStore, participantActions, sea
   class ParticipantListPage extends React.Component {
     constructor(props) {
       super(props);
-      this.state = { checked: new Array(), allChecked: false };
+      this.state = {
+        checked: new Array(),
+        allChecked: false,
+        participants: [ ],
+      };
+
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
       this.checkAll = this.checkAll.bind(this);
+      this.checkNoneOnParticipantsChanged = this.checkNoneOnParticipantsChanged.bind(this);
     }
 
     handleCheckboxChange(isChecked, participantId) {
@@ -168,6 +174,22 @@ export function getParticipantListPage(participantStore, participantActions, sea
         getOrder(this.props.location.query),
         getFilter(this.props.location.query)
       );
+    }
+
+    componentDidMount() {
+      participantStore.listen(this.checkNoneOnParticipantsChanged);
+    }
+
+    componentWillUnmount() {
+      participantStore.unlisten(this.checkNoneOnParticipantsChanged);
+    }
+
+    checkNoneOnParticipantsChanged() {
+      const newParticipants = _.map(participantStore.state.participants, 'participantId');
+      if (!_.isEqual(this.state.participants, newParticipants)) {
+        this.setState({ participants: newParticipants });
+        this.checkAll(false);
+      }
     }
 
     render() {

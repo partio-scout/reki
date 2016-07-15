@@ -156,6 +156,17 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "diet": {
+      "type": "string",
+      "postgresql": {
+        "columnName": "diet",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],
@@ -196,6 +207,13 @@
       "foreignKey": "participantId",
       "through": "KuksaParticipantExtraSelection",
       "keyThrough": "selectionId"
+    },
+    "payments": {
+      "type": "hasMany",
+      "model": "KuksaPayment",
+      "foreignKey": "participantId",
+      "through": "KuksaParticipantPayment",
+      "keyThrough": "paymentId"
     }
   },
   "acls": [

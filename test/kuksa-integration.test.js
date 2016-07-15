@@ -1,18 +1,23 @@
 import app from '../src/server/server';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import chaiDateTime from 'chai-datetime';
 import { resetDatabase } from '../scripts/seed-database';
 import mockKuksa from './kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 import Promise from 'bluebird';
 import _ from 'lodash';
+import moment from 'moment';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
+chai.use(chaiDateTime);
 
 describe('Kuksa integration', () => {
   const countParticipants = Promise.promisify(app.models.Participant.count, { context: app.models.Participant });
   const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
+  const countAllergies = Promise.promisify(app.models.Allergy.count, { context: app.models.Allergy });
+  const findAllergyById = Promise.promisify(app.models.Allergy.findById, { context: app.models.Allergy });
 
   before(function(done) {
     this.timeout(30000);
@@ -81,6 +86,22 @@ describe('Kuksa integration', () => {
     () => expect(findParticipantById(542)).to.eventually.have.property('internationalGuest', false)
   );
 
+  it('produces the expected amount of allergies in the database',
+    () => expect(countAllergies()).to.eventually.equal(26)
+  );
+
+  it('correctly transfers allergies',
+    () => expect(findAllergyById(415)).to.eventually.have.property('name', 'Herne, kypsä')
+  );
+
+  it('correctly transfers diets',
+    () => expect(findAllergyById(406)).to.eventually.have.property('name', 'Gluteeniton')
+  );
+
+  it('correctly transfers participants allergies',
+    () => expect(findParticipantById(448, { include: 'allergies' }).then(p => p.toJSON())).to.eventually.have.deep.property('allergies[0].name', 'Porkkana, kypsä')
+  );
+
   it('sets the billed date as null if participant has not been billed',
     () => expect(findParticipantById(1)).to.eventually.have.property('billedDate', null)
   );
@@ -103,6 +124,31 @@ describe('Kuksa integration', () => {
 
   it('sets the paid date as null if payment status is missing',
     () => expect(findParticipantById(38)).to.eventually.have.property('paidDate', null)
+  );
+
+  it('sets the correct amount of dates for participants with individual dates',
+    () => expect(findParticipantById(448, { include: 'dates' }).then(p => p.toJSON()))
+      .to.eventually.have.property('dates').that.has.length(2)
+  );
+
+  it('sets the correct amount of dates for participants with full camp',
+    () => expect(findParticipantById(497, { include: 'dates' }).then(p => p.toJSON()))
+      .to.eventually.have.property('dates').that.has.length(8)
+  );
+
+  it('sets the correct date for participants',
+    () => findParticipantById(448, { include: 'dates' })
+      .then(p => p.toJSON())
+      .then(participant => {
+        expect(participant).to.have.deep.property('dates[1].date');
+        expect(participant.dates[0].date).to.equalDate(moment('2016-07-23').toDate());
+        expect(participant.dates[1].date).to.equalDate(moment('2016-07-24').toDate());
+      })
+  );
+
+  it('sets the correct amount of dates even when the dates overlap',
+    () => expect(findParticipantById(1, { include: 'dates' }).then(p => p.toJSON()))
+      .to.eventually.have.property('dates').that.has.length(2)
   );
 
   after(() => {
