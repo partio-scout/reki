@@ -36,7 +36,7 @@ const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp(registryUserStore, registryUserActions);
-const login = components.getLogin(registryUserActions);
+const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(

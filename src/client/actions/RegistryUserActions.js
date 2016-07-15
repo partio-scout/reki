@@ -52,15 +52,20 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return dispatch => {
         dispatch();
         return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
-          .then(data =>{
-            if (window.location.protocol === 'https:') {
-              Cookie.set('accessToken', data, { secure: true });
+          .then(data => Cookie.set('accessToken', data, { secure: (window.location.protocol === 'https:') }))
+          .then(() => location.reload())
+          .catch(err => {
+            if (err.status === 404) {
+              this.offlineLoginNotEnabled(true);
             } else {
-              Cookie.set('accessToken', data);
+              this.offlineLoginNotEnabled(false);
             }
-          })
-          .then(() => location.reload());
+          });
       };
+    }
+
+    offlineLoginNotEnabled(tried) {
+      return tried;
     }
 
     currentUserUpdateFailed(error) {
