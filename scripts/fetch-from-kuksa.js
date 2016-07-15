@@ -319,7 +319,7 @@ function addDatesToParticipants() {
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
-    const x = _(kuksaParticipant.payments)
+    return _(kuksaParticipant.payments)
       .flatMap(payment => paymentToDateMappings[payment.name])
       .uniq()
       .map(date => ({
@@ -327,7 +327,6 @@ function addDatesToParticipants() {
         date: moment(date).toDate(),
       }))
       .value();
-    return x;
   }
 }
 
