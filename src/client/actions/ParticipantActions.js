@@ -74,7 +74,7 @@ export function getParticipantActions(alt, participantResource) {
     }
 
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
-      participantResource.raw('post', 'update', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
+      participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
               err => this.participantListUpdateFailed(err));
     }

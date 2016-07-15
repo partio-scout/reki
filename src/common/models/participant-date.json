@@ -1,0 +1,43 @@
+{
+  "name": "ParticipantDate",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "schema": "public",
+      "table": "participant_date"
+    }
+  },
+  "properties": {
+    "participantId": {
+      "type": "Number",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true,
+      "postgresql": {
+        "columnName": "date",
+        "dataType": "date"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "participant": {
+      "type": "belongsTo",
+      "model": "Participant",
+      "foreignKey": "participantId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

@@ -102,7 +102,7 @@ describe('Participant mass edit endpoint test', () => {
   }
 
   it('Should update whitelisted fields', () =>
-    postInstanceToDb('participants/update', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
       .then( () => queryParticipants(accessToken)
       .then( res => expectParticipantInCampValues([ inCamp, inCamp, tmpLeftCamp ], res.body) )
@@ -110,7 +110,7 @@ describe('Participant mass edit endpoint test', () => {
   );
 
   it('Should not update fields that are not whitelisted', () =>
-    postInstanceToDb('participants/update', { ids: [ 1,2 ], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken)
+    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken)
       .expect(400)
       .then( () => queryParticipants(accessToken)
       .then( res => expectParticipantSubCampValues([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ], res.body) )

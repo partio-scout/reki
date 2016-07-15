@@ -207,6 +207,13 @@
       "foreignKey": "participantId",
       "through": "KuksaParticipantExtraSelection",
       "keyThrough": "selectionId"
+    },
+    "payments": {
+      "type": "hasMany",
+      "model": "KuksaPayment",
+      "foreignKey": "participantId",
+      "through": "KuksaParticipantPayment",
+      "keyThrough": "paymentId"
     }
   },
   "acls": [
