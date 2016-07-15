@@ -1,4 +1,6 @@
-export function getSearchFilterActions(alt, searchFilterResource) {
+import _ from 'lodash';
+
+export function getSearchFilterActions(alt, searchFilterResource, participantResource) {
   class SearchFilterActions {
     saveSearchFilter(name, filter) {
       return dispatch => {
@@ -43,6 +45,33 @@ export function getSearchFilterActions(alt, searchFilterResource) {
 
     searchFilterListUpdated(searchFilters) {
       return searchFilters;
+    }
+
+    loadOptions(property) {
+      return dispatch => {
+        dispatch();
+        participantResource.findAll(`filter[fields][${property}]=true`)
+          .then(response => this.optionsLoaded(property, processResults(response)),
+                err => this.optionsLoadingFailed(err));
+      };
+
+      function processResults(result) {
+        const optionStrings = result.map(obj => obj[property]);
+        const uniqueStrings = _.uniq(optionStrings);
+        uniqueStrings.sort();
+        return _.concat([''], uniqueStrings);
+      }
+    }
+
+    optionsLoaded(property, options) {
+      return {
+        property: property,
+        options: options,
+      };
+    }
+
+    optionsLoadingFailed(err) {
+      return err;
     }
   }
 
