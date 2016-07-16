@@ -30,7 +30,9 @@ if ( !app.get('isDev') ) {
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
 
-app.middleware('routes:before', morgan('combined'));
+if (process.env.NODE_ENV !== 'test') {
+  app.middleware('routes:before', morgan('combined'));
+}
 
 const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
 
