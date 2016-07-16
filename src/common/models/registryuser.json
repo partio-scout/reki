@@ -76,6 +76,13 @@
       "type": "hasMany",
       "model": "AuditEvent",
       "foreignKey": "registryuserId"
+    },
+    "rekiRoles": {
+      "type": "hasMany",
+      "model": "Role",
+      "foreignKey": "principalId",
+      "through": "RoleMapping",
+      "keyThrough": "roleId"
     }
   },
   "acls": [
