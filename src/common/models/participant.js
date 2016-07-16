@@ -115,24 +115,27 @@ export default function (Participant) {
 
     next();
 
-    function nameQuery(string, string2) {
+    function constructTextSearchArray(string) {
       const stripRegex = function(s) {
         // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
         return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
       };
-      const array = new Array();
-      array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
-      array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
-      return array;
-    }
 
-    function constructTextSearchArray(string) {
+      function nameQuery(string, string2) {
+        const array = new Array();
+        array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
+        array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
+        return array;
+      }
 
       const or = nameQuery(string, string);
 
       if (_.isInteger(parseInt(string))) {
         or.push({ memberNumber: parseInt(string) });
       }
+
+      or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i` } });
 
       const splitted = string.split(' ', 2);
 
