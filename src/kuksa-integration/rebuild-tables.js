@@ -60,6 +60,13 @@ function rebuildParticipantsTable() {
     return statuses[type] || null;
   }
 
+  function getSubCamp(participant) {
+    if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+      return 'Riehu';
+    }
+    return _.get(participant, 'subCamp.name') || 'Muu';
+  }
+
   console.log('Rebuilding participants table...');
 
   return findKuksaParticipants({
@@ -89,7 +96,7 @@ function rebuildParticipantsTable() {
     diet: participant.diet,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
-    subCamp: (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.' && 'Riehu') || _.get(participant, 'subCamp.name') || 'Muu',
+    subCamp: getSubCamp(participant),
     village: _.get(participant, 'village.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
@@ -169,7 +176,14 @@ function buildSelectionTable() {
   const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
   const createSelections = Promise.promisify(Selection.create, { context: Selection });
   const findKuksaParticipantExtraSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
-  const groupsToCreate = ['0-11-vuotias lapsi osallistuu', 'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä', '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä', 'Lapsen uimataito', 'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä', '\tLapsi tarvitsee päiväunien aikaan vaippaa'];
+  const groupsToCreate = [
+    '0-11-vuotias lapsi osallistuu',
+    'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
+    '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
+    'Lapsen uimataito',
+    'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
+    '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+  ];
 
   console.log('Building selections table...');
 
