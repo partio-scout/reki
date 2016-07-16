@@ -20,7 +20,7 @@ const modelsToClear = [
   'KuksaParticipantPayment',
 ];
 
-function resetDatabase() {
+function clearTemporaryTables() {
   function clearTable(model) {
     const destroyAll = Promise.promisify(app.models[model].destroyAll, { context: app.models[model] });
     return destroyAll();
@@ -30,7 +30,7 @@ function resetDatabase() {
 }
 
 if (require.main === module) {
-  resetDatabase()
+  clearTemporaryTables()
     .then(() => console.log(`Tables ${modelsToClear} cleared.`))
     .then(() => process.exit(0))
     .catch(err => {
