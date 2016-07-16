@@ -17,6 +17,7 @@ const modelList = [
   ['PresenceHistory', false],
   ['AuditEvent', false],
   ['SearchFilter', false],
+  ['Selection', false],
   ['KuksaSubCamp', false],
   ['KuksaVillage', false],
   ['KuksaCampGroup', false],
