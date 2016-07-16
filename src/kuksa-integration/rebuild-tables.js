@@ -87,7 +87,7 @@ function rebuildParticipantsTable() {
     diet: participant.diet,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
-    subCamp: _.get(participant, 'subCamp.name') || 'Muu',
+    subCamp: (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.' && 'Riehu') || _.get(participant, 'subCamp.name') || 'Muu',
     village: _.get(participant, 'village.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
