@@ -757,7 +757,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }).expect(NOT_FOUND));
       it('logout: UNAUTHORIZED', () => post('/api/registryusers/logout').expect(UNAUTHORIZED));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm').expect(UNAUTHORIZED));
@@ -786,7 +786,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, noRolesAccessToken).expect(NOT_FOUND));
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, noRolesAccessToken).expect(UNAUTHORIZED));
@@ -816,7 +816,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryUserAccessToken).expect(NOT_FOUND));
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null,  accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryUserAccessToken).expect(UNAUTHORIZED));
@@ -846,7 +846,7 @@ describe('http api access control', () => {
       it('upsert (insert): ok', () => put('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(OK));
       it('upsert (update): ok', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, registryAdminAccessToken).expect(OK));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryAdminAccessToken).expect(NOT_FOUND));
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryAdminAccessToken).expect(UNAUTHORIZED));
@@ -876,7 +876,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
 
-      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, roihuappUserAccessToken).expect(NOT_FOUND));
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, roihuappUserAccessToken).expect(UNAUTHORIZED));

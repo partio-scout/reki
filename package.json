@@ -5,6 +5,7 @@
   "main": "src/server/bootstrap.js",
   "scripts": {
     "start": "node .",
+    "set-password": "babel-node scripts/set-password.js",
     "create-user": "babel-node scripts/create-user.js",
     "delete-user": "babel-node scripts/delete-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
