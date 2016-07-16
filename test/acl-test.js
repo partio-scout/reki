@@ -95,6 +95,18 @@ function logInRegistryAdmin() {
   }).then(() => testUtils.loginUser('registryAdmin', 'salasana'));
 }
 
+function logInRoihuappUser() {
+  return testUtils.createUserWithRoles(['roihuapp'], {
+    'username': 'roihuappUser',
+    'memberNumber': '7654321',
+    'email': 'roihuappUser@example.org',
+    'password': 'salasana',
+    'firstName': 'Testi',
+    'lastName': 'Testailija',
+    'phoneNumber': 'n/a',
+  }).then(() => testUtils.loginUser('roihuappUser', 'salasana'));
+}
+
 const OK = 200;
 const NO_CONTENT = 204;
 const UNAUTHORIZED = 401;
@@ -104,10 +116,12 @@ describe('http api access control', () => {
   let noRolesAccessToken;
   let registryUserAccessToken;
   let registryAdminAccessToken;
+  let roihuappUserAccessToken;
   let otherUserId;
   let noRolesUserId;
   let registryUserId;
   let registryAdminUserId;
+  let roihuappUserId;
 
   // Create fixtures for use in all tests - do not modify these in your tests!
   // These fixtures are created only once for performance reasons.
@@ -124,6 +138,10 @@ describe('http api access control', () => {
   before(() => logInRegistryAdmin().tap(at => {
     registryAdminAccessToken = at.id;
     registryAdminUserId = at.userId;
+  }));
+  before(() => logInRoihuappUser().tap(at => {
+    roihuappUserAccessToken = at.id;
+    roihuappUserId = at.userId;
   }));
 
   const participantFixture = {
@@ -288,6 +306,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234').expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
     });
 
@@ -304,6 +323,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', noRolesAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
     });
 
@@ -320,6 +340,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryUserAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
     });
 
@@ -336,7 +357,25 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+    });
+
+    describe('roihuapp user', () => {
+      it('find: UNAUTHORIZED', () => get('/api/participants', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('findById: UNAUTHORIZED', () => get('/api/participants/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('count: UNAUTHORIZED', () => get('/api/participants/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+      it('appInformation: OK', () => get('/api/participants/appInformation?memberNumber=1234', roihuappUserAccessToken).expect(OK));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
     });
   });
 
@@ -397,6 +436,20 @@ describe('http api access control', () => {
         it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, registryAdminAccessToken).expect(NOT_FOUND));
         it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, registryAdminAccessToken).expect(NOT_FOUND));
       });
+
+      describe('roihuapp user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/PresenceHistories', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/PresenceHistories/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/PresenceHistories/findOne', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, roihuappUserAccessToken).expect(NOT_FOUND));
+        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', roihuappUserAccessToken).expect(NOT_FOUND));
+        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, roihuappUserAccessToken).expect(NOT_FOUND));
+        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, roihuappUserAccessToken).expect(NOT_FOUND));
+        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, roihuappUserAccessToken).expect(NOT_FOUND));
+      });
     });
 
     describe('Through the participant', () => {
@@ -438,6 +491,16 @@ describe('http api access control', () => {
         it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', registryAdminAccessToken).expect(UNAUTHORIZED));
         it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('roihuapp user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, roihuappUserAccessToken).expect(UNAUTHORIZED));
       });
     });
   });
@@ -499,6 +562,20 @@ describe('http api access control', () => {
         it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
         it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }, registryAdminAccessToken).expect(UNAUTHORIZED));
       });
+
+      describe('roihuapp user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/Allergies', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Allergies/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Allergies/findOne', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Allergies/1/exists', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Allergies/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/Allergies', allergyFixture, roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Allergies/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Allergies/1', { id: 1, name: 'porkkana' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Allergies', allergyFixture, roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Allergies', { id: 1, name: 'porkkana' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      });
     });
 
     describe('Through the participant', () => {
@@ -540,6 +617,16 @@ describe('http api access control', () => {
         it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', registryAdminAccessToken).expect(UNAUTHORIZED));
         it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('roihuapp user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/allergies', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/allergies/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/allergies/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
       });
     });
   });
@@ -768,6 +855,33 @@ describe('http api access control', () => {
       it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, registryAdminAccessToken).expect(NO_CONTENT));
       it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryAdminAccessToken).expect(NO_CONTENT));
     });
+
+    describe('roihuapp user', () => {
+      let accessTokenForLogout;
+      before(() => testUtils.loginUser('roihuappUser', 'salasana').tap(at => accessTokenForLogout = at.id));
+
+      it('find: UNAUTHORIZED', () => get('/api/registryusers', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): OK', () => get(`/api/registryusers/${roihuappUserId}`, roihuappUserAccessToken).expect(OK));
+      it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${roihuappUserId}/exists`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('count: UNAUTHORIZED', () => get('/api/registryusers/count', roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+      it('create: UNAUTHORIZED', () => post('/api/registryusers', userFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById (own): UNAUTHORIZED', () => del(`/api/registryusers/${roihuappUserId}`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('update (other user): UNAUTHORIZED', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('update (own): UNAUTHORIZED', () => put(`/api/registryusers/${roihuappUserId}`, { firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('upsert (insert): UNAUTHORIZED', () => put('/api/registryusers', userFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('upsert (update): UNAUTHORIZED', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+
+      it('login: UNAUTHORIZED', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      //Use separate access token for logout because the access token used here will cease working on logout
+      it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
+      it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', roihuappUserAccessToken).expect(UNAUTHORIZED));
+    });
   });
 
   describe('SearchFilter', () => {
@@ -794,6 +908,12 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+    });
+
+    describe('roihuapp user', () => {
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
     });
   });
 });
