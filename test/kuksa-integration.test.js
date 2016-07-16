@@ -154,7 +154,7 @@ describe('Kuksa integration', () => {
   );
 
   it('produces the expected amount of selections',
-    () => expect(countSelections()).to.eventually.equal(25)
+    () => expect(countSelections({ kuksaGroupId: 94 })).to.eventually.equal(9)
   );
 
   it('produces expected selection',
