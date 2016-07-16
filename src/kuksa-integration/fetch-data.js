@@ -1,5 +1,6 @@
 import app from '../server/server';
 import Promise from 'bluebird';
+import moment from 'moment';
 import transfer from './transfer';
 import { getEventApi } from 'kuksa-event-api-client';
 import participantDateRanges from '../../conf/participant-fetch-dates.json';
@@ -153,6 +154,12 @@ function transferParticipants(eventApi) {
       },
     ]);
   }
+
+  // set the last date to be cuurent date
+  let lastDaterange = participantDateRanges.pop();
+  lastDaterange.endDate = moment().toDate();
+  participantDateRanges.push(lastDaterange);
+
   console.log('Transferring participants and their extra infos and selections');
   return Promise.each(participantDateRanges, daterange => transferDaterange(daterange));
 }
