@@ -5,6 +5,7 @@ import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getDateFilterContainer } from './DateFilterContainer';
+import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
@@ -12,6 +13,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
+  const PresenceFilterContainer = getPresenceFilterContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -25,7 +27,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'dates'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'dates'], props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -77,6 +79,10 @@ export function getQuickFilterContainer(participantStore, participantActions, se
               currentSelection={ currentSelection }
               label="Leirilippukunta"
               property="campGroup"
+            />
+            <PresenceFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
             />
             <DateFilterContainer
               onChange={ handleChange }

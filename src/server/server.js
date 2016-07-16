@@ -4,6 +4,8 @@ import path from 'path';
 import expressEnforcesSsl from 'express-enforces-ssl';
 import helmet from 'helmet';
 
+const morgan = require('morgan');
+
 const app = loopback();
 
 export default app;
@@ -27,6 +29,10 @@ if ( !app.get('isDev') ) {
 
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
+
+if (app.get('standalone')) {
+  app.middleware('routes:before', morgan('combined'));
+}
 
 const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
 
