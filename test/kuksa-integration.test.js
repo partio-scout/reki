@@ -20,7 +20,7 @@ describe('Kuksa integration', () => {
   const findAllergyById = Promise.promisify(app.models.Allergy.findById, { context: app.models.Allergy });
 
   before(function(done) {
-    this.timeout(30000);
+    this.timeout(50000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();
