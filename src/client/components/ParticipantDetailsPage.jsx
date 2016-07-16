@@ -34,8 +34,9 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     handleChange(property, event) {
-      this.state.participantDetails[property] = event.target.value;
-      this.setState(this.state);
+      const participantDetails = this.state.participantDetails;
+      participantDetails[property] = event.target.value;
+      this.setState({ participantDetails: participantDetails });
     }
 
     saveCampOfficeNotes() {
