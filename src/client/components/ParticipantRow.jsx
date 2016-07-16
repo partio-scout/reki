@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Link } from 'react-router';
-import { Input } from 'react-bootstrap';
+import { Input, Glyphicon } from 'react-bootstrap';
 import { Presence } from '../components';
 
 moment.locale('fi');
@@ -75,7 +75,7 @@ export class ParticipantRow extends React.Component {
 
     const checked = isChecked(participantId);
 
-    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : '–' }</td>;
+    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
 
     return (
       <tr>

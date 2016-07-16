@@ -97,6 +97,12 @@ td {
   vertical-align: middle !important;
 }
 
+table .glyphicon.muted {
+  margin-top: 1px;
+  opacity: 0.2;
+  font-size: 0.8em;
+}
+
 table {
   div.form-group {
     margin: 0;
