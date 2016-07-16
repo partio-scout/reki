@@ -38,6 +38,7 @@ export function getParticipantActions(alt, participantResource) {
         skip: offset,
         limit: limit,
         order: getLoopbackOrderParameter(),
+        include: ['dates'],
       };
 
       return dispatch => {

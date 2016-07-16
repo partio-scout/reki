@@ -130,8 +130,11 @@ export function getParticipantListPage(participantStore, participantActions, sea
         checked: new Array(),
         allChecked: false,
         participants: [ ],
+        dates: [ ],
       };
 
+      this.onStoreChanged = this.onStoreChanged.bind(this);
+      this.extractState = this.extractState.bind(this);
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
@@ -156,7 +159,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     checkAll(isChecked) {
-      const stateChange = { checked: new Array(), allChecked: isChecked };
+      const stateChange = { checked: new Array(), allChecked: isChecked, dates: this.state.dates };
 
       if (isChecked) {
         stateChange.checked = _.map(participantStore.state.participants, 'participantId');
@@ -178,10 +181,12 @@ export function getParticipantListPage(participantStore, participantActions, sea
 
     componentDidMount() {
       participantStore.listen(this.checkNoneOnParticipantsChanged);
+      searchFilterStore.listen(this.onStoreChanged);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.checkNoneOnParticipantsChanged);
+      searchFilterStore.unlisten(this.onStoreChanged);
     }
 
     checkNoneOnParticipantsChanged() {
@@ -190,6 +195,16 @@ export function getParticipantListPage(participantStore, participantActions, sea
         this.setState({ participants: newParticipants });
         this.checkAll(false);
       }
+    }
+
+    onStoreChanged() {
+      this.setState(this.extractState());
+    }
+
+    extractState() {
+      const state = this.state;
+      state.dates = searchFilterStore.getState().options.dates || [];
+      return state;
     }
 
     render() {
@@ -259,9 +274,10 @@ export function getParticipantListPage(participantStore, participantActions, sea
                         />
                       ))
                     }
+                    <th colSpan={ this.state.dates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } />
+                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } dates={ this.state.dates } />
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>

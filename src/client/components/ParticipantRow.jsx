@@ -1,7 +1,11 @@
 import React from 'react';
+import moment from 'moment';
+import _ from 'lodash';
 import { Link } from 'react-router';
 import { Input } from 'react-bootstrap';
 import { Presence } from '../components';
+
+moment.locale('fi');
 
 class LinkCell extends React.Component {
   render() {
@@ -56,6 +60,7 @@ export class ParticipantRow extends React.Component {
       subCamp,
       campGroup,
       presence,
+      dates,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
@@ -69,6 +74,8 @@ export class ParticipantRow extends React.Component {
     };
 
     const checked = isChecked(participantId);
+
+    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : '–' }</td>;
 
     return (
       <tr>
@@ -90,6 +97,9 @@ export class ParticipantRow extends React.Component {
         <td>{ localGroup }</td>
         <td>{ subCamp }</td>
         <td>{ campGroup }</td>
+        {
+          this.props.dates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
+        }
       </tr>
     );
   }
@@ -99,4 +109,5 @@ ParticipantRow.propTypes = {
   participant: React.PropTypes.object.isRequired,
   isChecked: React.PropTypes.func,
   checkboxCallback: React.PropTypes.func,
+  dates: React.PropTypes.array.isRequired,
 };
