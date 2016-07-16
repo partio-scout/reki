@@ -63,6 +63,20 @@ export function getRegistryUserActions(alt, registryUserResource) {
           });
       };
     }
+
+    blockUser(userId) {
+      return dispatch => {
+        registryUserResource.raw('POST', `${userId}/block`)
+          .then(() => this.loadRegistryUserList());
+      };
+    }
+
+    unblockUser(userId) {
+      return dispatch => {
+        registryUserResource.raw('POST', `${userId}/unblock`)
+          .then(() => this.loadRegistryUserList());
+      };
+    }
   }
 
   return alt.createActions(RegistryUserActions);
