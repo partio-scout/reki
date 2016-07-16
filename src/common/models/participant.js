@@ -25,7 +25,6 @@ export default function (Participant) {
 
     next();
 
-
     function constructTextSearchArray(string) {
       const stripRegex = function(s) {
         // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
@@ -45,8 +44,8 @@ export default function (Participant) {
         or.push({ memberNumber: parseInt(string) });
       }
 
-      or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i`}});
-      or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i`}});
+      or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i` } });
 
       const splitted = string.split(' ', 2);
 
