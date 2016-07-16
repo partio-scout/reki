@@ -217,16 +217,15 @@ export default function (Participant) {
           'memberNumber',
           'email',
         ],
-      }).asCallback((e, participant) => {
-        if (e || !participant) {
+      }).then(participant => {
+        if (!participant) {
           err = new Error('Participant not found');
-          err.originalError = e;
           err.status = 404;
-          return cb(err);
+          throw err;
         } else {
-          return cb(null, participant);
+          return participant;
         }
-      });
+      }).asCallback(cb);
     }
 
   };
