@@ -295,7 +295,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
 
-      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation', { memberNumber: 1234 }).expect(UNAUTHORIZED));
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234').expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
     });
 
@@ -312,6 +312,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', noRolesAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
     });
 
@@ -328,6 +329,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryUserAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
     });
 
@@ -344,6 +346,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
     });
 
@@ -360,6 +363,7 @@ describe('http api access control', () => {
       it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
 
+      it('appInformation: OK', () => get('/api/participants/appInformation?memberNumber=1234', roihuappUserAccessToken).expect(OK));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
     });
   });
