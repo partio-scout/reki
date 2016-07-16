@@ -305,6 +305,37 @@ table .presence {
   }
 }
 
+
+.participant-dates {
+  td {
+    height: 55px;
+    vertical-align: top !important;
+    text-align: right;
+    border-left: 1px solid #ddd;
+
+    &:first-child {
+      border-left: none;
+    }
+
+    span {
+      opacity: 0.5;
+    }
+    
+    &.active {
+      color: $green;
+      background: lighten($green, 50%) !important;
+
+      span {
+        opacity: 1;
+      };
+    }
+    
+    .glyphicon {
+      display: block;
+    }
+  }
+}
+
 /**
  *
  */

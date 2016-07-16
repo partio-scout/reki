@@ -83,7 +83,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <PresenceHistory value={ presenceHistory } />
                 </Panel>
               </Col>
-              <Col md={ 4 }>
+              <Col md={ 6 }>
                 <Panel header="Ilmoittautumispäivät">
                   <ParticipantDates dates={ dates } />
                 </Panel>
