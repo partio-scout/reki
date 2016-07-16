@@ -38,7 +38,7 @@ function getOptionsFromEnvironment() {
 }
 
 function transferTablesOnlyOnce(eventApi) {
-  console.log('Transferring sub camps, villages, local groups, extra selection and info fields...');
+  console.log('Transferring sub camps, villages, local groups, extra selections and info fields...');
 
   return transfer([
     {
