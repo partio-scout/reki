@@ -97,6 +97,8 @@ function rebuildParticipantsTable() {
     willOfTheWispWave: getSelectionForGroup(participant, 'Virvatulen aalto'),
     guardianOne: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 1)'),
     guardianTwo: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 2)'),
+    familyCampProgramInfo: getInfoForField(participant, 'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
+    childNaps: getSelectionForGroup(participant, 'Lapsi nukkuu päiväunet'),
   })))
   .then(participants =>
     _.reduce(
