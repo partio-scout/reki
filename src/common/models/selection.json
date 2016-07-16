@@ -105,13 +105,6 @@
       "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "*"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "registryAdmin",
-      "permission": "ALLOW",
-      "property": "*"
     }
   ],
   "methods": {}

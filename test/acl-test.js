@@ -576,11 +576,11 @@ describe('http api access control', () => {
       });
 
       describe('registryUser', () => {
-        it('find: AUTHORIZED', () => get('/api/Selections', registryUserAccessToken).expect(OK));
-        it('findById: AUTHORIZED', () => get('/api/Selections/1', registryUserAccessToken).expect(OK));
-        it('findOne: AUTHORIZED', () => get('/api/Selections/findOne', registryUserAccessToken).expect(OK));
-        it('exists: AUTHORIZED', () => get('/api/Selections/1/exists', registryUserAccessToken).expect(OK));
-        it('count: AUTHORIZED', () => get('/api/Selections/count', registryUserAccessToken).expect(OK));
+        it('find: ok', () => get('/api/Selections', registryUserAccessToken).expect(OK));
+        it('findById: ok', () => get('/api/Selections/1', registryUserAccessToken).expect(OK));
+        it('findOne: ok', () => get('/api/Selections/findOne', registryUserAccessToken).expect(OK));
+        it('exists: ok', () => get('/api/Selections/1/exists', registryUserAccessToken).expect(OK));
+        it('count: ok', () => get('/api/Selections/count', registryUserAccessToken).expect(OK));
         it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture, registryUserAccessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1', registryUserAccessToken).expect(UNAUTHORIZED));
         it('update: UNAUTHORIZED', () => put('/api/Selections/1', { selectionName: 'Nimi' }, registryUserAccessToken).expect(UNAUTHORIZED));
@@ -589,11 +589,11 @@ describe('http api access control', () => {
       });
 
       describe('registryAdmin', () => {
-        it('find: AUTHORIZED', () => get('/api/Selections', registryAdminAccessToken).expect(OK));
-        it('findById: AUTHORIZED', () => get('/api/Selections/1', registryAdminAccessToken).expect(OK));
-        it('findOne: AUTHORIZED', () => get('/api/Selections/findOne', registryAdminAccessToken).expect(OK));
-        it('exists: AUTHORIZED', () => get('/api/Selections/1/exists', registryAdminAccessToken).expect(OK));
-        it('count: AUTHORIZED', () => get('/api/Selections/count', registryAdminAccessToken).expect(OK));
+        it('find: UNAUTHORIZED', () => get('/api/Selections', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Selections/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Selections/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Selections/1/exists', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Selections/count', registryAdminAccessToken).expect(UNAUTHORIZED));
 
         it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1', registryAdminAccessToken).expect(UNAUTHORIZED));
