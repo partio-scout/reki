@@ -31,7 +31,7 @@ export function getDateFilter() {
 
           <div bsRole="menu" className="dropdown-menu">
             <ul className="list-unstyled">
-              { _.map(_.sortBy(options), (date, key) => <li key={ key }><Input type="checkbox" value={ date } label={ moment(date).format('L') } onChange={ handleValueChanged } checked={ _.includes(value, date) } /></li>) }
+              { options.map( (row, key) => <li key={ key }><Input type="checkbox" value={ row.date } label={ moment(row.date).format('L') } onChange={ handleValueChanged } checked={ _.includes(value, row.date) } /></li>) }
             </ul>
           </div>
         </Dropdown>
@@ -43,7 +43,7 @@ export function getDateFilter() {
     value: React.PropTypes.any,
     label: React.PropTypes.string.isRequired,
     property: React.PropTypes.string.isRequired,
-    options: React.PropTypes.object.isRequired,
+    options: React.PropTypes.array.isRequired,
     onChange: React.PropTypes.func.isRequired,
   };
 

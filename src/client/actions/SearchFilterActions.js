@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export function getSearchFilterActions(alt, searchFilterResource, participantResource) {
+export function getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource) {
   class SearchFilterActions {
     saveSearchFilter(name, filter) {
       return dispatch => {
@@ -66,16 +66,15 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
     loadDateOptions(property) {
       return dispatch => {
         dispatch();
-        participantResource.findAll(`filter[include]=${property}`)
+        participantDateResource.findAll(`filter[fields][date]=true`)
           .then(response => this.optionsLoaded(property, processResults(response)),
                 err => this.optionsLoadingFailed(err));
       };
 
       function processResults(result) {
-        const optionValues = result.map(obj => obj[property]);
-        const uniqueValues = _.uniqBy(_.flatMap(optionValues), 'date');
-        const dates = _.mapValues(_.mapKeys(uniqueValues, 'id'), 'date');
-        return dates;
+        const sortedValues = _.sortBy(result, 'date');
+        const uniqueValues = _.sortedUniqBy(sortedValues, 'date');
+        return uniqueValues;
       }
     }
 
