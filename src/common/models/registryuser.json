@@ -76,6 +76,13 @@
       "type": "hasMany",
       "model": "AuditEvent",
       "foreignKey": "registryuserId"
+    },
+    "rekiRoles": {
+      "type": "hasMany",
+      "model": "Role",
+      "foreignKey": "principalId",
+      "through": "RoleMapping",
+      "keyThrough": "roleId"
     }
   },
   "acls": [
@@ -83,12 +90,6 @@
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "DENY"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "DENY",
-      "property": "findById"
     },
     {
       "principalType": "ROLE",
@@ -136,6 +137,12 @@
       "principalId": "$everyone",
       "permission": "DENY",
       "property": "create"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "findById"
     },
     {
       "accessType": "READ",
@@ -192,6 +199,20 @@
       "principalId": "registryAdmin",
       "permission": "ALLOW",
       "property": "updateAttributes"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "registryAdmin",
+      "permission": "ALLOW",
+      "property": "block"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "registryAdmin",
+      "permission": "ALLOW",
+      "property": "unblock"
     }
   ],
   "methods": []

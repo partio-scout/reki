@@ -1,6 +1,7 @@
 import app from '../../server/server.js';
 import Promise from 'bluebird';
 import loopback from 'loopback';
+import crypto from 'crypto';
 
 export default function(Registryuser) {
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
@@ -37,4 +38,44 @@ export default function(Registryuser) {
   });
 
   Registryuser.disableRemoteMethod('login', process.env.ENABLE_OFFLINE_LOGIN !== 'true');
+
+  Registryuser.isBlocked = function(user) {
+    return user.status === 'blocked';
+  };
+
+  Registryuser.block = function(userId, callback) {
+    const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
+    const deleteAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
+
+    const newPassword = crypto.randomBytes(24).toString('hex');
+
+    Promise.join(
+      updateRegistryUser({ id: userId }, { status: 'blocked', password: newPassword }),
+      deleteAccessTokens({ userId: userId })
+    ).asCallback(callback);
+  };
+
+  Registryuser.unblock = function(userId, callback) {
+    const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
+
+    updateRegistryUser({ id: userId }, { status: null }).asCallback(callback);
+  };
+
+  Registryuser.remoteMethod('block',
+    {
+      http: { path: '/:id/block', verb: 'post' },
+      accepts: [
+        { arg: 'id', type: 'number', required: 'true' },
+      ],
+    }
+  );
+
+  Registryuser.remoteMethod('unblock',
+    {
+      http: { path: '/:id/unblock', verb: 'post' },
+      accepts: [
+        { arg: 'id', type: 'number', required: 'true' },
+      ],
+    }
+  );
 }

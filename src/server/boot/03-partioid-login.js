@@ -32,7 +32,7 @@ export default function(app) {
     validatePostResponse(req.body)
       .then(getWhereFilter)
       .then(findOneUser)
-      .then(loginUser)
+      .then(user => loginUser(user, app))
       .tap(([accessToken]) => destroyAccessTokens({ and: [{ id: { neq: accessToken.id } }, { userId: accessToken.userId }] }))
       .spread((accessToken, user) => setCookieAndFinishRequest(accessToken, user, cookieOptions, res))
       .catch(err => processError(req, res, err))
@@ -56,9 +56,13 @@ function getWhereFilter(samlResult) {
   }
 }
 
-function loginUser(user) {
+function loginUser(user, app) {
   if (user === null) {
     throw new Error('PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.');
+  }
+
+  if (app.models.RegistryUser.isBlocked(user)) {
+    throw new Error('Käyttäjän sisäänkirjautuminen on estetty');
   }
 
   return new Promise((resolve, reject) => {

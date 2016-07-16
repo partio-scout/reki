@@ -37,7 +37,7 @@ export function getRegistryUserActions(alt, registryUserResource) {
         if (!id) {
           this.currentUserUpdated(null);
         } else {
-          registryUserResource.findById(id)
+          registryUserResource.findById(id, 'filter[include]=rekiRoles')
             .then(newCurrentUser => this.currentUserUpdated(newCurrentUser),
                   error => this.currentUserUpdateFailed(error));
         }
@@ -85,6 +85,20 @@ export function getRegistryUserActions(alt, registryUserResource) {
 
             this.resetAllData();
           });
+      };
+    }
+
+    blockUser(userId) {
+      return dispatch => {
+        registryUserResource.raw('POST', `${userId}/block`)
+          .then(() => this.loadRegistryUserList());
+      };
+    }
+
+    unblockUser(userId) {
+      return dispatch => {
+        registryUserResource.raw('POST', `${userId}/unblock`)
+          .then(() => this.loadRegistryUserList());
       };
     }
   }
