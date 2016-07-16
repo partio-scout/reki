@@ -163,6 +163,17 @@ describe('http api access control', () => {
       .then(participants => participants[0].allergies.add(allergyFixture.allergyId))
   );
 
+  const selectionFixture = {
+    participantId: 1,
+    kuksaGroupId: 1,
+    kuksaSelectionId: 1,
+    groupName: 'Ryhmänimi',
+    selectionName: 'Valintanimi',
+  };
+  before(() =>
+    testUtils.createFixture('Selection', selectionFixture)
+  );
+
   const userFixture = {
     firstName: 'derp',
     lastName: 'durp',
@@ -529,6 +540,108 @@ describe('http api access control', () => {
         it('create: UNAUTHORIZED', () => post('/api/participants/1/allergies', allergyFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
         it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/allergies/1', registryAdminAccessToken).expect(UNAUTHORIZED));
         it('update: UNAUTHORIZED', () => put('/api/participants/1/allergies/1', { id: 1, name: 'porkkana' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      });
+    });
+  });
+
+  describe('Selection', () => {
+
+    describe('Directly', () => {
+      describe('Unauthenticated user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/Selections').expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Selections/1').expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Selections/findOne').expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Selections/1/exists').expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Selections/count').expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1').expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Selections/1', { selectionName: 'Nimi' }).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Selections', selectionFixture).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Selections', { selectionId: 1, selectionName: 'nimi' }).expect(UNAUTHORIZED));
+      });
+
+      describe('Authenticated user without roles', () => {
+        it('find: UNAUTHORIZED', () => get('/api/Selections', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/Selections/1', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('findOne: UNAUTHORIZED', () => get('/api/Selections/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('exists: UNAUTHORIZED', () => get('/api/Selections/1/exists', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/Selections/count', noRolesAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture, noRolesAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Selections/1', { selectionName: 'Nimi' }, noRolesAccessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Selections', selectionFixture, noRolesAccessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Selections', { selectionId: 1, selectionName: 'nimi' }, noRolesAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryUser', () => {
+        it('find: AUTHORIZED', () => get('/api/Selections', registryUserAccessToken).expect(OK));
+        it('findById: AUTHORIZED', () => get('/api/Selections/1', registryUserAccessToken).expect(OK));
+        it('findOne: AUTHORIZED', () => get('/api/Selections/findOne', registryUserAccessToken).expect(OK));
+        it('exists: AUTHORIZED', () => get('/api/Selections/1/exists', registryUserAccessToken).expect(OK));
+        it('count: AUTHORIZED', () => get('/api/Selections/count', registryUserAccessToken).expect(OK));
+        it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture, registryUserAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1', registryUserAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Selections/1', { selectionName: 'Nimi' }, registryUserAccessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Selections', allergyFixture, registryUserAccessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Selections', { selectionId: 1, selectionName: 'nimi' }, registryUserAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryAdmin', () => {
+        it('find: AUTHORIZED', () => get('/api/Selections', registryAdminAccessToken).expect(OK));
+        it('findById: AUTHORIZED', () => get('/api/Selections/1', registryAdminAccessToken).expect(OK));
+        it('findOne: AUTHORIZED', () => get('/api/Selections/findOne', registryAdminAccessToken).expect(OK));
+        it('exists: AUTHORIZED', () => get('/api/Selections/1/exists', registryAdminAccessToken).expect(OK));
+        it('count: AUTHORIZED', () => get('/api/Selections/count', registryAdminAccessToken).expect(OK));
+
+        it('create: UNAUTHORIZED', () => post('/api/Selections', selectionFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/Selections/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/Selections/1', { selectionName: 'Nimi' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('upsert (insert): UNAUTHORIZED', () => put('/api/Selections', selectionFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('upsert (update): UNAUTHORIZED', () => put('/api/Selections', { selectionId: 1, selectionName: 'nimi' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      });
+    });
+
+    describe('Through the participant', () => {
+      describe('Unauthenticated user', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/selections').expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/selections/1').expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/selections/count').expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/selections', allergyFixture).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/selections/1').expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/selections/1', { selectionName: 'Nimi' }).expect(UNAUTHORIZED));
+      });
+
+      describe('Authenticated user without roles', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/selections', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/selections/1', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/selections/count', noRolesAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/selections', selectionFixture, noRolesAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/selections/1', noRolesAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/selections/1', { selectionName: 'Nimi' }, noRolesAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryUser', () => {
+        it('find: ok', () => get('/api/participants/1/selections', registryUserAccessToken).expect(OK));
+        it('findById: ok', () => get('/api/participants/1/selections/1', registryUserAccessToken).expect(OK));
+        it('count: ok', () => get('/api/participants/1/selections/count', registryUserAccessToken).expect(OK));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/selections', selectionFixture, registryUserAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/selections/1', registryUserAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/selections/1', { selectionName: 'Nimi' }, registryUserAccessToken).expect(UNAUTHORIZED));
+      });
+
+      describe('registryAdmin', () => {
+        it('find: UNAUTHORIZED', () => get('/api/participants/1/selections', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('findById: UNAUTHORIZED', () => get('/api/participants/1/selections/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('count: UNAUTHORIZED', () => get('/api/participants/1/selections/count', registryAdminAccessToken).expect(UNAUTHORIZED));
+
+        it('create: UNAUTHORIZED', () => post('/api/participants/1/selections', allergyFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/selections/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+        it('update: UNAUTHORIZED', () => put('/api/participants/1/selections/1', { selectionName: 'Nimi' }, registryAdminAccessToken).expect(UNAUTHORIZED));
       });
     });
   });

@@ -18,6 +18,8 @@ describe('Kuksa integration', () => {
   const findParticipantById = Promise.promisify(app.models.Participant.findById, { context: app.models.Participant });
   const countAllergies = Promise.promisify(app.models.Allergy.count, { context: app.models.Allergy });
   const findAllergyById = Promise.promisify(app.models.Allergy.findById, { context: app.models.Allergy });
+  const findSelections = Promise.promisify(app.models.Selection.find, { context: app.models.Selection });
+  const countSelections = Promise.promisify(app.models.Selection.count, { context: app.models.Selection });
 
   before(function(done) {
     this.timeout(50000);
@@ -149,6 +151,20 @@ describe('Kuksa integration', () => {
   it('sets the correct amount of dates even when the dates overlap',
     () => expect(findParticipantById(1, { include: 'dates' }).then(p => p.toJSON()))
       .to.eventually.have.property('dates').that.has.length(2)
+  );
+
+  it('produces the expected amount of selections',
+    () => expect(countSelections()).to.eventually.equal(25)
+  );
+
+  it('produces expected selection',
+    () => findSelections({ where: { kuksaSelectionId: 487 } })
+      .then(s => {
+        expect(s).to.have.length(1);
+        expect(s[0]).to.have.property('participantId', 544);
+        expect(s[0]).to.have.property('groupName', 'Lapsi tarvitsee päiväunien aikaan vaippaa');
+        expect(s[0]).to.have.property('selectionName', 'Ei');
+      })
   );
 
   after(() => {
