@@ -58,7 +58,7 @@ export function getRegistryUserActions(alt, registryUserResource) {
             if (err.status === 404) {
               this.offlineLoginNotEnabled(true);
             } else {
-              this.offlineLoginNotEnabled(false);
+              this.offlineLoginFailed(err);
             }
           });
       };
@@ -66,6 +66,10 @@ export function getRegistryUserActions(alt, registryUserResource) {
 
     offlineLoginNotEnabled(tried) {
       return tried;
+    }
+
+    offlineLoginFailed(err) {
+      return err;
     }
 
     currentUserUpdateFailed(error) {
