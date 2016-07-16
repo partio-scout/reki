@@ -9,6 +9,7 @@ const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context
 
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
+const findParticipants = Promise.promisify(Participant.find, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
 if (require.main === module) {
@@ -111,8 +112,6 @@ function rebuildParticipantsTable() {
 }
 
 function addAllergiesToParticipants() {
-  const findParticipants = Promise.promisify(Participant.find, { context: Participant });
-
   function removeOldAndAddNewAllergies(participant, newAllergies) {
     Promise.promisifyAll(participant);
     return participant.allergies.destroyAll()
@@ -174,17 +173,19 @@ function buildSelectionTable() {
   console.log('Building selections table...');
 
   return destroyAllSelections()
-  .then(() => findKuksaParticipantExtraSelections({ include: { selection: 'group' } }))
-  .then(participantSelections => participantSelections.map(selections => selections.toObject()))
-  .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
-  .then(participantSelections => participantSelections.map(sel => ({
-    participantId: sel.participantId,
-    kuksaGroupId: sel.selection.group.id,
-    kuksaSelectionId: sel.selection.id,
-    groupName: sel.selection.group.name.trim(),
-    selectionName: sel.selection.name,
-  })))
-  .then(selections => createSelections(selections))
+  .then(() => findParticipants())
+  .then(participants => Promise.each(participants, p =>
+    findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
+    .then(participantSelections => participantSelections.map(selections => selections.toObject()))
+    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
+    .then(participantSelections => participantSelections.map(sel => ({
+      participantId: sel.participantId,
+      kuksaGroupId: sel.selection.group.id,
+      kuksaSelectionId: sel.selection.id,
+      groupName: sel.selection.group.name.trim(),
+      selectionName: sel.selection.name,
+    })))
+    .then(selections => createSelections(selections))))
   .then(() => console.log('Selections table built.'));
 }
 
