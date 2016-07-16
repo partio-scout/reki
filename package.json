@@ -5,6 +5,7 @@
   "main": "src/server/bootstrap.js",
   "scripts": {
     "start": "node .",
+    "set-password": "babel-node scripts/set-password.js",
     "create-user": "babel-node scripts/create-user.js",
     "delete-user": "babel-node scripts/delete-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
@@ -14,10 +15,14 @@
     "test-mocha": "NODE_ENV=test mocha --timeout 4000 --compilers js:babel-core/register",
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
-    "fetch-from-kuksa": "babel-node scripts/fetch-from-kuksa.js",
+    "clear-temporary-tables": "babel-node src/kuksa-integration/clear-temporary-tables.js",
+    "fetch-data": "babel-node src/kuksa-integration/fetch-data.js",
+    "rebuild-tables": "babel-node src/kuksa-integration/rebuild-tables.js",
+    "fetch-from-kuksa": "npm run clear-temporary-tables && npm run fetch-data && npm run rebuild-tables",
     "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
     "console": "echo 'Run .load scripts/console-utils.js to use utils' && babel-node",
-    "mock-kuksa": "babel-node test/kuksa-integration/mock/mock-kuksa.js"
+    "mock-kuksa": "babel-node test/kuksa-integration/mock/mock-kuksa.js",
+    "create-roihuapp-token": "babel-node scripts/create-roihuapp-token.js"
   },
   "dependencies": {
     "alt": "^0.18.2",
@@ -55,6 +60,7 @@
     "loopback-datasource-juggler": "2.46.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
+    "newrelic": "^1.28.3",
     "node-sass": "^3.4.2",
     "passport-saml": "^0.14.0",
     "react": "^0.14.3",

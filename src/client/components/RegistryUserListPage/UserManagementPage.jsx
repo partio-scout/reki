@@ -25,11 +25,19 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
       this.setState(state);
     }
 
+    blockUser(userId) {
+      registryUserActions.blockUser(userId);
+    }
+
+    unblockUser(userId) {
+      registryUserActions.unblockUser(userId);
+    }
+
     render() {
       return (
         <div>
           <h1>Käyttäjät</h1>
-          <RegistryUserTable registryUsers={ this.state.registryUsers }/>
+          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } />
         </div>
       );
     }

@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { Nav } from 'react-bootstrap';
 import { getNavigationItem } from '../components';
 
@@ -19,23 +20,38 @@ export function getMainNavigation() {
     }
 
     getLoggedInNavItems() {
-      return [
-        {
-          to: '/admin',
-          isIndexLink: true,
-          label: 'Käyttäjät',
-        },
-        {
-          to: '/participants',
-          isIndexLink: true,
-          label: 'Leiriläiset',
-        },
+      const navItems = [ ];
+      const rekiRoles = _.map(this.props.currentUser.rekiRoles, obj => obj.name);
+
+      if (_.includes(rekiRoles, 'registryAdmin')) {
+        navItems.push(
+          {
+            to: '/admin',
+            isIndexLink: true,
+            label: 'Käyttäjät',
+          }
+        );
+      }
+
+      if (_.includes(rekiRoles, 'registryUser')) {
+        navItems.push(
+          {
+            to: '/participants',
+            isIndexLink: true,
+            label: 'Leiriläiset',
+          }
+        );
+      }
+
+      navItems.push(
         {
           onClick: this.props.onLogout,
           isExternalLink: true,
           label: 'Kirjaudu ulos',
-        },
-      ];
+        }
+      );
+
+      return navItems;
     }
 
     getLoggedOutNavItems() {

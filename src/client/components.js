@@ -18,4 +18,5 @@ export { getNavigationItem } from './components/NavigationItem';
 export { getLoginPromptPage } from './components/LoginPromptPage';
 export { Presence } from './components/Presence';
 export { PresenceHistory } from './components/PresenceHistory';
+export { getLogin } from './components/OfflineLogin';
 export { PropertyTextArea } from './components/PropertyTextArea';

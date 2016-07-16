@@ -36,6 +36,7 @@ const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const app = components.getApp(registryUserStore, registryUserActions);
+const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
@@ -78,6 +79,7 @@ const routes = (
         <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
         <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
       </Route>
+      <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
       <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
     </Route>
   </Router>

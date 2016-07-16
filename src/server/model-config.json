@@ -40,6 +40,10 @@
     "dataSource": "db",
     "public": true
   },
+  "Selection": {
+    "dataSource": "db",
+    "public": true
+  },
   "AuditEvent": {
     "dataSource": "db",
     "public": false

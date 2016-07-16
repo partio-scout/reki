@@ -328,6 +328,33 @@
         "nullable": "YES"
       }
     },
+
+    "familyCampProgramInfo": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "family_camp_program_info",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+
+    "childNaps": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "child_naps",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+
     "campOfficeNotes": {
       "type": "string",
       "required": false,
@@ -368,6 +395,10 @@
     "dates": {
       "type": "hasMany",
       "model": "ParticipantDate"
+    },
+    "selections": {
+      "type": "hasMany",
+      "model": "Selection"
     }
   },
   "acls": [
@@ -390,6 +421,20 @@
       "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "massAssignField"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "roihuapp",
+      "permission": "ALLOW",
+      "property": "getParticipantInformationForApp"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "registryUser",
+      "permission": "DENY",
+      "property": "getParticipantInformationForApp"
     }
   ],
   "methods": {}

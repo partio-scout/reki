@@ -25,24 +25,27 @@ export default function (Participant) {
 
     next();
 
-    function nameQuery(string, string2) {
+    function constructTextSearchArray(string) {
       const stripRegex = function(s) {
         // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
         return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
       };
-      const array = new Array();
-      array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
-      array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
-      return array;
-    }
 
-    function constructTextSearchArray(string) {
+      function nameQuery(string, string2) {
+        const array = new Array();
+        array.push({ firstName: { regexp: `/${stripRegex(string)}/i` } });
+        array.push({ lastName: { regexp: `/${stripRegex(string2)}/i` } });
+        return array;
+      }
 
       const or = nameQuery(string, string);
 
       if (_.isInteger(parseInt(string))) {
         or.push({ memberNumber: parseInt(string) });
       }
+
+      or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i` } });
 
       const splitted = string.split(' ', 2);
 
@@ -187,6 +190,48 @@ export default function (Participant) {
     }
   };
 
+  Participant.getParticipantInformationForApp = (memberNumber, email, cb) => {
+    const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
+    let err;
+    let where;
+
+    if (!memberNumber && !email) {
+      err = new Error('email or memberNumber is required!');
+      err.status = 400;
+      return cb(err);
+    } else {
+      if (memberNumber) {
+        where = { memberNumber: memberNumber };
+      } else if (email) {
+        where = { email: email };
+      }
+      findParticipant({
+        where: where,
+        fields: [
+          'firstName',
+          'lastName',
+          'phoneNumber',
+          'localGroup',
+          'campGroup',
+          'subCamp',
+          'village',
+          'ageGroup',
+          'memberNumber',
+          'email',
+        ],
+      }).then(participant => {
+        if (!participant) {
+          err = new Error('Participant not found');
+          err.status = 404;
+          throw err;
+        } else {
+          return participant;
+        }
+      }).asCallback(cb);
+    }
+
+  };
+
   Participant.remoteMethod('massAssignField',
     {
       http: { path: '/massAssign', verb: 'post' },
@@ -196,6 +241,17 @@ export default function (Participant) {
         { arg: 'newValue', type: 'string', required: 'true' },
       ],
       returns: { arg: 'result', type: 'string' },
+    }
+  );
+
+  Participant.remoteMethod('getParticipantInformationForApp',
+    {
+      http: { path: '/appInformation', verb: 'get' },
+      accepts: [
+        { arg: 'memberNumber', type: 'string', required: false },
+        { arg: 'email', type: 'string', required: false },
+      ],
+      returns: { type: 'object', root: true },
     }
   );
 }
