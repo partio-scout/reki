@@ -327,6 +327,31 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "campOfficeNotes": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "camp_office_notes",
+        "dataType": "character varying",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+
+    "editableInfo": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "editable_info",
+        "dataType": "character varying",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   },
   "validations": [],

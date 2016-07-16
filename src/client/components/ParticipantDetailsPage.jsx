@@ -1,7 +1,8 @@
 import React from 'react';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Grid, Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../components';
 import { PresenceHistory } from '../components';
+import { TextArea } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
@@ -10,6 +11,9 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       super(props);
       this.state = participantStore.getState();
       this.onStoreChanged = this.onStoreChanged.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.saveParticipant = this.saveParticipant.bind(this);
+      this.save = this.save.bind(this);
     }
 
     componentWillMount() {
@@ -26,6 +30,26 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
     onStoreChanged(state) {
       this.setState(state);
+      this.setState({ campOfficeNotes: state.participantDetails.campOfficeNotes });
+      this.setState({ editableInfo: state.participantDetails.editableInfo });
+    }
+
+    handleChange(property, event) {
+      const newState = {};
+      newState[property] = event.target.value;
+      this.setState(newState);
+    }
+
+    saveParticipant() {
+      this.save('campOfficeNotes');
+      this.save('editableInfo');
+    }
+
+    save(property) {
+      participantActions.updateProperty(
+        this.state.participantDetails.participantId,
+        property,
+        this.state[property]);
     }
 
     render() {
@@ -80,6 +104,32 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <PresenceHistory value={ presenceHistory } />
                   </Panel>
                 </Col>
+            </Row>
+            <Row>
+              <Col md={ 9 }>
+                <Panel header="Leiritoimiston merkinnät">
+                  <TextArea
+                    property= "campOfficeNotes"
+                    value={ this.state.campOfficeNotes }
+                    onChange= { this.handleChange }
+                    rows={ 8 }
+                  />
+                  <Button bsStyle="primary" onClick={ this.saveParticipant }>
+                    Tallenna
+                  </Button>
+                </Panel>
+                <Panel header="Lisätiedot">
+                  <TextArea
+                    property= "editableInfo"
+                    value={ this.state.editableInfo }
+                    onChange= { this.handleChange }
+                    rows={ 6 }
+                  />
+                  <Button bsStyle="primary" onClick={ this.saveParticipant }>
+                    Tallenna
+                  </Button>
+                </Panel>
+              </Col>
             </Row>
           </Grid>
         </div>

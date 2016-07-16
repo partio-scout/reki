@@ -78,6 +78,26 @@ export function getParticipantActions(alt, participantResource) {
         .then(response => this.loadParticipantList(offset, limit, order, filter),
               err => this.participantListUpdateFailed(err));
     }
+
+    updateProperty(participantId, property, value) {
+      return dispatch => {
+        dispatch();
+        participantResource.raw('post', 'massAssign',
+          {
+            body: { ids: participantId, fieldName: property, newValue: value },
+          })
+          .then(response => this.participantPropertyUpdated(participantId),
+                err => this.participantUpdateFailed(err));
+      };
+    }
+
+    participantPropertyUpdated(id) {
+      return id;
+    }
+
+    participantUpdateFailed(err) {
+      return err;
+    }
   }
 
   return alt.createActions(ParticipantActions);
