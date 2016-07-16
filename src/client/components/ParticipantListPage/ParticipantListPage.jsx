@@ -281,7 +281,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
-                    <td colSpan={ columnCount }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
+                    <td colSpan={ columnCount + this.state.dates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
