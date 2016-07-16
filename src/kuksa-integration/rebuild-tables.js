@@ -9,6 +9,7 @@ const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context
 
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
+const findParticipants = Promise.promisify(Participant.find, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
 if (require.main === module) {
@@ -23,6 +24,7 @@ function main() {
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
     .then(addDatesToParticipants)
+    .then(buildSelectionTable)
     .then(deleteCancelledParticipants);
 }
 
@@ -58,6 +60,13 @@ function rebuildParticipantsTable() {
     return statuses[type] || null;
   }
 
+  function getSubCamp(participant) {
+    if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+      return 'Riehu';
+    }
+    return _.get(participant, 'subCamp.name') || 'Muu';
+  }
+
   console.log('Rebuilding participants table...');
 
   return findKuksaParticipants({
@@ -87,7 +96,7 @@ function rebuildParticipantsTable() {
     diet: participant.diet,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
-    subCamp: _.get(participant, 'subCamp.name') || 'Muu',
+    subCamp: getSubCamp(participant),
     village: _.get(participant, 'village.name') || 'Muu',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
@@ -98,6 +107,8 @@ function rebuildParticipantsTable() {
     willOfTheWispWave: getSelectionForGroup(participant, 'Virvatulen aalto'),
     guardianOne: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 1)'),
     guardianTwo: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 2)'),
+    familyCampProgramInfo: getInfoForField(participant, 'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
+    childNaps: getSelectionForGroup(participant, 'Lapsi nukkuu päiväunet'),
   })))
   .then(participants =>
     _.reduce(
@@ -109,8 +120,6 @@ function rebuildParticipantsTable() {
 }
 
 function addAllergiesToParticipants() {
-  const findParticipants = Promise.promisify(Participant.find, { context: Participant });
-
   function removeOldAndAddNewAllergies(participant, newAllergies) {
     Promise.promisifyAll(participant);
     return participant.allergies.destroyAll()
@@ -160,6 +169,39 @@ function addDatesToParticipants() {
       }))
       .value();
   }
+}
+
+function buildSelectionTable() {
+  const Selection = app.models.Selection;
+  const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
+  const createSelections = Promise.promisify(Selection.create, { context: Selection });
+  const findKuksaParticipantExtraSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
+  const groupsToCreate = [
+    '0-11-vuotias lapsi osallistuu',
+    'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
+    '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
+    'Lapsen uimataito',
+    'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
+    '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+  ];
+
+  console.log('Building selections table...');
+
+  return destroyAllSelections()
+  .then(() => findParticipants())
+  .then(participants => Promise.each(participants, p =>
+    findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
+    .then(participantSelections => participantSelections.map(selections => selections.toObject()))
+    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
+    .then(participantSelections => participantSelections.map(sel => ({
+      participantId: sel.participantId,
+      kuksaGroupId: sel.selection.group.id,
+      kuksaSelectionId: sel.selection.id,
+      groupName: sel.selection.group.name.trim(),
+      selectionName: sel.selection.name,
+    })))
+    .then(selections => createSelections(selections))))
+  .then(() => console.log('Selections table built.'));
 }
 
 function deleteCancelledParticipants() {
