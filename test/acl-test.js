@@ -749,7 +749,7 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, roihuappUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${roihuappUserId}`, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): OK', () => get(`/api/registryusers/${roihuappUserId}`, roihuappUserAccessToken).expect(OK));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${roihuappUserId}/exists`, roihuappUserAccessToken).expect(UNAUTHORIZED));
