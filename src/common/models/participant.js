@@ -193,11 +193,9 @@ export default function (Participant) {
     if (!memberNumber && !email) {
       err = new Error('email or memberNumber is required!');
       err.status = 400;
-      cb(err);
+      return cb(err);
     } else {
-      if (memberNumber && email) {
-        where = { memberNumber: memberNumber };
-      } else if (memberNumber) {
+      if (memberNumber) {
         where = { memberNumber: memberNumber };
       } else if (email) {
         where = { email: email };
@@ -221,9 +219,9 @@ export default function (Participant) {
           err = new Error('Participant not found');
           err.originalError = e;
           err.status = 404;
-          cb(err);
+          return cb(err);
         } else {
-          cb(null, participant);
+          return cb(null, participant);
         }
       });
     }
