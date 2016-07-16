@@ -2,20 +2,16 @@ import React from 'react';
 import _ from 'lodash';
 import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
-import { getAgeGroupFilterContainer } from './AgeGroupFilterContainer';
-import { getSubCampFilterContainer } from './SubCampFilterContainer';
-import { getLocalGroupFilterContainer } from './LocalGroupFilterContainer';
-import { getCampGroupFilterContainer } from './CampGroupFilterContainer';
+import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions) {
-  const AgeGroupFilterContainer = getAgeGroupFilterContainer();
-  const SubCampFilterContainer = getSubCampFilterContainer();
-  const LocalGroupFilterContainer = getLocalGroupFilterContainer(participantStore, participantActions);
-  const CampGroupFilterContainer = getCampGroupFilterContainer(participantStore, participantActions);
+export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
+  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
+  const PresenceFilterContainer = getPresenceFilterContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -29,7 +25,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence'], props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -54,11 +50,38 @@ export function getQuickFilterContainer(participantStore, participantActions, se
       <div className="well clearfix">
         <div>
           <form className="form-inline">
-            <DebouncedTextFieldContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <AgeGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <SubCampFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <LocalGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
-            <CampGroupFilterContainer onChange={ handleChange } currentSelection={ currentSelection } />
+            <DebouncedTextFieldContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Ikäkausi"
+              property="ageGroup"
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Alaleiri"
+              property="subCamp"
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Lippukunta"
+              property="localGroup"
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Leirilippukunta"
+              property="campGroup"
+            />
+            <PresenceFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+            />
             <SaveSearchButtonContainer location={ props.location } />
           </form>
         </div>
