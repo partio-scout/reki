@@ -155,8 +155,8 @@ function transferParticipants(eventApi) {
     ]);
   }
 
-  // set the last date to be cuurent date
-  let lastDaterange = participantDateRanges.pop();
+  // set the last date to be current date
+  const lastDaterange = participantDateRanges.pop();
   lastDaterange.endDate = moment().toDate();
   participantDateRanges.push(lastDaterange);
 
