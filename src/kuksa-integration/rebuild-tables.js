@@ -72,6 +72,7 @@ function rebuildParticipantsTable() {
     ],
   })
   .then(participants => participants.map(participant => participant.toObject()))
+  .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
     firstName: participant.firstName,

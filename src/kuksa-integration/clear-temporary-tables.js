@@ -21,18 +21,20 @@ const modelsToClear = [
 ];
 
 function resetDatabase() {
-  function automigrate() {
-    const db = app.datasources.db;
-    return new Promise((resolve, reject) => db.automigrate(modelsToClear).then(resolve, reject));
+  function clearTable(model) {
+    const destroyAll = Promise.promisify(app.models[model].destroyAll, { context: app.models[model] });
+    return destroyAll();
   }
-  return automigrate();
+
+  return Promise.each(modelsToClear, model => clearTable(model));
 }
 
 if (require.main === module) {
-  const db = app.datasources.db;
-
   resetDatabase()
-    .then(() => console.log(`Tables ${modelsToClear} re-created.`))
-    .catch(err => console.error('Temporary model creation failed: ', err))
-    .finally(() => db.disconnect());
+    .then(() => console.log(`Tables ${modelsToClear} cleared.`))
+    .then(() => process.exit(0))
+    .catch(err => {
+      console.error('Temporary model creation failed: ', err);
+      process.exit(1);
+    });
 }

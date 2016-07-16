@@ -16,8 +16,8 @@ function main() {
   return getOptionsFromEnvironment()
     .then(getEventApi)
     .then(eventApi => transferTablesOnlyOnce(eventApi)
-      .then(() => transferParticipants(eventApi)
-        .then(() => transferPayments(eventApi))));
+      .then(() => transferParticipants(eventApi))
+      .then(() => transferPayments(eventApi)));
 }
 
 function getOptionsFromEnvironment() {
@@ -33,12 +33,12 @@ function getOptionsFromEnvironment() {
     endpoint: extractEnvVar('KUKSA_API_ENDPOINT', 'the endpoint url of the kuksa api'),
     username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
     password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
-    eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id for Roihu'),
+    eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id'),
   }));
 }
 
 function transferTablesOnlyOnce(eventApi) {
-  console.log('Transferring sub camps, villages, local groups, extra selections and info fields...');
+  console.log('Transferring sub camps, villages, local groups, extra selections, info fields and payments...');
 
   return transfer([
     {
@@ -104,6 +104,14 @@ function transferTablesOnlyOnce(eventApi) {
         name: selection.name.fi,
       }),
     },
+    {
+      getFromSource: eventApi.getPayments,
+      targetModel: app.models.KuksaPayment,
+      transform: field => ({
+        id: field.id,
+        name: field.name.fi,
+      }),
+    },
   ]);
 }
 
@@ -152,40 +160,31 @@ function transferParticipants(eventApi) {
         joinTable: true,
         dateRange: daterange,
       },
+      {
+        getFromSource: eventApi.getParticipantPayments,
+        targetModel: app.models.KuksaParticipantPayment,
+        transform: field => ({
+          participantId: field.from,
+          paymentId: field.to,
+        }),
+        joinTable: true,
+        dateRange: daterange,
+      },
     ]);
   }
 
   // set the last date to be current date
-  const lastDaterange = participantDateRanges.pop();
-  lastDaterange.endDate = moment().toDate();
-  participantDateRanges.push(lastDaterange);
+  const lastIndex = participantDateRanges.length - 1;
+  participantDateRanges[lastIndex].endDate = moment().toDate();
 
-  console.log('Transferring participants and their extra infos and selections');
+  console.log('Transferring participants, their extra infos, selections and payments');
   return Promise.each(participantDateRanges, daterange => transferDaterange(daterange));
 }
 
 function transferPayments(eventApi) {
-  console.log('Transferring payments...');
+  console.log('Transferring payment statuses...');
 
   return transfer([
-    {
-      getFromSource: eventApi.getPayments,
-      targetModel: app.models.KuksaPayment,
-      transform: field => ({
-        id: field.id,
-        name: field.name.fi,
-      }),
-    },
-    {
-      getFromSource: eventApi.getParticipantPayments,
-      targetModel: app.models.KuksaParticipantPayment,
-      transform: field => ({
-        participantId: field.from,
-        paymentId: field.to,
-      }),
-      joinTable: true,
-    },
-
     {
       getFromSource: eventApi.getParticipantPaymentStatus,
       targetModel: app.models.KuksaParticipantPaymentStatus,
