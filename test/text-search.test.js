@@ -25,6 +25,8 @@ describe('Text search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
+      'staffPosition': null,
+      'staffPositionInGenerator': 'Tiskari',
     },
     {
       'participantId': 2,
@@ -38,6 +40,8 @@ describe('Text search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
+      'staffPosition': 'Jumppaohjaaja',
+      'staffPositionInGenerator': null,
     },
     {
       'participantId': 3,
@@ -51,6 +55,8 @@ describe('Text search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
+      'staffPosition': 'Kaivaja',
+      'staffPositionInGenerator': 'Kaivuumies',
     },
   ];
 
@@ -152,6 +158,27 @@ describe('Text search', () => {
     queryParticipants({ 'textSearch':'Jukola Jussi' }, accessToken)
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
+    })
+  );
+
+  it('Query with staff position', () =>
+    queryParticipants({ 'textSearch':'Jumppaohjaaja' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Tero' ], res.body);
+    })
+  );
+
+  it('Query with staff position in generator', () =>
+    queryParticipants({ 'textSearch':'Tiskari' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Teemu' ], res.body);
+    })
+  );
+
+  it('Query with partial staff position', () =>
+    queryParticipants({ 'textSearch':'tisk' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
