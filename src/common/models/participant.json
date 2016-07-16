@@ -367,6 +367,10 @@
     "dates": {
       "type": "hasMany",
       "model": "ParticipantDate"
+    },
+    "selections": {
+      "type": "hasMany",
+      "model": "Selection"
     }
   },
   "acls": [

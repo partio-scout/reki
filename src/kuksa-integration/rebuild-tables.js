@@ -23,6 +23,7 @@ function main() {
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
     .then(addDatesToParticipants)
+    .then(buildSelectionTable)
     .then(deleteCancelledParticipants);
 }
 
@@ -161,6 +162,30 @@ function addDatesToParticipants() {
       }))
       .value();
   }
+}
+
+function buildSelectionTable() {
+  const Selection = app.models.Selection;
+  const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
+  const createSelections = Promise.promisify(Selection.create, { context: Selection });
+  const findKuksaParticipantExtraSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
+  const groupsToCreate = ['0-11-vuotias lapsi osallistuu', 'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä', '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä', 'Lapsen uimataito', 'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä', '\tLapsi tarvitsee päiväunien aikaan vaippaa'];
+
+  console.log('Building selections table...');
+
+  return destroyAllSelections()
+  .then(() => findKuksaParticipantExtraSelections({ include: { selection: 'group' } }))
+  .then(participantSelections => participantSelections.map(selections => selections.toObject()))
+  .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
+  .then(participantSelections => participantSelections.map(sel => ({
+    participantId: sel.participantId,
+    kuksaGroupId: sel.selection.group.id,
+    kuksaSelectionId: sel.selection.id,
+    groupName: sel.selection.group.name.trim(),
+    selectionName: sel.selection.name,
+  })))
+  .then(selections => createSelections(selections))
+  .then(() => console.log('Selections table built.'));
 }
 
 function deleteCancelledParticipants() {
