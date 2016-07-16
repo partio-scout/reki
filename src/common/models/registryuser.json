@@ -199,6 +199,20 @@
       "principalId": "registryAdmin",
       "permission": "ALLOW",
       "property": "updateAttributes"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "registryAdmin",
+      "permission": "ALLOW",
+      "property": "block"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "registryAdmin",
+      "permission": "ALLOW",
+      "property": "unblock"
     }
   ],
   "methods": []
