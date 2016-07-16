@@ -13,6 +13,7 @@ export { getListSortingSelector } from './components/ListSortingSelector';
 export { getSortableHeaderCell } from './components/SortableHeaderCell';
 export { getPropertySelect } from './components/PropertySelect';
 export { getDebouncedTextField } from './components/DebouncedTextField';
+export { getDateFilter } from './components/DateFilter';
 export { getMainNavigation } from './components/MainNavigation';
 export { getNavigationItem } from './components/NavigationItem';
 export { getLoginPromptPage } from './components/LoginPromptPage';

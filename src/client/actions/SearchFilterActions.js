@@ -63,6 +63,22 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
       }
     }
 
+    loadDateOptions(property) {
+      return dispatch => {
+        dispatch();
+        participantResource.findAll(`filter[include]=${property}`)
+          .then(response => this.optionsLoaded(property, processResults(response)),
+                err => this.optionsLoadingFailed(err));
+      };
+
+      function processResults(result) {
+        const optionValues = result.map(obj => obj[property]);
+        const uniqueValues = _.uniqBy(_.flatMap(optionValues), 'date');
+        const dates = _.mapValues(_.mapKeys(uniqueValues, 'id'), 'date');
+        return dates;
+      }
+    }
+
     optionsLoaded(property, options) {
       return {
         property: property,

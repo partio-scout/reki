@@ -4,10 +4,12 @@ import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getDateFilterContainer } from './DateFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
+  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
@@ -23,7 +25,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'dates'], props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -75,6 +77,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
               currentSelection={ currentSelection }
               label="Leirilippukunta"
               property="campGroup"
+            />
+            <DateFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Ilmoittautumispäivät"
+              property="dates"
             />
             <SaveSearchButtonContainer location={ props.location } />
           </form>
