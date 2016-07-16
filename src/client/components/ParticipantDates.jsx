@@ -8,14 +8,12 @@ moment.locale('fi');
 export class ParticipantDates extends React.Component {
   render() {
     const participantDays = _.sortBy(this.props.dates, 'date');
-    
-    if(!_.isEmpty(participantDays)) {
+
+    if (!_.isEmpty(participantDays)) {
       const firstDay = _.head(participantDays).date;
       const lastDay = _.last(participantDays).date;
 
       const weeks = {};
-      
-      console.log(participantDays);
 
       for (let d = moment(firstDay).utc().startOf('week'); d <= moment(lastDay).endOf('week'); d = moment(d).add(1, 'days')) {
         if (!weeks[d.format('w')]) {
@@ -35,7 +33,7 @@ export class ParticipantDates extends React.Component {
         </Table>
       );
     }
-    
+
     return (
       <div></div>
     );
