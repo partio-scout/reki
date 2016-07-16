@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class TextArea extends React.Component {
+export class PropertyTextArea extends React.Component {
   constructor() {
     super();
     this.onChange = this.onChange.bind(this);
@@ -22,7 +22,7 @@ export class TextArea extends React.Component {
   }
 }
 
-TextArea.propTypes = {
+PropertyTextArea.propTypes = {
   property: React.PropTypes.string,
   value: React.PropTypes.string,
   onChange: React.PropTypes.func,

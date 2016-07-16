@@ -82,17 +82,15 @@ export function getParticipantActions(alt, participantResource) {
     updateProperty(participantId, property, value) {
       return dispatch => {
         dispatch();
-        participantResource.raw('post', 'massAssign',
-          {
-            body: { ids: participantId, fieldName: property, newValue: value },
-          })
-          .then(response => this.participantPropertyUpdated(participantId),
+        participantResource.raw('post', 'massAssign', {
+          body: { ids: participantId, fieldName: property, newValue: value } })
+          .then(participant => this.participantPropertyUpdated(participant, property),
                 err => this.participantUpdateFailed(err));
       };
     }
 
-    participantPropertyUpdated(id) {
-      return id;
+    participantPropertyUpdated(updatedParticipant, property) {
+      return { property: updatedParticipant[property] };
     }
 
     participantUpdateFailed(err) {
