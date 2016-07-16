@@ -572,7 +572,7 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): ok', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(OK));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
@@ -602,7 +602,7 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', registryUserAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): ok', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(OK));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
