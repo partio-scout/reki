@@ -177,7 +177,7 @@ describe('http api access control', () => {
   };
   before(() =>
     testUtils.createFixture('Allergy', allergyFixture)
-      .then(participant => testUtils.find('Participant', { where: { participantId: participantFixture.participantId } }))
+      .then(participant => testUtils.find('Participant', { participantId: participantFixture.participantId }))
       .then(participants => participants[0].allergies.add(allergyFixture.allergyId))
   );
 
@@ -648,6 +648,9 @@ describe('http api access control', () => {
       it('logout: UNAUTHORIZED', () => post('/api/registryusers/logout').expect(UNAUTHORIZED));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm').expect(UNAUTHORIZED));
+
+      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED));
+      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`).expect(UNAUTHORIZED));
     });
 
     describe('Authenticated user without roles', () => {
@@ -656,7 +659,7 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): ok', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(OK));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}/exists`, noRolesAccessToken).expect(UNAUTHORIZED));
@@ -675,6 +678,9 @@ describe('http api access control', () => {
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, noRolesAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', noRolesAccessToken).expect(UNAUTHORIZED));
+
+      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, noRolesAccessToken).expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
@@ -683,7 +689,7 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', registryUserAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('findById (own): ok', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(OK));
       it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (own): UNAUTHORIZED', () => get(`/api/registryusers/${registryUserId}/exists`, registryUserAccessToken).expect(UNAUTHORIZED));
@@ -702,6 +708,9 @@ describe('http api access control', () => {
       it('logout: OK', () => post('/api/registryusers/logout', null,  accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryUserAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryUserAccessToken).expect(UNAUTHORIZED));
+
+      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryUserAccessToken).expect(UNAUTHORIZED));
     });
 
     describe('registryAdmin', () => {
@@ -729,6 +738,9 @@ describe('http api access control', () => {
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: UNAUTHORIZED', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryAdminAccessToken).expect(UNAUTHORIZED));
+
+      it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, registryAdminAccessToken).expect(NO_CONTENT));
+      it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryAdminAccessToken).expect(NO_CONTENT));
     });
 
     describe('roihuapp user', () => {
