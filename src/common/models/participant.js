@@ -185,34 +185,48 @@ export default function (Participant) {
     }
   };
 
-  Participant.getParticipantInformationForApp = (memberNumber, cb) => {
+  Participant.getParticipantInformationForApp = (memberNumber, email, cb) => {
     const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
+    let err;
+    let where;
 
-    findParticipant({
-      where: {
-        memberNumber: memberNumber,
-      },
-      fields: [
-        'firstName',
-        'lastName',
-        'phoneNumber',
-        'localGroup',
-        'campGroup',
-        'subCamp',
-        'village',
-        'ageGroup',
-        'memberNumber',
-      ],
-    }).asCallback((e, participant) => {
-      if (e || !participant) {
-        const err = new Error('Participant not found');
-        err.originalError = e;
-        err.status = 404;
-        cb(err);
-      } else {
-        cb(null, participant);
+    if (!memberNumber && !email) {
+      err = new Error('email or memberNumber is required!');
+      err.status = 400;
+      cb(err);
+    } else {
+      if (memberNumber && email) {
+        where = { memberNumber: memberNumber };
+      } else if (memberNumber) {
+        where = { memberNumber: memberNumber };
+      } else if (email) {
+        where = { email: email };
       }
-    });
+      findParticipant({
+        where: where,
+        fields: [
+          'firstName',
+          'lastName',
+          'phoneNumber',
+          'localGroup',
+          'campGroup',
+          'subCamp',
+          'village',
+          'ageGroup',
+          'memberNumber',
+          'email',
+        ],
+      }).asCallback((e, participant) => {
+        if (e || !participant) {
+          err = new Error('Participant not found');
+          err.originalError = e;
+          err.status = 404;
+          cb(err);
+        } else {
+          cb(null, participant);
+        }
+      });
+    }
 
   };
 
@@ -232,7 +246,8 @@ export default function (Participant) {
     {
       http: { path: '/appInformation', verb: 'get' },
       accepts: [
-        { arg: 'memberNumber', type: 'string', required: 'true' },
+        { arg: 'memberNumber', type: 'string', required: false },
+        { arg: 'email', type: 'string', required: false },
       ],
       returns: { type: 'object', root: true },
     }

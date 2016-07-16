@@ -32,6 +32,7 @@ describe('Roihuapp interface', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
       'phoneNumber': 888,
+      'email': 'teemu@example.com',
     },
     {
       'participantId': 2,
@@ -83,6 +84,7 @@ describe('Roihuapp interface', () => {
         'village',
         'ageGroup',
         'memberNumber',
+        'email',
       ];
 
       return request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
@@ -101,10 +103,31 @@ describe('Roihuapp interface', () => {
       })
     );
 
-    it('returns error when user is not found', () =>
+    it('returns correct user by email', () =>
+      request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
+      .query({ email: 'teemu@example.com' })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.have.property('firstName', 'Teemu');
+        expect(res.body).to.have.property('lastName', 'Testihenkilö');
+      })
+    );
+
+    it('returns error when user is not found by membernumber', () =>
       request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
       .query({ memberNumber: 123456789 })
       .expect(404)
+    );
+
+    it('returns error when user is not found by email', () =>
+      request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
+      .query({ email: 'no_email@example.com' })
+      .expect(404)
+    );
+
+    it('returns error when both email and membernumber are missing', () =>
+      request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)
+      .expect(400)
     );
   });
 });
