@@ -88,12 +88,6 @@
       "principalType": "ROLE",
       "principalId": "$owner",
       "permission": "DENY",
-      "property": "findById"
-    },
-    {
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "DENY",
       "property": "updateAttributes"
     },
     {
@@ -136,6 +130,12 @@
       "principalId": "$everyone",
       "permission": "DENY",
       "property": "create"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "findById"
     },
     {
       "accessType": "READ",
