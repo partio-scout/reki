@@ -117,7 +117,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 12 }>
                 <h2>
                   { participantName }
-                  <small> { nickname || ''} </small>
+                  <small> { nickname || '' } </small>
                   <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
                 </h2>
                 <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
