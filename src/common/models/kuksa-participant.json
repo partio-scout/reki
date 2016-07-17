@@ -58,6 +58,18 @@
         "nullable": "YES"
       }
     },
+    "nickname": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "nickname",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "dateOfBirth": {
       "type": "date",
       "postgresql": {

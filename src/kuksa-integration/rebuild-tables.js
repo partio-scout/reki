@@ -88,6 +88,7 @@ function rebuildParticipantsTable() {
     participantId: participant.id,
     firstName: participant.firstName,
     lastName: participant.lastName,
+    nickname: participant.nickname,
     memberNumber: participant.memberNumber,
     dateOfBirth: participant.dateOfBirth,
     billedDate: getPaymentStatus(participant.paymentStatus, 'billed'),
@@ -101,6 +102,7 @@ function rebuildParticipantsTable() {
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
     village: _.get(participant, 'village.name') || 'Muu',
+    country: _.get(participant, 'localGroup.country') || 'Suomi',
     ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
     nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
