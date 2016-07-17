@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import { Presence } from '../components';
 import { PresenceHistory } from '../components';
@@ -29,61 +30,114 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     render() {
-      let participantName = '';
-      let nonScout = '';
-      let dateOfBirth = '';
-      let participantPhone = '';
-      let homeCity = '';
-      let email = '';
-      let presence = '';
-      let presenceHistory = '';
-
       if (this.state.participantDetails) {
-        participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
-        nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
-        const dateOfBirthString = this.state.participantDetails.dateOfBirth;
-        const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
-        const day = time.substring(0,2);
-        dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
-        presence = this.state.participantDetails.presence;
-        presenceHistory = this.state.participantDetails.presenceHistory || [];
+        const {
+          participantId,
+          firstName,
+          lastName,
+          dateOfBirth,
+          nonScout,
+          billedDate,
+          paidDate,
+          memberNumber,
+          homeCity,
+          email,
+          phoneNumber,
+          ageGroup,
+          localGroup,
+          subCamp,
+          campGroup,
+          village,
+          dates,
+          internationalGuest,
+          staffPosition,
+          staffPositionInGenerator,
+          swimmingSkill,
+          willOfTheWisp,
+          willOfTheWispWave,
+          guardianOne,
+          guardianTwo,
+          diet,
+          familyCampProgramInfo,
+          childNaps,
+        } = this.state.participantDetails;
 
-        participantPhone = this.state.participantDetails.phoneNumber || '-';
-        homeCity = this.state.participantDetails.homeCity || '-';
-        email = this.state.participantDetails.email || '-';
-      }
+        const participantName = `${firstName} ${lastName}`;
+        const participantStatus = internationalGuest ? 'KV-osallistuja' : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
 
-      return (
-        <div>
-          <Grid>
-            <Row>
-              <Col md={ 12 }>
-                <h2><b>{ participantName }</b></h2>
-                <p className="text-muted">{ nonScout }</p>
-                <p><b>Syntymäaika: </b> { dateOfBirth }</p>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={ 3 }>
-                <Panel header="Yhteystiedot">
-                  <p className="text-muted"> Puhelin </p>
-                  <p >{ participantPhone }</p>
-                  <p className="text-muted"> Kotikaupunki</p>
-                  <p >{ homeCity }</p>
-                  <p className="text-muted"> Sähköposti</p>
-                  <p >{ email }</p>
-                </Panel>
-              </Col>
-                <Col md={ 6 }>
-                  <Panel header="Läsnäolo">
-                    <Presence value={ presence } />
-                    <PresenceHistory value={ presenceHistory } />
+        const formattedBilledDate = billedDate ? moment(billedDate).format('D.M.YYYY') : '–';
+        const formattedPaidDate = paidDate ? moment(paidDate).format('D.M.YYYY') : '–';
+
+        const presence = this.state.participantDetails.presence;
+        const presenceHistory = this.state.participantDetails.presenceHistory || [];
+
+        return (
+          <div>
+            <Grid>
+              <Row>
+                <Col md={ 12 }>
+                  <h2>{ participantName }</h2>
+                  <p className="text-muted">{ participantStatus }</p>
+                  <p className="text-muted">Syntymäaika: { moment(dateOfBirth).format('D.M.YYYY') }</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={ 3 }>
+                  <Panel header="Yhteystiedot">
+                    <dl>
+                      <dt>Puhelin</dt>
+                      <dd>{ phoneNumber }</dd>
+                      <dt>Sähköposti</dt>
+                      <dd>{ email }</dd>
+                      { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
+                      { guardianOne ? <dd>{ guardianOne }</dd> : '' }
+                      { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
+                    </dl>
+                  </Panel>
+                  <Panel header="Osallistujan tiedot">
+                    <dl>
+                      <dt>Ikäkausi</dt>
+                      <dd>{ ageGroup }</dd>
+                      { swimmingSkill ? <dt>Uimataito</dt> : '' }
+                      { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
+                      <dt>Lippukunta</dt>
+                      <dd>{ localGroup }</dd>
+                      <dt>Leirilippukunta</dt>
+                      <dd>{ campGroup }</dd>
+                      <dt>Kylä</dt>
+                      <dd>{ village }</dd>
+                      <dt>Alaleiri</dt>
+                      <dd>{ subCamp }</dd>
+                      { willOfTheWisp ? <dt>Virvatuli</dt> : '' }
+                      { willOfTheWisp ? <dd>{ willOfTheWisp }</dd> : '' }
+                      { willOfTheWispWave ? <dt>Virvatuliaalto</dt> : '' }
+                      { willOfTheWispWave ? <dd>{ willOfTheWispWave }</dd> : '' }
+                    </dl>
+                  </Panel>
+                  <Panel header="Laskutustiedot">
+                    <dl>
+                      <dt>Laskutettu</dt>
+                      <dd>{ formattedBilledDate }</dd>
+                      <dt>Maksettu</dt>
+                      <dd>{ formattedPaidDate }</dd>
+                    </dl>
                   </Panel>
                 </Col>
-            </Row>
-          </Grid>
-        </div>
-      );
+                <Col md={ 8 }>
+                  <Panel header="Läsnäolo">
+                   <Presence value={ presence } />
+                   <PresenceHistory value={ presenceHistory } />
+                  </Panel>
+                </Col>
+              </Row>
+            </Grid>
+          </div>
+        );
+      } else {
+        return (
+          <div></div>
+        );
+      }
     }
   }
 
