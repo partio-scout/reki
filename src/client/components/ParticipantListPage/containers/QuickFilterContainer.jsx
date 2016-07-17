@@ -6,12 +6,14 @@ import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
+import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
   const PresenceFilterContainer = getPresenceFilterContainer();
+  const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -25,7 +27,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'childNaps', 'accommodation'], props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -79,6 +81,10 @@ export function getQuickFilterContainer(participantStore, participantActions, se
               property="campGroup"
             />
             <PresenceFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+            />
+            <GenericPropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
             />
