@@ -27,7 +27,10 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village', 'childNaps', 'accommodation'], props.filter);
+    const propertiesForGenericFilter = GenericPropertyFilterContainer.availableProperties();
+    const properties = ['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village'].concat(propertiesForGenericFilter);
+
+    const currentSelection = getCurrentSelection(properties, props.filter);
 
     function resetFilters(event) {
       event.preventDefault();

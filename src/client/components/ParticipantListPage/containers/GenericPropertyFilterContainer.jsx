@@ -9,6 +9,8 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     ['childNaps', 'Lapsi nukkuu päiväunet'],
     ['accommodation', 'Majoittautuminen'],
     ['country', 'Maa'],
+    ['willOfTheWisp', 'Virvatuli'],
+    ['willOfTheWispWave', 'Virvatulen aalto'],
   ];
 
   class GenericPropertyFilterContainer extends React.Component {
@@ -18,18 +20,16 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
         property: '',
       };
       this.onPropertyChange = this.onPropertyChange.bind(this);
-      this.onValueChange = this.onValueChange.bind(this);
+    }
+
+    static availableProperties() {
+      return properties.map(p => p[0]);
     }
 
     onPropertyChange(e) {
       this.props.onChange(this.state.property, null);
       this.setState({ property: e.target.value });
       searchFilterActions.loadOptions.defer(e.target.value);
-
-    }
-
-    onValueChange(e) {
-      this.props.onChange();
     }
 
     render() {
