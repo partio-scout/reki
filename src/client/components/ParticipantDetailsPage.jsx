@@ -60,6 +60,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           diet,
           familyCampProgramInfo,
           childNaps,
+          allergies,
         } = this.state.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
@@ -70,6 +71,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
         const presence = this.state.participantDetails.presence;
         const presenceHistory = this.state.participantDetails.presenceHistory || [];
+
+        const allergyNames = _.map(allergies, row => row.name);
+
+        console.log(this.state.participantDetails);
 
         return (
           <div>
@@ -127,6 +132,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <Panel header="Läsnäolo">
                    <Presence value={ presence } />
                    <PresenceHistory value={ presenceHistory } />
+                  </Panel>
+                  <Panel header="Allergiat ja erityisruokavaliot">
+                    { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
+                    { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
+                    { diet ? <p>{ diet }</p> : '' }
                   </Panel>
                 </Col>
               </Row>
