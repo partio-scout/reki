@@ -133,8 +133,8 @@ export function getParticipantListPage(participantStore, participantActions, sea
         availableDates: [ ],
       };
 
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-      this.extractState = this.extractState.bind(this);
+      this.onSearchFilterStoreChanged = this.onSearchFilterStoreChanged.bind(this);
+      this.extractDatesFromSearchFilters = this.extractDatesFromSearchFilters.bind(this);
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
@@ -181,12 +181,12 @@ export function getParticipantListPage(participantStore, participantActions, sea
 
     componentDidMount() {
       participantStore.listen(this.checkNoneOnParticipantsChanged);
-      searchFilterStore.listen(this.onStoreChanged);
+      searchFilterStore.listen(this.onSearchFilterStoreChanged);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.checkNoneOnParticipantsChanged);
-      searchFilterStore.unlisten(this.onStoreChanged);
+      searchFilterStore.unlisten(this.onSearchFilterStoreChanged);
     }
 
     checkNoneOnParticipantsChanged() {
@@ -197,11 +197,11 @@ export function getParticipantListPage(participantStore, participantActions, sea
       }
     }
 
-    onStoreChanged() {
-      this.setState(this.extractState());
+    onSearchFilterStoreChanged() {
+      this.setState(this.extractDatesFromSearchFilters());
     }
 
-    extractState() {
+    extractDatesFromSearchFilters() {
       const state = this.state;
       state.availableDates = searchFilterStore.getState().options.dates || [];
       return state;

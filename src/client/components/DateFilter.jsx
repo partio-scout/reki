@@ -14,7 +14,7 @@ export function getDateFilter() {
       if (checked) {
         newDates.push(thisDate);
       } else {
-        newDates = _.pull(newDates, thisDate);
+        _.pull(newDates, thisDate);
       }
 
       onChange(property, newDates);
