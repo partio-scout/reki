@@ -27,6 +27,7 @@ describe('Text search', () => {
       'memberNumber': 123,
       'staffPosition': null,
       'staffPositionInGenerator': 'Tiskari',
+      'editableInfo': 'Muokattava teksti',
     },
     {
       'participantId': 2,
@@ -42,6 +43,7 @@ describe('Text search', () => {
       'memberNumber': 345,
       'staffPosition': 'Jumppaohjaaja',
       'staffPositionInGenerator': null,
+      'campOfficeNotes': 'Leiritoimiston jutut',
     },
     {
       'participantId': 3,
@@ -56,7 +58,7 @@ describe('Text search', () => {
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
       'staffPosition': 'Kaivaja',
-      'staffPositionInGenerator': 'Kaivuumies',
+      'staffPositionInGenerator': '#Tiskari',
     },
   ];
 
@@ -87,7 +89,7 @@ describe('Text search', () => {
 
   function queryParticipants(filter, accessToken) {
     return request(app)
-      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
+      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${encodeURIComponent(JSON.stringify(filter))},"skip":0,"limit":20}`)
       .expect(200);
   }
 
@@ -171,12 +173,33 @@ describe('Text search', () => {
   it('Query with staff position in generator', () =>
     queryParticipants({ 'textSearch':'Tiskari' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Teemu' ], res.body);
+      expectParticipants([ 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with partial staff position', () =>
     queryParticipants({ 'textSearch':'tisk' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Teemu', 'Jussi' ], res.body);
+    })
+  );
+
+  it('Query with hashtag', () =>
+    queryParticipants({ 'textSearch':'#Tiskari' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Jussi' ], res.body);
+    })
+  );
+
+  it('Query with camp office notes', () =>
+    queryParticipants({ 'textSearch':'Leiritoimisto' }, accessToken)
+    .then(res => {
+      expectParticipants([ 'Tero' ], res.body);
+    })
+  );
+
+  it('Query with editable info', () =>
+    queryParticipants({ 'textSearch':'Muokattava' }, accessToken)
     .then(res => {
       expectParticipants([ 'Teemu' ], res.body);
     })
