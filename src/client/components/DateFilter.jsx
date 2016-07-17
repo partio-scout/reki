@@ -9,7 +9,7 @@ export function getDateFilter() {
     function handleValueChanged(event) {
       const checked = event.target.checked;
       const thisDate = event.target.value;
-      let newDates = value || [];
+      const newDates = value || [];
 
       if (checked) {
         newDates.push(thisDate);
