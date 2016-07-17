@@ -137,6 +137,7 @@ function transferParticipants(eventApi) {
           subCampId: participant.subCamp,
           cancelled: participant.cancelled,
           diet: participant.diet,
+          accommodation: participant.accommodation,
         }),
         dateRange: daterange,
       },

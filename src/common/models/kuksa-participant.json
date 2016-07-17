@@ -146,6 +146,18 @@
         "nullable": "YES"
       }
     },
+    "accommodation": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "accommodation",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "cancelled": {
       "type": "boolean",
       "postgresql": {

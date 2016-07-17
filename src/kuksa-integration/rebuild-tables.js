@@ -61,7 +61,9 @@ function rebuildParticipantsTable() {
   }
 
   function getSubCamp(participant) {
-    if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+    if (participant.accommodation === 'Perheleirissä') {
+      return 'Riehu';
+    } else if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
       return 'Riehu';
     }
     return _.get(participant, 'subCamp.name') || 'Muu';
@@ -94,6 +96,7 @@ function rebuildParticipantsTable() {
     email: participant.email,
     internationalGuest: !!participant.localGroup,
     diet: participant.diet,
+    accommodation: participant.accommodation,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
