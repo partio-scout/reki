@@ -8,7 +8,7 @@ import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorC
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
-import { getPresenceLabel } from '../../components';
+import { getPresenceLabel } from '../';
 
 function getOrder(query) {
   try {

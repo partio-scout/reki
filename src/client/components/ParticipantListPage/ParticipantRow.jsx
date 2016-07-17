@@ -3,7 +3,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { Link } from 'react-router';
 import { Input, Glyphicon } from 'react-bootstrap';
-import { Presence } from '../components';
+import { Presence } from '../index';
 
 class LinkCell extends React.Component {
   render() {

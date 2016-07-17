@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDateFilter } from '../../../components';
+import { getDateFilter } from '../../index';
 
 export function getDateFilterContainer(searchFilterStore, searchFilterActions) {
   const DateFilter = getDateFilter();
