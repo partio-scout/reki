@@ -36,9 +36,9 @@ export function getMainNavigation() {
       if (_.includes(rekiRoles, 'registryUser')) {
         navItems.push(
           {
-            to: '/admin',
+            to: '/participants',
             isIndexLink: true,
-            label: 'Käyttäjät',
+            label: 'Leiriläiset',
           }
         );
       }

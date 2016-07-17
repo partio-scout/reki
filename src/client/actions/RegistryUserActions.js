@@ -48,6 +48,30 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return newCurrentUser;
     }
 
+    loginOffline(email, pass) {
+      return dispatch => {
+        dispatch();
+        return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
+          .then(data => Cookie.set('accessToken', data, { secure: (window.location.protocol === 'https:') }))
+          .then(() => location.reload())
+          .catch(err => {
+            if (err.status === 404) {
+              this.offlineLoginNotEnabled(true);
+            } else {
+              this.offlineLoginFailed(err);
+            }
+          });
+      };
+    }
+
+    offlineLoginNotEnabled(tried) {
+      return tried;
+    }
+
+    offlineLoginFailed(err) {
+      return err;
+    }
+
     currentUserUpdateFailed(error) {
       return error;
     }
