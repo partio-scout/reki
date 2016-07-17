@@ -213,7 +213,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
         email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
         ageGroup: 'Ikäkausi',
-        accommodation: 'Majoitus',
+        accommodation: 'Majoittuminen',
         localGroup: 'Lippukunta',
         village: 'Kylä',
         subCamp: 'Alaleiri',
