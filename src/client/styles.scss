@@ -63,6 +63,7 @@ $screen-xs: 480px;
 $screen-sm: 768px;
 
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+@import "~react-spinner/react-spinner.css";
 
 /**
  * Tables
@@ -70,10 +71,10 @@ $screen-sm: 768px;
 
 table {
   border: 1px solid $table-border-color;
-  
+
   &.noborder {
     border: none;
-    
+
     & td:first-child, & th:first-child { padding-left: 0; }
     & td:last-child, & th:last-child { padding-right: 0; }
   }
@@ -114,7 +115,7 @@ table {
   td {
     padding-top: 1em !important;
     padding-bottom: 1em !important;
-    
+
     input[type="checkbox"] {
       position: absolute !important;
       top: -28px;
@@ -260,7 +261,7 @@ table {
 
 table .presence {
   margin-bottom: 0;
-  
+
   .ball {
     margin-left: 0.5em;
   }
@@ -324,10 +325,10 @@ dl {
   margin: -1em 0 0;
 
   dt {
-    font-weight: 400; 
-    margin-top: 1em; 
+    font-weight: 400;
+    margin-top: 1em;
   }
-  
+
   dd {
     @extend .text-muted;
   }

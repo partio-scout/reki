@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from 'react-spinner';
 import { ParticipantRow } from '../../../components';
 
 function Tbody(props) {
@@ -45,19 +46,30 @@ export function getParticipantRowsContainer(participantStore) {
       const {
         isChecked,
         checkboxCallback,
+        columnCount,
       } = this.props;
 
       const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
 
-      return (
-        <Tbody rowCreator={ rowCreator } elements={ this.state.participants } />
-      );
+      return this.state.participants === undefined
+        ? (
+          <tbody>
+            <tr>
+              <td colSpan={ columnCount }>
+                <Spinner />
+              </td>
+            </tr>
+          </tbody>
+        ) : (
+          <Tbody rowCreator={ rowCreator } elements={ this.state.participants } />
+        );
     }
   }
 
   ParticipantRowsContainer.propTypes = {
     isChecked: React.PropTypes.func,
     checkboxCallback: React.PropTypes.func,
+    columnCount: React.PropTypes.number,
   };
 
   return ParticipantRowsContainer;
