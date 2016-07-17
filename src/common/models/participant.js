@@ -46,6 +46,8 @@ export default function (Participant) {
 
       or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i` } });
       or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ campOfficeNotes: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ editableInfo: { regexp: `/${stripRegex(string)}/i` } });
 
       const splitted = string.split(' ', 2);
 
