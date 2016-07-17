@@ -27,8 +27,8 @@ export default function (Participant) {
 
     function constructTextSearchArray(string) {
       const stripRegex = function(s) {
-        // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
-        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
+        // Remove all charactes except alphabets (with umlauts and accents), numbers, dash and hashtag
+        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-#]/ig, '');
       };
 
       function nameQuery(string, string2) {
