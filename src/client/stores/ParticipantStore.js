@@ -5,8 +5,8 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
 
       this.bindListeners({
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
+        handleLoadParticipantList: ParticipantActions.LOAD_PARTICIPANT_LIST,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
-        handleParticipantCountUpdated: ParticipantActions.PARTICIPANT_COUNT_UPDATED,
         handleParticipantPropertyUpdated: ParticipantActions.PARTICIPANT_PROPERTY_UPDATED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
@@ -16,8 +16,18 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.participantDetails = participant;
     }
 
-    handleParticipantListUpdated(participants) {
+    handleLoadParticipantList(countParticipants) {
+      this.participants = undefined;
+      if (countParticipants) {
+        this.participantCount = undefined;
+      }
+    }
+
+    handleParticipantListUpdated({ participants, newCount }) {
       this.participants = participants;
+      if (newCount !== undefined) {
+        this.participantCount = newCount;
+      }
     }
 
     handleParticipantCountUpdated(newCount) {
@@ -29,9 +39,9 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
     }
 
     resetAllData() {
-      this.participants = [ ];
+      this.participants = undefined;
       this.participantDetails = {};
-      this.participantCount = 0;
+      this.participantCount = undefined;
 
       this.localGroups = [''];
       this.campGroups = [''];
