@@ -260,7 +260,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
                     }
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } />
+                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } />
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
