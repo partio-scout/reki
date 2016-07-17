@@ -195,7 +195,7 @@ function buildSelectionTable() {
   .then(participants => Promise.each(participants, p =>
     findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
     .then(participantSelections => participantSelections.map(selections => selections.toObject()))
-    .then(participantSelections => _.filter(participantSelections, s => !!s.group)) // Apparently some selections don't have a group, so handle only selections with group
+    .then(participantSelections => _.filter(participantSelections, s => !!s.selection.group)) // Apparently some selections don't have a group, so handle only selections with group
     .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
       participantId: sel.participantId,
