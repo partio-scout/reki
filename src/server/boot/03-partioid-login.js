@@ -66,7 +66,7 @@ function loginUser(user, app) {
   }
 
   return new Promise((resolve, reject) => {
-    user.createAccessToken(3600, (err, accessToken) => {
+    user.createAccessToken(4*3600, (err, accessToken) => {
       if (err) {
         reject(err);
       } else {
