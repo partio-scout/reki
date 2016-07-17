@@ -107,9 +107,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
             <Grid>
               <Row>
                 <Col md={ 12 }>
-                  <h2>{ participantName }</h2>
-                  <p className="text-muted">{ participantStatus }</p>
-                  <p className="text-muted">Syntymäaika: { moment(dateOfBirth).format('D.M.YYYY') }</p>
+                  <h2>
+                    { participantName }
+                    <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
+                  </h2>
+                  <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
                 </Col>
               </Row>
               <Row>

@@ -312,8 +312,25 @@ table .presence {
  * ParticipantDetailsPage
  */
 
+h4.margin-bottom {
+  margin-bottom: 2em;
+}
+
 textarea.form-control {
-  margin-bottom: 15px;
+  margin-bottom: 1em;
+}
+
+dl {
+  margin: -1em 0 0;
+
+  dt {
+    font-weight: 400; 
+    margin-top: 1em; 
+  }
+  
+  dd {
+    @extend .text-muted;
+  }
 }
 
 @media screen and (max-width: $screen-sm) {
