@@ -126,6 +126,7 @@ function transferParticipants(eventApi) {
           id: participant.id,
           firstName: participant.firstName || 'x',
           lastName: participant.lastName || 'x',
+          nickname: participant.nickname,
           memberNumber: participant.memberNumber,
           dateOfBirth: new Date(participant.birthDate),
           phoneNumber: participant.phoneNumber,

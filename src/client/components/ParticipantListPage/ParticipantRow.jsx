@@ -55,6 +55,8 @@ export class ParticipantRow extends React.Component {
       localGroup,
       subCamp,
       campGroup,
+      village,
+      accommodation,
       presence,
     } = this.props.participant;
 
@@ -87,7 +89,9 @@ export class ParticipantRow extends React.Component {
         <td>{ formatNullableString(email) }</td>
         <td>{ formatNullableString(phoneNumber) }</td>
         <td>{ ageGroup }</td>
+        <td>{ formatNullableString(accommodation) }</td>
         <td>{ localGroup }</td>
+        <td>{ village }</td>
         <td>{ subCamp }</td>
         <td>{ campGroup }</td>
       </tr>
