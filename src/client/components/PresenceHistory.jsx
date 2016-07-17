@@ -3,8 +3,6 @@ import { Table } from 'react-bootstrap';
 import moment from 'moment';
 import { getPresenceLabel } from './Presence';
 
-moment.locale('fi');
-
 export class PresenceHistory extends React.Component {
   render() {
     return (

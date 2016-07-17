@@ -5,8 +5,6 @@ import { Link } from 'react-router';
 import { Input, Glyphicon } from 'react-bootstrap';
 import { Presence } from '../components';
 
-moment.locale('fi');
-
 class LinkCell extends React.Component {
   render() {
     return <td><Link to={ this.props.href }>{ this.props.children }</Link></td>;

@@ -3,8 +3,6 @@ import { Dropdown, Input, Button } from 'react-bootstrap';
 import _ from 'lodash';
 import moment from 'moment';
 
-moment.locale('fi');
-
 export function getDateFilter() {
   function dateFilter({ value, label, property, options, onChange }) {
 

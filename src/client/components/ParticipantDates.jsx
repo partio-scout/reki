@@ -3,8 +3,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Table, Glyphicon } from 'react-bootstrap';
 
-moment.locale('fi');
-
 export class ParticipantDates extends React.Component {
   render() {
     const participantDays = _.sortBy(this.props.dates, 'date');
