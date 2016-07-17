@@ -4,7 +4,7 @@ function deleteAccessTokenCookie() {
   Cookie.remove('accessToken');
 }
 
-export function getRegistryUserActions(alt, registryUserResource) {
+export function getRegistryUserActions(alt, registryUserResource, errorActions) {
   class RegistryUserActions {
     resetAllData() {
       return null;
@@ -15,16 +15,12 @@ export function getRegistryUserActions(alt, registryUserResource) {
         dispatch();
         registryUserResource.findAll()
           .then(registryUserList => this.registryUserListUpdated(registryUserList),
-                err => this.registryUserListUpdatedFailed(err));
+                err => errorActions.error(err, 'Käyttäjiä ei voitu ladata'));
       };
     }
 
     registryUserListUpdated(registryUsers) {
       return registryUsers;
-    }
-
-    registryUserListUpdatedFailed(error) {
-      return error;
     }
 
     updateLoginStatus(loggedIn) {
@@ -39,7 +35,7 @@ export function getRegistryUserActions(alt, registryUserResource) {
         } else {
           registryUserResource.findById(id, 'filter[include]=rekiRoles')
             .then(newCurrentUser => this.currentUserUpdated(newCurrentUser),
-                  error => this.currentUserUpdateFailed(error));
+                  err => errorActions.error(err, 'Käyttäjätietoja ei voitu ladata'));
         }
       };
     }
@@ -57,8 +53,10 @@ export function getRegistryUserActions(alt, registryUserResource) {
           .catch(err => {
             if (err.status === 404) {
               this.offlineLoginNotEnabled(true);
+            } else if (err.status === 400) {
+              errorActions.error(err, 'Väärä käyttäjätunnus tai salasana');
             } else {
-              this.offlineLoginFailed(err);
+              errorActions.error(err, 'Kirjautuminen epäonnistui');
             }
           });
       };
@@ -68,21 +66,12 @@ export function getRegistryUserActions(alt, registryUserResource) {
       return tried;
     }
 
-    offlineLoginFailed(err) {
-      return err;
-    }
-
-    currentUserUpdateFailed(error) {
-      return error;
-    }
-
     logoutCurrentUser() {
       return dispatch => {
         dispatch();
         registryUserResource.raw('POST', 'logout')
           .then(() => {
             deleteAccessTokenCookie();
-
             this.resetAllData();
           });
       };

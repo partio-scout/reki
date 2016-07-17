@@ -1,4 +1,5 @@
 // Tämä tiedosto kokoaa kaikki components-kansion exportit yhteen moduuliin
+export { ErrorDialog } from './components/ErrorDialog';
 export { getApp } from './components/App/App';
 export { getHomepage } from './components/Homepage';
 export { getParticipantListPage } from './components/ParticipantListPage/ParticipantListPage';
