@@ -125,6 +125,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                       { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
                       { guardianOne ? <dd>{ guardianOne }</dd> : '' }
                       { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
+                      { homeCity ? <dt>Kotikunta</dt> : '' }
+                      { homeCity ? <dd>{ homeCity }</dd> : '' }
                     </dl>
                   </Panel>
                   <Panel header="Osallistujan tiedot">
