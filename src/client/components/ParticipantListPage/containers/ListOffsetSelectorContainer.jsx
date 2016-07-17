@@ -10,7 +10,7 @@ export function getListOffsetSelectorContainer(participantStore) {
         stores={
           {
             count: function() {
-              return { store: participantStore, value: participantStore.getState().participantCount || 0 };
+              return { store: participantStore, value: participantStore.getState().participantCount };
             },
           }
         }

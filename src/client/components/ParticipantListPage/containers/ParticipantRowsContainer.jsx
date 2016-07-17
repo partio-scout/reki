@@ -1,6 +1,7 @@
 import React from 'react';
-import Spinner from 'react-spinner';
+import AltContainer from 'alt-container';
 import { ParticipantRow } from '../../../components';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 function Tbody(props) {
   const elements = props.elements || [];
@@ -17,59 +18,26 @@ Tbody.propTypes = {
 };
 
 export function getParticipantRowsContainer(participantStore) {
-  class ParticipantRowsContainer extends React.Component {
-    constructor(props) {
-      super(props);
+  function ParticipantRowsContainer({ isChecked, checkboxCallback }) {
+    const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
 
-      this.onStoreChange = this.onStoreChange.bind(this);
-
-      this.state = this.extractState();
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onStoreChange);
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChange);
-    }
-
-    onStoreChange() {
-      this.setState(this.extractState());
-    }
-
-    extractState() {
-      return { participants: participantStore.getState().participants };
-    }
-
-    render() {
-      const {
-        isChecked,
-        checkboxCallback,
-        columnCount,
-      } = this.props;
-
-      const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
-
-      return this.state.participants === undefined
-        ? (
-          <tbody>
-            <tr>
-              <td colSpan={ columnCount }>
-                <Spinner />
-              </td>
-            </tr>
-          </tbody>
-        ) : (
-          <Tbody rowCreator={ rowCreator } elements={ this.state.participants } />
-        );
-    }
+    return (
+      <AltContainer
+        stores={
+          {
+            elements: () => ({ store: participantStore, value: participantStore.getState().participants }),
+          }
+        }
+        shouldComponentUpdate={ pureShouldComponentUpdate }
+      >
+        <Tbody rowCreator={ rowCreator } />
+      </AltContainer>
+    );
   }
 
   ParticipantRowsContainer.propTypes = {
     isChecked: React.PropTypes.func,
     checkboxCallback: React.PropTypes.func,
-    columnCount: React.PropTypes.number,
   };
 
   return ParticipantRowsContainer;
