@@ -1,6 +1,4 @@
 import React from 'react';
-import AltContainer from 'alt-container';
-import { pureShouldComponentUpdate } from '../../../utils';
 
 function Count(props) {
   return (
@@ -15,19 +13,34 @@ Count.propTypes = {
 };
 
 export function getParticipantCount(participantStore) {
-  function ParticipantCount() {
-    return (
-      <AltContainer
-        stores={
-          {
-            count: () => ({ store: participantStore, value: participantStore.getState().participantCount }),
-          }
-        }
-        shouldComponentUpdate={ pureShouldComponentUpdate }
-      >
-        <Count />
-      </AltContainer>
-    );
+  class ParticipantCount extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.onStoreChanged = this.onStoreChanged.bind(this);
+    }
+
+    componentDidMount() {
+      participantStore.listen(this.onStoreChanged);
+    }
+
+    componentWillUnmount() {
+      participantStore.unlisten(this.onStoreChanged);
+    }
+
+    onStoreChanged() {
+      this.setState(this.extractState());
+    }
+
+    extractState() {
+      return { count: participantStore.getState().participantCount };
+    }
+
+    render() {
+      return (
+        <Count count={ this.state.count }/>
+      );
+    }
   }
 
   return ParticipantCount;
