@@ -1,8 +1,9 @@
 import React from 'react';
 import moment from 'moment';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Grid, Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../components';
 import { PresenceHistory } from '../components';
+import { PropertyTextArea } from '../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
@@ -11,6 +12,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       super(props);
       this.state = participantStore.getState();
       this.onStoreChanged = this.onStoreChanged.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
+      this.saveEditableInfo = this.saveEditableInfo.bind(this);
+      this.save = this.save.bind(this);
     }
 
     componentWillMount() {
@@ -27,6 +32,27 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
     onStoreChanged(state) {
       this.setState(state);
+    }
+
+    handleChange(property, event) {
+      const participantDetails = this.state.participantDetails;
+      participantDetails[property] = event.target.value;
+      this.setState({ participantDetails: participantDetails });
+    }
+
+    saveCampOfficeNotes() {
+      this.save('campOfficeNotes');
+    }
+
+    saveEditableInfo() {
+      this.save('editableInfo');
+    }
+
+    save(property) {
+      participantActions.updateProperty(
+        this.state.participantDetails.participantId,
+        property,
+        this.state.participantDetails[property]);
     }
 
     render() {
@@ -137,6 +163,28 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
                     { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
                     { diet ? <p>{ diet }</p> : '' }
+                  </Panel>
+                  <Panel header="Leiritoimiston merkinnät">
+                    <PropertyTextArea
+                      property= "campOfficeNotes"
+                      value={ this.state.participantDetails.campOfficeNotes }
+                      onChange= { this.handleChange }
+                      rows={ 8 }
+                    />
+                    <Button bsStyle="primary" onClick={ this.saveCampOfficeNotes }>
+                      Tallenna
+                    </Button>
+                  </Panel>
+                  <Panel header="Lisätiedot">
+                    <PropertyTextArea
+                      property= "editableInfo"
+                      value={ this.state.participantDetails.editableInfo }
+                      onChange= { this.handleChange }
+                      rows={ 6 }
+                    />
+                    <Button bsStyle="primary" onClick={ this.saveEditableInfo }>
+                      Tallenna
+                    </Button>
                   </Panel>
                 </Col>
               </Row>
