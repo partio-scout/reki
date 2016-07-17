@@ -100,7 +100,15 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
         const allergyNames = _.map(allergies, row => row.name);
 
-        console.log(this.state.participantDetails);
+        const familyCampDetails = (program, naps) => 
+          <Panel header="Perheleiri">
+            <dl>
+              { program ? <dt>Ohjelma</dt> : '' }
+              { program ? <dd>{ program }</dd> : '' }
+              { naps ? <dt>Päiväunet</dt> : '' }
+              { naps ? <dd>{ naps }</dd> : '' }
+            </dl>
+          </Panel>;
 
         return (
           <div>
@@ -129,7 +137,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                       { homeCity ? <dd>{ homeCity }</dd> : '' }
                     </dl>
                   </Panel>
-                  {}
+                  { familyCampProgramInfo || childNaps ? familyCampDetails(familyCampProgramInfo, childNaps) : '' }
                   <Panel header="Pesti">
                     { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
                     <dl>
