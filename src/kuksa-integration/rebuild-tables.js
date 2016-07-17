@@ -61,7 +61,9 @@ function rebuildParticipantsTable() {
   }
 
   function getSubCamp(participant) {
-    if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+    if (participant.accommodation === 'Perheleirissä') {
+      return 'Riehu';
+    } else if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
       return 'Riehu';
     }
     return _.get(participant, 'subCamp.name') || 'Muu';
@@ -94,6 +96,7 @@ function rebuildParticipantsTable() {
     email: participant.email,
     internationalGuest: !!participant.localGroup,
     diet: participant.diet,
+    accommodation: participant.accommodation,
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
@@ -192,6 +195,7 @@ function buildSelectionTable() {
   .then(participants => Promise.each(participants, p =>
     findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
     .then(participantSelections => participantSelections.map(selections => selections.toObject()))
+    .then(participantSelections => _.filter(participantSelections, s => !!(s.selection && s.selection.group))) // Apparently some selections don't have a group, so handle only selections with group
     .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
       participantId: sel.participantId,

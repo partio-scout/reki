@@ -27,8 +27,8 @@ export default function (Participant) {
 
     function constructTextSearchArray(string) {
       const stripRegex = function(s) {
-        // Remove all charactes except alphabets (with umlauts and accents), numbers and dash
-        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-]/ig, '');
+        // Remove all charactes except alphabets (with umlauts and accents), numbers, dash and hashtag
+        return s.replace(/[^A-zÀ-úÀ-ÿ0-9-#]/ig, '');
       };
 
       function nameQuery(string, string2) {
@@ -46,6 +46,8 @@ export default function (Participant) {
 
       or.push({ staffPosition: { regexp: `/${stripRegex(string)}/i` } });
       or.push({ staffPositionInGenerator: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ campOfficeNotes: { regexp: `/${stripRegex(string)}/i` } });
+      or.push({ editableInfo: { regexp: `/${stripRegex(string)}/i` } });
 
       const splitted = string.split(' ', 2);
 
@@ -169,9 +171,11 @@ export default function (Participant) {
     // field name : validation function
     const allowedFields = {
       presence: value => _.includes([ 1, 2, 3 ], +value),
+      campOfficeNotes: value => _.isString(value),
+      editableInfo: value => _.isString(value),
     };
 
-    const fieldIsValid = (field, value) => allowedFields[field] && allowedFields[field](value);
+    const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
       Participant.findByIds(ids).then(rows => {

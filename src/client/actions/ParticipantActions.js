@@ -3,7 +3,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId, `filter=${JSON.stringify({ include: { presenceHistory: 'author' } })}` )
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies' ] })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err =>errorActions.error(err, 'Osallistujan tietojen lataaminen epäonnistui'));
       };
@@ -38,7 +38,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
 
       return dispatch => {
         dispatch();
-        participantResource.findAll(`filter=${JSON.stringify(filters)}`)
+        participantResource.findAll(`filter=${encodeURIComponent(JSON.stringify(filters))}`)
           .then(participantList => this.participantListUpdated(participantList),
                 err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
       };
@@ -51,7 +51,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     loadParticipantCount(filter) {
       return dispatch => {
         dispatch();
-        participantResource.raw('get', 'count', { filters: `where=${JSON.stringify(filter)}` })
+        participantResource.raw('get', 'count', { filters: `where=${encodeURIComponent(JSON.stringify(filter))}` })
           .then(response => this.participantCountUpdated(response.count),
                 err => errorActions.error(err, 'Osallistujien lukumäärän päivitys epäonnistui'));
       };
@@ -65,6 +65,27 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
               err => errorActions.error(err, 'Osallistujalistan päivitys epäonnistui'));
+    }
+
+    updateProperty(participantId, property, value) {
+      return dispatch => {
+        dispatch();
+        participantResource.raw('post', 'massAssign', {
+          body: { ids: participantId, fieldName: property, newValue: value } })
+          .then(participants => this.participantPropertyUpdated(property, participants),
+                err => this.participantUpdateFailed(err));
+      };
+    }
+
+    participantPropertyUpdated(property, participants) {
+      return {
+        property: property,
+        newValue: participants.result[0][property],
+      };
+    }
+
+    participantUpdateFailed(err) {
+      return err;
     }
   }
 
