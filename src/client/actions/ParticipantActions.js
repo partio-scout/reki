@@ -42,7 +42,7 @@ export function getParticipantActions(alt, participantResource) {
 
       return dispatch => {
         dispatch();
-        participantResource.findAll(`filter=${JSON.stringify(filters)}`)
+        participantResource.findAll(`filter=${encodeURIComponent(JSON.stringify(filters))}`)
           .then(participantList => this.participantListUpdated(participantList),
                 err => this.participantListUpdateFailed(err));
       };
@@ -59,7 +59,7 @@ export function getParticipantActions(alt, participantResource) {
     loadParticipantCount(filter) {
       return dispatch => {
         dispatch();
-        participantResource.raw('get', 'count', { filters: `where=${JSON.stringify(filter)}` })
+        participantResource.raw('get', 'count', { filters: `where=${encodeURIComponent(JSON.stringify(filter))}` })
           .then(response => this.participantCountUpdated(response.count),
                 err => this.participantCountUpdateFailed(err));
       };
