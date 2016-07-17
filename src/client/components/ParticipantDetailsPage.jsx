@@ -1,6 +1,7 @@
 import React from 'react';
+import _ from 'lodash';
 import moment from 'moment';
-import { Grid, Row, Col, Panel, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../components';
 import { PresenceHistory } from '../components';
 import { PropertyTextArea } from '../components';
@@ -58,7 +59,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     render() {
       if (this.state.participantDetails) {
         const {
-          participantId,
           firstName,
           lastName,
           dateOfBirth,
@@ -74,7 +74,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           subCamp,
           campGroup,
           village,
-          dates,
           internationalGuest,
           staffPosition,
           staffPositionInGenerator,
@@ -100,7 +99,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
         const allergyNames = _.map(allergies, row => row.name);
 
-        const familyCampDetails = (program, naps) => 
+        const familyCampDetails = (program, naps) =>
           <Panel header="Perheleiri">
             <dl>
               { program ? <dt>Ohjelma</dt> : '' }
@@ -112,105 +111,103 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
         return (
           <div>
-            <Grid>
-              <Row>
-                <Col md={ 12 }>
-                  <h2>
-                    { participantName }
-                    <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
-                  </h2>
-                  <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={ 3 }>
-                  <Panel header="Yhteystiedot">
-                    <dl>
-                      <dt>Puhelin</dt>
-                      <dd>{ phoneNumber }</dd>
-                      <dt>Sähköposti</dt>
-                      <dd>{ email }</dd>
-                      { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
-                      { guardianOne ? <dd>{ guardianOne }</dd> : '' }
-                      { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
-                      { homeCity ? <dt>Kotikunta</dt> : '' }
-                      { homeCity ? <dd>{ homeCity }</dd> : '' }
-                    </dl>
-                  </Panel>
-                  { familyCampProgramInfo || childNaps ? familyCampDetails(familyCampProgramInfo, childNaps) : '' }
-                  <Panel header="Pesti">
-                    { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
-                    <dl>
-                      { staffPosition ? <dt>Pesti</dt> : '' }
-                      { staffPosition ? <dd>{ staffPosition }</dd> : '' }
-                      { staffPositionInGenerator ? <dt>Pestitieto kehittimestä</dt> : '' }
-                      { staffPositionInGenerator ? <dd>{ staffPositionInGenerator }</dd> : '' }
-                    </dl>
-                  </Panel>
-                  <Panel header="Osallistujan tiedot">
-                    <dl>
-                      <dt>Ikäkausi</dt>
-                      <dd>{ ageGroup }</dd>
-                      { swimmingSkill ? <dt>Uimataito</dt> : '' }
-                      { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
-                      <dt>Lippukunta</dt>
-                      <dd>{ localGroup }</dd>
-                      <dt>Leirilippukunta</dt>
-                      <dd>{ campGroup }</dd>
-                      <dt>Kylä</dt>
-                      <dd>{ village }</dd>
-                      <dt>Alaleiri</dt>
-                      <dd>{ subCamp }</dd>
-                      { willOfTheWisp ? <dt>Virvatuli</dt> : '' }
-                      { willOfTheWisp ? <dd>{ willOfTheWisp }</dd> : '' }
-                      { willOfTheWispWave ? <dt>Virvatuliaalto</dt> : '' }
-                      { willOfTheWispWave ? <dd>{ willOfTheWispWave }</dd> : '' }
-                    </dl>
-                  </Panel>
-                  <Panel header="Laskutustiedot">
-                    <dl>
-                      <dt>Laskutettu</dt>
-                      <dd>{ formattedBilledDate }</dd>
-                      <dt>Maksettu</dt>
-                      <dd>{ formattedPaidDate }</dd>
-                    </dl>
-                  </Panel>
-                </Col>
-                <Col md={ 8 }>
-                  <Panel header="Läsnäolo">
-                   <Presence value={ presence } />
-                   <PresenceHistory value={ presenceHistory } />
-                  </Panel>
-                  <Panel header="Allergiat ja erityisruokavaliot">
-                    { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
-                    { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
-                    { diet ? <p>{ diet }</p> : '' }
-                  </Panel>
-                  <Panel header="Leiritoimiston merkinnät">
-                    <PropertyTextArea
-                      property= "campOfficeNotes"
-                      value={ this.state.participantDetails.campOfficeNotes }
-                      onChange= { this.handleChange }
-                      rows={ 8 }
-                    />
-                    <Button bsStyle="primary" onClick={ this.saveCampOfficeNotes }>
-                      Tallenna
-                    </Button>
-                  </Panel>
-                  <Panel header="Lisätiedot">
-                    <PropertyTextArea
-                      property= "editableInfo"
-                      value={ this.state.participantDetails.editableInfo }
-                      onChange= { this.handleChange }
-                      rows={ 6 }
-                    />
-                    <Button bsStyle="primary" onClick={ this.saveEditableInfo }>
-                      Tallenna
-                    </Button>
-                  </Panel>
-                </Col>
-              </Row>
-            </Grid>
+            <Row>
+              <Col md={ 12 }>
+                <h2>
+                  { participantName }
+                  <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
+                </h2>
+                <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={ 3 }>
+                <Panel header="Yhteystiedot">
+                  <dl>
+                    <dt>Puhelin</dt>
+                    <dd>{ phoneNumber }</dd>
+                    <dt>Sähköposti</dt>
+                    <dd>{ email }</dd>
+                    { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
+                    { guardianOne ? <dd>{ guardianOne }</dd> : '' }
+                    { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
+                    { homeCity ? <dt>Kotikunta</dt> : '' }
+                    { homeCity ? <dd>{ homeCity }</dd> : '' }
+                  </dl>
+                </Panel>
+                { familyCampProgramInfo || childNaps ? familyCampDetails(familyCampProgramInfo, childNaps) : '' }
+                <Panel header="Pesti">
+                  { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
+                  <dl>
+                    { staffPosition ? <dt>Pesti</dt> : '' }
+                    { staffPosition ? <dd>{ staffPosition }</dd> : '' }
+                    { staffPositionInGenerator ? <dt>Pestitieto kehittimestä</dt> : '' }
+                    { staffPositionInGenerator ? <dd>{ staffPositionInGenerator }</dd> : '' }
+                  </dl>
+                </Panel>
+                <Panel header="Osallistujan tiedot">
+                  <dl>
+                    <dt>Ikäkausi</dt>
+                    <dd>{ ageGroup }</dd>
+                    { swimmingSkill ? <dt>Uimataito</dt> : '' }
+                    { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
+                    <dt>Lippukunta</dt>
+                    <dd>{ localGroup }</dd>
+                    <dt>Leirilippukunta</dt>
+                    <dd>{ campGroup }</dd>
+                    <dt>Kylä</dt>
+                    <dd>{ village }</dd>
+                    <dt>Alaleiri</dt>
+                    <dd>{ subCamp }</dd>
+                    { willOfTheWisp ? <dt>Virvatuli</dt> : '' }
+                    { willOfTheWisp ? <dd>{ willOfTheWisp }</dd> : '' }
+                    { willOfTheWispWave ? <dt>Virvatuliaalto</dt> : '' }
+                    { willOfTheWispWave ? <dd>{ willOfTheWispWave }</dd> : '' }
+                  </dl>
+                </Panel>
+                <Panel header="Laskutustiedot">
+                  <dl>
+                    <dt>Laskutettu</dt>
+                    <dd>{ formattedBilledDate }</dd>
+                    <dt>Maksettu</dt>
+                    <dd>{ formattedPaidDate }</dd>
+                  </dl>
+                </Panel>
+              </Col>
+              <Col md={ 9 }>
+                <Panel header="Läsnäolo">
+                 <Presence value={ presence } />
+                 <PresenceHistory value={ presenceHistory } />
+                </Panel>
+                <Panel header="Allergiat ja erityisruokavaliot">
+                  { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
+                  { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
+                  { diet ? <p>{ diet }</p> : '' }
+                </Panel>
+                <Panel header="Leiritoimiston merkinnät">
+                  <PropertyTextArea
+                    property= "campOfficeNotes"
+                    value={ this.state.participantDetails.campOfficeNotes }
+                    onChange= { this.handleChange }
+                    rows={ 8 }
+                  />
+                  <Button bsStyle="primary" onClick={ this.saveCampOfficeNotes }>
+                    Tallenna
+                  </Button>
+                </Panel>
+                <Panel header="Lisätiedot">
+                  <PropertyTextArea
+                    property= "editableInfo"
+                    value={ this.state.participantDetails.editableInfo }
+                    onChange= { this.handleChange }
+                    rows={ 6 }
+                  />
+                  <Button bsStyle="primary" onClick={ this.saveEditableInfo }>
+                    Tallenna
+                  </Button>
+                </Panel>
+              </Col>
+            </Row>
           </div>
         );
       } else {
