@@ -23,6 +23,17 @@ cp /vagrant/vagrant/pg_hba.conf /etc/postgresql/9.3/main/
 service postgresql reload
 SCRIPT
 
+# Remove directories and databases possibly left by a previous round of provisioning.
+# Just to ensure a clean run each time.
+$clean_up_previous = <<SCRIPT
+rm -rf /home/vagrant/node_modules
+rm -rf /vagrant/node_modules
+
+sudo -u postgres psql -f /vagrant/vagrant/drop-database-and-user.sql || exit 1
+
+exit 0
+SCRIPT
+
 # To enable global installations with npm without using sudo, change
 # ownership of some directories to the vagrant default user.
 $ensure_permissions = <<SCRIPT
@@ -36,6 +47,15 @@ chown "$vagrant_user" "$bin"
 chown -R "$vagrant_user" "$node_modules"
 
 echo "127.0.0.1 demo.kehatieto.fi" >> /etc/hosts
+SCRIPT
+
+# Create new node_modules directory outside of /vagrant and
+# symlink /vagrant/node_modules to that directory.
+# This is only executed for windows hosts, which have issues with npm
+$create_node_modules_symlink = <<SCRIPT
+mkdir -p /home/vagrant/node_modules
+cd /vagrant
+ln -s /home/vagrant/node_modules
 SCRIPT
 
 # Set the NODE_ENV environment variable, and the default login location
@@ -73,10 +93,8 @@ $install_project = <<SCRIPT
 cd /vagrant
 npm install -g strongloop || exit 1
 
-rm -rf node_modules
 npm install || exit 1
 
-sudo -u postgres psql -f vagrant/drop-database-and-user.sql || exit 1
 sudo -u postgres psql -f vagrant/create-database-and-user.sql || exit 1
 
 npm run seed-database || exit 1
@@ -100,7 +118,15 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: $generate_locales
   config.vm.provision "shell", inline: $install_packages
   config.vm.provision "shell", inline: $configure_postgres
+  config.vm.provision "shell", inline: $clean_up_previous
   config.vm.provision "shell", inline: $ensure_permissions
+  # Only create symlink hack if host is windows
+  if (RbConfig::CONFIG['host_os'] =~ /mswin|msys|mingw|cygwin|bccwin|wince|emc/)
+    config.vm.provision "shell" do |s|
+      s.privileged = false
+      s.inline = $create_node_modules_symlink
+    end
+  end
   # environment setup, npm installations and project setup need to be run
   # as the development user
   config.vm.provision "shell" do |s|
@@ -111,4 +137,6 @@ Vagrant.configure(2) do |config|
     s.privileged = false
     s.inline = $install_project
   end
+  puts "HOST OS:"
+  puts RbConfig::CONFIG['host_os']
 end
