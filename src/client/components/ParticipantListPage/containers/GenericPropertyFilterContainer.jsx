@@ -8,6 +8,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
   const properties = [
     ['childNaps', 'Lapsi nukkuu päiväunet'],
     ['accommodation', 'Majoittautuminen'],
+    ['country', 'Maa'],
   ];
 
   class GenericPropertyFilterContainer extends React.Component {
