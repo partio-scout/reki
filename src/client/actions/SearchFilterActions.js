@@ -63,19 +63,15 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
       }
     }
 
-    loadDateOptions(property) {
+    loadDateOptions() {
+      const processResults = result => _.sortedUniqBy(_.sortBy(result, 'date'), 'date');
+
       return dispatch => {
         dispatch();
         participantDateResource.findAll(`filter[fields][date]=true`)
-          .then(response => this.optionsLoaded(property, processResults(response)),
+          .then(response => this.optionsLoaded('dates', processResults(response)),
                 err => this.optionsLoadingFailed(err));
       };
-
-      function processResults(result) {
-        const sortedValues = _.sortBy(result, 'date');
-        const uniqueValues = _.sortedUniqBy(sortedValues, 'date');
-        return uniqueValues;
-      }
     }
 
     optionsLoaded(property, options) {

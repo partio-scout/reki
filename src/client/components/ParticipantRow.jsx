@@ -98,7 +98,7 @@ export class ParticipantRow extends React.Component {
         <td>{ subCamp }</td>
         <td>{ campGroup }</td>
         {
-          this.props.dates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
+          this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
         }
       </tr>
     );
@@ -109,5 +109,5 @@ ParticipantRow.propTypes = {
   participant: React.PropTypes.object.isRequired,
   isChecked: React.PropTypes.func,
   checkboxCallback: React.PropTypes.func,
-  dates: React.PropTypes.array.isRequired,
+  availableDates: React.PropTypes.array.isRequired,
 };

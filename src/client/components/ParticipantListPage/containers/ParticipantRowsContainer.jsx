@@ -18,8 +18,8 @@ Tbody.propTypes = {
 };
 
 export function getParticipantRowsContainer(participantStore) {
-  function ParticipantRowsContainer({ isChecked, checkboxCallback, dates }) {
-    const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } dates={ dates } participant={ element } />;
+  function ParticipantRowsContainer({ isChecked, checkboxCallback, availableDates }) {
+    const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } />;
 
     return (
       <AltContainer
@@ -38,7 +38,7 @@ export function getParticipantRowsContainer(participantStore) {
   ParticipantRowsContainer.propTypes = {
     isChecked: React.PropTypes.func,
     checkboxCallback: React.PropTypes.func,
-    dates: React.PropTypes.array.isRequired,
+    availableDates: React.PropTypes.array.isRequired,
   };
 
   return ParticipantRowsContainer;

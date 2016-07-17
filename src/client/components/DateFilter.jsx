@@ -19,8 +19,6 @@ export function getDateFilter() {
         newDates = _.pull(newDates, thisDate);
       }
 
-      label = newDates.length;
-
       onChange(property, newDates);
     }
 

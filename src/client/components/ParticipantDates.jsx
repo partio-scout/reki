@@ -13,16 +13,22 @@ export class ParticipantDates extends React.Component {
       const firstDay = _.head(participantDays).date;
       const lastDay = _.last(participantDays).date;
 
+      const startOfFirstWeek = moment(firstDay).utc().startOf('week');
+      const endOfLastWeek = moment(lastDay).endOf('week');
+
       const weeks = {};
 
-      for (let d = moment(firstDay).utc().startOf('week'); d <= moment(lastDay).endOf('week'); d = moment(d).add(1, 'days')) {
-        if (!weeks[d.format('w')]) {
-          weeks[d.format('w')] = [];
+      for (let d = startOfFirstWeek; d <= endOfLastWeek; d = moment(d).add(1, 'days')) {
+        const currentWeekNum = d.format('w');
+
+        if (!weeks[currentWeekNum]) {
+          weeks[currentWeekNum] = [];
         }
-        weeks[d.format('w')].push({ date: moment(d), participant: _.find(participantDays, { date: d.startOf('day').toISOString() }) });
+
+        weeks[currentWeekNum].push({ date: moment(d), isParticipating: _.find(participantDays, { date: d.startOf('day').toISOString() }) });
       }
 
-      const showDay = day => <td className={ day.participant ? 'active' : 'inactive' }>{ day.date.format('D.M.') }{ day.participant ? <Glyphicon glyph="ok" /> : '' }</td>;
+      const showDay = day => <td className={ day.isParticipating ? 'active' : 'inactive' }>{ day.date.format('D.M.') }{ day.isParticipating ? <Glyphicon glyph="ok" /> : '' }</td>;
       const showWeek = week => <tr>{ week.map(day => showDay(day)) }</tr>;
 
       return (

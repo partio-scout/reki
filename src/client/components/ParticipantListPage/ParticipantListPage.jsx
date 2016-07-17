@@ -130,7 +130,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
         checked: new Array(),
         allChecked: false,
         participants: [ ],
-        dates: [ ],
+        availableDates: [ ],
       };
 
       this.onStoreChanged = this.onStoreChanged.bind(this);
@@ -159,7 +159,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     checkAll(isChecked) {
-      const stateChange = { checked: new Array(), allChecked: isChecked, dates: this.state.dates };
+      const stateChange = { checked: new Array(), allChecked: isChecked, availableDates: this.state.availableDates };
 
       if (isChecked) {
         stateChange.checked = _.map(participantStore.state.participants, 'participantId');
@@ -203,7 +203,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
 
     extractState() {
       const state = this.state;
-      state.dates = searchFilterStore.getState().options.dates || [];
+      state.availableDates = searchFilterStore.getState().options.dates || [];
       return state;
     }
 
@@ -274,14 +274,14 @@ export function getParticipantListPage(participantStore, participantActions, sea
                         />
                       ))
                     }
-                    <th colSpan={ this.state.dates.length }>Ilmoittautumispäivät</th>
+                    <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } dates={ this.state.dates } />
+                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } availableDates={ this.state.availableDates } />
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
-                    <td colSpan={ columnCount + this.state.dates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
+                    <td colSpan={ columnCount + this.state.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
