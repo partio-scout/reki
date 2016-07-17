@@ -35,7 +35,8 @@ const participantStore = stores.getParticipantStore(alt, participantActions, reg
 const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
-const app = components.getApp(registryUserStore, registryUserActions);
+const SessionTimeoutNotification = components.getSessionTimeoutNotification(accessToken);
+const app = components.getApp(registryUserStore, registryUserActions, SessionTimeoutNotification);
 const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
