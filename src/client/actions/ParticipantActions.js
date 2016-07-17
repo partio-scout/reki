@@ -17,7 +17,7 @@ export function getParticipantActions(alt, participantResource) {
       return err;
     }
 
-    loadParticipantList(offset, limit, order, filter, countParticipants) {
+    loadParticipantList(offset, limit, order, filter) {
       function getLoopbackOrderParameter() {
         if (!order) {
           return undefined;
@@ -38,33 +38,39 @@ export function getParticipantActions(alt, participantResource) {
         skip: offset,
         limit: limit,
         order: getLoopbackOrderParameter(),
-        count: countParticipants,
       };
 
-      const filterString = `filter=${encodeURIComponent(JSON.stringify(filters))}`;
-
       return dispatch => {
-        dispatch(countParticipants);
-        participantResource.findAll(filterString)
-          .then(participantList => {
-            if (countParticipants) {
-              this.participantListUpdated(participantList.result, participantList.count);
-            } else {
-              this.participantListUpdated(participantList);
-            }
-          }, err => this.participantListUpdateFailed(err));
+        dispatch();
+        participantResource.findAll(`filter=${encodeURIComponent(JSON.stringify(filters))}`)
+          .then(participantList => this.participantListUpdated(participantList),
+                err => this.participantListUpdateFailed(err));
       };
     }
 
-    participantListUpdated(participants, newCount) {
-      return {
-        participants: participants,
-        newCount: newCount,
-      };
+    participantListUpdated(participants) {
+      return participants;
     }
 
     participantListUpdateFailed(error) {
       return error;
+    }
+
+    loadParticipantCount(filter) {
+      return dispatch => {
+        dispatch();
+        participantResource.raw('get', 'count', { filters: `where=${encodeURIComponent(JSON.stringify(filter))}` })
+          .then(response => this.participantCountUpdated(response.count),
+                err => this.participantCountUpdateFailed(err));
+      };
+    }
+
+    participantCountUpdated(newCount) {
+      return newCount;
+    }
+
+    participantCountUpdateFailed(err) {
+      return err;
     }
 
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
