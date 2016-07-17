@@ -129,6 +129,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                       { homeCity ? <dd>{ homeCity }</dd> : '' }
                     </dl>
                   </Panel>
+                  {}
+                  <Panel header="Pesti">
+                    { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
+                    <dl>
+                      { staffPosition ? <dt>Pesti</dt> : '' }
+                      { staffPosition ? <dd>{ staffPosition }</dd> : '' }
+                      { staffPositionInGenerator ? <dt>Pestitieto kehittimestä</dt> : '' }
+                      { staffPositionInGenerator ? <dd>{ staffPositionInGenerator }</dd> : '' }
+                    </dl>
+                  </Panel>
                   <Panel header="Osallistujan tiedot">
                     <dl>
                       <dt>Ikäkausi</dt>
