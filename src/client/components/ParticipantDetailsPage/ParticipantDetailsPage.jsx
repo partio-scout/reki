@@ -1,5 +1,7 @@
 import React from 'react';
-import { Grid, Row, Col, Panel, Button } from 'react-bootstrap';
+import _ from 'lodash';
+import moment from 'moment';
+import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../../components';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
@@ -55,60 +57,133 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     render() {
-      let participantName = '';
-      let nonScout = '';
-      let dateOfBirth = '';
-      let participantPhone = '';
-      let homeCity = '';
-      let email = '';
-      let presence = '';
-      let presenceHistory = '';
-
       if (this.state.participantDetails) {
-        participantName = `${this.state.participantDetails.firstName} ${this.state.participantDetails.lastName}`;
-        nonScout = this.state.participantDetails.nonScout ? 'EVP' : 'Partiolainen';
-        const dateOfBirthString = this.state.participantDetails.dateOfBirth;
-        const [year, month, time] = dateOfBirthString && dateOfBirthString.split('-') || ['','',''];
-        const day = time.substring(0,2);
-        dateOfBirth = dateOfBirthString && `${day}.${month}.${year}`;
-        presence = this.state.participantDetails.presence;
-        presenceHistory = this.state.participantDetails.presenceHistory || [];
+        const {
+          firstName,
+          lastName,
+          dateOfBirth,
+          nonScout,
+          billedDate,
+          paidDate,
+          memberNumber,
+          homeCity,
+          email,
+          phoneNumber,
+          ageGroup,
+          localGroup,
+          subCamp,
+          campGroup,
+          village,
+          internationalGuest,
+          staffPosition,
+          staffPositionInGenerator,
+          swimmingSkill,
+          willOfTheWisp,
+          willOfTheWispWave,
+          guardianOne,
+          guardianTwo,
+          diet,
+          familyCampProgramInfo,
+          childNaps,
+          allergies,
+        } = this.state.participantDetails;
 
-        participantPhone = this.state.participantDetails.phoneNumber || '-';
-        homeCity = this.state.participantDetails.homeCity || '-';
-        email = this.state.participantDetails.email || '-';
-      }
+        const participantName = `${firstName} ${lastName}`;
+        const participantStatus = internationalGuest ? 'KV-osallistuja' : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
 
-      return (
-        <div>
-          <Grid>
+        const formattedBilledDate = billedDate ? moment(billedDate).format('D.M.YYYY') : '–';
+        const formattedPaidDate = paidDate ? moment(paidDate).format('D.M.YYYY') : '–';
+
+        const presence = this.state.participantDetails.presence;
+        const presenceHistory = this.state.participantDetails.presenceHistory || [];
+
+        const allergyNames = _.map(allergies, row => row.name);
+
+        const familyCampDetails = (program, naps) =>
+          <Panel header="Perheleiri">
+            <dl>
+              { program ? <dt>Ohjelma</dt> : '' }
+              { program ? <dd>{ program }</dd> : '' }
+              { naps ? <dt>Päiväunet</dt> : '' }
+              { naps ? <dd>{ naps }</dd> : '' }
+            </dl>
+          </Panel>;
+
+        return (
+          <div>
             <Row>
               <Col md={ 12 }>
-                <h2><b>{ participantName }</b></h2>
-                <p className="text-muted">{ nonScout }</p>
-                <p><b>Syntymäaika: </b> { dateOfBirth }</p>
+                <h2>
+                  { participantName }
+                  <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
+                </h2>
+                <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
               </Col>
             </Row>
             <Row>
               <Col md={ 3 }>
                 <Panel header="Yhteystiedot">
-                  <p className="text-muted"> Puhelin </p>
-                  <p >{ participantPhone }</p>
-                  <p className="text-muted"> Kotikaupunki</p>
-                  <p >{ homeCity }</p>
-                  <p className="text-muted"> Sähköposti</p>
-                  <p >{ email }</p>
+                  <dl>
+                    <dt>Puhelin</dt>
+                    <dd>{ phoneNumber }</dd>
+                    <dt>Sähköposti</dt>
+                    <dd>{ email }</dd>
+                    { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
+                    { guardianOne ? <dd>{ guardianOne }</dd> : '' }
+                    { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
+                    { homeCity ? <dt>Kotikunta</dt> : '' }
+                    { homeCity ? <dd>{ homeCity }</dd> : '' }
+                  </dl>
+                </Panel>
+                { familyCampProgramInfo || childNaps ? familyCampDetails(familyCampProgramInfo, childNaps) : '' }
+                <Panel header="Pesti">
+                  { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
+                  <dl>
+                    { staffPosition ? <dt>Pesti</dt> : '' }
+                    { staffPosition ? <dd>{ staffPosition }</dd> : '' }
+                    { staffPositionInGenerator ? <dt>Pestitieto kehittimestä</dt> : '' }
+                    { staffPositionInGenerator ? <dd>{ staffPositionInGenerator }</dd> : '' }
+                  </dl>
+                </Panel>
+                <Panel header="Osallistujan tiedot">
+                  <dl>
+                    <dt>Ikäkausi</dt>
+                    <dd>{ ageGroup }</dd>
+                    { swimmingSkill ? <dt>Uimataito</dt> : '' }
+                    { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
+                    <dt>Lippukunta</dt>
+                    <dd>{ localGroup }</dd>
+                    <dt>Leirilippukunta</dt>
+                    <dd>{ campGroup }</dd>
+                    <dt>Kylä</dt>
+                    <dd>{ village }</dd>
+                    <dt>Alaleiri</dt>
+                    <dd>{ subCamp }</dd>
+                    { willOfTheWisp ? <dt>Virvatuli</dt> : '' }
+                    { willOfTheWisp ? <dd>{ willOfTheWisp }</dd> : '' }
+                    { willOfTheWispWave ? <dt>Virvatuliaalto</dt> : '' }
+                    { willOfTheWispWave ? <dd>{ willOfTheWispWave }</dd> : '' }
+                  </dl>
+                </Panel>
+                <Panel header="Laskutustiedot">
+                  <dl>
+                    <dt>Laskutettu</dt>
+                    <dd>{ formattedBilledDate }</dd>
+                    <dt>Maksettu</dt>
+                    <dd>{ formattedPaidDate }</dd>
+                  </dl>
                 </Panel>
               </Col>
-                <Col md={ 6 }>
-                  <Panel header="Läsnäolo">
-                    <Presence value={ presence } />
-                    <PresenceHistory value={ presenceHistory } />
-                  </Panel>
-                </Col>
-            </Row>
-            <Row>
               <Col md={ 9 }>
+                <Panel header="Läsnäolo">
+                 <Presence value={ presence } />
+                 <PresenceHistory value={ presenceHistory } />
+                </Panel>
+                <Panel header="Allergiat ja erityisruokavaliot">
+                  { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
+                  { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
+                  { diet ? <p>{ diet }</p> : '' }
+                </Panel>
                 <Panel header="Leiritoimiston merkinnät">
                   <PropertyTextArea
                     property= "campOfficeNotes"
@@ -133,9 +208,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 </Panel>
               </Col>
             </Row>
-          </Grid>
-        </div>
-      );
+          </div>
+        );
+      } else {
+        return (
+          <div></div>
+        );
+      }
     }
   }
 
