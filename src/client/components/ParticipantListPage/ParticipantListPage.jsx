@@ -213,7 +213,9 @@ export function getParticipantListPage(participantStore, participantActions, sea
         email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
         ageGroup: 'Ikäkausi',
+        accommodation: 'Majoittuminen',
         localGroup: 'Lippukunta',
+        village: 'Kylä',
         subCamp: 'Alaleiri',
         campGroup: 'Leirilippukunta',
       };

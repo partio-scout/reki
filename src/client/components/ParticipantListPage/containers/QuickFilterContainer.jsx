@@ -27,7 +27,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'childNaps', 'accommodation'], props.filter);
+    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village', 'childNaps', 'accommodation'], props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -67,6 +67,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
               currentSelection={ currentSelection }
               label="Alaleiri"
               property="subCamp"
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Kylä"
+              property="village"
             />
             <PropertyFilterContainer
               onChange={ handleChange }
