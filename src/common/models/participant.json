@@ -46,6 +46,18 @@
         "nullable": "NO"
       }
     },
+    "nickname": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "nickname",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "nonScout": {
       "type": "boolean",
       "required": true,
@@ -141,6 +153,18 @@
       "type": "string",
       "postgresql": {
         "columnName": "home_city",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+    "country": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "country",
         "dataType": "character varying",
         "dataLength": 255,
         "dataPrecision": null,
@@ -256,6 +280,18 @@
         "nullable": "NO"
       }
     },
+    "accommodation": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "accommodation",
+        "dataType": "character varying",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
     "ageGroup": {
       "type": "string",
       "required": true,
@@ -328,6 +364,7 @@
         "nullable": "YES"
       }
     },
+
     "familyCampProgramInfo": {
       "type": "string",
       "required": false,
@@ -340,6 +377,7 @@
         "nullable": "YES"
       }
     },
+
     "childNaps": {
       "type": "string",
       "required": false,
@@ -347,6 +385,32 @@
         "columnName": "child_naps",
         "dataType": "character varying",
         "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+
+    "campOfficeNotes": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "camp_office_notes",
+        "dataType": "character varying",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
+
+    "editableInfo": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "columnName": "editable_info",
+        "dataType": "character varying",
+        "dataLength": null,
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"

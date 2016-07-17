@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import moment from 'moment';
-import { getPresenceLabel } from './Presence';
+import { getPresenceLabel } from '../../components';
 
 export class PresenceHistory extends React.Component {
   render() {

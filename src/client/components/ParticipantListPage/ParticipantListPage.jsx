@@ -8,7 +8,7 @@ import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorC
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
-import { getPresenceLabel } from '../Presence';
+import { getPresenceLabel } from '../../components';
 
 function getOrder(query) {
   try {
@@ -228,7 +228,9 @@ export function getParticipantListPage(participantStore, participantActions, sea
         email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
         ageGroup: 'Ikäkausi',
+        accommodation: 'Majoittuminen',
         localGroup: 'Lippukunta',
+        village: 'Kylä',
         subCamp: 'Alaleiri',
         campGroup: 'Leirilippukunta',
       };

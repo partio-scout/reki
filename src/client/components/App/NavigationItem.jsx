@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavItem } from 'react-bootstrap';
-import { NavLinkItem } from '../components';
+import { NavLinkItem } from '../../components';
 
 export function getNavigationItem() {
   class NavigationItem extends React.Component {

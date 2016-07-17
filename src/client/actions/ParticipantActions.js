@@ -3,7 +3,7 @@ export function getParticipantActions(alt, participantResource) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'dates' ] })}` )
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies', 'dates' ] })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err => this.loadingParticipantByIdFailed(err));
       };
@@ -43,7 +43,7 @@ export function getParticipantActions(alt, participantResource) {
 
       return dispatch => {
         dispatch();
-        participantResource.findAll(`filter=${JSON.stringify(filters)}`)
+        participantResource.findAll(`filter=${encodeURIComponent(JSON.stringify(filters))}`)
           .then(participantList => this.participantListUpdated(participantList),
                 err => this.participantListUpdateFailed(err));
       };
@@ -60,7 +60,7 @@ export function getParticipantActions(alt, participantResource) {
     loadParticipantCount(filter) {
       return dispatch => {
         dispatch();
-        participantResource.raw('get', 'count', { filters: `where=${JSON.stringify(filter)}` })
+        participantResource.raw('get', 'count', { filters: `where=${encodeURIComponent(JSON.stringify(filter))}` })
           .then(response => this.participantCountUpdated(response.count),
                 err => this.participantCountUpdateFailed(err));
       };
@@ -78,6 +78,27 @@ export function getParticipantActions(alt, participantResource) {
       participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
               err => this.participantListUpdateFailed(err));
+    }
+
+    updateProperty(participantId, property, value) {
+      return dispatch => {
+        dispatch();
+        participantResource.raw('post', 'massAssign', {
+          body: { ids: participantId, fieldName: property, newValue: value } })
+          .then(participants => this.participantPropertyUpdated(property, participants),
+                err => this.participantUpdateFailed(err));
+      };
+    }
+
+    participantPropertyUpdated(property, participants) {
+      return {
+        property: property,
+        newValue: participants.result[0][property],
+      };
+    }
+
+    participantUpdateFailed(err) {
+      return err;
     }
   }
 
