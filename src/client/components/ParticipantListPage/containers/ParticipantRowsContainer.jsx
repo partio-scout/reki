@@ -1,7 +1,5 @@
 import React from 'react';
-import AltContainer from 'alt-container';
 import { ParticipantRow } from '../../../components';
-import { pureShouldComponentUpdate } from '../../../utils';
 
 function Tbody(props) {
   const elements = props.elements || [];
@@ -18,21 +16,43 @@ Tbody.propTypes = {
 };
 
 export function getParticipantRowsContainer(participantStore) {
-  function ParticipantRowsContainer({ isChecked, checkboxCallback }) {
-    const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
+  class ParticipantRowsContainer extends React.Component {
+    constructor(props) {
+      super(props);
 
-    return (
-      <AltContainer
-        stores={
-          {
-            elements: () => ({ store: participantStore, value: participantStore.getState().participants }),
-          }
-        }
-        shouldComponentUpdate={ pureShouldComponentUpdate }
-      >
-        <Tbody rowCreator={ rowCreator } />
-      </AltContainer>
-    );
+      this.onStoreChange = this.onStoreChange.bind(this);
+
+      this.state = this.extractState();
+    }
+
+    componentDidMount() {
+      participantStore.listen(this.onStoreChange);
+    }
+
+    componentWillUnmount() {
+      participantStore.unlisten(this.onStoreChange);
+    }
+
+    onStoreChange() {
+      this.setState(this.extractState());
+    }
+
+    extractState() {
+      return { participants: participantStore.getState().participants };
+    }
+
+    render() {
+      const {
+        isChecked,
+        checkboxCallback,
+      } = this.props;
+
+      const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
+
+      return (
+        <Tbody rowCreator={ rowCreator } elements={ this.state.participants } />
+      );
+    }
   }
 
   ParticipantRowsContainer.propTypes = {
