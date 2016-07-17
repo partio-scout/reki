@@ -1,16 +1,17 @@
 import React from 'react';
 import { Input } from 'react-bootstrap';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
+import _ from 'lodash';
 
 export function getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions) {
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   const properties = [
-    ['childNaps', 'Lapsi nukkuu päiväunet'],
-    ['accommodation', 'Majoittautuminen'],
-    ['country', 'Maa'],
-    ['willOfTheWisp', 'Virvatuli'],
-    ['willOfTheWispWave', 'Virvatulen aalto'],
+    { childNaps: 'Lapsi nukkuu päiväunet' },
+    { accommodation: 'Majoittautuminen' },
+    { country: 'Maa' },
+    { willOfTheWisp: 'Virvatuli' },
+    { willOfTheWispWave: 'Virvatulen aalto' },
   ];
 
   class GenericPropertyFilterContainer extends React.Component {
@@ -23,7 +24,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     }
 
     static availableProperties() {
-      return properties.map(p => p[0]);
+      return properties.map(p => _.keys(p)[0]);
     }
 
     onPropertyChange(e) {
@@ -37,7 +38,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
         <div>
           <Input type="select" label="Kenttä" value={ this.state.property } onChange={ this.onPropertyChange }>
             <option value=""></option>
-            { properties.map((property, index) => <option value={ property[0] } key={ index }>{ property[1] }</option>) }
+            { properties.map((property, index) => <option value={ _.keys(property)[0] } key={ index }>{ _.values(property)[0] }</option>) }
           </Input>
           <PropertyFilterContainer
             onChange={ this.props.onChange }
