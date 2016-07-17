@@ -22,7 +22,7 @@ describe('Kuksa integration', () => {
   const countSelections = Promise.promisify(app.models.Selection.count, { context: app.models.Selection });
 
   before(function(done) {
-    this.timeout(50000);
+    this.timeout(80000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();

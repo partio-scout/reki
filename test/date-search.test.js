@@ -1,5 +1,3 @@
-Object.keys(require.cache).forEach(key => { delete require.cache[key]; });
-
 import app from '../src/server/server';
 import request from 'supertest-as-promised';
 import chai from 'chai';
