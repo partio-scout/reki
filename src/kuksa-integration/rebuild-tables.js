@@ -97,7 +97,7 @@ function rebuildParticipantsTable() {
     email: participant.email,
     internationalGuest: !!participant.localGroup,
     diet: participant.diet,
-    accommodation: participant.accommodation,
+    accommodation: participant.accommodation || 'Muu',
     localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
     campGroup: _.get(participant, 'campGroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
