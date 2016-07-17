@@ -2,9 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { Row, Col, Panel, Button } from 'react-bootstrap';
-import { Presence } from '../components';
-import { PresenceHistory } from '../components';
-import { PropertyTextArea } from '../components';
+import { Presence } from '../../components';
+import { PresenceHistory } from '../../components';
+import { PropertyTextArea } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 

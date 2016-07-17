@@ -1,5 +1,5 @@
 import React from 'react';
-import { getListSortingSelector } from '../components';
+import { getListSortingSelector } from '../../components';
 
 export function getSortableHeaderCell() {
   const ListSortingSelector = getListSortingSelector();
