@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import { Table, Grid, Row, Col, Input, Button } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
-import { getParticipantCountUpdater } from './containers/ParticipantCountUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
@@ -114,7 +113,6 @@ export function getSelectAll() {
 
 export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
-  const ParticipantCountUpdater = getParticipantCountUpdater(participantActions);
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
@@ -130,8 +128,11 @@ export function getParticipantListPage(participantStore, participantActions, sea
         checked: new Array(),
         allChecked: false,
         participants: [ ],
+        availableDates: [ ],
       };
 
+      this.onSearchFilterStoreChanged = this.onSearchFilterStoreChanged.bind(this);
+      this.extractDatesFromSearchFilters = this.extractDatesFromSearchFilters.bind(this);
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
       this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
@@ -156,7 +157,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     checkAll(isChecked) {
-      const stateChange = { checked: new Array(), allChecked: isChecked };
+      const stateChange = { checked: new Array(), allChecked: isChecked, availableDates: this.state.availableDates };
 
       if (isChecked) {
         stateChange.checked = _.map(participantStore.state.participants, 'participantId');
@@ -178,10 +179,12 @@ export function getParticipantListPage(participantStore, participantActions, sea
 
     componentDidMount() {
       participantStore.listen(this.checkNoneOnParticipantsChanged);
+      searchFilterStore.listen(this.onSearchFilterStoreChanged);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.checkNoneOnParticipantsChanged);
+      searchFilterStore.unlisten(this.onSearchFilterStoreChanged);
     }
 
     checkNoneOnParticipantsChanged() {
@@ -190,6 +193,16 @@ export function getParticipantListPage(participantStore, participantActions, sea
         this.setState({ participants: newParticipants });
         this.checkAll(false);
       }
+    }
+
+    onSearchFilterStoreChanged() {
+      this.setState(this.extractDatesFromSearchFilters());
+    }
+
+    extractDatesFromSearchFilters() {
+      const state = this.state;
+      state.availableDates = searchFilterStore.getState().options.dates || [];
+      return state;
     }
 
     render() {
@@ -225,7 +238,6 @@ export function getParticipantListPage(participantStore, participantActions, sea
       return (
         <Grid fluid>
           <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
-          <ParticipantCountUpdater filter={ filter } />
           <Row>
             <Col md={ 12 }>
               <h1>Leiriläiset</h1>
@@ -261,13 +273,14 @@ export function getParticipantListPage(participantStore, participantActions, sea
                         />
                       ))
                     }
+                    <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } />
+                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } />
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
-                    <td colSpan={ columnCount }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
+                    <td colSpan={ columnCount + this.state.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
