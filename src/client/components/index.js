@@ -1,4 +1,5 @@
 // Tämä tiedosto kokoaa kaikki components-kansion exportit yhteen moduuliin
+export { ErrorDialog } from './ErrorDialog';
 export { getSessionTimeoutNotification } from './Util/SessionTimeoutNotification';
 export { getApp } from './App/App';
 export { getHomepage } from './Homepage';
