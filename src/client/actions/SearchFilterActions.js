@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export function getSearchFilterActions(alt, searchFilterResource, participantResource) {
+export function getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource) {
   class SearchFilterActions {
     saveSearchFilter(name, filter) {
       return dispatch => {
@@ -65,6 +65,17 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
         uniqueStrings.sort();
         return _.concat([''], uniqueStrings);
       }
+    }
+
+    loadDateOptions() {
+      const processResults = result => _.sortedUniqBy(_.sortBy(result, 'date'), 'date');
+
+      return dispatch => {
+        dispatch();
+        participantDateResource.findAll(`filter[fields][date]=true`)
+          .then(response => this.optionsLoaded('dates', processResults(response)),
+                err => this.optionsLoadingFailed(err));
+      };
     }
 
     optionsLoaded(property, options) {

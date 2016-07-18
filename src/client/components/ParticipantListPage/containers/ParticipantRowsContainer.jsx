@@ -47,9 +47,10 @@ export function getParticipantRowsContainer(participantStore) {
         isChecked,
         checkboxCallback,
         columnCount,
+        availableDates,
       } = this.props;
 
-      const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } participant={ element } />;
+      const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } />;
 
       return this.state.participants === undefined
         ? (
@@ -69,6 +70,7 @@ export function getParticipantRowsContainer(participantStore) {
   ParticipantRowsContainer.propTypes = {
     isChecked: React.PropTypes.func,
     checkboxCallback: React.PropTypes.func,
+    availableDates: React.PropTypes.array.isRequired,
     columnCount: React.PropTypes.number,
   };
 

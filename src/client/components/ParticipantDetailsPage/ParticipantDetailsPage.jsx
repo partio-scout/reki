@@ -3,6 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../../components';
+import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 
@@ -87,6 +88,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           diet,
           familyCampProgramInfo,
           childNaps,
+          dates,
           allergies,
         } = this.state.participantDetails;
 
@@ -182,8 +184,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                  <Presence value={ presence } />
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
+                <Panel header="Ilmoittautumispäivät">
+                  <ParticipantDates dates={ dates } />
+                </Panel>
                 <Panel header="Allergiat ja erityisruokavaliot">
-                  { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
+                  { _.isEmpty(allergyNames) && _.isEmpty(diet)  ? <p>Ei allergioita</p> : '' }
                   { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
                   { diet ? <p>{ diet }</p> : '' }
                 </Panel>

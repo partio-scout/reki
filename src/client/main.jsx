@@ -8,11 +8,14 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import superagent from 'superagent';
 import superagentAsPromised from 'superagent-as-promised';
 import Cookie from 'js-cookie';
+import moment from 'moment';
 
 import * as components from './components';
 import * as stores from './stores';
 import * as actions from './actions';
 import { getRestfulResource, restrictComponent } from './utils';
+
+moment.locale('fi');
 
 // Get REST API access token
 
@@ -22,13 +25,14 @@ const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants', accessToken);
+const participantDateResource = new RestfulResource('/api/participantDates', accessToken);
 const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
 const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
 
 const alt = new Alt();
 
 const participantActions = actions.getParticipantActions(alt, participantResource);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
 
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);

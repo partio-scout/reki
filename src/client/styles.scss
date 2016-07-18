@@ -98,6 +98,12 @@ td {
   vertical-align: middle !important;
 }
 
+table .glyphicon.muted {
+  margin-top: 1px;
+  opacity: 0.2;
+  font-size: 0.8em;
+}
+
 table {
   div.form-group {
     margin: 0;
@@ -274,6 +280,27 @@ table .presence {
  * Search tools
  */
 
+.date-filter {
+  button {
+    margin-bottom: 1em;
+  }
+  .dropdown-menu {
+    margin-top: -1em;
+    padding: 10px 0 0;
+
+    ul {
+      padding: 0 10px;
+      margin: 0;
+
+      input[type="checkbox"] {
+        position: relative;
+        top: -1px;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
 .participant-count {
   span {
     font-size: $font-size-base;
@@ -282,6 +309,37 @@ table .presence {
   .h2 {
     line-height: 1;
     margin: 0;
+  }
+}
+
+
+.participant-dates {
+  td {
+    height: 55px;
+    vertical-align: top !important;
+    text-align: right;
+    border-left: 1px solid #ddd;
+
+    &:first-child {
+      border-left: none;
+    }
+
+    span {
+      opacity: 0.5;
+    }
+    
+    &.active {
+      color: $green;
+      background: lighten($green, 50%) !important;
+
+      span {
+        opacity: 1;
+      };
+    }
+    
+    .glyphicon {
+      display: block;
+    }
   }
 }
 
