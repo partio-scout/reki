@@ -91,7 +91,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         } = this.state.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
-        const participantStatus = internationalGuest ? `KV-osallistuja, ${country}` : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
+        const participantStatus = internationalGuest ? 'KV-osallistuja' : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
 
         const formattedBilledDate = billedDate ? moment(billedDate).format('D.M.YYYY') : '–';
         const formattedPaidDate = paidDate ? moment(paidDate).format('D.M.YYYY') : '–';
@@ -117,7 +117,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 12 }>
                 <h2>
                   { participantName }
-                  <small> { nickname || '' } </small>
                   <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
                 </h2>
                 <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
@@ -150,12 +149,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 </Panel>
                 <Panel header="Osallistujan tiedot">
                   <dl>
+                    <dt>Partionimi</dt>
+                    <dd>{ nickname || '' }</dd>
                     <dt>Ikäkausi</dt>
                     <dd>{ ageGroup }</dd>
                     { swimmingSkill ? <dt>Uimataito</dt> : '' }
                     { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
                     <dt>Lippukunta</dt>
-                    <dd>{ `${localGroup}, ${country}` }</dd>
+                    <dd>{ localGroup }</dd>
+                    <dt>Maa</dt>
+                    <dd>{ country }</dd>
                     <dt>Leirilippukunta</dt>
                     <dd>{ campGroup }</dd>
                     <dt>Kylä</dt>
