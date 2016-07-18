@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import Spinner from 'react-spinner';
 import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../../components';
 import { ParticipantDates } from './ParticipantDates';
@@ -223,7 +224,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         );
       } else {
         return (
-          <div></div>
+          <Spinner />
         );
       }
     }

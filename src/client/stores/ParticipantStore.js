@@ -4,12 +4,17 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.resetAllData();
 
       this.bindListeners({
+        handleFetchParticipantById: ParticipantActions.FETCH_PARTICIPANT_BY_ID,
         handleUpdateParticipantById: ParticipantActions.UPDATE_PARTICIPANT_BY_ID,
         handleLoadParticipantList: ParticipantActions.LOAD_PARTICIPANT_LIST,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantPropertyUpdated: ParticipantActions.PARTICIPANT_PROPERTY_UPDATED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
+    }
+
+    handleFetchParticipantById() {
+      this.participantDetails = undefined;
     }
 
     handleUpdateParticipantById(participant) {
@@ -40,7 +45,7 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
 
     resetAllData() {
       this.participants = undefined;
-      this.participantDetails = {};
+      this.participantDetails = undefined;
       this.participantCount = undefined;
 
       this.localGroups = [''];
