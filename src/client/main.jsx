@@ -32,9 +32,9 @@ const searchFilterResource = new RestfulResource('/api/searchfilters', accessTok
 const alt = new Alt();
 
 const errorActions = actions.getErrorActions(alt);
-const participantActions = actions.getParticipantActions(alt, participantResource);
+const participantActions = actions.getParticipantActions(alt, participantResource, errorActions);
 const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, errorActions);
-const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
+const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource, errorActions);
 
 const errorStore = stores.getErrorStore(alt, errorActions);
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
