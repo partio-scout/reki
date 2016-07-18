@@ -17,7 +17,7 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
       registryUserStore.listen(this.onStoreChanged);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       registryUserStore.unlisten(this.onStoreChanged);
     }
 
