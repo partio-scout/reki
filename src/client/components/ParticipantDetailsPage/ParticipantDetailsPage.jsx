@@ -29,7 +29,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       participantStore.listen(this.onStoreChanged);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       participantStore.unlisten(this.onStoreChanged);
     }
 

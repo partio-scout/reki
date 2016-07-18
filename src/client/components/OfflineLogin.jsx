@@ -13,7 +13,7 @@ export function getLogin(userActions, userStore) {
       userStore.listen(this.onStoreChanged);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       userStore.unlisten(this.onStoreChanged);
     }
 

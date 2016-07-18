@@ -54,7 +54,7 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
       searchFilterStore.listen(this.onChange);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       searchFilterStore.unlisten(this.onChange);
     }
 
