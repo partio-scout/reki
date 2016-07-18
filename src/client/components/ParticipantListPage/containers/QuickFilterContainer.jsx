@@ -4,14 +4,18 @@ import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getDateFilterContainer } from './DateFilterContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
+import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
+  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
   const PresenceFilterContainer = getPresenceFilterContainer();
+  const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -25,7 +29,10 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   }
 
   function QuickFilterContainer(props, context) {
-    const currentSelection = getCurrentSelection(['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence'], props.filter);
+    const propertiesForGenericFilter = GenericPropertyFilterContainer.availableProperties();
+    const properties = ['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village', 'dates'].concat(propertiesForGenericFilter);
+
+    const currentSelection = getCurrentSelection(properties, props.filter);
 
     function resetFilters(event) {
       event.preventDefault();
@@ -69,6 +76,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             <PropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
+              label="Kylä"
+              property="village"
+            />
+            <PropertyFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
               label="Lippukunta"
               property="localGroup"
             />
@@ -79,6 +92,16 @@ export function getQuickFilterContainer(participantStore, participantActions, se
               property="campGroup"
             />
             <PresenceFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+            />
+            <DateFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Ilmoittautumispäivät"
+              property="dates"
+            />
+            <GenericPropertyFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
             />

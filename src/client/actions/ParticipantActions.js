@@ -3,7 +3,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies' ] })}` )
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies', 'dates' ] })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err =>errorActions.error(err, 'Osallistujan tietojen lataaminen epäonnistui'));
       };
@@ -13,7 +13,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       return participant;
     }
 
-    loadParticipantList(offset, limit, order, filter) {
+    loadParticipantList(offset, limit, order, filter, countParticipants) {
       function getLoopbackOrderParameter() {
         if (!order) {
           return undefined;
@@ -34,37 +34,36 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         skip: offset,
         limit: limit,
         order: getLoopbackOrderParameter(),
+        include: ['dates'],
+        count: countParticipants,
       };
+
+      const filterString = `filter=${encodeURIComponent(JSON.stringify(filters))}`;
 
       return dispatch => {
-        dispatch();
-        participantResource.findAll(`filter=${encodeURIComponent(JSON.stringify(filters))}`)
-          .then(participantList => this.participantListUpdated(participantList),
-                err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
+        dispatch(countParticipants);
+        participantResource.findAll(filterString)
+          .then(participantList => {
+            if (countParticipants) {
+              this.participantListUpdated(participantList.result, participantList.count);
+            } else {
+              this.participantListUpdated(participantList);
+            }
+          }, err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
       };
     }
 
-    participantListUpdated(participants) {
-      return participants;
-    }
-
-    loadParticipantCount(filter) {
-      return dispatch => {
-        dispatch();
-        participantResource.raw('get', 'count', { filters: `where=${encodeURIComponent(JSON.stringify(filter))}` })
-          .then(response => this.participantCountUpdated(response.count),
-                err => errorActions.error(err, 'Osallistujien lukumäärän päivitys epäonnistui'));
+    participantListUpdated(participants, newCount) {
+      return {
+        participants: participants,
+        newCount: newCount,
       };
-    }
-
-    participantCountUpdated(newCount) {
-      return newCount;
     }
 
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
       participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
-              err => errorActions.error(err, 'Osallistujalistan päivitys epäonnistui'));
+              err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
     }
 
     updateProperty(participantId, property, value) {
@@ -73,7 +72,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         participantResource.raw('post', 'massAssign', {
           body: { ids: participantId, fieldName: property, newValue: value } })
           .then(participants => this.participantPropertyUpdated(property, participants),
-                err => this.participantUpdateFailed(err));
+                err => errorActions.error(err, 'Osallistujan tallennus epäonnistui'));
       };
     }
 
@@ -82,10 +81,6 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         property: property,
         newValue: participants.result[0][property],
       };
-    }
-
-    participantUpdateFailed(err) {
-      return err;
     }
   }
 
