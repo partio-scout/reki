@@ -1,25 +1,36 @@
 import React from 'react';
-import { pureShouldComponentUpdate } from '../../../utils';
+import _ from 'lodash';
 
 export function getParticipantListUpdater(participantActions) {
   class ParticipantListUpdater extends React.Component {
-    reloadList() {
+    reloadList(nextProps, recount) {
       const {
         offset,
         limit,
         order,
         filter,
-      } = this.props;
+      } = nextProps;
 
-      participantActions.loadParticipantList.defer(offset, limit, order, filter);
+      participantActions.loadParticipantList(offset, limit, order, filter, recount);
+    }
+
+    componentWillMount() {
+      this.reloadList(this.props, true);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (!_.isEqual(this.props, nextProps)) {
+        const recount = !_.isEqual(this.props.filter, nextProps.filter);
+
+        this.reloadList(nextProps, recount);
+      }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      return pureShouldComponentUpdate.call(this, nextProps, nextState);
+      return false;
     }
 
     render() {
-      this.reloadList();
       return null;
     }
   }

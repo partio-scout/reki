@@ -181,6 +181,36 @@ export default function (Participant) {
     }
   }
 
+  function checkFullParticipantCount(ctx, participantInstance, next) {
+    Promise.try(() => getFilterIfShouldCount())
+      .then(filterForCount => {
+        if (filterForCount) {
+          const countParticipants = Promise.promisify(Participant.count, { context: Participant });
+          return countParticipants(filterForCount)
+            .then(count => {
+              const findResult = ctx.result;
+              ctx.result = {
+                result: findResult,
+                count: count,
+              };
+              console.log(filterForCount);
+              console.log(ctx.result);
+            });
+        }
+      }).asCallback(next);
+
+    function getFilterIfShouldCount() {
+      const args = ctx && ctx.args || null;
+
+      if (args && args.filter && _.isString(args.filter)) {
+        // This if clause is technically not needed since the textsearch hook does the same but I left it here for robustness, in case the text search is changed
+        args.filter = JSON.parse(args.filter);
+      }
+
+      return args && args.filter && args.filter.count && args.filter.where || false;
+    }
+  }
+
   Participant.afterRemote('create', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
@@ -200,6 +230,8 @@ export default function (Participant) {
   });
 
   Participant.beforeRemote('find', handleTextSearch);
+  Participant.afterRemote('find', checkFullParticipantCount);
+
   Participant.beforeRemote('count', handleTextSearch);
 
   Participant.beforeRemote('find', handleDateSearch);

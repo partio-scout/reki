@@ -1,6 +1,5 @@
 import React from 'react';
-import AltContainer from 'alt-container';
-import { pureShouldComponentUpdate } from '../../../utils';
+import Spinner from 'react-spinner';
 
 function Count(props) {
   return (
@@ -14,20 +13,52 @@ Count.propTypes = {
   count: React.PropTypes.number,
 };
 
+function CountSpinner() {
+  return (
+    <div className="participant-count well">
+      Hakutulokset
+      <div className="h2"><Spinner /></div>
+    </div>
+  );
+}
+
 export function getParticipantCount(participantStore) {
-  function ParticipantCount() {
-    return (
-      <AltContainer
-        stores={
-          {
-            count: () => ({ store: participantStore, value: participantStore.getState().participantCount }),
-          }
-        }
-        shouldComponentUpdate={ pureShouldComponentUpdate }
-      >
-        <Count />
-      </AltContainer>
-    );
+  class ParticipantCount extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = this.extractState();
+
+      this.onStoreChanged = this.onStoreChanged.bind(this);
+    }
+
+    componentDidMount() {
+      participantStore.listen(this.onStoreChanged);
+    }
+
+    componentWillUnmount() {
+      participantStore.unlisten(this.onStoreChanged);
+    }
+
+    onStoreChanged() {
+      this.setState(this.extractState());
+    }
+
+    extractState() {
+      return { count: participantStore.getState().participantCount };
+    }
+
+    render() {
+      if (this.state.count === undefined) {
+        return (
+          <CountSpinner />
+        );
+      } else {
+        return (
+          <Count count={ this.state.count }/>
+        );
+      }
+    }
   }
 
   return ParticipantCount;
