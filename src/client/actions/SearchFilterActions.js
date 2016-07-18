@@ -50,9 +50,13 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
     loadOptions(property) {
       return dispatch => {
         dispatch();
-        participantResource.findAll(`filter[fields][${property}]=true`)
-          .then(response => this.optionsLoaded(property, processResults(response)),
-                err => this.optionsLoadingFailed(err));
+        if (!property) {
+          this.optionsLoaded('', null); // dispatch empty list
+        } else {
+          participantResource.findAll(`filter[fields][${property}]=true`)
+            .then(response => this.optionsLoaded(property, processResults(response)),
+                  err => this.optionsLoadingFailed(err));
+        }
       };
 
       function processResults(result) {

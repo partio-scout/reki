@@ -3,7 +3,7 @@ import { Navbar, Grid, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { getMainNavigationContainer } from './containers/MainNavigationContainer';
 
-export function getApp(registryUserStore, registryUserActions) {
+export function getApp(registryUserStore, registryUserActions, SessionTimeoutNotification) {
   class App extends React.Component {
     render() {
       const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
@@ -28,6 +28,7 @@ export function getApp(registryUserStore, registryUserActions) {
               </Col>
             </Row>
           </Grid>
+          <SessionTimeoutNotification />
         </div>
       );
     }
