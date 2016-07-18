@@ -193,8 +193,6 @@ export default function (Participant) {
                 result: findResult,
                 count: count,
               };
-              console.log(filterForCount);
-              console.log(ctx.result);
             });
         }
       }).asCallback(next);
