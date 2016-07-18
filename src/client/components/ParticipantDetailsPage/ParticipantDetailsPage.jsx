@@ -3,6 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { Presence } from '../../components';
+import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 
@@ -87,11 +88,12 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           diet,
           familyCampProgramInfo,
           childNaps,
+          dates,
           allergies,
         } = this.state.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
-        const participantStatus = internationalGuest ? `KV-osallistuja, ${country}` : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
+        const participantStatus = internationalGuest ? 'KV-osallistuja' : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
 
         const formattedBilledDate = billedDate ? moment(billedDate).format('D.M.YYYY') : '–';
         const formattedPaidDate = paidDate ? moment(paidDate).format('D.M.YYYY') : '–';
@@ -117,7 +119,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 12 }>
                 <h2>
                   { participantName }
-                  <small> { nickname || '' } </small>
                   <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
                 </h2>
                 <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
@@ -150,12 +151,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 </Panel>
                 <Panel header="Osallistujan tiedot">
                   <dl>
+                    <dt>Partionimi</dt>
+                    <dd>{ nickname || '' }</dd>
                     <dt>Ikäkausi</dt>
                     <dd>{ ageGroup }</dd>
                     { swimmingSkill ? <dt>Uimataito</dt> : '' }
                     { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
                     <dt>Lippukunta</dt>
-                    <dd>{ `${localGroup}, ${country}` }</dd>
+                    <dd>{ localGroup }</dd>
+                    <dt>Maa</dt>
+                    <dd>{ country }</dd>
                     <dt>Leirilippukunta</dt>
                     <dd>{ campGroup }</dd>
                     <dt>Kylä</dt>
@@ -182,8 +187,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                  <Presence value={ presence } />
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
+                <Panel header="Ilmoittautumispäivät">
+                  <ParticipantDates dates={ dates } />
+                </Panel>
                 <Panel header="Allergiat ja erityisruokavaliot">
-                  { allergyNames || diet  ? '' : <p>Ei allergioita</p> }
+                  { _.isEmpty(allergyNames) && _.isEmpty(diet)  ? <p>Ei allergioita</p> : '' }
                   { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
                   { diet ? <p>{ diet }</p> : '' }
                 </Panel>

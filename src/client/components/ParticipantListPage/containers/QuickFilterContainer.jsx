@@ -4,12 +4,14 @@ import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
+import { getDateFilterContainer } from './DateFilterContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
+  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
   const PresenceFilterContainer = getPresenceFilterContainer();
@@ -28,7 +30,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
 
   function QuickFilterContainer(props, context) {
     const propertiesForGenericFilter = GenericPropertyFilterContainer.availableProperties();
-    const properties = ['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village'].concat(propertiesForGenericFilter);
+    const properties = ['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village', 'dates'].concat(propertiesForGenericFilter);
 
     const currentSelection = getCurrentSelection(properties, props.filter);
 
@@ -92,6 +94,12 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             <PresenceFilterContainer
               onChange={ handleChange }
               currentSelection={ currentSelection }
+            />
+            <DateFilterContainer
+              onChange={ handleChange }
+              currentSelection={ currentSelection }
+              label="Ilmoittautumispäivät"
+              property="dates"
             />
             <GenericPropertyFilterContainer
               onChange={ handleChange }

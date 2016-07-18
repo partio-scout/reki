@@ -2,11 +2,13 @@ import React from 'react';
 import { Navbar, Grid, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { getMainNavigationContainer } from './containers/MainNavigationContainer';
+import { getErrorNotification } from './ErrorNotification';
 
-export function getApp(registryUserStore, registryUserActions, SessionTimeoutNotification) {
+export function getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification) {
   class App extends React.Component {
     render() {
       const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
+      const ErrorNotification = getErrorNotification(errorStore, errorActions);
 
       return (
         <div>
@@ -28,6 +30,7 @@ export function getApp(registryUserStore, registryUserActions, SessionTimeoutNot
               </Col>
             </Row>
           </Grid>
+          <ErrorNotification />
           <SessionTimeoutNotification />
         </div>
       );

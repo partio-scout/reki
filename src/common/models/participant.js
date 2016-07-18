@@ -5,6 +5,96 @@ import _ from 'lodash';
 
 export default function (Participant) {
 
+  function handleDateSearch(ctx, participantInstance, next) {
+
+    const args = ctx && ctx.args || null;
+
+    let where;
+
+    if (args) {
+      if (args.where) {
+        where = args.where;
+      } else if (args.filter && args.filter.where) {
+        where = args.filter.where;
+      }
+
+      if (!where || _.isEmpty(where) || (!where.dates && !where.and)) {
+        return next();
+      }
+
+      if (_.isString(where)) {
+        where = JSON.parse(where);
+      }
+
+      if (where.dates && where.dates.length == 0) {
+        delete where.dates;
+        return next();
+      }
+
+      let dates;
+
+      if (where.and) {
+        dates = where.and.filter(filter => filter.dates);
+        dates = dates.dates;
+        where.and = where.and.filter(filter => !filter.dates);
+      } else {
+        dates = where.dates;
+      }
+
+      if (_.isEmpty(dates)) {
+        return next();
+      }
+
+      const getParticipantIdsForDates = Promise.promisify(app.models.ParticipantDate.find, { context: app.models.ParticipantDate });
+
+      getParticipantIdsForDates(constructParticipantDateFilters(dates))
+      .then( res => _.map(res, 'participantId'))
+      .then( ids => constructInternalDateFilter(ids) )
+      .then( newWhere => {
+
+        delete where.dates;
+
+        if (where.length > 0) {
+          where = { and: [where, newWhere] };
+        } else {
+          if (where.and) {
+            where.and.push(newWhere);
+          } else {
+            where = newWhere;
+          }
+        }
+
+        if (args.where) {
+          args.where = where;
+        } else if (args.filter && args.filter.where) {
+          args.filter.where = where;
+        }
+        next();
+      })
+      .catch( err => next(err));
+    }
+
+    function constructParticipantDateFilters(dates){
+      if (dates.length == 1) {
+        return { where: { date: dates[0] } };
+      }
+      if (dates.length > 1) {
+        const or = [];
+        dates.map((value, index) => or.push({ date: value }));
+        return { where: { or: or } };
+      }
+      return {};
+    }
+
+    function constructInternalDateFilter(participantIds) {
+      const or = [];
+      participantIds.map( id => {
+        or.push({ participantId: id });
+      });
+      return { or: or };
+    }
+  }
+
   function handleTextSearch(ctx, participantInstance, next) {
     const args = ctx && ctx.args || null;
     if (args) {
@@ -91,6 +181,34 @@ export default function (Participant) {
     }
   }
 
+  function checkFullParticipantCount(ctx, participantInstance, next) {
+    Promise.try(() => getFilterIfShouldCount())
+      .then(filterForCount => {
+        if (filterForCount) {
+          const countParticipants = Promise.promisify(Participant.count, { context: Participant });
+          return countParticipants(filterForCount)
+            .then(count => {
+              const findResult = ctx.result;
+              ctx.result = {
+                result: findResult,
+                count: count,
+              };
+            });
+        }
+      }).asCallback(next);
+
+    function getFilterIfShouldCount() {
+      const args = ctx && ctx.args || null;
+
+      if (args && args.filter && _.isString(args.filter)) {
+        // This if clause is technically not needed since the textsearch hook does the same but I left it here for robustness, in case the text search is changed
+        args.filter = JSON.parse(args.filter);
+      }
+
+      return args && args.filter && args.filter.count && args.filter.where || false;
+    }
+  }
+
   Participant.afterRemote('create', (ctx, participantInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
@@ -110,8 +228,12 @@ export default function (Participant) {
   });
 
   Participant.beforeRemote('find', handleTextSearch);
+  Participant.afterRemote('find', checkFullParticipantCount);
 
   Participant.beforeRemote('count', handleTextSearch);
+
+  Participant.beforeRemote('find', handleDateSearch);
+  Participant.beforeRemote('count', handleDateSearch);
 
   Participant.observe('before delete', (ctx, next) => {
     const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });

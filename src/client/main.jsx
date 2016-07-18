@@ -8,11 +8,14 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import superagent from 'superagent';
 import superagentAsPromised from 'superagent-as-promised';
 import Cookie from 'js-cookie';
+import moment from 'moment';
 
 import * as components from './components';
 import * as stores from './stores';
 import * as actions from './actions';
 import { getRestfulResource, restrictComponent } from './utils';
+
+moment.locale('fi');
 
 // Get REST API access token
 
@@ -22,21 +25,24 @@ const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants', accessToken);
+const participantDateResource = new RestfulResource('/api/participantDates', accessToken);
 const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
 const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource);
-const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
+const errorActions = actions.getErrorActions(alt);
+const participantActions = actions.getParticipantActions(alt, participantResource, errorActions);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, errorActions);
+const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource, errorActions);
 
+const errorStore = stores.getErrorStore(alt, errorActions);
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
 const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const SessionTimeoutNotification = components.getSessionTimeoutNotification(accessToken);
-const app = components.getApp(registryUserStore, registryUserActions, SessionTimeoutNotification);
+const app = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification);
 const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
