@@ -1,20 +1,16 @@
-export function getParticipantActions(alt, participantResource) {
+export function getParticipantActions(alt, participantResource, errorActions) {
   class ParticipantActions {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
         participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies', 'dates' ] })}` )
           .then(participant => this.updateParticipantById(participant))
-          .catch(err => this.loadingParticipantByIdFailed(err));
+          .catch(err =>errorActions.error(err, 'Osallistujan tietojen lataaminen epäonnistui'));
       };
     }
 
     updateParticipantById(participant) {
       return participant;
-    }
-
-    loadingParticipantByIdFailed(err) {
-      return err;
     }
 
     loadParticipantList(offset, limit, order, filter, countParticipants) {
@@ -53,7 +49,7 @@ export function getParticipantActions(alt, participantResource) {
             } else {
               this.participantListUpdated(participantList);
             }
-          }, err => this.participantListUpdateFailed(err));
+          }, err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
       };
     }
 
@@ -64,14 +60,10 @@ export function getParticipantActions(alt, participantResource) {
       };
     }
 
-    participantListUpdateFailed(error) {
-      return error;
-    }
-
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
       participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
         .then(response => this.loadParticipantList(offset, limit, order, filter),
-              err => this.participantListUpdateFailed(err));
+              err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
     }
 
     updateProperty(participantId, property, value) {
@@ -80,7 +72,7 @@ export function getParticipantActions(alt, participantResource) {
         participantResource.raw('post', 'massAssign', {
           body: { ids: participantId, fieldName: property, newValue: value } })
           .then(participants => this.participantPropertyUpdated(property, participants),
-                err => this.participantUpdateFailed(err));
+                err => errorActions.error(err, 'Osallistujan tallennus epäonnistui'));
       };
     }
 
@@ -89,10 +81,6 @@ export function getParticipantActions(alt, participantResource) {
         property: property,
         newValue: participants.result[0][property],
       };
-    }
-
-    participantUpdateFailed(err) {
-      return err;
     }
   }
 

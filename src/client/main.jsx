@@ -31,16 +31,18 @@ const searchFilterResource = new RestfulResource('/api/searchfilters', accessTok
 
 const alt = new Alt();
 
-const participantActions = actions.getParticipantActions(alt, participantResource);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource);
-const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource);
+const errorActions = actions.getErrorActions(alt);
+const participantActions = actions.getParticipantActions(alt, participantResource, errorActions);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, errorActions);
+const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource, errorActions);
 
+const errorStore = stores.getErrorStore(alt, errorActions);
 const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
 const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const SessionTimeoutNotification = components.getSessionTimeoutNotification(accessToken);
-const app = components.getApp(registryUserStore, registryUserActions, SessionTimeoutNotification);
+const app = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification);
 const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
