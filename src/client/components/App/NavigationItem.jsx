@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavItem } from 'react-bootstrap';
+import { NavItem, Glyphicon } from 'react-bootstrap';
 import { NavLinkItem } from '../../components';
 
 export function getNavigationItem() {
@@ -9,14 +9,14 @@ export function getNavigationItem() {
         values,
       } = this.props;
 
+      const label = (values.icon ? <span><Glyphicon glyph={ values.icon }/> { values.label }</span> : values.label);
+
       if (values.isExternalLink) {
-        return (<NavItem href={ values.to } onClick={ values.onClick }>{ values.label }</NavItem>);
+        return (<NavItem href={ values.to } onClick={ values.onClick }>{ label }</NavItem>);
+      } else if (values.onClick || values.to) {
+        return (<NavLinkItem to={ values.to } isIndexLink={ values.isIndexLink }>{ label }</NavLinkItem>);
       } else {
-        return (
-          <NavLinkItem to={ values.to } isIndexLink={ values.isIndexLink }>
-            { values.label }
-          </NavLinkItem>
-        );
+        return (<NavItem disabled={ true }>{ label }</NavItem>);
       }
     }
   }

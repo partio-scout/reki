@@ -45,6 +45,13 @@ export function getMainNavigation() {
 
       navItems.push(
         {
+          icon: 'user',
+          label: `${this.props.currentUser.firstName} ${this.props.currentUser.lastName}`,
+        }
+      );
+
+      navItems.push(
+        {
           onClick: this.props.onLogout,
           isExternalLink: true,
           label: 'Kirjaudu ulos',

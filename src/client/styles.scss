@@ -183,6 +183,12 @@ table {
   font-weight: bold;
 }
 
+.navbar {
+  .no-link {
+    cursor: default !important
+  }
+}
+
 /**
  * Sidebar & Main Container
  */
