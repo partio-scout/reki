@@ -60,10 +60,13 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       };
     }
 
-    updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
-      participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
-        .then(response => this.loadParticipantList(offset, limit, order, filter),
-              err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
+    updateParticipantPresences(ids, newValue, offset, limit, order, filter) {      
+      return dispatch => {
+        dispatch();
+        participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
+          .then(response => this.loadParticipantList(offset, limit, order, filter),
+                err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
+      };
     }
 
     updateProperty(participantId, property, value) {
