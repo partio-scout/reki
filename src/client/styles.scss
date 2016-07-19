@@ -65,6 +65,11 @@ $screen-sm: 768px;
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 @import "~react-spinner/react-spinner.css";
 
+table .react-spinner, .h2 .react-spinner {
+  top: 15px;
+  left: 15px;
+}
+
 .react-spinner_bar {
   background: $mid-grey;
 }
