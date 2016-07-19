@@ -8,6 +8,7 @@ import { getParticipantRowsContainer } from './containers/ParticipantRowsContain
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
 import { getPresenceLabel } from '../../components';
+import { LoadingButton } from '../../components';
 
 function getOrder(query) {
   try {
@@ -35,20 +36,34 @@ function getLimit(query) {
   return query.limit && Number(query.limit) || 200;
 }
 
-export function getMassEdit() {
+export function getMassEdit(participantStore) {
   class MassEdit extends React.Component {
     constructor(props){
       super(props);
-      this.state = {};
+      this.state = { loading: false };
       this.onSubmit = this.onSubmit.bind(this);
       this.onChange = this.onChange.bind(this);
+      this.onStoreChanged = this.onStoreChanged.bind(this);
     }
 
     onSubmit(event) {
       event.preventDefault();
       if (this.state.value !== null && this.state.value !== 'null') {
+        this.setState({ value: this.state.value, loading: true });
         this.props.onSubmit(this.state.value);
       }
+    }
+
+    componentDidMount() {
+      participantStore.listen(this.onStoreChanged);
+    }
+
+    componentWillUnmount() {
+      participantStore.unlisten(this.onStoreChanged);
+    }
+
+    onStoreChanged() {
+      this.setState({ loading: false });
     }
 
     onChange(event){
@@ -69,7 +84,7 @@ export function getMassEdit() {
             <option value="2">{ tmpOutCampLabel }</option>
             <option value="3">{ outCampLabel }</option>
           </Input>
-          <Button type="submit" bsStyle="primary" disabled={ (this.props.count > 0 ? false : true) }>Tallenna</Button>
+          <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
         </form>
       );
     }
@@ -118,7 +133,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore);
   const ParticipantCount = getParticipantCount(participantStore);
-  const MassEdit = getMassEdit();
+  const MassEdit = getMassEdit(participantStore);
   const SelectAll = getSelectAll();
 
   class ParticipantListPage extends React.Component {
