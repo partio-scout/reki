@@ -25,6 +25,7 @@
     "firstName": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "first_name",
         "dataType": "character varying",
@@ -37,6 +38,7 @@
     "lastName": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "last_name",
         "dataType": "character varying",
@@ -129,6 +131,7 @@
     },
     "phoneNumber": {
       "type": "string",
+      "index": true,
       "postgresql": {
         "columnName": "phone_number",
         "dataType": "character varying",
@@ -229,12 +232,14 @@
       }
     },
     "presence": {
+      "index": true,
       "type": "number"
     },
 
     "localGroup": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "local_group",
         "dataType": "character varying",
@@ -247,6 +252,7 @@
     "campGroup": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "camp_group",
         "dataType": "character varying",
@@ -259,6 +265,7 @@
     "village": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "village",
         "dataType": "character varying",
@@ -271,6 +278,7 @@
     "subCamp": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "sub_camp",
         "dataType": "character varying",
@@ -283,6 +291,7 @@
     "accommodation": {
       "type": "string",
       "required": false,
+      "index": true,
       "postgresql": {
         "columnName": "accommodation",
         "dataType": "character varying",
@@ -295,6 +304,7 @@
     "ageGroup": {
       "type": "string",
       "required": true,
+      "index": true,
       "postgresql": {
         "columnName": "age_group",
         "dataType": "character varying",
@@ -394,6 +404,7 @@
     "campOfficeNotes": {
       "type": "string",
       "required": false,
+      "index": true,
       "postgresql": {
         "columnName": "camp_office_notes",
         "dataType": "character varying",
@@ -407,6 +418,7 @@
     "editableInfo": {
       "type": "string",
       "required": false,
+      "index": true,
       "postgresql": {
         "columnName": "editable_info",
         "dataType": "character varying",
