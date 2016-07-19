@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Table, Grid, Row, Col, Input, Button } from 'react-bootstrap';
+import { Table, Grid, Row, Col, Input } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';

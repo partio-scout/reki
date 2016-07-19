@@ -60,7 +60,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       };
     }
 
-    updateParticipantPresences(ids, newValue, offset, limit, order, filter) {      
+    updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
       return dispatch => {
         dispatch();
         participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
