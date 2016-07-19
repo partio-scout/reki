@@ -22,13 +22,14 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
     }
 
     handleLoadParticipantList(countParticipants) {
-      this.participants = undefined;
+      this.loading = true;
       if (countParticipants) {
         this.participantCount = undefined;
       }
     }
 
     handleParticipantListUpdated({ participants, newCount }) {
+      this.loading = false;
       this.participants = participants;
       if (newCount !== undefined) {
         this.participantCount = newCount;

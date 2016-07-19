@@ -49,7 +49,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
             } else {
               this.participantListUpdated(participantList);
             }
-          }, err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
+          }, err => errorActions.error(err, 'Osallistujia ei voitu ladata'));
       };
     }
 
@@ -61,9 +61,12 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     }
 
     updateParticipantPresences(ids, newValue, offset, limit, order, filter) {
-      participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
-        .then(response => this.loadParticipantList(offset, limit, order, filter),
-              err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
+      return dispatch => {
+        dispatch();
+        participantResource.raw('post', 'massAssign', { body: { ids: ids, newValue: newValue, fieldName: 'presence' } })
+          .then(response => this.loadParticipantList(offset, limit, order, filter),
+                err => errorActions.error(err, 'Osallistujien tilan päivitys epäonnistui'));
+      };
     }
 
     updateProperty(participantId, property, value) {

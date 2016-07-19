@@ -52,7 +52,7 @@ export function getParticipantRowsContainer(participantStore) {
 
       const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } />;
 
-      return this.state.participants === undefined
+      return this.state.loading
         ? (
           <tbody>
             <tr>
