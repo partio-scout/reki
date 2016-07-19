@@ -49,7 +49,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
             } else {
               this.participantListUpdated(participantList);
             }
-          }, err => errorActions.error(err, 'Osallitujia ei voitu ladata'));
+          }, err => errorActions.error(err, 'Osallistujia ei voitu ladata'));
       };
     }
 
