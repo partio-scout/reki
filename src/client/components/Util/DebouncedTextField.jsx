@@ -5,7 +5,7 @@ import { Input } from 'react-bootstrap';
 export function getDebouncedTextField() {
   function debouncedTextField({ value, label, property, onChange }) {
 
-    const delayedOnChange = _.debounce(value => onChange(property, value), 300);
+    const delayedOnChange = _.debounce(value => onChange(property, value), 1500);
 
     function handleValueChanged(event) {
       event.persist();
