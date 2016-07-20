@@ -28,12 +28,13 @@ const participantResource = new RestfulResource('/api/participants', accessToken
 const participantDateResource = new RestfulResource('/api/participantDates', accessToken);
 const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
 const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
+const optionResource = new RestfulResource('/api/options', accessToken);
 
 const alt = new Alt();
 
 const errorActions = actions.getErrorActions(alt);
 const participantActions = actions.getParticipantActions(alt, participantResource, errorActions);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, errorActions);
+const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, optionResource, errorActions);
 const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource, errorActions);
 
 const errorStore = stores.getErrorStore(alt, errorActions);

@@ -15,6 +15,7 @@ const modelList = [
   ['ParticipantAllergy', false],
   ['ParticipantDate', false],
   ['PresenceHistory', false],
+  ['Option', false],
   ['AuditEvent', false],
   ['SearchFilter', false],
   ['Selection', false],
