@@ -104,16 +104,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
         const allergyNames = _.map(allergies, row => row.name);
 
-        const familyCampDetails = (program, naps) =>
-          <Panel header="Perheleiri">
-            <dl>
-              { program ? <dt>Ohjelma</dt> : '' }
-              { program ? <dd>{ program }</dd> : '' }
-              { naps ? <dt>Päiväunet</dt> : '' }
-              { naps ? <dd>{ naps }</dd> : '' }
-            </dl>
-          </Panel>;
-
         return (
           <div>
             <Row>
@@ -130,56 +120,62 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 <Panel header="Yhteystiedot">
                   <dl>
                     <dt>Puhelin</dt>
-                    <dd>{ phoneNumber }</dd>
+                    <dd>{ phoneNumber || '–' }</dd>
                     <dt>Sähköposti</dt>
-                    <dd>{ email }</dd>
-                    { guardianOne || guardianTwo ? <dt>Huoltajat</dt> : '' }
-                    { guardianOne ? <dd>{ guardianOne }</dd> : '' }
-                    { guardianTwo ? <dd>{ guardianTwo }</dd> : '' }
-                    { homeCity ? <dt>Kotikunta</dt> : '' }
-                    { homeCity ? <dd>{ homeCity }</dd> : '' }
-                  </dl>
-                </Panel>
-                { familyCampProgramInfo || childNaps ? familyCampDetails(familyCampProgramInfo, childNaps) : '' }
-                <Panel header="Pesti">
-                  { staffPosition || staffPositionInGenerator  ? '' : <p>Ei pestiä</p> }
-                  <dl>
-                    { staffPosition ? <dt>Pesti</dt> : '' }
-                    { staffPosition ? <dd>{ staffPosition }</dd> : '' }
-                    { staffPositionInGenerator ? <dt>Pestitieto kehittimestä</dt> : '' }
-                    { staffPositionInGenerator ? <dd>{ staffPositionInGenerator }</dd> : '' }
-                  </dl>
-                </Panel>
-                <Panel header="Osallistujan tiedot">
-                  <dl>
-                    <dt>Partionimi</dt>
-                    <dd>{ nickname || '' }</dd>
-                    <dt>Ikäkausi</dt>
-                    <dd>{ ageGroup }</dd>
-                    { swimmingSkill ? <dt>Uimataito</dt> : '' }
-                    { swimmingSkill ? <dd>{ swimmingSkill }</dd> : '' }
-                    <dt>Lippukunta</dt>
-                    <dd>{ localGroup }</dd>
-                    <dt>Maa</dt>
-                    <dd>{ country }</dd>
-                    <dt>Leirilippukunta</dt>
-                    <dd>{ campGroup }</dd>
-                    <dt>Kylä</dt>
-                    <dd>{ village }</dd>
-                    <dt>Alaleiri</dt>
-                    <dd>{ subCamp }</dd>
-                    <dt>Virvatuli</dt>
-                    <dd>{ willOfTheWisp ? willOfTheWisp : '–' }</dd>
-                    <dt>Virvatuliaalto</dt>
-                    <dd>{ willOfTheWispWave ? willOfTheWispWave : '–' }</dd>
+                    <dd>{ email || '–' }</dd>
+                    <dt>Huoltajat</dt>
+                    <dd>{ guardianOne || '–' }</dd>
+                    <dd>{ guardianTwo || '–' }</dd>
+                    <dt>Kotikunta</dt>
+                    <dd>{ homeCity || '–' }</dd>
                   </dl>
                 </Panel>
                 <Panel header="Laskutustiedot">
                   <dl>
                     <dt>Laskutettu</dt>
-                    <dd>{ formattedBilledDate }</dd>
+                    <dd>{ formattedBilledDate || '–' }</dd>
                     <dt>Maksettu</dt>
-                    <dd>{ formattedPaidDate }</dd>
+                    <dd>{ formattedPaidDate || '–' }</dd>
+                  </dl>
+                </Panel>
+                <Panel header="Pesti">
+                  <dl>
+                    <dt>Pesti</dt>
+                    <dd>{ staffPosition || '–' }</dd>
+                    <dt>Pestitieto kehittimestä</dt>
+                    <dd>{ staffPositionInGenerator || '–' }</dd>
+                  </dl>
+                </Panel>
+                <Panel header="Osallistujan tiedot">
+                  <dl>
+                    <dt>Partionimi</dt>
+                    <dd>{ nickname || '–' }</dd>
+                    <dt>Ikäkausi</dt>
+                    <dd>{ ageGroup || '–' }</dd>
+                    <dt>Uimataito</dt>
+                    <dd>{ swimmingSkill || '–' }</dd>
+                    <dt>Lippukunta</dt>
+                    <dd>{ localGroup || '–' }</dd>
+                    <dt>Maa</dt>
+                    <dd>{ country || '–' }</dd>
+                    <dt>Leirilippukunta</dt>
+                    <dd>{ campGroup || '–' }</dd>
+                    <dt>Kylä</dt>
+                    <dd>{ village || '–' }</dd>
+                    <dt>Alaleiri</dt>
+                    <dd>{ subCamp || '–' }</dd>
+                    <dt>Virvatuli</dt>
+                    <dd>{ willOfTheWisp || '–' }</dd>
+                    <dt>Virvatuliaalto</dt>
+                    <dd>{ willOfTheWispWave || '–' }</dd>
+                  </dl>
+                </Panel>
+                <Panel header="Perheleiri">
+                  <dl>
+                    <dt>Ohjelma</dt>
+                    <dd>{ familyCampProgramInfo || '–' }</dd>
+                    <dt>Päiväunet</dt>
+                    <dd>{ childNaps || '–' }</dd>
                   </dl>
                 </Panel>
               </Col>
