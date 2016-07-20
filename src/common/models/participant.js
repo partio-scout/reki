@@ -35,7 +35,7 @@ export default function (Participant) {
 
       if (where.and) {
         dates = where.and.filter(filter => filter.dates);
-        dates = dates.dates;
+        dates = dates[0].dates;
         where.and = where.and.filter(filter => !filter.dates);
       } else {
         dates = where.dates;
