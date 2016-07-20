@@ -130,6 +130,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dd>{ homeCity || '–' }</dd>
                   </dl>
                 </Panel>
+                <Panel header="Laskutustiedot">
+                  <dl>
+                    <dt>Laskutettu</dt>
+                    <dd>{ formattedBilledDate || '–' }</dd>
+                    <dt>Maksettu</dt>
+                    <dd>{ formattedPaidDate || '–' }</dd>
+                  </dl>
+                </Panel>
                 <Panel header="Pesti">
                   <dl>
                     <dt>Pesti</dt>
@@ -168,14 +176,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dd>{ familyCampProgramInfo || '–' }</dd>
                     <dt>Päiväunet</dt>
                     <dd>{ childNaps || '–' }</dd>
-                  </dl>
-                </Panel>
-                <Panel header="Laskutustiedot">
-                  <dl>
-                    <dt>Laskutettu</dt>
-                    <dd>{ formattedBilledDate || '–' }</dd>
-                    <dt>Maksettu</dt>
-                    <dd>{ formattedPaidDate || '–' }</dd>
                   </dl>
                 </Panel>
               </Col>
