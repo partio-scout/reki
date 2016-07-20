@@ -59,7 +59,7 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
           if (x[property]) {
             x[property].push(response[i].value);
           } else {
-            x[property] = [];
+            x[property] = [''];
             x[property].push(response[i].value);
           }
         }
