@@ -27,3 +27,4 @@ export { ParticipantDates } from './ParticipantDetailsPage/ParticipantDates';
 export { getLogin } from './OfflineLogin';
 export { PropertyTextArea } from './PropertyTextArea';
 export { LoadingButton } from './Util/LoadingButton';
+export { TdWithTitle } from './Util/TdWithTitle';

@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Link } from 'react-router';
 import { Input, Glyphicon } from 'react-bootstrap';
 import { Presence } from '../index';
+import { TdWithTitle } from '../../components';
 
 class LinkCell extends React.Component {
   render() {
@@ -83,22 +84,22 @@ export class ParticipantRow extends React.Component {
         <td><Presence value={ presence } /></td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
-        <td title={ formatDate(dateOfBirth) }>{ formatDate(dateOfBirth) }</td>
-        <td title={ formatNonScout(nonScout) }>{ formatNonScout(nonScout) }</td>
-        <td title={ memberNumber }>{ memberNumber }</td>
-        <td title={ formatDate(billedDate) || 'Ei' }>{ formatDate(billedDate) || 'Ei' }</td>
-        <td title={ formatDate(paidDate) || 'Ei' }>{ formatDate(paidDate) || 'Ei' }</td>
-        <td title={ formatNullableString(homeCity) }>{ formatNullableString(homeCity) }</td>
-        <td title={ formatNullableString(staffPosition) }>{ formatNullableString(staffPosition) }</td>
-        <td title={ formatNullableBoolean(interestedInHomeHospitality) }>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
-        <td title={ formatNullableString(email) }>{ formatNullableString(email) }</td>
-        <td title={ formatNullableString(phoneNumber) }>{ formatNullableString(phoneNumber) }</td>
-        <td title={ ageGroup }>{ ageGroup }</td>
-        <td title={ formatNullableString(accommodation) }>{ formatNullableString(accommodation) }</td>
-        <td title={ localGroup }>{ localGroup }</td>
-        <td title={ village }>{ village }</td>
-        <td title={ subCamp }>{ subCamp }</td>
-        <td title={ campGroup }>{ campGroup }</td>
+        <TdWithTitle value={ formatDate(dateOfBirth) } />
+        <TdWithTitle value={ formatNonScout(nonScout) } />
+        <TdWithTitle value={ memberNumber } />
+        <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
+        <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
+        <TdWithTitle value={ formatNullableString(homeCity) } />
+        <TdWithTitle value={ formatNullableString(staffPosition) } />
+        <TdWithTitle value={ formatNullableBoolean(interestedInHomeHospitality) } />
+        <TdWithTitle value={ formatNullableString(email) } />
+        <TdWithTitle value={ formatNullableString(phoneNumber) } />
+        <TdWithTitle value={ ageGroup } />
+        <TdWithTitle value={ formatNullableString(accommodation) } />
+        <TdWithTitle value={ localGroup } />
+        <TdWithTitle value={ village } />
+        <TdWithTitle value={ subCamp } />
+        <TdWithTitle value={ campGroup } />
         {
           this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
         }
