@@ -81,24 +81,24 @@ export class ParticipantRow extends React.Component {
       <tr>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
         <td><Presence value={ presence } /></td>
-        <LinkCell href={ href }>{ firstName }</LinkCell>
-        <LinkCell href={ href }>{ lastName }</LinkCell>
-        <td>{ formatDate(dateOfBirth) }</td>
-        <td>{ formatNonScout(nonScout) }</td>
-        <td>{ memberNumber }</td>
-        <td>{ formatDate(billedDate) || 'Ei' }</td>
-        <td>{ formatDate(paidDate) || 'Ei' }</td>
-        <td>{ formatNullableString(homeCity) }</td>
-        <td>{ formatNullableString(staffPosition) }</td>
-        <td>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
-        <td>{ formatNullableString(email) }</td>
-        <td>{ formatNullableString(phoneNumber) }</td>
-        <td>{ ageGroup }</td>
-        <td>{ formatNullableString(accommodation) }</td>
-        <td>{ localGroup }</td>
-        <td>{ village }</td>
-        <td>{ subCamp }</td>
-        <td>{ campGroup }</td>
+        <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
+        <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
+        <td title={ formatDate(dateOfBirth) }>{ formatDate(dateOfBirth) }</td>
+        <td title={ formatNonScout(nonScout) }>{ formatNonScout(nonScout) }</td>
+        <td title={ memberNumber }>{ memberNumber }</td>
+        <td title={ formatDate(billedDate) || 'Ei' }>{ formatDate(billedDate) || 'Ei' }</td>
+        <td title={ formatDate(paidDate) || 'Ei' }>{ formatDate(paidDate) || 'Ei' }</td>
+        <td title={ formatNullableString(homeCity) }>{ formatNullableString(homeCity) }</td>
+        <td title={ formatNullableString(staffPosition) }>{ formatNullableString(staffPosition) }</td>
+        <td title={ formatNullableBoolean(interestedInHomeHospitality) }>{ formatNullableBoolean(interestedInHomeHospitality) }</td>
+        <td title={ formatNullableString(email) }>{ formatNullableString(email) }</td>
+        <td title={ formatNullableString(phoneNumber) }>{ formatNullableString(phoneNumber) }</td>
+        <td title={ ageGroup }>{ ageGroup }</td>
+        <td title={ formatNullableString(accommodation) }>{ formatNullableString(accommodation) }</td>
+        <td title={ localGroup }>{ localGroup }</td>
+        <td title={ village }>{ village }</td>
+        <td title={ subCamp }>{ subCamp }</td>
+        <td title={ campGroup }>{ campGroup }</td>
         {
           this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
         }
