@@ -69,8 +69,6 @@ function rebuildParticipantsTable() {
   function getSubCamp(participant) {
     if (participant.accommodation === 'Perheleirissä') {
       return 'Riehu';
-    } else if (getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
-      return 'Riehu';
     }
     return _.get(participant, 'subCamp.name') || 'Muu';
   }
