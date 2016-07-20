@@ -227,10 +227,12 @@ table {
   padding-left: 0px;
   li {
     overflow: auto;
+    line-height: 30px;
   }
   button {
     color: $red;
     float: right;
+    outline: none !important;
   }
 }
 
