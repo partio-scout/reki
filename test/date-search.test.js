@@ -34,7 +34,7 @@ describe('Date search', () => {
       'campGroup': 'Leirilippukunta',
       'village': 'Kylä',
       'subCamp': 'Alaleiri2',
-      'ageGroup': 'sudenpentu',
+      'ageGroup': 'seikkailija',
       'memberNumber': 345,
     },
     {
@@ -104,7 +104,7 @@ describe('Date search', () => {
   it('Query with other filter', () =>
     queryParticipants({ 'ageGroup':'sudenpentu' }, accessToken)
     .then(res => {
-      expectParticipants([ 'Tero', 'Teemu' ], res.body);
+      expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
@@ -116,14 +116,14 @@ describe('Date search', () => {
   );
 
   it('Query with one date', () =>
-    queryParticipants({ 'dates': ['2016-07-23T00:00:00.000Z'] }, accessToken)
+    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
 
   it('Query with one date and other filter', () =>
-    queryParticipants({ 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'subCamp': 'Alaleiri2' } ] }, accessToken)
+    queryParticipants({ 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] }, accessToken)
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
