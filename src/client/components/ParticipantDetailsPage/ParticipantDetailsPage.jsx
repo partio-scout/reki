@@ -91,6 +91,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           childNaps,
           dates,
           allergies,
+          selections,
         } = this.state.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
@@ -103,6 +104,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const presenceHistory = this.state.participantDetails.presenceHistory || [];
 
         const allergyNames = _.map(allergies, row => row.name);
+
+        const familyCampSelections = _.groupBy(selections, row => row.kuksaGroupId);
+
+        const renderedFamilyCampSelections = _.map(familyCampSelections, selection => {
+          const rows = _.map(selection, row => <dd>{ row.selectionName }</dd>);
+          return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
+        });
 
         return (
           <div>
@@ -177,6 +185,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dt>Päiväunet</dt>
                     <dd>{ childNaps || '–' }</dd>
                   </dl>
+                  { renderedFamilyCampSelections }
                 </Panel>
               </Col>
               <Col md={ 9 }>

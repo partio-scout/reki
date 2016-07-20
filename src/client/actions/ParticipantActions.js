@@ -3,7 +3,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     fetchParticipantById(participantId) {
       return dispatch => {
         dispatch();
-        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies', 'dates' ] })}` )
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: [ { presenceHistory: 'author' }, 'allergies', 'dates', 'selections' ] })}` )
           .then(participant => this.updateParticipantById(participant))
           .catch(err =>errorActions.error(err, 'Osallistujan tietojen lataaminen epäonnistui'));
       };
