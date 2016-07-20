@@ -13,10 +13,6 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
       this.extractState = this.extractState.bind(this);
     }
 
-    componentWillMount() {
-      searchFilterActions.loadOptions.defer(this.props.property);
-    }
-
     componentDidMount() {
       searchFilterStore.listen(this.onStoreChanged);
     }

@@ -30,7 +30,7 @@ export function getDateFilterContainer(searchFilterStore, searchFilterActions) {
     }
 
     extractState() {
-      return { options: searchFilterStore.getState().options[this.props.property] || [] };
+      return { options: searchFilterStore.getState().dates || [] };
     }
 
     render() {

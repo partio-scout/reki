@@ -7,6 +7,7 @@ export function getSearchFilterStore(alt, SearchFilterActions) {
       this.bindListeners({
         handleSearchFilterListUpdated: SearchFilterActions.SEARCH_FILTER_LIST_UPDATED,
         handleOptionsLoaded: SearchFilterActions.OPTIONS_LOADED,
+        handleDateOptionsLoaded: SearchFilterActions.DATE_OPTIONS_LOADED,
       });
     }
 
@@ -14,8 +15,12 @@ export function getSearchFilterStore(alt, SearchFilterActions) {
       this.searchFilters = searchFilters;
     }
 
-    handleOptionsLoaded({ property, options }) {
-      this.options[property] = options;
+    handleOptionsLoaded(options) {
+      this.options = options;
+    }
+
+    handleDateOptionsLoaded(dates) {
+      this.dates = dates;
     }
   }
 
