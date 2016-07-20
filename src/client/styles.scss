@@ -137,7 +137,12 @@ table {
 
     input[type="checkbox"] {
       position: absolute !important;
-      top: -28px;
+      top: -34px;
+    }
+    
+    button {
+      position: relative;
+      top: -8px;
     }
   }
 }
