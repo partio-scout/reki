@@ -192,6 +192,10 @@ export function getParticipantListPage(participantStore, participantActions, sea
       );
     }
 
+    componentWillMount() {
+      searchFilterActions.loadOptions.defer();
+    }
+
     componentDidMount() {
       participantStore.listen(this.checkNoneOnParticipantsChanged);
       searchFilterStore.listen(this.onSearchFilterStoreChanged);
@@ -216,7 +220,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
 
     extractDatesFromSearchFilters() {
       const state = this.state;
-      state.availableDates = searchFilterStore.getState().options.dates || [];
+      state.availableDates = searchFilterStore.getState().dates || [];
       return state;
     }
 

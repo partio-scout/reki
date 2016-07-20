@@ -3,6 +3,7 @@ import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
 import paymentToDateMappings from '../../conf/payment-date-mappings.json';
+import optionFields from '../../conf/option-fields.json';
 
 const KuksaParticipant = app.models.KuksaParticipant;
 const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
@@ -11,6 +12,10 @@ const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
 const findParticipants = Promise.promisify(Participant.find, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
+
+const Option = app.models.Option;
+const destroyAllOptions = Promise.promisify(Option.destroyAll, { context: Option });
+const upsertOption = Promise.promisify(Option.upsert, { context: Option });
 
 if (require.main === module) {
   main().then(
@@ -25,7 +30,8 @@ function main() {
     .then(addAllergiesToParticipants)
     .then(addDatesToParticipants)
     .then(buildSelectionTable)
-    .then(deleteCancelledParticipants);
+    .then(deleteCancelledParticipants)
+    .then(buildOptionTable);
 }
 
 function buildAllergyTable() {
@@ -217,3 +223,21 @@ function deleteCancelledParticipants() {
     .then(idsToDelete => destroyAllParticipants({ participantId: { inq: idsToDelete } }))
     .then(info => console.log(`Deleted ${info.count} cancelled participants.`));
 }
+
+function buildOptionTable() {
+  const addFieldValues = ({ field, values }) => Promise.each(values, value => upsertOption({ property: field, value: value }));
+  return destroyAllOptions()
+    .then(() => Promise.mapSeries(optionFields, getFieldValues))
+    .then(items => Promise.each(items, addFieldValues));
+
+  function getFieldValues(field) {
+    const filter = { fields: { } };
+    filter['fields'][field] = true;
+    return findParticipants(filter)
+      .then(values => ({
+        field: field,
+        values: _(values).map(obj => obj[field]).uniq().reject(_.isNull).value().sort(),
+      }));
+  }
+}
+
