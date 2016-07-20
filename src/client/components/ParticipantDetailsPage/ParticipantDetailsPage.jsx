@@ -168,10 +168,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dd>{ village }</dd>
                     <dt>Alaleiri</dt>
                     <dd>{ subCamp }</dd>
-                    { willOfTheWisp ? <dt>Virvatuli</dt> : '' }
-                    { willOfTheWisp ? <dd>{ willOfTheWisp }</dd> : '' }
-                    { willOfTheWispWave ? <dt>Virvatuliaalto</dt> : '' }
-                    { willOfTheWispWave ? <dd>{ willOfTheWispWave }</dd> : '' }
+                    <dt>Virvatuli</dt>
+                    <dd>{ willOfTheWisp ? willOfTheWisp : '–' }</dd>
+                    <dt>Virvatuliaalto</dt>
+                    <dd>{ willOfTheWispWave ? willOfTheWispWave : '–' }</dd>
                   </dl>
                 </Panel>
                 <Panel header="Laskutustiedot">
