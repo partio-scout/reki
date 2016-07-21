@@ -50,7 +50,7 @@ export function getParticipantRowsContainer(participantStore) {
         availableDates,
       } = this.props;
 
-      const rowCreator = element => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } />;
+      const rowCreator = (element, index) => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } index={ index } offset={ this.props.offset }/>;
 
       return this.state.loading
         ? (
@@ -72,6 +72,7 @@ export function getParticipantRowsContainer(participantStore) {
     checkboxCallback: React.PropTypes.func,
     availableDates: React.PropTypes.array.isRequired,
     columnCount: React.PropTypes.number,
+    offset: React.PropTypes.number,
   };
 
   return ParticipantRowsContainer;
