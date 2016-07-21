@@ -103,17 +103,17 @@ export class ParticipantRow extends React.Component {
       <tr>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
         <td><Presence value={ presence } /></td>
-        <td>{ notes }</td>
-        <td>{ info }</td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
         <TdWithTitle value={ formatDate(dateOfBirth) } />
-        <TdWithTitle value={ formatNonScout(nonScout) } />
-        <TdWithTitle value={ memberNumber } />
+        <TdWithTitle value={ formatNullableString(staffPosition) } />
         <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
         <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
+        <TdWithTitle value={ memberNumber } />
+        <td>{ notes }</td>
+        <td>{ info }</td>
+        <TdWithTitle value={ formatNonScout(nonScout) } />
         <TdWithTitle value={ formatNullableString(homeCity) } />
-        <TdWithTitle value={ formatNullableString(staffPosition) } />
         <TdWithTitle value={ formatNullableBoolean(interestedInHomeHospitality) } />
         <TdWithTitle value={ formatNullableString(email) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
