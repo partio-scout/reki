@@ -391,7 +391,7 @@ export default function (Participant) {
     {
       http: { path: '/participantAmount', verb: 'get' },
       accepts: { arg: 'subCamp', type: 'string', required: false },
-      returns: { arg: 'result', type: 'string' },
+      returns: { arg: 'amount', type: 'string' },
     }
   );
 }
