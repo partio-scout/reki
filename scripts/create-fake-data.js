@@ -231,6 +231,5 @@ function addParticipantDate(participant) {
   return createParticipantDate({ participantId: participant.participantId, date: new Date(2016,6,22) });
 }
 
-
 console.log(`Attempting to create ${amountToCreate} mock participants.`);
 createMockParticipants(amountToCreate);
