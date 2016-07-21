@@ -2,18 +2,23 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import Spinner from 'react-spinner';
-import { Row, Col, Panel, Button } from 'react-bootstrap';
+import { Row, Col, Panel } from 'react-bootstrap';
 import { Presence } from '../../components';
 import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
+import { LoadingButton } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
-      this.state = participantStore.getState();
+      const state = participantStore.getState();
+      state.campOfficeNotesSaving = false;
+      state.editableInfoSaving = false;
+      this.state = state;
+
       this.onStoreChanged = this.onStoreChanged.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
@@ -34,20 +39,29 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     onStoreChanged(state) {
-      this.setState(state);
+      const newState = state;
+      state.campOfficeNotesSaving = false;
+      state.editableInfoSaving = false;
+      this.setState(newState);
     }
 
     handleChange(property, event) {
       const participantDetails = this.state.participantDetails;
       participantDetails[property] = event.target.value;
-      this.setState({ participantDetails: participantDetails });
+      this.setState({ participantDetails: participantDetails, campOfficeNotesSaving: false, editableInfoSaving: false });
     }
 
     saveCampOfficeNotes() {
+      const newState = this.state;
+      newState.campOfficeNotesSaving = true;
+      this.setState(newState);
       this.save('campOfficeNotes');
     }
 
     saveEditableInfo() {
+      const newState = this.state;
+      newState.editableInfoSaving = true;
+      this.setState(newState);
       this.save('editableInfo');
     }
 
@@ -208,9 +222,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     onChange= { this.handleChange }
                     rows={ 8 }
                   />
-                  <Button bsStyle="primary" onClick={ this.saveCampOfficeNotes }>
-                    Tallenna
-                  </Button>
+                  <LoadingButton loading={ this.state.campOfficeNotesSaving } onClick={ this.saveCampOfficeNotes } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                 </Panel>
                 <Panel header="Lisätiedot">
                   <PropertyTextArea
@@ -219,9 +231,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     onChange= { this.handleChange }
                     rows={ 6 }
                   />
-                  <Button bsStyle="primary" onClick={ this.saveEditableInfo }>
-                    Tallenna
-                  </Button>
+                  <LoadingButton loading={ this.state.editableInfoSaving } onClick={ this.saveEditableInfo } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                 </Panel>
               </Col>
             </Row>

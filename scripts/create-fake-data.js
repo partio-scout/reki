@@ -5,6 +5,9 @@ import faker from 'faker';
 const ParticipantModel = app.models.Participant;
 const createParticipant = Promise.promisify(ParticipantModel.create, { context: ParticipantModel });
 
+const ParticipantDateModel = app.models.ParticipantDate;
+const createParticipantDate = Promise.promisify(ParticipantDateModel.create, { context: ParticipantDateModel });
+
 const opts = require('commander')
   .usage('<amount of fake participants to create>')
   .parse(process.argv);
@@ -214,6 +217,7 @@ function createMockParticipants(i) {
     countParticipants();
   } else {
     createParticipant(generateRandomParticipant(i))
+      .tap(addParticipantDate)
       .then(createdParticipantInfo => {
         createMockParticipants(i-1);
       })
@@ -221,6 +225,10 @@ function createMockParticipants(i) {
         console.log(err);
       });
   }
+}
+
+function addParticipantDate(participant) {
+  return createParticipantDate({ participantId: participant.participantId, date: new Date(2016,6,22) });
 }
 
 console.log(`Attempting to create ${amountToCreate} mock participants.`);

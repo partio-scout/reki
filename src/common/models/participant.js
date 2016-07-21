@@ -89,11 +89,7 @@ export default function (Participant) {
     }
 
     function constructInternalDateFilter(participantIds) {
-      const or = [];
-      participantIds.map( id => {
-        or.push({ participantId: id });
-      });
-      return { or: or };
+      return { participantId: { inq: participantIds } };
     }
   }
 
