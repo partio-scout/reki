@@ -65,7 +65,7 @@ $screen-sm: 768px;
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 @import "~react-spinner/react-spinner.css";
 
-table .react-spinner, .h2 .react-spinner {
+.react-spinner {
   top: 15px;
   left: 15px;
 }
@@ -105,6 +105,10 @@ table {
 
 td {
   vertical-align: middle !important;
+  white-space: nowrap;
+  max-width: 250px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 table .glyphicon.muted {
@@ -133,7 +137,12 @@ table {
 
     input[type="checkbox"] {
       position: absolute !important;
-      top: -28px;
+      top: -34px;
+    }
+    
+    button {
+      position: relative;
+      top: -8px;
     }
   }
 }
@@ -218,10 +227,12 @@ table {
   padding-left: 0px;
   li {
     overflow: auto;
+    line-height: 30px;
   }
   button {
     color: $red;
     float: right;
+    outline: none !important;
   }
 }
 

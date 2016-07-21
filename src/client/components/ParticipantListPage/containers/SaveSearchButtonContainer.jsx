@@ -53,7 +53,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
               <Input
                 type="text"
                 autoFocus={ true }
-                placeholder="Italiankieliset leiriläiset"
+                placeholder="Hakuehdon nimi"
                 value={ this.searchFilterName }
                 onChange={ this.handleChange }
                 onKeyPress={ this.saveOnEnter }
