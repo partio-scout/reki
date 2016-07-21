@@ -8,13 +8,14 @@ import { TdWithTitle } from '../../components';
 
 class LinkCell extends React.Component {
   render() {
-    return <td><Link to={ this.props.href }>{ this.props.children }</Link></td>;
+    return <td><Link to={ this.props.href } title={ this.props.title }>{ this.props.children }</Link></td>;
   }
 }
 
 LinkCell.propTypes = {
   href: React.PropTypes.string,
   children: React.PropTypes.node,
+  title: React.PropTypes.string,
 };
 
 function getNullableFormatter(finalFormatter) {
