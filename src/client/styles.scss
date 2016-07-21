@@ -263,6 +263,13 @@ table {
   .control-label {
     margin-right: 0.5em;
   }
+  
+  button.top-right {
+    position: absolute;
+    top: 15px;
+    right: 150px;
+    outline: none !important;
+  }
 }
 
 @media screen and (min-width: $screen-sm-min) {
