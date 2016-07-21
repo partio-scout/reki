@@ -55,62 +55,58 @@ export function getQuickFilterContainer(participantStore, participantActions, se
 
     return (
       <div className="well clearfix">
-        <div>
-          <form className="form-inline">
-            <DebouncedTextFieldContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-            />
-            <PropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Ikäkausi"
-              property="ageGroup"
-            />
-            <PropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Alaleiri"
-              property="subCamp"
-            />
-            <PropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Kylä"
-              property="village"
-            />
-            <PropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Lippukunta"
-              property="localGroup"
-            />
-            <PropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Leirilippukunta"
-              property="campGroup"
-            />
-            <PresenceFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-            />
-            <DateFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-              label="Ilmoittautumispäivät"
-              property="dates"
-            />
-            <GenericPropertyFilterContainer
-              onChange={ handleChange }
-              currentSelection={ currentSelection }
-            />
-            <SaveSearchButtonContainer location={ props.location } />
-          </form>
-        </div>
-        <div>
-          <Button type="submit" bsStyle="primary" onClick={ resetFilters }>Nollaa haku</Button>
-        </div>
+        <form className="form-inline">
+          <DebouncedTextFieldContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+          />
+          <PropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Ikäkausi"
+            property="ageGroup"
+          />
+          <PropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Alaleiri"
+            property="subCamp"
+          />
+          <PropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Kylä"
+            property="village"
+          />
+          <PropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Lippukunta"
+            property="localGroup"
+          />
+          <PropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Leirilippukunta"
+            property="campGroup"
+          />
+          <PresenceFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+          />
+          <DateFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+            label="Ilmoittautumispäivät"
+            property="dates"
+          />
+          <GenericPropertyFilterContainer
+            onChange={ handleChange }
+            currentSelection={ currentSelection }
+          />
+          <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
+          <SaveSearchButtonContainer location={ props.location } />
+        </form>
       </div>
     );
   }
