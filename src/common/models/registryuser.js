@@ -2,6 +2,7 @@ import app from '../../server/server.js';
 import Promise from 'bluebird';
 import loopback from 'loopback';
 import crypto from 'crypto';
+import _ from 'lodash';
 
 export default function(Registryuser) {
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
@@ -60,6 +61,30 @@ export default function(Registryuser) {
 
     updateRegistryUser({ id: userId }, { status: null }).asCallback(callback);
   };
+
+  Registryuser.afterRemote('find', (ctx, instance, next) => {
+    Promise.try(() => {
+      const includePresence = ctx && ctx.result && ctx.req && ctx.req.query && ctx.req.query.includePresence;
+      if (includePresence) {
+        const findParticipants = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
+
+        const memberNumbers = ctx.result.map(user => user.memberNumber);
+
+        // To object is an undocumented function of loopback models, which is used here to force the model object into a plain javascript object.
+        // Without the call setting a new property on the objects below wouldn't work.
+        const keyedUsers = _.keyBy(ctx.result.map(user => user.toObject()), 'memberNumber');
+
+        return findParticipants({ where: { memberNumber: { inq: memberNumbers } } })
+          .each(participant => {
+            const user = keyedUsers[participant.memberNumber];
+            if (user) {
+              user.presence = participant.presence;
+            }
+          })
+          .tap(() => ctx.result = _.values(keyedUsers));
+      }
+    }).asCallback(next);
+  });
 
   Registryuser.remoteMethod('block',
     {

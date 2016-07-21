@@ -308,6 +308,7 @@ describe('http api access control', () => {
 
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234').expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
+      it('participantAmount: OK', () => get('/api/participants/participantAmount').expect(OK));
     });
 
     describe('Authenticated user without roles', () => {
@@ -325,6 +326,7 @@ describe('http api access control', () => {
 
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', noRolesAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('participantAmount: OK', () => get('/api/participants/participantAmount', noRolesAccessToken).expect(OK));
     });
 
     describe('registryUser', () => {
@@ -342,6 +344,7 @@ describe('http api access control', () => {
 
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryUserAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
+      it('participantAmount: OK', () => get('/api/participants/participantAmount', registryUserAccessToken).expect(OK));
     });
 
     describe('registryAdmin', () => {
@@ -359,6 +362,7 @@ describe('http api access control', () => {
 
       it('appInformation: UNAUTHORIZED', () => get('/api/participants/appInformation?memberNumber=1234', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('participantAmount: OK', () => get('/api/participants/participantAmount', registryAdminAccessToken).expect(OK));
     });
 
     describe('roihuapp user', () => {
@@ -376,6 +380,7 @@ describe('http api access control', () => {
 
       it('appInformation: OK', () => get('/api/participants/appInformation?memberNumber=1234', roihuappUserAccessToken).expect(OK));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('participantAmount: OK', () => get('/api/participants/participantAmount', roihuappUserAccessToken).expect(OK));
     });
   });
 

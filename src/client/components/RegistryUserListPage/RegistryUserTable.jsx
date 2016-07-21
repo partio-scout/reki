@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
+import { Presence } from '../../components';
 
 const RegistryUserRow = props => {
   const {
@@ -15,6 +16,7 @@ const RegistryUserRow = props => {
     phoneNumber,
     email,
     status,
+    presence,
   } = registryUser;
 
   const blockStatusToggleButton = status === 'blocked'
@@ -23,6 +25,7 @@ const RegistryUserRow = props => {
 
   return (
     <tr>
+      <td><Presence value={ presence } /></td>
       <td>{ `${firstName} ${lastName}` }</td>
       <td>{ memberNumber }</td>
       <td>{ phoneNumber }</td>
@@ -49,6 +52,7 @@ export function RegistryUserTable(props) {
     <Table striped responsive condensed>
       <thead>
         <tr>
+          <th>Tila</th>
           <th>Nimi</th>
           <th>Jäsennumero</th>
           <th>Puhelinnumero</th>
