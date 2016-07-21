@@ -13,7 +13,7 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
     loadRegistryUserList() {
       return dispatch => {
         dispatch();
-        registryUserResource.findAll()
+        registryUserResource.findAll('includePresence=true')
           .then(registryUserList => this.registryUserListUpdated(registryUserList),
                 err => errorActions.error(err, 'Käyttäjiä ei voitu ladata'));
       };
