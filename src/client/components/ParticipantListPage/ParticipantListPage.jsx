@@ -319,6 +319,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
                 <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } offset={ offset }/>
                 <tbody className="tfooter">
                   <tr>
+                    <td></td>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
                     <td colSpan={ columnCount + this.state.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
