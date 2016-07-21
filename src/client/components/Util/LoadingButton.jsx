@@ -5,7 +5,8 @@ export class LoadingButton extends React.Component {
   render() {
     return (
       <Button
-        type="submit"
+        type={ this.props.onClick ? 'button' : 'onClick' }
+        onClick={ this.props.onClick ? this.props.onClick : null }
         disabled={ this.props.loading }
         bsStyle={ this.props.bsStyle }>
         { this.props.loading ? this.props.labelWhileLoading : this.props.label }
@@ -19,4 +20,5 @@ LoadingButton.propTypes = {
   label: React.PropTypes.string.isRequired,
   labelWhileLoading: React.PropTypes.string.isRequired,
   bsStyle: React.PropTypes.string,
+  onClick: React.PropTypes.function,
 };
