@@ -101,6 +101,7 @@ export class ParticipantRow extends React.Component {
 
     return (
       <tr>
+        <td><small style={ { color: 'grey' } }>{ 1 + this.props.index + this.props.offset }</small></td>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
         <td><Presence value={ presence } /></td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
@@ -133,6 +134,8 @@ export class ParticipantRow extends React.Component {
 
 ParticipantRow.propTypes = {
   participant: React.PropTypes.object.isRequired,
+  index: React.PropTypes.number,
+  offset: React.PropTypes.number,
   isChecked: React.PropTypes.func,
   checkboxCallback: React.PropTypes.func,
   availableDates: React.PropTypes.array.isRequired,

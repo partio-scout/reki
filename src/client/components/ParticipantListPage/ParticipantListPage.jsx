@@ -300,6 +300,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
               <Table striped responsive condensed>
                 <thead>
                   <tr>
+                    <th></th>
                     <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
                     {
                       Object.keys(columnPropertyToLabelMapping).map(property => (
@@ -315,7 +316,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
                     <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } />
+                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } offset={ offset }/>
                 <tbody className="tfooter">
                   <tr>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
