@@ -314,19 +314,15 @@ export default function (Participant) {
 
   Participant.getParticipantInformationForApp = (memberNumber, email, cb) => {
     const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
-    let err;
-    let where;
-
-    if (!memberNumber && !email) {
-      err = new Error('email or memberNumber is required!');
-      err.status = 400;
-      return cb(err);
-    } else {
-      if (memberNumber) {
-        where = { memberNumber: memberNumber };
-      } else if (email) {
-        where = { email: email };
+    Promise.try(() => {
+      if (!(memberNumber || email)) {
+        const err = new Error('email or memberNumber is required!');
+        err.status = 400;
+        throw err;
       }
+
+      return memberNumber ? { memberNumber: memberNumber } : { email: email };
+    }).then(where =>
       findParticipant({
         where: where,
         fields: [
@@ -341,17 +337,16 @@ export default function (Participant) {
           'memberNumber',
           'email',
         ],
-      }).then(participant => {
-        if (!participant) {
-          err = new Error('Participant not found');
-          err.status = 404;
-          throw err;
-        } else {
-          return participant;
-        }
-      }).asCallback(cb);
-    }
-
+      }
+    )).then(participant => {
+      if (!participant) {
+        const err = new Error('Participant not found');
+        err.status = 404;
+        throw err;
+      } else {
+        return participant;
+      }
+    }).asCallback(cb);
   };
 
   Participant.participantAmount = (subCamp, cb) => {
