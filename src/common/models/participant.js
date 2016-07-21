@@ -354,6 +354,16 @@ export default function (Participant) {
 
   };
 
+  Participant.participantAmount = (subCamp, cb) => {
+    const countParticipants = Promise.promisify(Participant.count, { context: Participant });
+    const filter = { presence: 3 };
+    if (subCamp) {
+      filter.subCamp = subCamp;
+    }
+
+    countParticipants(filter).asCallback(cb);
+  };
+
   Participant.remoteMethod('massAssignField',
     {
       http: { path: '/massAssign', verb: 'post' },
@@ -374,6 +384,14 @@ export default function (Participant) {
         { arg: 'email', type: 'string', required: false },
       ],
       returns: { type: 'object', root: true },
+    }
+  );
+
+  Participant.remoteMethod('participantAmount',
+    {
+      http: { path: '/participantAmount', verb: 'get' },
+      accepts: { arg: 'subCamp', type: 'string', required: false },
+      returns: { arg: 'result', type: 'string' },
     }
   );
 }
