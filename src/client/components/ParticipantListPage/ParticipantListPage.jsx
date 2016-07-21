@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Table, Grid, Row, Col, Input } from 'react-bootstrap';
+import { Table, Grid, Row, Col, Input, Glyphicon, Tooltip, OverlayTrigger  } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
@@ -230,8 +230,28 @@ export function getParticipantListPage(participantStore, participantActions, sea
       const limit = getLimit(this.props.location.query);
       const filter = getFilter(this.props.location.query);
 
+      const tooltipForNotes = (
+        <Tooltip>{ 'Leiritoimiston merkinnät' }</Tooltip>
+      );
+      const campOfficeNotes = (
+        <OverlayTrigger placement="top" overlay={ tooltipForNotes }>
+          <Glyphicon glyph="info-sign" />
+        </OverlayTrigger>
+      );
+
+      const tooltipForInfo = (
+        <Tooltip>{ 'Lisätiedot' }</Tooltip>
+      );
+      const editableInfo = (
+        <OverlayTrigger placement="top" overlay={ tooltipForInfo }>
+          <Glyphicon glyph="comment" />
+        </OverlayTrigger>
+      );
+
       const columnPropertyToLabelMapping = {
         presence: 'Tila',
+        campOfficeNotes: campOfficeNotes,
+        editableInfo: editableInfo,
         firstName: 'Etunimi',
         lastName: 'Sukunimi',
         dateOfBirth: 'Syntymäpäivä',

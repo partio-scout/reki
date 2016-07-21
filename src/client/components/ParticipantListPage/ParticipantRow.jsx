@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Link } from 'react-router';
-import { Input, Glyphicon } from 'react-bootstrap';
+import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Presence } from '../index';
 import { TdWithTitle } from '../../components';
 
@@ -63,6 +63,8 @@ export class ParticipantRow extends React.Component {
       accommodation,
       presence,
       dates,
+      campOfficeNotes,
+      editableInfo,
     } = this.props.participant;
 
     const href = `participants/${participantId}`;
@@ -79,10 +81,30 @@ export class ParticipantRow extends React.Component {
 
     const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
 
+    const tooltipForNotes = (
+      <Tooltip>{ campOfficeNotes }</Tooltip>
+    );
+    const notes = campOfficeNotes ? (
+      <OverlayTrigger placement="top" overlay={ tooltipForNotes }>
+        <Glyphicon glyph="info-sign" />
+      </OverlayTrigger>
+    ) : '';
+
+    const tooltipForInfo = (
+      <Tooltip>{ editableInfo }</Tooltip>
+    );
+    const info = editableInfo ? (
+      <OverlayTrigger placement="top" overlay={ tooltipForInfo }>
+        <Glyphicon glyph="comment" />
+      </OverlayTrigger>
+    ) : '';
+
     return (
       <tr>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
         <td><Presence value={ presence } /></td>
+        <td>{ notes }</td>
+        <td>{ info }</td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
         <TdWithTitle value={ formatDate(dateOfBirth) } />
