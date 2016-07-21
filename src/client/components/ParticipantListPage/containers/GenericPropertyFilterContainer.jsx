@@ -12,6 +12,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     { country: 'Maa' },
     { willOfTheWisp: 'Virvatuli' },
     { willOfTheWispWave: 'Virvatulen aalto' },
+    { internationalGuest: 'KV-osallistuja' },
   ];
 
   class GenericPropertyFilterContainer extends React.Component {
