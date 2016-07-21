@@ -19,7 +19,7 @@ const RegistryUserRow = props => {
 
   const blockStatusToggleButton = status === 'blocked'
     ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
-    : <Button onClick={ onBlock } bsStyle="danger">Estä sisäänkirjautuminen</Button>;
+    : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
 
   return (
     <tr>
