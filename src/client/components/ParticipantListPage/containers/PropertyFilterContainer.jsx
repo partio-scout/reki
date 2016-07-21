@@ -37,6 +37,7 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
           value={ this.props.currentSelection[this.props.property] }
           onChange={ this.props.onChange }
           options={ this.state.options }
+          className={ this.props.className }
         />
       );
     }
@@ -47,6 +48,7 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
     label: React.PropTypes.string,
     currentSelection: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func.isRequired,
+    className: React.PropTypes.string,
   };
 
   return PropertyFilterContainer;

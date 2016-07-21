@@ -268,6 +268,25 @@ table {
 @media screen and (min-width: $screen-sm-min) {
   .form-inline .form-group {
     margin-right: 1em;
+
+    .agegroup-filter {
+      width: 200px;
+    }
+    .subcamp-filter {
+      width: 100px;
+    }
+    .village-filter {
+      width: 300px;
+    }
+    .local-group-filter {
+      width: 300px;
+    }
+    .camp-group-filter {
+      width: 300px;
+    }
+    .property-selector {
+      width: 200px;
+    }
   }
 }
 
