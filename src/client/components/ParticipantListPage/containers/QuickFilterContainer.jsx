@@ -65,30 +65,35 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             currentSelection={ currentSelection }
             label="Ikäkausi"
             property="ageGroup"
+            className="agegroup-filter"
           />
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
             label="Alaleiri"
             property="subCamp"
+            className="subcamp-filter"
           />
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
             label="Kylä"
             property="village"
+            className="village-filter"
           />
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
             label="Lippukunta"
             property="localGroup"
+            className="local-group-filter"
           />
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
             label="Leirilippukunta"
             property="campGroup"
+            className="camp-group-filter"
           />
           <PresenceFilterContainer
             onChange={ handleChange }

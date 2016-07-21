@@ -37,7 +37,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     render() {
       return (
         <div>
-          <Input type="select" label="Kenttä" value={ this.state.property } onChange={ this.onPropertyChange }>
+          <Input type="select" className="property-selector" label="Kenttä" value={ this.state.property } onChange={ this.onPropertyChange }>
             <option value=""></option>
             { properties.map((property, index) => <option value={ _.keys(property)[0] } key={ index }>{ _.values(property)[0] }</option>) }
           </Input>
