@@ -85,6 +85,8 @@ describe('Roihuapp interface', () => {
         'ageGroup',
         'memberNumber',
         'email',
+        'nickname',
+        'country',
       ];
 
       return request(app).get(`/api/Participants/appInformation?access_token=${accessToken}`)

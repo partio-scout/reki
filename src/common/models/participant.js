@@ -336,6 +336,8 @@ export default function (Participant) {
           'ageGroup',
           'memberNumber',
           'email',
+          'nickname',
+          'country',
         ],
       }
     )).then(participant => {
