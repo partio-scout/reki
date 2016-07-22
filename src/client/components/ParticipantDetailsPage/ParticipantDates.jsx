@@ -39,7 +39,7 @@ export class ParticipantDates extends React.Component {
     }
 
     return (
-      <p>Osallistuja ei ole ilmoittautunut leirille.</p>
+      <p>Osallistujalle ei löydy ilmoittautumispäiviä.</p>
     );
   }
 }
