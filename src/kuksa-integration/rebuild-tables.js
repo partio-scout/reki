@@ -73,6 +73,15 @@ function rebuildParticipantsTable() {
     return _.get(participant, 'subCamp.name') || 'Muu';
   }
 
+  function getAgeGroup(participant) {
+    const ageGroup = getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
+    if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+      return 'perheleiri (0-11v.)';
+    } else {
+      return ageGroup;
+    }
+  }
+
   console.log('Rebuilding participants table...');
 
   return findKuksaParticipants({
@@ -107,7 +116,7 @@ function rebuildParticipantsTable() {
     subCamp: getSubCamp(participant),
     village: _.get(participant, 'village.name') || 'Muu',
     country: _.get(participant, 'localGroup.country') || 'Suomi',
-    ageGroup: getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu',
+    ageGroup: getAgeGroup(participant),
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
     nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
     staffPosition: getInfoForField(participant, 'Pesti'),
@@ -238,4 +247,3 @@ function buildOptionTable() {
       }));
   }
 }
-
