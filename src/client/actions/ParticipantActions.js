@@ -74,8 +74,12 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         dispatch();
         participantResource.raw('post', 'massAssign', {
           body: { ids: participantId, fieldName: property, newValue: value } })
-          .then(participants => this.participantPropertyUpdated(property, participants),
-                err => errorActions.error(err, 'Osallistujan tallennus epäonnistui'));
+          .then(participants => {
+            if (property === 'presence') {
+              this.fetchParticipantByIdWithPresenceHistory(participants.result[0].participantId);
+            }
+            this.participantPropertyUpdated(property, participants);
+          }, err => errorActions.error(err, 'Osallistujan tallennus epäonnistui'));
       };
     }
 
@@ -84,6 +88,19 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         property: property,
         newValue: participants.result[0][property],
       };
+    }
+
+    fetchParticipantByIdWithPresenceHistory(participantId) {
+      return dispatch => {
+        dispatch();
+        participantResource.findById(participantId, `filter=${JSON.stringify({ include: { presenceHistory: 'author' } })}`)
+        .then(participant => this.participantPresenceHistoryUpdated(participant),
+              err => errorActions.error(err, 'Osallistujan tietojen lataaminen epäonnistui.'));
+      };
+    }
+
+    participantPresenceHistoryUpdated(participant) {
+      return participant;
     }
   }
 

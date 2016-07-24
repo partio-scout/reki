@@ -2,12 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import Spinner from 'react-spinner';
-import { Row, Col, Panel } from 'react-bootstrap';
+import { Row, Col, Panel, Input } from 'react-bootstrap';
 import { Presence } from '../../components';
 import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
+import { getPresenceLabel } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
@@ -17,12 +18,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       const state = participantStore.getState();
       state.campOfficeNotesSaving = false;
       state.editableInfoSaving = false;
+      state.presenceSaving = false;
+      state.selectedPresence = null;
       this.state = state;
 
       this.onStoreChanged = this.onStoreChanged.bind(this);
       this.handleChange = this.handleChange.bind(this);
+      this.onPresenceChange = this.onPresenceChange.bind(this);
       this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
       this.saveEditableInfo = this.saveEditableInfo.bind(this);
+      this.savePresence = this.savePresence.bind(this);
       this.save = this.save.bind(this);
     }
 
@@ -42,6 +47,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       const newState = state;
       state.campOfficeNotesSaving = false;
       state.editableInfoSaving = false;
+      state.presenceSaving = false;
+      this.setState(newState);
+    }
+
+    onPresenceChange(event) {
+      const newState = this.state;
+      newState.selectedPresence = event.target.value;
       this.setState(newState);
     }
 
@@ -63,6 +75,12 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       newState.editableInfoSaving = true;
       this.setState(newState);
       this.save('editableInfo');
+    }
+
+    savePresence() {
+      if (this.state.selectedPresence) {
+        participantActions.updateProperty(this.state.participantDetails.participantId, 'presence', this.state.selectedPresence);
+      }
     }
 
     save(property) {
@@ -125,6 +143,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           const rows = _.map(selection, row => <dd>{ row.selectionName }</dd>);
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
+
+        const presenceLabel = getPresenceLabel(1);
+        const tmpOutCampLabel = getPresenceLabel(2);
+        const outCampLabel = getPresenceLabel(3);
 
         return (
           <div>
@@ -205,6 +227,17 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 9 }>
                 <Panel header="Läsnäolo">
                  <Presence value={ presence } />
+                 <div>
+                 <form className="form-inline">
+                   <Input type="select" label="Muuta tilaa" defaultValue="null" onChange={ this.onPresenceChange }>
+                     <option value="null"></option>
+                     <option value="1">{ presenceLabel }</option>
+                     <option value="2">{ tmpOutCampLabel }</option>
+                     <option value="3">{ outCampLabel }</option>
+                   </Input>
+                   <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                 </form>
+                 </div>
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
                 <Panel header="Ilmoittautumispäivät">
