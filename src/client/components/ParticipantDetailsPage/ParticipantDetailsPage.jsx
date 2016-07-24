@@ -2,13 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import Spinner from 'react-spinner';
-import { Row, Col, Panel, Input } from 'react-bootstrap';
+import { Row, Col, Panel } from 'react-bootstrap';
 import { Presence } from '../../components';
 import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
-import { getPresenceLabel } from '../../components';
+import { PresenceSelector } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
@@ -144,10 +144,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
 
-        const presenceLabel = getPresenceLabel(1);
-        const tmpOutCampLabel = getPresenceLabel(2);
-        const outCampLabel = getPresenceLabel(3);
-
         return (
           <div>
             <Row>
@@ -227,17 +223,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 9 }>
                 <Panel header="Läsnäolo">
                  <Presence value={ presence } />
-                 <div>
                  <form className="form-inline">
-                   <Input type="select" label="Muuta tilaa" defaultValue="null" onChange={ this.onPresenceChange }>
-                     <option value="null"></option>
-                     <option value="1">{ presenceLabel }</option>
-                     <option value="2">{ tmpOutCampLabel }</option>
-                     <option value="3">{ outCampLabel }</option>
-                   </Input>
+                   <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa" />
                    <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                  </form>
-                 </div>
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
                 <Panel header="Ilmoittautumispäivät">
