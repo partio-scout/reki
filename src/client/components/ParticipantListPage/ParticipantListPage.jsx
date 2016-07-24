@@ -7,8 +7,8 @@ import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorC
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
-import { getPresenceLabel } from '../../components';
 import { LoadingButton } from '../../components';
+import { PresenceSelector } from '../../components';
 
 function getOrder(query) {
   try {
@@ -72,18 +72,10 @@ export function getMassEdit(participantStore) {
     }
 
     render() {
-      const presenceLabel = getPresenceLabel(1);
-      const tmpOutCampLabel = getPresenceLabel(2);
-      const outCampLabel = getPresenceLabel(3);
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
           <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
-          <Input type="select" label="Tila" defaultValue="null" onChange={ this.onChange }>
-            <option value="null">---</option>
-            <option value="1">{ presenceLabel }</option>
-            <option value="2">{ tmpOutCampLabel }</option>
-            <option value="3">{ outCampLabel }</option>
-          </Input>
+          <PresenceSelector label="Tila" onChange={ this.onChange }/>
           <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
         </form>
       );

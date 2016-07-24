@@ -8,6 +8,7 @@ import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
+import { PresenceSelector } from '../../components';
 
 export function getParticipantDetailsPage(participantStore, participantActions) {
 
@@ -17,12 +18,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       const state = participantStore.getState();
       state.campOfficeNotesSaving = false;
       state.editableInfoSaving = false;
+      state.presenceSaving = false;
+      state.selectedPresence = null;
       this.state = state;
 
       this.onStoreChanged = this.onStoreChanged.bind(this);
       this.handleChange = this.handleChange.bind(this);
+      this.onPresenceChange = this.onPresenceChange.bind(this);
       this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
       this.saveEditableInfo = this.saveEditableInfo.bind(this);
+      this.savePresence = this.savePresence.bind(this);
       this.save = this.save.bind(this);
     }
 
@@ -42,6 +47,13 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       const newState = state;
       state.campOfficeNotesSaving = false;
       state.editableInfoSaving = false;
+      state.presenceSaving = false;
+      this.setState(newState);
+    }
+
+    onPresenceChange(event) {
+      const newState = this.state;
+      newState.selectedPresence = event.target.value;
       this.setState(newState);
     }
 
@@ -63,6 +75,12 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       newState.editableInfoSaving = true;
       this.setState(newState);
       this.save('editableInfo');
+    }
+
+    savePresence() {
+      if (this.state.selectedPresence) {
+        participantActions.updateProperty(this.state.participantDetails.participantId, 'presence', this.state.selectedPresence);
+      }
     }
 
     save(property) {
@@ -205,6 +223,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 9 }>
                 <Panel header="Läsnäolo">
                  <Presence value={ presence } />
+                 <form className="form-inline">
+                   <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa" />
+                   <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                 </form>
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
                 <Panel header="Ilmoittautumispäivät">

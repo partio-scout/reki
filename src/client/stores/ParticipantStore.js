@@ -9,6 +9,7 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
         handleLoadParticipantList: ParticipantActions.LOAD_PARTICIPANT_LIST,
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantPropertyUpdated: ParticipantActions.PARTICIPANT_PROPERTY_UPDATED,
+        handleParticipantPresenceHistoryUpdated: ParticipantActions.PARTICIPANT_PRESENCE_HISTORY_UPDATED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
     }
@@ -42,6 +43,10 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
 
     handleParticipantPropertyUpdated({ property, newValue }) {
       this.participantDetails[property] = newValue;
+    }
+
+    handleParticipantPresenceHistoryUpdated(participant) {
+      this.participantDetails.presenceHistory = participant.presenceHistory;
     }
 
     resetAllData() {
