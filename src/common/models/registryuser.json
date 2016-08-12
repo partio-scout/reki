@@ -193,6 +193,13 @@
       "permission": "ALLOW",
       "property": "create"
     },
+      {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "registryAdmin",
+      "permission": "ALLOW",
+      "property": "deleteById"
+    },
     {
       "accessType": "WRITE",
       "principalType": "ROLE",

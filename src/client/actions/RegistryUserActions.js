@@ -90,6 +90,30 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
           .then(() => this.loadRegistryUserList());
       };
     }
+
+    createRegistryUser(user) {
+      return dispatch => {
+        registryUserResource.create(user)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu luoda.'));
+      };
+    }
+
+    deleteRegistryUser(userId) {
+      return dispatch => {
+        registryUserResource.del(userId)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu poistaa.'));
+      };
+    }
+
+    updateRegistryUser(user) {
+      return dispatch => {
+        registryUserResource.update(user.id, user)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu päivittää.'));
+      };
+    }
   }
 
   return alt.createActions(RegistryUserActions);

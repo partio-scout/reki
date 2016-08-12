@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Glyphicon } from 'react-bootstrap';
 import { Presence } from '../../components';
 
 const RegistryUserRow = props => {
@@ -7,6 +7,7 @@ const RegistryUserRow = props => {
     registryUser,
     onBlock,
     onUnblock,
+    onDeleteUser,
   } = props;
 
   const {
@@ -23,6 +24,8 @@ const RegistryUserRow = props => {
     ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
     : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
 
+  const deleteUserButton = <Button onClick={ onDeleteUser } bsStyle="danger"><Glyphicon glyph="remove"/></Button>;
+
   return (
     <tr>
       <td><Presence value={ presence } /></td>
@@ -31,6 +34,7 @@ const RegistryUserRow = props => {
       <td>{ phoneNumber }</td>
       <td>{ email }</td>
       <td>{ blockStatusToggleButton }</td>
+      <td>{ deleteUserButton }</td>
     </tr>
   );
 };
@@ -39,6 +43,7 @@ RegistryUserRow.propTypes = {
   registryUser: React.PropTypes.object,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
+  onDeleteUser: React.PropTypes.func,
 };
 
 export function RegistryUserTable(props) {
@@ -46,6 +51,7 @@ export function RegistryUserTable(props) {
     registryUsers,
     onBlock,
     onUnblock,
+    onDeleteUser,
   } = props;
 
   return (
@@ -58,6 +64,7 @@ export function RegistryUserTable(props) {
           <th>Puhelinnumero</th>
           <th>Sähköposti</th>
           <th>Lukittu?</th>
+          <th>Poista</th>
         </tr>
       </thead>
       <tbody>
@@ -67,6 +74,7 @@ export function RegistryUserTable(props) {
             registryUser={ registryUser }
             onBlock={ function() { onBlock(registryUser.id); } }
             onUnblock={ function() { onUnblock(registryUser.id); } }
+            onDeleteUser={ function() { onDeleteUser(registryUser.id); } }
           />
           ))
         }
@@ -79,4 +87,5 @@ RegistryUserTable.propTypes = {
   registryUsers: React.PropTypes.array,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
+  onDeleteUser: React.PropTypes.func,
 };
