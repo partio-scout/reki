@@ -6,6 +6,29 @@ import _ from 'lodash';
 
 export default function(Registryuser) {
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
+    const findRoles = Promise.promisify(app.models.Role.find, { context: app.models.Role });
+    const createRoleMapping = Promise.promisify(app.models.RoleMapping.create, { context: app.models.RoleMapping });
+    function addRolesToUser(userId, roleNames) {
+      return findRoles({ where: { name: { inq: roleNames } } })
+        .then(roles => {
+          const roleMappings = _.map(roles, role => ({
+            'principalType': 'USER',
+            'principalId': userId,
+            'roleId': role.id,
+          }));
+
+          return createRoleMapping(roleMappings);
+        });
+    }
+
+    if (registryuserInstance.roles && registryuserInstance.roles.length !== 0) {
+      return addRolesToUser(registryuserInstance.id, registryuserInstance.roles).asCallback(next);
+    } else {
+      next();
+    }
+  });
+
+  Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Registryuser(userId, registryuserInstance.id, 'add')
     .asCallback(next);
@@ -86,6 +109,13 @@ export default function(Registryuser) {
     }).asCallback(next);
   });
 
+  Registryuser.getRoleNames = function(cb) {
+    const findRoles = Promise.promisify(app.models.Role.find, { context: app.models.Role });
+    findRoles()
+      .then(roles => roles.map(role => role.name))
+      .asCallback(cb);
+  };
+
   Registryuser.remoteMethod('block',
     {
       http: { path: '/:id/block', verb: 'post' },
@@ -101,6 +131,13 @@ export default function(Registryuser) {
       accepts: [
         { arg: 'id', type: 'number', required: 'true' },
       ],
+    }
+  );
+
+  Registryuser.remoteMethod('getRoleNames',
+    {
+      http: { path: '/allRoleNames', verb: 'get' },
+      returns: { arg: 'roles', type: 'array' },
     }
   );
 }

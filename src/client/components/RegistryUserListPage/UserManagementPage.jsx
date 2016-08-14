@@ -1,4 +1,6 @@
 import React from 'react';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Button } from 'react-bootstrap';
 import { RegistryUserTable } from './RegistryUserTable';
 
 export function getUserManagementPage(registryUserStore, registryUserActions) {
@@ -33,11 +35,18 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
       registryUserActions.unblockUser(userId);
     }
 
+    deleteUser(userId) {
+      registryUserActions.deleteRegistryUser(userId);
+    }
+
     render() {
       return (
         <div>
           <h1>Käyttäjät</h1>
-          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } />
+          <LinkContainer to="admin/newUser">
+            <Button bsStyle="primary">Lisää käyttäjä</Button>
+          </LinkContainer>
+          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } onDeleteUser={ this.deleteUser }/>
         </div>
       );
     }

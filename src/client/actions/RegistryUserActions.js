@@ -114,6 +114,18 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
                 err => errorActions.error(err, 'Käyttäjää ei voitu päivittää.'));
       };
     }
+
+    getRoleNames() {
+      return dispatch => {
+        registryUserResource.raw('GET', '/allRoleNames')
+          .then(roles => this.roleNamesUpdated(roles),
+                err => this.errorActions.error(err, 'Rooleja ei voitu ladata.'));
+      };
+    }
+
+    roleNamesUpdated(roles) {
+      return roles;
+    }
   }
 
   return alt.createActions(RegistryUserActions);
