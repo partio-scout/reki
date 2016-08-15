@@ -92,7 +92,7 @@ export function getEditRegistryUser(registryUserActions, registryUserStore) {
     render() {
       return (
         <RegistryUserForm
-          title="Luo käyttäjä"
+          title="Muokkaa käyttäjää"
           registryUser={ this.state.registryUser }
           roles={ this.state.roles }
           onPropertyChange={ this.onPropertyChange }
