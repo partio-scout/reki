@@ -67,6 +67,11 @@ const NewRegistryUserPage = restrictComponent(
   components.getNewRegistryUser(registryUserActions, registryUserStore),
   LoginPromptPage
 );
+const EditRegistryUserPage = restrictComponent(
+  registryUserStore,
+  components.getEditRegistryUser(registryUserActions, registryUserStore),
+  LoginPromptPage
+);
 const participantSidebar = restrictComponent(
   registryUserStore,
   components.getParticipantSidebar(searchFilterStore, searchFilterActions)
@@ -96,6 +101,7 @@ const routes = (
       <Route path="admin">
         <IndexRoute components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
         <Route path="newUser" components={ { main: NewRegistryUserPage, sidebar: defaultSidebar } }/>
+        <Route path="users/:id/edit" components={ { main: EditRegistryUserPage, sidebar: defaultSidebar } }/>
       </Route>
     </Route>
   </Router>

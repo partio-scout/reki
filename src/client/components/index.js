@@ -30,4 +30,5 @@ export { LoadingButton } from './Util/LoadingButton';
 export { TdWithTitle } from './Util/TdWithTitle';
 export { PresenceSelector } from './Util/PresenceSelector';
 export { getNewRegistryUser } from './RegistryUserListPage/NewRegistryUser';
+export { getEditRegistryUser } from './RegistryUserListPage/EditRegistryUser';
 export { FormErrorMessages } from './Util/FormErrorMessages';

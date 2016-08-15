@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie';
+import _ from 'lodash';
 
 function deleteAccessTokenCookie() {
   Cookie.remove('accessToken');
@@ -107,6 +108,22 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
       };
     }
 
+    loadRegistryUserById(userId) {
+      return dispatch => {
+        registryUserResource.findById(userId, 'filter[include]=rekiRoles')
+          .then(user => this.registryUserByIdUpdated(user),
+                err => errorActions.error(err, 'Käyttäjän tietoja ei voitu ladata'));
+      };
+    }
+
+    registryUserByIdUpdated(user) {
+      if (user.rekiRoles) {
+        user.roles = _.map(user.rekiRoles, role => role.name);
+        delete user.rekiRoles;
+      }
+      return user;
+    }
+
     updateRegistryUser(user) {
       return dispatch => {
         registryUserResource.update(user.id, user)
@@ -115,7 +132,7 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
       };
     }
 
-    getRoleNames() {
+    loadRoleNames() {
       return dispatch => {
         registryUserResource.raw('GET', '/allRoleNames')
           .then(roles => this.roleNamesUpdated(roles),

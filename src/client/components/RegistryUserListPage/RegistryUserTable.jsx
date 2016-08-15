@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table, Button, Glyphicon } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { Presence } from '../../components';
 
 const RegistryUserRow = props => {
@@ -25,6 +26,11 @@ const RegistryUserRow = props => {
     : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
 
   const deleteUserButton = <Button onClick={ onDeleteUser } bsStyle="danger"><Glyphicon glyph="remove"/></Button>;
+  const editUserButton = (
+    <LinkContainer to={ `admin/users/${registryUser.id}/edit` }>
+      <Button bsStyle="primary"><Glyphicon glyph="pencil"/></Button>
+    </LinkContainer>
+  );
 
   return (
     <tr>
@@ -34,6 +40,7 @@ const RegistryUserRow = props => {
       <td>{ phoneNumber }</td>
       <td>{ email }</td>
       <td>{ blockStatusToggleButton }</td>
+      <td>{ editUserButton }</td>
       <td>{ deleteUserButton }</td>
     </tr>
   );
@@ -64,6 +71,7 @@ export function RegistryUserTable(props) {
           <th>Puhelinnumero</th>
           <th>Sähköposti</th>
           <th>Lukittu?</th>
+          <th>Muokkaa</th>
           <th>Poista</th>
         </tr>
       </thead>

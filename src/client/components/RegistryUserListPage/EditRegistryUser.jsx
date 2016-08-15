@@ -6,8 +6,8 @@ import { RegistryUserForm } from './RegistryUserForm';
 
 import * as validateRegistryUser from '../../validation/registryUser';
 
-export function getNewRegistryUser(registryUserActions, registryUserStore) {
-  class NewRegistryUser extends React.Component {
+export function getEditRegistryUser(registryUserActions, registryUserStore) {
+  class EditRegistryUser extends React.Component {
     constructor(props) {
       super(props);
       const state = {};
@@ -32,6 +32,7 @@ export function getNewRegistryUser(registryUserActions, registryUserStore) {
     }
 
     componentWillMount() {
+      registryUserActions.loadRegistryUserById(this.props.params.id);
       registryUserActions.loadRoleNames();
     }
 
@@ -46,6 +47,9 @@ export function getNewRegistryUser(registryUserActions, registryUserStore) {
     onStoreChanged(state) {
       if (state && state.roles) {
         this.setState({ roles: state.roles.roles });
+      }
+      if (state.registryUserById) {
+        this.setState({ registryUser: state.registryUserById });
       }
     }
 
@@ -80,7 +84,7 @@ export function getNewRegistryUser(registryUserActions, registryUserStore) {
       this.setState({ validationErrors: validationErrors });
 
       if (validationErrors.length === 0) {
-        registryUserActions.createRegistryUser(registryUser);
+        registryUserActions.updateRegistryUser(registryUser);
         browserHistory.goBack();
       }
     }
@@ -101,5 +105,11 @@ export function getNewRegistryUser(registryUserActions, registryUserStore) {
     }
   }
 
-  return NewRegistryUser;
+  EditRegistryUser.propTypes = {
+    params: React.PropTypes.shape({
+      id: React.PropTypes.string.isRequired,
+    }).isRequired,
+  };
+
+  return EditRegistryUser;
 }

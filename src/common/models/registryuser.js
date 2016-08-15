@@ -5,24 +5,39 @@ import crypto from 'crypto';
 import _ from 'lodash';
 
 export default function(Registryuser) {
-  Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
+  Registryuser.addRolesToUser = function(userId, roleNames) {
     const findRoles = Promise.promisify(app.models.Role.find, { context: app.models.Role });
     const createRoleMapping = Promise.promisify(app.models.RoleMapping.create, { context: app.models.RoleMapping });
-    function addRolesToUser(userId, roleNames) {
-      return findRoles({ where: { name: { inq: roleNames } } })
-        .then(roles => {
-          const roleMappings = _.map(roles, role => ({
-            'principalType': 'USER',
-            'principalId': userId,
-            'roleId': role.id,
-          }));
+    return findRoles({ where: { name: { inq: roleNames } } })
+      .then(roles => {
+        const roleMappings = _.map(roles, role => ({
+          'principalType': 'USER',
+          'principalId': userId,
+          'roleId': role.id,
+        }));
 
-          return createRoleMapping(roleMappings);
-        });
+        return createRoleMapping(roleMappings);
+      });
+  };
+
+  Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
+    if (registryuserInstance.roles && registryuserInstance.roles.length !== 0) {
+      return Registryuser.addRolesToUser(registryuserInstance.id, registryuserInstance.roles).asCallback(next);
+    } else {
+      next();
+    }
+  });
+
+  Registryuser.afterRemote('prototype.updateAttributes', (ctx, registryuserInstance, next) => {
+    function removeRoles(userId) {
+      const removeRoleMappings = Promise.promisify(app.models.RoleMapping.destroyAll, { context: app.models.RoleMapping });
+      return removeRoleMappings({ principalId: userId });
     }
 
-    if (registryuserInstance.roles && registryuserInstance.roles.length !== 0) {
-      return addRolesToUser(registryuserInstance.id, registryuserInstance.roles).asCallback(next);
+    if (registryuserInstance.roles) {
+      return removeRoles(registryuserInstance.id)
+      .then(() => Registryuser.addRolesToUser(registryuserInstance.id, registryuserInstance.roles))
+      .asCallback(next);
     } else {
       next();
     }
