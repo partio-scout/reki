@@ -42,15 +42,20 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
     render() {
       return (
         <div>
+          <div>{ this.props.children }</div>
           <h1>Käyttäjät</h1>
-          <LinkContainer to="admin/newUser">
+          <LinkContainer to="/admin/newUser">
             <Button bsStyle="primary">Lisää käyttäjä</Button>
           </LinkContainer>
-          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } onDeleteUser={ this.deleteUser }/>
+          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser }/>
         </div>
       );
     }
   }
+
+  UserManagementPage.propTypes = {
+    children: React.PropTypes.node,
+  };
 
   return UserManagementPage;
 }

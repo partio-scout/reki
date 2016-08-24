@@ -72,6 +72,11 @@ const EditRegistryUserPage = restrictComponent(
   components.getEditRegistryUser(registryUserActions, registryUserStore),
   LoginPromptPage
 );
+const DeleteRegistryUserPage = restrictComponent(
+  registryUserStore,
+  components.getDeleteRegistryUser(registryUserActions, registryUserStore),
+  LoginPromptPage
+);
 const participantSidebar = restrictComponent(
   registryUserStore,
   components.getParticipantSidebar(searchFilterStore, searchFilterActions)
@@ -98,10 +103,10 @@ const routes = (
         <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
       </Route>
       <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
-      <Route path="admin">
-        <IndexRoute components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
-        <Route path="newUser" components={ { main: NewRegistryUserPage, sidebar: defaultSidebar } }/>
-        <Route path="users/:id/edit" components={ { main: EditRegistryUserPage, sidebar: defaultSidebar } }/>
+      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } }>
+        <Route path="newUser" component={ NewRegistryUserPage }/>
+        <Route path="users/:id/edit" component={ EditRegistryUserPage }/>
+        <Route path="users/:id/delete" component={ DeleteRegistryUserPage }/>
       </Route>
     </Route>
   </Router>

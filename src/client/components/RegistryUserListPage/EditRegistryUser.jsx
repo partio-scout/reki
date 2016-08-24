@@ -1,5 +1,4 @@
 import React from 'react';
-import crypto from 'crypto';
 import _ from 'lodash';
 import { browserHistory } from 'react-router';
 import { RegistryUserForm } from './RegistryUserForm';
@@ -78,7 +77,6 @@ export function getEditRegistryUser(registryUserActions, registryUserStore) {
 
     onSave(user) {
       const registryUser = this.state.registryUser;
-      registryUser.password = crypto.randomBytes(24).toString('hex');
 
       const validationErrors = validateRegistryUser.default(registryUser);
       this.setState({ validationErrors: validationErrors });

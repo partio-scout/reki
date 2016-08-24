@@ -8,7 +8,6 @@ const RegistryUserRow = props => {
     registryUser,
     onBlock,
     onUnblock,
-    onDeleteUser,
   } = props;
 
   const {
@@ -25,9 +24,13 @@ const RegistryUserRow = props => {
     ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
     : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
 
-  const deleteUserButton = <Button onClick={ onDeleteUser } bsStyle="danger"><Glyphicon glyph="remove"/></Button>;
+  const deleteUserButton = (
+    <LinkContainer to={ `/admin/users/${registryUser.id}/delete` }>
+      <Button bsStyle="danger"><Glyphicon glyph="remove"/></Button>
+    </LinkContainer>
+  );
   const editUserButton = (
-    <LinkContainer to={ `admin/users/${registryUser.id}/edit` }>
+    <LinkContainer to={ `/admin/users/${registryUser.id}/edit` }>
       <Button bsStyle="primary"><Glyphicon glyph="pencil"/></Button>
     </LinkContainer>
   );
@@ -50,7 +53,6 @@ RegistryUserRow.propTypes = {
   registryUser: React.PropTypes.object,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
-  onDeleteUser: React.PropTypes.func,
 };
 
 export function RegistryUserTable(props) {
@@ -58,7 +60,6 @@ export function RegistryUserTable(props) {
     registryUsers,
     onBlock,
     onUnblock,
-    onDeleteUser,
   } = props;
 
   return (
@@ -82,7 +83,6 @@ export function RegistryUserTable(props) {
             registryUser={ registryUser }
             onBlock={ function() { onBlock(registryUser.id); } }
             onUnblock={ function() { onUnblock(registryUser.id); } }
-            onDeleteUser={ function() { onDeleteUser(registryUser.id); } }
           />
           ))
         }
@@ -95,5 +95,4 @@ RegistryUserTable.propTypes = {
   registryUsers: React.PropTypes.array,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
-  onDeleteUser: React.PropTypes.func,
 };
