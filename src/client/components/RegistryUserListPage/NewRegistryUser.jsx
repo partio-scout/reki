@@ -2,7 +2,7 @@ import React from 'react';
 import crypto from 'crypto';
 import _ from 'lodash';
 import { browserHistory } from 'react-router';
-import { RegistryUserForm } from './RegistryUserForm';
+import { RegistryUserForm } from '../Util/RegistryUserForm';
 
 import * as validateRegistryUser from '../../validation/registryUser';
 
