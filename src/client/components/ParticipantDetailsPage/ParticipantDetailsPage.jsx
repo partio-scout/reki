@@ -2,7 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import Spinner from 'react-spinner';
-import { Row, Col, Panel } from 'react-bootstrap';
+import { Row, Col, Panel, Button } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { Presence } from '../../components';
 import { ParticipantDates } from './ParticipantDates';
 import { PresenceHistory } from '../../components';
@@ -10,7 +11,7 @@ import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
 
-export function getParticipantDetailsPage(participantStore, participantActions) {
+export function getParticipantDetailsPage(participantStore, participantActions, restrictComponent, registryUserStore) {
 
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
@@ -144,13 +145,21 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
 
+        const createUserButton = restrictComponent(registryUserStore, (
+            <LinkContainer to={ `participants/${this.state.participantDetails.participantId}/createUser` }>
+              <Button bsStyle="primary">Luo käyttäjä</Button>
+            </LinkContainer>
+          )
+        );
         return (
           <div>
+            <div>{ this.props.children }</div>
             <Row>
               <Col md={ 12 }>
                 <h2>
                   { participantName }
                   <small> (synt. { moment(dateOfBirth).format('D.M.YYYY') })</small>
+                  { createUserButton }
                 </h2>
                 <h4 className="text-muted margin-bottom">{ participantStatus }</h4>
               </Col>
@@ -271,6 +280,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     params: React.PropTypes.shape({
       id: React.PropTypes.string.isRequired,
     }).isRequired,
+    children: React.PropTypes.node,
   };
 
   return ParticipantDetailsPage;

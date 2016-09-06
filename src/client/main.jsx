@@ -49,7 +49,7 @@ const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
   registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions),
+  components.getParticipantDetailsPage(participantStore, participantActions, restrictComponent, registryUserStore),
   LoginPromptPage
 );
 const ParticipantListPage = restrictComponent(
@@ -77,6 +77,11 @@ const DeleteRegistryUserPage = restrictComponent(
   components.getDeleteRegistryUser(registryUserActions, registryUserStore),
   LoginPromptPage
 );
+const CreateRegistryUserFromParticipantPage = restrictComponent(
+  registryUserStore,
+  components.getCreateRegistryUserFromParticipant(registryUserActions, registryUserStore, participantStore),
+  LoginPromptPage
+);
 const participantSidebar = restrictComponent(
   registryUserStore,
   components.getParticipantSidebar(searchFilterStore, searchFilterActions)
@@ -100,7 +105,9 @@ const routes = (
       <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
       <Route path="participants">
         <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
-        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
+        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } }>
+          <Route path="createUser" component={ CreateRegistryUserFromParticipantPage }/>
+        </Route>
       </Route>
       <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
       <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } }>
