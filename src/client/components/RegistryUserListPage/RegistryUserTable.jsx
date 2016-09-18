@@ -5,6 +5,7 @@ import { Presence } from '../../components';
 
 const RegistryUserRow = props => {
   const {
+    disabled,
     registryUser,
     onBlock,
     onUnblock,
@@ -21,17 +22,17 @@ const RegistryUserRow = props => {
   } = registryUser;
 
   const blockStatusToggleButton = status === 'blocked'
-    ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
-    : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
+    ? <Button disabled={ disabled } onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
+    : <Button disabled={ disabled } onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
 
   const deleteUserButton = (
-    <LinkContainer to={ `/admin/users/${registryUser.id}/delete` }>
-      <Button bsStyle="danger"><Glyphicon glyph="remove"/></Button>
+    <LinkContainer disabled={ disabled } to={ `/admin/users/${registryUser.id}/delete` }>
+      <Button disabled={ disabled } bsStyle="danger"><Glyphicon glyph="remove"/></Button>
     </LinkContainer>
   );
   const editUserButton = (
-    <LinkContainer to={ `/admin/users/${registryUser.id}/edit` }>
-      <Button bsStyle="primary"><Glyphicon glyph="pencil"/></Button>
+    <LinkContainer disabled={ disabled } to={ `/admin/users/${registryUser.id}/edit` }>
+      <Button disabled={ disabled } bsStyle="primary"><Glyphicon glyph="pencil"/></Button>
     </LinkContainer>
   );
 
@@ -53,10 +54,12 @@ RegistryUserRow.propTypes = {
   registryUser: React.PropTypes.object,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
+  disabled: React.PropTypes.bool,
 };
 
 export function RegistryUserTable(props) {
   const {
+    loggedUser,
     registryUsers,
     onBlock,
     onUnblock,
@@ -83,6 +86,7 @@ export function RegistryUserTable(props) {
             registryUser={ registryUser }
             onBlock={ function() { onBlock(registryUser.id); } }
             onUnblock={ function() { onUnblock(registryUser.id); } }
+            disabled={ loggedUser === registryUser.id }
           />
           ))
         }
@@ -92,6 +96,7 @@ export function RegistryUserTable(props) {
 }
 
 RegistryUserTable.propTypes = {
+  loggedUser: React.PropTypes.number,
   registryUsers: React.PropTypes.array,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,

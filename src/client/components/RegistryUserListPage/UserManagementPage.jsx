@@ -47,7 +47,7 @@ export function getUserManagementPage(registryUserStore, registryUserActions) {
           <LinkContainer to="/admin/newUser">
             <Button bsStyle="primary">Lisää käyttäjä</Button>
           </LinkContainer>
-          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser }/>
+          <RegistryUserTable loggedUser={ this.state.currentUser ? this.state.currentUser.id : 0 } registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser }/>
         </div>
       );
     }
