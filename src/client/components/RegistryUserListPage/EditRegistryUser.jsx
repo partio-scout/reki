@@ -19,7 +19,6 @@ export function getEditRegistryUser(registryUserActions, registryUserStore) {
         roles: [],
       };
       state.roles = registryUserStore.roles;
-      state.showModal = true;
       state.validationErrors = [];
       this.state = state;
 

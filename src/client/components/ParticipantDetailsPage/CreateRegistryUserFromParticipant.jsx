@@ -21,7 +21,6 @@ export function getCreateRegistryUserFromParticipant(registryUserActions, regist
         roles: [],
       };
       state.roles = registryUserStore.roles;
-      state.showModal = true;
       state.validationErrors = [];
       this.state = state;
 

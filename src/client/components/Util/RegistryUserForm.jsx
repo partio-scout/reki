@@ -66,13 +66,13 @@ export function RegistryUserForm(props) {
       <Modal.Body>
         <form className="form-horizontal">
           <FormErrorMessages messages={ validationErrors } />
-          <Input label="Käyttäjän etunimi" value={ registryUser.firstName } onChange={ function(e) { onPropertyChange('firstName', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
-          <Input label="Käyttäjän sukunimi" value={ registryUser.lastName } onChange={ function(e) { onPropertyChange('lastName', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
-          <Input label="Käyttäjän jäsennumero" value={ registryUser.memberNumber } onChange={ function(e) { onPropertyChange('memberNumber', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
-          <Input label="Käyttäjän sähköposti" value={ registryUser.email } onChange={ function(e) { onPropertyChange('email', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
-          <Input label="Käyttäjän puhelinnumero" value={ registryUser.phoneNumber } onChange={ function(e) { onPropertyChange('phoneNumber', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
+          <Input label="Etunimi" value={ registryUser.firstName } onChange={ function(e) { onPropertyChange('firstName', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
+          <Input label="Sukunimi" value={ registryUser.lastName } onChange={ function(e) { onPropertyChange('lastName', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
+          <Input label="Jäsennumero" value={ registryUser.memberNumber } onChange={ function(e) { onPropertyChange('memberNumber', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
+          <Input label="Sähköposti" value={ registryUser.email } onChange={ function(e) { onPropertyChange('email', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
+          <Input label="Puhelinnumero" value={ registryUser.phoneNumber } onChange={ function(e) { onPropertyChange('phoneNumber', e.target.value); } } type="text" labelClassName="col-xs-3" wrapperClassName="col-xs-9"/>
         </form>
-          <b>Käyttäjän roolit</b>
+          <b>Roolit</b>
           { roleCheckboxes }
       </Modal.Body>
       <Modal.Footer>
