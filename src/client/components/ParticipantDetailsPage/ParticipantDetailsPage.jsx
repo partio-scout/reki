@@ -11,7 +11,7 @@ import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
 
-export function getParticipantDetailsPage(participantStore, participantActions, restrictComponent, registryUserStore) {
+export function getParticipantDetailsPage(participantStore, participantActions, registryUserStore) {
 
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
@@ -145,11 +145,11 @@ export function getParticipantDetailsPage(participantStore, participantActions, 
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
 
-        const createUserButton = restrictComponent(registryUserStore, (
-            <LinkContainer to={ `participants/${this.state.participantDetails.participantId}/createUser` }>
-              <Button bsStyle="primary">Luo käyttäjä</Button>
-            </LinkContainer>
-          )
+        const disableCreateUser = !(_.map(registryUserStore.getState().currentUser.rekiRoles, obj => obj.name).includes('registryAdmin'));
+        const createUserButton = (
+          <LinkContainer disabled={ disableCreateUser } to={ `participants/${this.state.participantDetails.participantId}/createUser` }>
+            <Button className="pull-right" disabled={ disableCreateUser } bsStyle="primary">Luo käyttäjä</Button>
+          </LinkContainer>
         );
         return (
           <div>

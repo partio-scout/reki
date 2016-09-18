@@ -49,7 +49,7 @@ const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
   registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions, restrictComponent, registryUserStore),
+  components.getParticipantDetailsPage(participantStore, participantActions, registryUserStore),
   LoginPromptPage
 );
 const ParticipantListPage = restrictComponent(
@@ -79,7 +79,7 @@ const DeleteRegistryUserPage = restrictComponent(
 );
 const CreateRegistryUserFromParticipantPage = restrictComponent(
   registryUserStore,
-  components.getCreateRegistryUserFromParticipant(registryUserActions, registryUserStore, participantStore),
+  components.getCreateRegistryUserFromParticipant(registryUserActions, registryUserStore,  participantStore),
   LoginPromptPage
 );
 const participantSidebar = restrictComponent(
