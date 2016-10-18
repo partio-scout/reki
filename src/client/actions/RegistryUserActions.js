@@ -111,12 +111,12 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
     loadRegistryUserById(userId) {
       return dispatch => {
         registryUserResource.findById(userId, 'filter[include]=rekiRoles')
-          .then(user => this.registryUserByIdUpdated(user),
+          .then(user => this.registryUserUpdated(user),
                 err => errorActions.error(err, 'Käyttäjän tietoja ei voitu ladata'));
       };
     }
 
-    registryUserByIdUpdated(user) {
+    registryUserUpdated(user) {
       if (user.rekiRoles) {
         user.roles = _.map(user.rekiRoles, role => role.name);
         delete user.rekiRoles;

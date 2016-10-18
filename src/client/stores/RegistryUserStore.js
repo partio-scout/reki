@@ -8,7 +8,7 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
         handleCurrentUserUpdated: RegistryUserActions.CURRENT_USER_UPDATED,
         handleLoginStatusUpdated: RegistryUserActions.UPDATE_LOGIN_STATUS,
         handleOfflineLoginNotEnabled: RegistryUserActions.OFFLINE_LOGIN_NOT_ENABLED,
-        handleRegistryUserByIdUpdated: RegistryUserActions.REGISTRY_USER_BY_ID_UPDATED,
+        handleRegistryUserUpdated: RegistryUserActions.REGISTRY_USER_UPDATED,
         handleRoleNamesUpdated: RegistryUserActions.ROLE_NAMES_UPDATED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
@@ -30,7 +30,7 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
       this.offlineLoginTriedWhileDisabled = tried;
     }
 
-    handleRegistryUserByIdUpdated(user) {
+    handleRegistryUserUpdated(user) {
       this.registryUserById = user;
     }
 

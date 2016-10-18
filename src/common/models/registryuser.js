@@ -20,6 +20,13 @@ export default function(Registryuser) {
       });
   };
 
+  Registryuser.beforeRemote('create', (ctx, registryuserInstance, next) => {
+    if (!ctx.args.data.password) {
+      ctx.args.data.password = crypto.randomBytes(24).toString('hex');
+    }
+    next();
+  });
+
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
     if (registryuserInstance.roles && registryuserInstance.roles.length !== 0) {
       return Registryuser.addRolesToUser(registryuserInstance.id, registryuserInstance.roles).asCallback(next);
