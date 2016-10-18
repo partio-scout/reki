@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export function getRegistryUserStore(alt, RegistryUserActions) {
   class RegistryUserStore  {
     constructor() {
@@ -20,6 +22,7 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
 
     handleCurrentUserUpdated(newCurrentUser) {
       this.currentUser = newCurrentUser;
+      this.currentUser.hasRole = role => _.map(this.currentUser.rekiRoles, obj => obj.name).includes(role);
     }
 
     handleLoginStatusUpdated(loggedIn) {

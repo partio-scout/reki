@@ -15,13 +15,9 @@ const Role = props => {
     onRoleChange(role, event.target.checked);
   }
 
-  if (!role) {
-    return <div></div>;
-  } else {
-    return (
-      <Input type="checkbox" label={ role } checked={ value } onChange={ onChecked }/>
-    );
-  }
+  return (
+    <Input type="checkbox" label={ role } checked={ value } onChange={ onChecked }/>
+  );
 };
 
 Role.propTypes = {

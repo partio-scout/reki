@@ -145,7 +145,7 @@ export function getParticipantDetailsPage(participantStore, participantActions, 
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
 
-        const disableCreateUser = !(_.map(registryUserStore.getState().currentUser.rekiRoles, obj => obj.name).includes('registryAdmin'));
+        const disableCreateUser = !registryUserStore.getState().currentUser.hasRole('registryAdmin');
         const createUserButton = (
           <LinkContainer disabled={ disableCreateUser } to={ `participants/${this.state.participantDetails.participantId}/createUser` }>
             <Button className="pull-right" disabled={ disableCreateUser } bsStyle="primary">Luo käyttäjä</Button>
