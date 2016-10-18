@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export function getRegistryUserStore(alt, RegistryUserActions) {
   class RegistryUserStore  {
     constructor() {
@@ -8,6 +10,8 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
         handleCurrentUserUpdated: RegistryUserActions.CURRENT_USER_UPDATED,
         handleLoginStatusUpdated: RegistryUserActions.UPDATE_LOGIN_STATUS,
         handleOfflineLoginNotEnabled: RegistryUserActions.OFFLINE_LOGIN_NOT_ENABLED,
+        handleRegistryUserUpdated: RegistryUserActions.REGISTRY_USER_UPDATED,
+        handleRoleNamesUpdated: RegistryUserActions.ROLE_NAMES_UPDATED,
         resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
     }
@@ -18,6 +22,7 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
 
     handleCurrentUserUpdated(newCurrentUser) {
       this.currentUser = newCurrentUser;
+      this.currentUser.hasRole = role => _.map(this.currentUser.rekiRoles, obj => obj.name).includes(role);
     }
 
     handleLoginStatusUpdated(loggedIn) {
@@ -28,10 +33,20 @@ export function getRegistryUserStore(alt, RegistryUserActions) {
       this.offlineLoginTriedWhileDisabled = tried;
     }
 
+    handleRegistryUserUpdated(user) {
+      this.registryUserById = user;
+    }
+
+    handleRoleNamesUpdated(roles) {
+      this.roles = roles;
+    }
+
     resetAllData() {
       this.loggedIn = false;
       this.currentUser = null;
       this.registryUsers = [];
+      this.roles = [];
+      this.registryUserById = null;
     }
   }
 

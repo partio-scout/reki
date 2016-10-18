@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie';
+import _ from 'lodash';
 
 function deleteAccessTokenCookie() {
   Cookie.remove('accessToken');
@@ -89,6 +90,58 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
         registryUserResource.raw('POST', `${userId}/unblock`)
           .then(() => this.loadRegistryUserList());
       };
+    }
+
+    createRegistryUser(user) {
+      return dispatch => {
+        registryUserResource.create(user)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu luoda.'));
+      };
+    }
+
+    deleteRegistryUser(userId) {
+      return dispatch => {
+        registryUserResource.del(userId)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu poistaa.'));
+      };
+    }
+
+    loadRegistryUserById(userId) {
+      return dispatch => {
+        registryUserResource.findById(userId, 'filter[include]=rekiRoles')
+          .then(user => this.registryUserUpdated(user),
+                err => errorActions.error(err, 'Käyttäjän tietoja ei voitu ladata'));
+      };
+    }
+
+    registryUserUpdated(user) {
+      if (user.rekiRoles) {
+        user.roles = _.map(user.rekiRoles, role => role.name);
+        delete user.rekiRoles;
+      }
+      return user;
+    }
+
+    updateRegistryUser(user) {
+      return dispatch => {
+        registryUserResource.update(user.id, user)
+          .then(() => this.loadRegistryUserList(),
+                err => errorActions.error(err, 'Käyttäjää ei voitu päivittää.'));
+      };
+    }
+
+    loadRoleNames() {
+      return dispatch => {
+        registryUserResource.raw('GET', '/allRoleNames')
+          .then(roles => this.roleNamesUpdated(roles),
+                err => this.errorActions.error(err, 'Rooleja ei voitu ladata.'));
+      };
+    }
+
+    roleNamesUpdated(roles) {
+      return roles;
     }
   }
 

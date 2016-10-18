@@ -29,3 +29,8 @@ export { PropertyTextArea } from './PropertyTextArea';
 export { LoadingButton } from './Util/LoadingButton';
 export { TdWithTitle } from './Util/TdWithTitle';
 export { PresenceSelector } from './Util/PresenceSelector';
+export { getNewRegistryUser } from './RegistryUserListPage/NewRegistryUser';
+export { getEditRegistryUser } from './RegistryUserListPage/EditRegistryUser';
+export { getDeleteRegistryUser } from './RegistryUserListPage/DeleteRegistryUser';
+export { FormErrorMessages } from './Util/FormErrorMessages';
+export { getCreateRegistryUserFromParticipant } from './ParticipantDetailsPage/CreateRegistryUserFromParticipant';

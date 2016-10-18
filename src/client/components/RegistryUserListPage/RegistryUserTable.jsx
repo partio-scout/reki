@@ -1,9 +1,11 @@
 import React from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Glyphicon } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { Presence } from '../../components';
 
 const RegistryUserRow = props => {
   const {
+    disabled,
     registryUser,
     onBlock,
     onUnblock,
@@ -20,8 +22,19 @@ const RegistryUserRow = props => {
   } = registryUser;
 
   const blockStatusToggleButton = status === 'blocked'
-    ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
-    : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
+    ? <Button disabled={ disabled } onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
+    : <Button disabled={ disabled } onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
+
+  const deleteUserButton = (
+    <LinkContainer disabled={ disabled } to={ `/admin/users/${registryUser.id}/delete` }>
+      <Button disabled={ disabled } bsStyle="danger"><Glyphicon glyph="remove"/></Button>
+    </LinkContainer>
+  );
+  const editUserButton = (
+    <LinkContainer disabled={ disabled } to={ `/admin/users/${registryUser.id}/edit` }>
+      <Button disabled={ disabled } bsStyle="primary"><Glyphicon glyph="pencil"/></Button>
+    </LinkContainer>
+  );
 
   return (
     <tr>
@@ -31,6 +44,8 @@ const RegistryUserRow = props => {
       <td>{ phoneNumber }</td>
       <td>{ email }</td>
       <td>{ blockStatusToggleButton }</td>
+      <td>{ editUserButton }</td>
+      <td>{ deleteUserButton }</td>
     </tr>
   );
 };
@@ -39,10 +54,12 @@ RegistryUserRow.propTypes = {
   registryUser: React.PropTypes.object,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,
+  disabled: React.PropTypes.bool,
 };
 
 export function RegistryUserTable(props) {
   const {
+    loggedUser,
     registryUsers,
     onBlock,
     onUnblock,
@@ -58,6 +75,8 @@ export function RegistryUserTable(props) {
           <th>Puhelinnumero</th>
           <th>Sähköposti</th>
           <th>Lukittu?</th>
+          <th>Muokkaa</th>
+          <th>Poista</th>
         </tr>
       </thead>
       <tbody>
@@ -67,6 +86,7 @@ export function RegistryUserTable(props) {
             registryUser={ registryUser }
             onBlock={ function() { onBlock(registryUser.id); } }
             onUnblock={ function() { onUnblock(registryUser.id); } }
+            disabled={ loggedUser === registryUser.id }
           />
           ))
         }
@@ -76,6 +96,7 @@ export function RegistryUserTable(props) {
 }
 
 RegistryUserTable.propTypes = {
+  loggedUser: React.PropTypes.number,
   registryUsers: React.PropTypes.array,
   onBlock: React.PropTypes.func,
   onUnblock: React.PropTypes.func,

@@ -76,6 +76,7 @@
     "superagent-as-promised": "^3.2.1",
     "uglify-js": "^2.6.1",
     "url-loader": "^0.5.7",
+    "validator": "^5.5.0",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
   },

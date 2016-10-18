@@ -49,7 +49,7 @@ const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
   registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions),
+  components.getParticipantDetailsPage(participantStore, participantActions, registryUserStore),
   LoginPromptPage
 );
 const ParticipantListPage = restrictComponent(
@@ -60,6 +60,26 @@ const ParticipantListPage = restrictComponent(
 const UserManagementPage = restrictComponent(
   registryUserStore,
   components.getUserManagementPage(registryUserStore, registryUserActions),
+  LoginPromptPage
+);
+const NewRegistryUserPage = restrictComponent(
+  registryUserStore,
+  components.getNewRegistryUser(registryUserActions, registryUserStore),
+  LoginPromptPage
+);
+const EditRegistryUserPage = restrictComponent(
+  registryUserStore,
+  components.getEditRegistryUser(registryUserActions, registryUserStore),
+  LoginPromptPage
+);
+const DeleteRegistryUserPage = restrictComponent(
+  registryUserStore,
+  components.getDeleteRegistryUser(registryUserActions, registryUserStore),
+  LoginPromptPage
+);
+const CreateRegistryUserFromParticipantPage = restrictComponent(
+  registryUserStore,
+  components.getCreateRegistryUserFromParticipant(registryUserActions, registryUserStore,  participantStore),
   LoginPromptPage
 );
 const participantSidebar = restrictComponent(
@@ -85,10 +105,16 @@ const routes = (
       <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
       <Route path="participants">
         <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
-        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
+        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } }>
+          <Route path="createUser" component={ CreateRegistryUserFromParticipantPage }/>
+        </Route>
       </Route>
       <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
-      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
+      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } }>
+        <Route path="newUser" component={ NewRegistryUserPage }/>
+        <Route path="users/:id/edit" component={ EditRegistryUserPage }/>
+        <Route path="users/:id/delete" component={ DeleteRegistryUserPage }/>
+      </Route>
     </Route>
   </Router>
 );

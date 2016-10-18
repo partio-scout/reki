@@ -832,8 +832,29 @@ describe('http api access control', () => {
     });
 
     describe('registryAdmin', () => {
-      let accessTokenForLogout;
+      let accessTokenForLogout, userIdForDelete, adminAccessTokenForDelete, adminIdForDelete;
+      const userFixtureForDelete = {
+        firstName: 'derp',
+        lastName: 'durp',
+        password: 'password',
+        memberNumber: '1234',
+        email: 'herpderp@example.com',
+        phoneNumber: '123446',
+      };
+      before(() => testUtils.createUserWithRoles(['registryAdmin'], {
+        'username': 'registryAdminForDelete',
+        'memberNumber': '7654621',
+        'email': 'registryAdminForDelete@example.org',
+        'password': 'salasana',
+        'firstName': 'Testi',
+        'lastName': 'Testailija',
+        'phoneNumber': 'n/a',
+      }).then(() => testUtils.loginUser('registryAdminForDelete', 'salasana').tap(at => {
+        adminIdForDelete = at.userId;
+        adminAccessTokenForDelete = at.id;
+      })));
       before(() => testUtils.loginUser('registryAdmin', 'salasana').tap(at => accessTokenForLogout = at.id));
+      before(() => testUtils.createFixture('RegistryUser', userFixtureForDelete).tap(user => userIdForDelete = user.id));
 
       it('find: ok', () => get('/api/registryusers', registryAdminAccessToken).expect(OK));
       it('findById (other user): ok', () => get(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(OK));
@@ -844,12 +865,12 @@ describe('http api access control', () => {
       it('count: ok', () => get('/api/registryusers/count', registryAdminAccessToken).expect(OK));
 
       it('create: ok', () => post('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(OK));
-      it('deleteById (other user): UNAUTHORIZED', () => del(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('deleteById (own): UNAUTHORIZED', () => del(`/api/registryusers/${registryAdminUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('update (other user): ok', () => put(`/api/registryusers/${otherUserId}`, { firstName: 'updated' }, registryAdminAccessToken).expect(OK));
       it('update (own): ok', () => put(`/api/registryusers/${registryAdminUserId}`, { firstName: 'updated' }, registryAdminAccessToken).expect(OK));
       it('upsert (insert): ok', () => put('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(OK));
       it('upsert (update): ok', () => put('/api/registryusers', { id: 1, firstName: 'updated' }, registryAdminAccessToken).expect(OK));
+      it('deleteById (other user): OK', () => del(`/api/registryusers/${userIdForDelete}`, registryAdminAccessToken).expect(OK));
+      it('deleteById (own): OK', () => del(`/api/registryusers/${adminIdForDelete}`, adminAccessTokenForDelete).expect(OK));
 
       it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }, registryAdminAccessToken).expect(NOT_FOUND));
       //Use separate access token for logout because the access token used here will cease working on logout
