@@ -14,6 +14,9 @@ export function getDebouncedTextField() {
       this.state = { textSearch: props.value };
     }
 
+    componentWillReceiveProps(nextProps) {
+      this.setState({ textSearch: nextProps.value });
+    }
 
     handleValueChanged(event) {
       event.persist();
