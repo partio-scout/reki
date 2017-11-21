@@ -1,11 +1,11 @@
-import app from '../src/server/server';
+import app from '../../src/server/server';
 import _ from 'lodash';
 import request from 'supertest-as-promised';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Promise from 'bluebird';
-import * as testUtils from './utils/test-utils';
-import { resetDatabase } from '../scripts/seed-database';
+import * as testUtils from '../utils/test-utils';
+import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);

@@ -1,10 +1,10 @@
-import app from '../src/server/server';
+import app from '../../src/server/server';
 import request from 'supertest-as-promised';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import * as testUtils from './utils/test-utils';
+import * as testUtils from '../utils/test-utils';
 import _ from 'lodash';
-import { resetDatabase } from '../scripts/seed-database';
+import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
