@@ -1,0 +1,54 @@
+### BEGIN INIT INFO
+# Provides: selenium
+# Required-Start: $local_fs $remote_fs $network xvfb
+# Required-Stop: xvfb
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Selenium browser automation server
+### END INIT INFO
+
+DESC="Selenium server"
+RUN_AS=root
+JAVA_BIN=/usr/bin/java
+
+SELENIUM_DIR=/selenium
+PID_FILE="$SELENIUM_DIR/selenium.pid"
+JAR_FILE="$SELENIUM_DIR/selenium-server-standalone.jar"
+LOG_FILE="$SELENIUM_DIR/selenium.log"
+
+MAX_MEMORY="-Xmx500m"
+STACK_SIZE="-Xss1024k"
+
+DAEMON_OPTS=" $MAX_MEMORY $STACK_SIZE -jar $JAR_FILE -log $LOG_FILE"
+
+NAME=selenium
+
+export DISPLAY=:1
+
+case "$1" in
+    start)
+        echo -n "Starting $DESC: "
+        start-stop-daemon -c $RUN_AS --start --background --pidfile $PID_FILE --make-pidfile --exec $JAVA_BIN -- $DAEMON_OPTS
+        echo "$NAME."
+        ;;
+
+    stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop --pidfile $PID_FILE
+        echo "$NAME."
+        ;;
+
+    restart|force-reload)
+        echo -n "Restarting $DESC: "
+        start-stop-daemon --stop --pidfile $PID_FILE
+        sleep 1
+        start-stop-daemon -c $RUN_AS --start --background --pidfile $PID_FILE  --make-pidfile --exec $JAVA_BIN -- $DAEMON_OPTS
+        echo "$NAME."
+        ;;
+
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
