@@ -94,7 +94,7 @@ Vagrant.configure(2) do |config|
   # more for some operations. This proved to be enough, though it might be
   # able to survive with less.
   config.vm.provider "virtualbox" do |v|
-    v.memory = 1536
+    v.memory = 2536
   end
   # Run provisioning scripts in this order.
   config.vm.provision "shell", inline: $generate_locales

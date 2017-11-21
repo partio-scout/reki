@@ -1,5 +1,5 @@
 # REKI
-Finnjamboree 2016 camp registry system
+Camp registry system that integrates with Kuksa. Originally developed for Roihu.
 
 ## Developing with Vagrant
 ### Prerequisites
