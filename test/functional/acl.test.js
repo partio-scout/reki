@@ -1,9 +1,9 @@
-import app from '../src/server/server';
+import app from '../../src/server/server';
 import request from 'supertest-as-promised';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import * as testUtils from './utils/test-utils';
-import { resetDatabase } from '../scripts/seed-database';
+import * as testUtils from '../utils/test-utils';
+import { resetDatabase } from '../../scripts/seed-database';
 
 chai.use(chaiAsPromised);
 

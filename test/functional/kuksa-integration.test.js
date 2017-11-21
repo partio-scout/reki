@@ -1,9 +1,9 @@
-import app from '../src/server/server';
+import app from '../../src/server/server';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import chaiDateTime from 'chai-datetime';
-import { resetDatabase } from '../scripts/seed-database';
-import mockKuksa from './kuksa-integration/mock/mock-kuksa';
+import { resetDatabase } from '../../scripts/seed-database';
+import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 import Promise from 'bluebird';
 import _ from 'lodash';
