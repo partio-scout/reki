@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import _ from 'lodash';
 
 const app = express();
 const PORT = 4001;
@@ -41,6 +42,15 @@ const mock = {
   },
   stop: () => server.close(),
   serveFixtures: serveFixtures,
+  getOptionsForExec: () => ({
+    cwd: process.CWD,
+    env: _.merge(process.env, {
+      KUKSA_API_ENDPOINT: endpoint,
+      KUKSA_API_USERNAME: username,
+      KUKSA_API_PASSWORD: password,
+      KUKSA_API_EVENTID: eventid,
+    }),
+  }),
 };
 
 export default mock;

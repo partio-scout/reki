@@ -6,7 +6,6 @@ import { resetDatabase } from '../../scripts/seed-database';
 import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 import Promise from 'bluebird';
-import _ from 'lodash';
 import moment from 'moment';
 
 const expect = chai.expect;
@@ -27,17 +26,7 @@ describe('Kuksa integration', () => {
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();
-
-      const options = {
-        cwd: process.CWD,
-        env: _.merge(process.env, {
-          KUKSA_API_ENDPOINT: mockKuksa.endpoint,
-          KUKSA_API_USERNAME: mockKuksa.username,
-          KUKSA_API_PASSWORD: mockKuksa.password,
-          KUKSA_API_EVENTID: mockKuksa.eventid,
-        }),
-      };
-      exec('npm run fetch-from-kuksa', options, () => done());
+      exec('npm run fetch-from-kuksa', mockKuksa.getOptionsForExec(), () => done());
     });
   });
 
