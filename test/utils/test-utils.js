@@ -38,8 +38,8 @@ function addRolesToUser(roles, user) {
   return createFixture('RoleMapping', roleMappings).then(() => user);
 }
 
-export function createUserAndGetAccessToken(roles, userData) {
-  const data = Object.assign({
+export function createUserAndGetAccessToken(roles, overrides) {
+  const userData = {
     'username': 'testuser',
     'memberNumber': '7654321',
     'email': 'testi@example.org',
@@ -47,8 +47,9 @@ export function createUserAndGetAccessToken(roles, userData) {
     'firstName': 'Testi',
     'lastName': 'Testailija',
     'phoneNumber': 'n/a',
-  }, userData);
-  return createUserWithRoles(roles, userData).then(() => loginUser(data.username));
+  };
+  Object.assign(userData, userData);
+  return createUserWithRoles(roles, userData).then(() => loginUser(userData.username, userData.password));
 }
 
 export function deleteFixtureIfExists(modelName, id) {
