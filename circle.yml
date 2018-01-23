@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 4.2.2
+    version: 8.9.4
   environment:
     TEST_DATABASE_URL: postgres://ubuntu@localhost/circle_test
 dependencies:

@@ -11,7 +11,7 @@ SCRIPT
 
 # Installs absolute minimun for building/running
 $install_packages = <<SCRIPT
-curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
+curl --silent --location https://deb.nodesource.com/setup_8.x | sudo bash -
 apt-get install -y --no-install-recommends build-essential git postgresql nodejs xvfb firefox=28.0+build2-0ubuntu2 openjdk-7-jre-headless
 npm install -g npm
 SCRIPT
