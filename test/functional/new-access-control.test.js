@@ -29,33 +29,33 @@ describe('Role-Based Access Control', () => {
 
   it('should succeed when user has permission', () =>
     request(app)
-      .get(`/api/rbac-test-success?access_token=${accessToken}`)
+      .get(`/api/test/rbac-test-success?access_token=${accessToken}`)
       .expect(200, 'You should see this!')
   );
 
   it('should return 401 when user has no permission', () =>
     request(app)
-      .get(`/api/rbac-test-fail?access_token=${accessToken}`)
-      .expect(401, 'Unauthorized')
+      .get(`/api/test/rbac-test-fail?access_token=${accessToken}`)
+      .expect(401, 'Unauthorized: You do not have permission to perform this action')
   );
 
   it('should find token from Authorization header', () =>
     request(app)
-      .get('/api/rbac-test-success')
+      .get('/api/test/rbac-test-success')
       .set('Authorization', accessToken)
       .expect(200, 'You should see this!')
   );
 
   it('should return 401 when there is no token', () =>
     request(app)
-      .get('/api/rbac-test-success')
-      .expect(401, 'Unauthorized')
+      .get('/api/test/rbac-test-success')
+      .expect(401, 'Unauthorized: No access token given')
   );
 
   it('should return 401 when there is an incorrect token', () =>
     request(app)
-      .get('/api/rbac-test-success?access_token=dfgRTYERgherg€ERvrege')
-      .expect(401, 'Unauthorized')
+      .get('/api/test/rbac-test-success?access_token=dfgRTYERgherg€ERvrege')
+      .expect(401, 'Unauthorized: Invalid access token')
   );
 
   it('should return 401 when the token has expired', () =>
@@ -65,8 +65,8 @@ describe('Role-Based Access Control', () => {
         return token.save();
       })
       .then(() => request(app)
-        .get(`/api/rbac-test-success?access_token=${accessToken}`)
-        .expect(401, 'Unauthorized')
+        .get(`/api/test/rbac-test-success?access_token=${accessToken}`)
+        .expect(401, 'Unauthorized: Invalid access token')
       )
   );
 });
