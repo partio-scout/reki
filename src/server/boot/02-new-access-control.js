@@ -1,9 +1,11 @@
 import { readFileSync } from 'fs';
-import setupAccessControl from 'middleware/access-control.js';
+import path from 'path';
+import setupAccessControl from '../middleware/access-control.js';
 
 export default function(app) {
 
-  const permissions = JSON.parse(readFileSync('../../../conf/permissions.json'));
+  const permissionsFile = path.join(__dirname,'..', '..', '..', 'conf', 'permissions.json');
+  const permissions = JSON.parse(readFileSync(permissionsFile));
   const requirePermission = setupAccessControl(app, permissions);
   app.requirePermission = requirePermission;
 
