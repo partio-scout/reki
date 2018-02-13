@@ -48,7 +48,7 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
         dispatch();
         optionResource.findAll()
           .then(response => this.optionsLoaded(processResults(response)),
-                err => errorActions.error(err, `Hakusuodattimia ei voitu ladata`));
+                err => errorActions.error(err, 'Hakusuodattimia ei voitu ladata'));
       };
 
       function processResults(response) {
@@ -72,7 +72,7 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
 
       return dispatch => {
         dispatch();
-        participantDateResource.findAll(`filter[fields][date]=true`)
+        participantDateResource.findAll('filter[fields][date]=true')
           .then(response => this.dateOptionsLoaded(processResults(response)),
                 err => this.optionsLoadingFailed(err));
       };

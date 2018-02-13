@@ -9,11 +9,9 @@ export function getMainNavigationContainer(registryUserStore, registryUserAction
   function MainNavigationContainer(props) {
     return (
       <AltContainer
-        stores={
-          {
-            currentUser: () => ({ store: registryUserStore, value: registryUserStore.getState().currentUser }),
-          }
-        }
+        stores={ {
+          currentUser: () => ({ store: registryUserStore, value: registryUserStore.getState().currentUser }),
+        } }
         actions={
           function() {
             return {
