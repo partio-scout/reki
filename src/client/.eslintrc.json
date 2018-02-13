@@ -2,13 +2,14 @@
   "env": {
     "browser": true
   },
-  "ecmaFeatures": {
-    "jsx": true
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "rules": {
     "no-console": 2,
     "jsx-quotes": 2,
-
     "react/display-name": 0,
     "react/forbid-prop-types": 0,
     "react/jsx-boolean-value": 0,
@@ -39,6 +40,6 @@
     "react/react-in-jsx-scope": 2,
     "react/self-closing-comp": 2,
     "react/sort-comp": 0,
-    "react/wrap-multilines": 2
+    "react/jsx-wrap-multilines": 2
   }
 }
