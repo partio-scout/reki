@@ -61,7 +61,7 @@ describe('Participant amount endpoint test', () => {
 
   function getParticipantAmount(subCamp) {
     const req = request(app)
-      .get(`/api/Participants/participantAmount`);
+      .get('/api/Participants/participantAmount');
     if (subCamp) {
       req.set('subCamp', subCamp);
     }
