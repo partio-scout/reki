@@ -48,13 +48,13 @@ export default function(app, permissions) {
           next();
         } else if (allowed === false) {
           res.status(UNAUTHORIZED).send('Unauthorized: You do not have permission to perform this action');
-        } else if(err.status) {
+        } else if (err.status) {
           res.status(err.status).send(err.message);
         } else {
           console.error(err);
           res.status(500).send('Internal server error');
         }
       });
-    }
-  }
+    };
+  };
 }

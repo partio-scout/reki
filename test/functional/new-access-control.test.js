@@ -41,20 +41,20 @@ describe('Role-Based Access Control', () => {
 
   it('should find token from Authorization header', () =>
     request(app)
-      .get(`/api/rbac-test-success`)
+      .get('/api/rbac-test-success')
       .set('Authorization', accessToken)
       .expect(200, 'You should see this!')
   );
 
   it('should return 401 when there is no token', () =>
     request(app)
-      .get(`/api/rbac-test-success`)
+      .get('/api/rbac-test-success')
       .expect(401, 'Unauthorized')
   );
 
   it('should return 401 when there is an incorrect token', () =>
     request(app)
-      .get(`/api/rbac-test-success?access_token=dfgRTYERgherg€ERvrege`)
+      .get('/api/rbac-test-success?access_token=dfgRTYERgherg€ERvrege')
       .expect(401, 'Unauthorized')
   );
 

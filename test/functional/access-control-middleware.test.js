@@ -10,12 +10,12 @@ const assert = chai.assert;
 
 describe('Role-Based Access Control Middleware', () => {
   const permissions = {
-    "registryUser": [
-      "perform allowed action"
+    'registryUser': [
+      'perform allowed action',
     ],
-    "registryAdmin": [
-      "perform disallowed action"
-    ]
+    'registryAdmin': [
+      'perform disallowed action',
+    ],
   };
 
   let requirePermission;
@@ -46,29 +46,29 @@ describe('Role-Based Access Control Middleware', () => {
     expect(requirePermission('perform allowed action')).to.be.a('function');
   });
 
-  it('allows request if user has permission', (done) => {
+  it('allows request if user has permission', done => {
     const req = mockReq({
       query: {
-        access_token: accessToken
-      }
+        access_token: accessToken,
+      },
     });
     const res = mockRes({
-      send: () => { expect.fail('res.send() was called'); done() },
-      status: () => { expect.fail('res.status() was called'); done() }
+      send: () => { expect.fail('res.send() was called'); done(); },
+      status: () => { expect.fail('res.status() was called'); done(); },
     });
     const next = () => { assert(true, 'next() was called'); done(); };
     requirePermission('perform allowed action')(req, res, next);
   });
 
-  it('should send unauthorized when user has no permission', (done) => {
+  it('should send unauthorized when user has no permission', done => {
     const req = mockReq({
       query: {
-        access_token: accessToken
-      }
+        access_token: accessToken,
+      },
     });
     const res = mockRes({
-      send: (val) => { expect(val).to.equal('Unauthorized: You do not have permission to perform this action'); done() },
-      status: (val) => { expect(val).to.equal(401); return res; }
+      send: val => { expect(val).to.equal('Unauthorized: You do not have permission to perform this action'); done(); },
+      status: val => { expect(val).to.equal(401); return res; },
     });
     const next = () => { expect.fail('next() was called'); done(); };
     requirePermission('perform disallowed action')(req, res, next);
@@ -76,53 +76,53 @@ describe('Role-Based Access Control Middleware', () => {
 
   it('finds token from Authorization header', done => {
     const req = mockReq({
-      get: header => header === 'Authorization' ? accessToken : undefined
+      get: header => header === 'Authorization' ? accessToken : undefined,
     });
     const res = mockRes({
-      send: () => { expect.fail('res.send() was called'); done() },
-      status: () => { expect.fail('res.status() was called'); done() }
+      send: () => { expect.fail('res.send() was called'); done(); },
+      status: () => { expect.fail('res.status() was called'); done(); },
     });
     const next = () => { assert(true, 'next() was called'); done(); };
     requirePermission('perform allowed action')(req, res, next);
   });
 
-  it('should send unauthorized when no token is sent', (done) => {
+  it('should send unauthorized when no token is sent', done => {
     const req = mockReq({
       // workaround bug in sinon-express-mock:
       // otherwise it returns req for req.get('...') instead of undefined
-      get: () => undefined
+      get: () => undefined,
     });
     const res = mockRes({
-      send: (val) => { expect(val).to.equal('Unauthorized: No access token given'); done() },
-      status: (val) => { expect(val).to.equal(401); return res; }
+      send: val => { expect(val).to.equal('Unauthorized: No access token given'); done(); },
+      status: val => { expect(val).to.equal(401); return res; },
     });
     const next = () => { expect.fail('next() was called'); done(); };
     requirePermission('perform allowed action')(req, res, next);
   });
 
-  it('should send unauthorized when there is an incorrect token', (done) => {
+  it('should send unauthorized when there is an incorrect token', done => {
     const req = mockReq({
       query: {
-        access_token: 'ThisIsNotARealAccessTokenERTfsdvgerTw14fwefr23r2'
-      }
+        access_token: 'ThisIsNotARealAccessTokenERTfsdvgerTw14fwefr23r2',
+      },
     });
     const res = mockRes({
-      send: (val) => { expect(val).to.equal('Unauthorized: Invalid access token'); done() },
-      status: (val) => { expect(val).to.equal(401); return res; }
+      send: val => { expect(val).to.equal('Unauthorized: Invalid access token'); done(); },
+      status: val => { expect(val).to.equal(401); return res; },
     });
     const next = () => { expect.fail('next() was called'); done(); };
     requirePermission('perform allowed action')(req, res, next);
   });
 
-  it('should send unauthorized when token is expired', (done) => {
+  it('should send unauthorized when token is expired', done => {
     const req = mockReq({
       query: {
-        access_token: accessToken
-      }
+        access_token: accessToken,
+      },
     });
     const res = mockRes({
-      send: (val) => { expect(val).to.equal('Unauthorized: Invalid access token'); done() },
-      status: (val) => { expect(val).to.equal(401); return res; }
+      send: val => { expect(val).to.equal('Unauthorized: Invalid access token'); done(); },
+      status: val => { expect(val).to.equal(401); return res; },
     });
     const next = () => { expect.fail('next() was called'); done(); };
     app.models.AccessToken.findById(accessToken)
