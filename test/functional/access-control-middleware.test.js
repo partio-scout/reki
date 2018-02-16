@@ -124,4 +124,22 @@ describe('Role-Based Access Control Middleware', () => {
       .then(() => requirePermission('perform allowed action')(req, res, next));
   });
 
+  it('adds current user to successful request', done => {
+    const req = mockReq({
+      query: {
+        access_token: accessToken,
+      },
+    });
+    const res = mockRes({
+      send: () => { expect.fail('res.send() was called'); done(); },
+      status: () => { expect.fail('res.status() was called'); done(); },
+    });
+    const next = () => {
+      expect(req).to.have.property('user');
+      expect(req.user).to.have.property('username', 'allowedUser');
+      done();
+    };
+    requirePermission('perform allowed action')(req, res, next);
+  });
+
 });

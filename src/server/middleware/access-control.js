@@ -33,6 +33,12 @@ export default function(app, permissions) {
     }
 
     const user = await app.models.RegistryUser.findById(token.userId, { include: 'rekiRoles' });
+
+    // Token belongs to a user -> add user to request
+    if (user) {
+      req.user = user;
+    }
+
     const roleNames = user.toObject().rekiRoles.map(role => role.name);
     const hasPerm = _.some(roleNames, name => roleHasPermission(name, permission));
     return hasPerm;
