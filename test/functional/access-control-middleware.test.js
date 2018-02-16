@@ -1,7 +1,7 @@
 import app from '../../src/server/server';
 import { mockReq, mockRes } from 'sinon-express-mock';
 import chai from 'chai';
-import * as testUtils from '../utils/test-utils';
+import { createUserAndGetAccessToken } from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 import accessControlMiddleware from '../../src/server/middleware/access-control.js';
 
@@ -22,21 +22,12 @@ describe('Role-Based Access Control Middleware', () => {
   before(() => requirePermission = accessControlMiddleware(app, permissions));
 
   let accessToken;
-  const testUser = {
-    'username': 'testUser',
-    'memberNumber': '1234567',
-    'email': 'testi@testailija.fi',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  };
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser'], testUser))
-      .then(() => testUtils.loginUser(testUser.username, testUser.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-    );
+  beforeEach(async () => {
+    await resetDatabase();
+    await createUserAndGetAccessToken(['registryUser'], { username: 'otherUser', email: 'a@b.com' });
+    const at = await createUserAndGetAccessToken(['registryUser'], { username: 'allowedUser', email: 'b@c.com' });
+    accessToken = at.id;
+  });
 
   it('is a function', () => {
     expect(requirePermission).to.be.a('function');
