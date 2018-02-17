@@ -1,0 +1,8 @@
+{
+  "registryUser": [
+    "perform allowed test action"
+  ],
+  "registryAdmin": [
+    "perform disallowed test action"
+  ]
+}

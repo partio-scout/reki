@@ -75,7 +75,7 @@ function rebuildParticipantsTable() {
 
   function getAgeGroup(participant) {
     const ageGroup = getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
-    if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta \"vain perheleirin osallistujille\" -osuuteen.') {
+    if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
       return 'perheleiri (0-11v.)';
     } else {
       return ageGroup;

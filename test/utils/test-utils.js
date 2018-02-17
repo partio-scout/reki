@@ -48,7 +48,7 @@ export function createUserAndGetAccessToken(roles, overrides) {
     'lastName': 'Testailija',
     'phoneNumber': 'n/a',
   };
-  Object.assign(userData, userData);
+  Object.assign(userData, overrides);
   return createUserWithRoles(roles, userData).then(() => loginUser(userData.username, userData.password));
 }
 
