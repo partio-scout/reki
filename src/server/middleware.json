@@ -19,7 +19,8 @@
       "params": {
         "extended": true
       }
-    }
+    },
+    "body-parser#json": {}
   },
   "routes": {},
   "files": {},

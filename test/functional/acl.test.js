@@ -202,15 +202,6 @@ describe('http api access control', () => {
   };
   before(() => testUtils.createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
 
-  const searchFilterFixture = {
-    id: 1,
-    name: 'derp',
-    filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
-  };
-  before(() =>
-    testUtils.createFixture('SearchFilter', searchFilterFixture)
-  );
-
   describe('AuditEvent', () => {
     it('Should not be exposed through http', () => get('/api/auditevents').expect(NOT_FOUND));
   });
@@ -890,6 +881,16 @@ describe('http api access control', () => {
   });
 
   describe('SearchFilter', () => {
+
+    const searchFilterFixture = {
+      id: '111',
+      name: 'derp',
+      filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
+    };
+    before(() =>
+      testUtils.createFixture('SearchFilter', searchFilterFixture)
+    );
+
     const searchFilterFixtureToCreate = {
       id: 2,
       name: 'durp',
@@ -900,25 +901,25 @@ describe('http api access control', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
       it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1').expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111').expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
       it('find: ok', () => get('/api/searchfilters', registryUserAccessToken).expect(OK));
       it('create: ok', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryUserAccessToken).expect(OK));
-      it('deleteById: ok', () => del('/api/searchfilters/1', registryUserAccessToken).expect(OK));
+      it('deleteById: ok', () => del('/api/searchfilters/111', registryUserAccessToken).expect(OK));
     });
 
     describe('registryAdmin', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', registryAdminAccessToken).expect(UNAUTHORIZED));
     });
 
     describe('roihuapp user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters', roihuappUserAccessToken).expect(UNAUTHORIZED));
       it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, roihuappUserAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/1', roihuappUserAccessToken).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', roihuappUserAccessToken).expect(UNAUTHORIZED));
     });
   });
 });
