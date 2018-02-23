@@ -1,7 +1,8 @@
 {
   "registryUser": [
     "perform allowed test action",
-    "view search filters"
+    "view searchfilters",
+    "modify searchfilters"
   ],
   "registryAdmin": [
     "perform disallowed test action"

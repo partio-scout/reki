@@ -1,10 +1,10 @@
 export default function(app){
-  app.get('/api/searchfilters', app.requirePermission('view search filters'), async (req, res) => {
+  app.get('/api/searchfilters', app.requirePermission('view searchfilters'), async (req, res) => {
     const filters = await app.models.SearchFilter.find();
     res.json(filters);
   });
 
-  app.del('/api/searchfilters/:id', app.requirePermission('view search filters'), async (req, res) => {
+  app.delete('/api/searchfilters/:id', app.requirePermission('modify searchfilters'), async (req, res) => {
     try {
       const filter = await app.models.SearchFilter.findById(req.params.id);
 
@@ -20,7 +20,7 @@ export default function(app){
     }
   });
 
-  app.post('/api/searchfilters', app.requirePermission('view search filters'), async (req, res) => {
+  app.post('/api/searchfilters', app.requirePermission('modify searchfilters'), async (req, res) => {
     try {
       const filter = await app.models.SearchFilter.create({
         filter: req.body.filter,
