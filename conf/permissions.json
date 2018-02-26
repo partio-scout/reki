@@ -1,8 +1,11 @@
 {
   "registryUser": [
-    "perform allowed test action"
+    "perform allowed test action",
+    "view searchfilters",
+    "modify searchfilters"
   ],
   "registryAdmin": [
     "perform disallowed test action"
-  ]
+  ],
+  "roihuapp": []
 }

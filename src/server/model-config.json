@@ -38,7 +38,7 @@
   },
   "SearchFilter": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "Selection": {
     "dataSource": "db",
