@@ -22,7 +22,7 @@
   },
   "RegistryUser": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "Participant": {
     "dataSource": "db",

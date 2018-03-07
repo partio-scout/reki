@@ -3,4 +3,10 @@ export default function(app){
     const users = await app.models.RegistyUsers.find();
     res.json(users);
   });
+
+  app.get('/api/registryusers/:id', app.requirePermission('view own registryUser by id'), async (req, res) => {
+    const users = await app.models.RegistyUsers.findById(req.params.id, { include: 'accesToken' });
+    res.json(users);
+  });
+
 }

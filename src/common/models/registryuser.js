@@ -5,6 +5,17 @@ import crypto from 'crypto';
 import _ from 'lodash';
 
 export default function(Registryuser) {
+
+  Registryuser.disableRemoteMethod('findOne', true);
+  Registryuser.disableRemoteMethod('exists', true);
+  Registryuser.disableRemoteMethod('count', true);
+  Registryuser.disableRemoteMethod('create', true);
+  Registryuser.disableRemoteMethod('deleteById', true);
+  Registryuser.disableRemoteMethod('update', true);
+  Registryuser.disableRemoteMethod('upsert', true);
+  Registryuser.disableRemoteMethod('confirm', true);
+  Registryuser.disableRemoteMethod('resetPassword', true);
+
   Registryuser.afterRemote('create', (ctx, registryuserInstance, next) => {
     const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
     app.models.AuditEvent.createEvent.Registryuser(userId, registryuserInstance.id, 'add')
