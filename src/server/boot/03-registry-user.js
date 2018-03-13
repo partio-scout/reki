@@ -13,7 +13,6 @@ export default function(app){
         app.models.AuditEvent.createEvent.Registryuser(req.user.id, user.id, 'find');
       } else {
         return res.status(401).send('Unauthorized');
-        app.models.AuditEvent.createEvent.Registryuser(req.user.id, user.id, 'find:unauthorized');
       }
     } catch (e) {
       console.error(e);

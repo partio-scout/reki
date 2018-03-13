@@ -57,21 +57,6 @@ describe('Audit Event', () => {
       });
   }
 
-  function postInstanceToDb(modelInPlural, instance, accessToken, idProperty) {
-    return request(app)
-      .post(`/api/${modelInPlural}?access_token=${accessToken}`)
-      .send(instance)
-      .expect(200)
-      .then(res => res.body[idProperty]);
-  }
-
-  function postChangesToDb(modelInPlural, instanceId, accessToken, changes) {
-    return request(app)
-      .put(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken}`)
-      .send(changes)
-      .expect(200);
-  }
-
   function queryInstanceFromDb(modelInPlural, instanceId, accessToken) {
     return request(app)
       .get(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken}`)

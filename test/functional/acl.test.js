@@ -655,9 +655,9 @@ describe('http api access control', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers').expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`).expect(UNAUTHORIZED));
-      it('findOne: NOT_FOUND', () => get('/api/registryusers/findOne').expect(NOT_FOUND));
+      it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne').expect(UNAUTHORIZED));
       it('exists: NOT_FOUND', () => get(`/api/registryusers/${otherUserId}/exists`).expect(NOT_FOUND));
-      it('count: NOT_FOUND', () => get('/api/registryusers/count').expect(NOT_FOUND));
+      it('count: UNAUTHORIZED', () => get('/api/registryusers/count').expect(UNAUTHORIZED));
 
       it('create: NOT_FOUND', () => post('/api/registryusers', userFixtureToCreate).expect(NOT_FOUND));
       it('deleteById: NOT_FOUND', () => del(`/api/registryusers/${otherUserId}`).expect(NOT_FOUND));
@@ -665,10 +665,10 @@ describe('http api access control', () => {
       it('upsert (insert): NOT_FOUND', () => put('/api/registryusers', userFixtureToCreate).expect(NOT_FOUND));
       it('upsert (update): NOT_FOUND', () => put('/api/registryusers', { id: 1, firstName: 'updated' }).expect(NOT_FOUND));
 
-      it('login: NOT FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }).expect(NOT_FOUND));
-      it('logout: UNAUTHORIZED', () => post('/api/registryusers/logout').expect(UNAUTHORIZED));
+      it('login: NOT_FOUND', () => post('/api/registryusers/login', { email: userFixture.email, password: userFixture.password }).expect(NOT_FOUND));
+      it('logout: Internal Server Error', () => post('/api/registryusers/logout').expect(500));
       it('password reset: NOT_FOUND', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }).expect(NOT_FOUND));
-      it('confirm email: NOT_FOUND', () => get('/api/registryusers/confirm').expect(NOT_FOUND));
+      it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm').expect(UNAUTHORIZED));
 
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED));
       it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`).expect(UNAUTHORIZED));
@@ -680,11 +680,11 @@ describe('http api access control', () => {
 
       it('find: UNAUTHORIZED', () => get('/api/registryusers', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): ok', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(OK));
-      it('findOne: NOT_FOUND', () => get('/api/registryusers/findOne', noRolesAccessToken).expect(NOT_FOUND));
+      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): NOT_FOUND', () => get(`/api/registryusers/${otherUserId}/exists`, noRolesAccessToken).expect(NOT_FOUND));
       it('exists (own): NOT_FOUND', () => get(`/api/registryusers/${noRolesUserId}/exists`, noRolesAccessToken).expect(NOT_FOUND));
-      it('count: NOT_FOUND', () => get('/api/registryusers/count', noRolesAccessToken).expect(NOT_FOUND));
+      it('count: UNAUTHORIZED', () => get('/api/registryusers/count', noRolesAccessToken).expect(UNAUTHORIZED));
 
       it('create: NOT_FOUND', () => post('/api/registryusers', userFixtureToCreate, noRolesAccessToken).expect(NOT_FOUND));
       it('deleteById (other user): NOT_FOUND', () => del(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(NOT_FOUND));
@@ -698,7 +698,7 @@ describe('http api access control', () => {
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: NOT_FOUND', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, noRolesAccessToken).expect(NOT_FOUND));
-      it('confirm email: NOT_FOUND', () => get('/api/registryusers/confirm', noRolesAccessToken).expect(NOT_FOUND));
+      it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', noRolesAccessToken).expect(UNAUTHORIZED));
 
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, noRolesAccessToken).expect(UNAUTHORIZED));
       it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, noRolesAccessToken).expect(UNAUTHORIZED));
@@ -711,10 +711,10 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', registryUserAccessToken).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
       it('findById (own): ok', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(OK));
-      it('findOne: NOT_FOUND', () => get('/api/registryusers/findOne', registryUserAccessToken).expect(NOT_FOUND));
+      it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', registryUserAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): NOT_FOUND', () => get(`/api/registryusers/${otherUserId}/exists`, registryUserAccessToken).expect(NOT_FOUND));
       it('exists (own): NOT_FOUND', () => get(`/api/registryusers/${registryUserId}/exists`, registryUserAccessToken).expect(NOT_FOUND));
-      it('count: NOT_FOUND', () => get('/api/registryusers/count', registryUserAccessToken).expect(NOT_FOUND));
+      it('count: UNAUTHORIZED', () => get('/api/registryusers/count', registryUserAccessToken).expect(UNAUTHORIZED));
 
       it('create: NOT_FOUND', () => post('/api/registryusers', userFixtureToCreate, registryUserAccessToken).expect(NOT_FOUND));
       it('deleteById (other user): NOT_FOUND', () => del(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(NOT_FOUND));
@@ -728,7 +728,7 @@ describe('http api access control', () => {
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null,  accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: NOT_FOUND', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryUserAccessToken).expect(NOT_FOUND));
-      it('confirm email: NOT_FOUND', () => get('/api/registryusers/confirm', registryUserAccessToken).expect(NOT_FOUND));
+      it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryUserAccessToken).expect(UNAUTHORIZED));
 
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, registryUserAccessToken).expect(UNAUTHORIZED));
       it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryUserAccessToken).expect(UNAUTHORIZED));
@@ -739,12 +739,12 @@ describe('http api access control', () => {
       before(() => testUtils.loginUser('registryAdmin', 'salasana').tap(at => accessTokenForLogout = at.id));
 
       it('find: ok', () => get('/api/registryusers', registryAdminAccessToken).expect(OK));
-      it('findById (other user): ok', () => get(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(OK));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('findById (own): ok', () => get(`/api/registryusers/${registryAdminUserId}`, registryAdminAccessToken).expect(OK));
-      it('findOne: NOT_FOUND', () => get('/api/registryusers/findOne', registryAdminAccessToken).expect(NOT_FOUND));
+      it('findOne: UNAUTHORIZED', () => get('/api/registryusers/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('exists (other user): NOT_FOUND', () => get(`/api/registryusers/${otherUserId}/exists`, registryAdminAccessToken).expect(NOT_FOUND));
       it('exists (own): NOT_FOUND', () => get(`/api/registryusers/${registryAdminUserId}/exists`, registryAdminAccessToken).expect(NOT_FOUND));
-      it('count: NOT_FOUND', () => get('/api/registryusers/count', registryAdminAccessToken).expect(NOT_FOUND));
+      it('count: UNAUTHORIZED', () => get('/api/registryusers/count', registryAdminAccessToken).expect(UNAUTHORIZED));
 
       it('create: NOT_FOUND', () => post('/api/registryusers', userFixtureToCreate, registryAdminAccessToken).expect(NOT_FOUND));
       it('deleteById (other user): NOT_FOUND', () => del(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(NOT_FOUND));
@@ -758,7 +758,7 @@ describe('http api access control', () => {
       //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
       it('password reset: NOT_FOUND', () => post('/api/registryusers/reset', { email: 'derp@durp.com' }, registryAdminAccessToken).expect(NOT_FOUND));
-      it('confirm email: NOT_FOUND', () => get('/api/registryusers/confirm', registryAdminAccessToken).expect(NOT_FOUND));
+      it('confirm email: UNAUTHORIZED', () => get('/api/registryusers/confirm', registryAdminAccessToken).expect(UNAUTHORIZED));
 
       it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, registryAdminAccessToken).expect(NO_CONTENT));
       it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryAdminAccessToken).expect(NO_CONTENT));
