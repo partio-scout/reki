@@ -471,20 +471,6 @@
       "property": "massAssignField"
     },
     {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "roihuapp",
-      "permission": "ALLOW",
-      "property": "getParticipantInformationForApp"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "registryUser",
-      "permission": "DENY",
-      "property": "getParticipantInformationForApp"
-    },
-    {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
       "principalId": "$everyone",
