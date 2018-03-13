@@ -78,39 +78,15 @@ describe('Audit Event', () => {
       .expect(200);
   }
 
-  // Test registryuser audit logs
-  it('should create audit event when creating registryuser', () =>
-    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
-    .then(id =>
-      expectAuditEventToEventuallyExist({
-        'eventType': 'add',
-        'model': 'RegistryUser',
-        'modelId': id,
-      })
-    )
-  );
-
-  it('should create audit event when updating registryuser', () =>
-    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
-      .then(userId => postChangesToDb('RegistryUsers', userId, accessToken, { 'firstName': 'Muutos' })
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'update',
-          'model': 'RegistryUser',
-          'modelId': userId,
-        }))
-      )
-  );
-
-  it('should create audit event when finding registryuser', () =>
-    postInstanceToDb('RegistryUsers', testUser, accessToken, 'id')
-      .then(userId => queryInstanceFromDb('RegistryUsers', userId, accessToken)
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'find',
-          'model': 'RegistryUser',
-          'modelId': userId,
-        }))
-      )
-  );
+  it('should create audit event when finding registryusers', async () => {
+    await testUtils.createFixture('RegistryUser', testUser);
+    await request(app).get(`/api/registryusers/?access_token=${accessToken}`)
+      .expect(200);
+    await expectAuditEventToEventuallyExist({
+      'eventType': 'find',
+      'model': 'RegistryUser',
+    });
+  });
 
   it('should create audit event when finding participant', () =>
     testUtils.createFixture('Participant', testParticipant)

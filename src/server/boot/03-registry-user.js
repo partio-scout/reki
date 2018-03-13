@@ -1,8 +1,8 @@
 export default function(app){
   app.get('/api/registryusers', app.requirePermission('view registry users'), async (req, res) => {
+    await app.models.AuditEvent.createEvent.Registryuser(req.user.id, 0, 'find');
     const users = await app.models.RegistryUser.find();
     res.json(users);
-    app.models.AuditEvent.createEvent.Registryuser(req.user.id, 0, 'find');
   });
 
   app.get('/api/registryusers/:id', app.requirePermission('view own user information'), async (req, res) => {
