@@ -101,4 +101,17 @@ describe('RegistryUser', () => {
     expect(app.models.RegistryUser.isBlocked(user)).is.false;
   });
 
+  it('logout should destroy accestoken from query param', async () => {
+    await request(app).post(`/api/registryusers/logout?access_token=${accessTokenAdmin}`)
+    .expect(204);
+    expect(await app.models.AccessToken.findById(accessTokenAdmin)).to.be.null;
+  });
+
+  it('logout should destroy accestoken with Authorization header', async () => {
+    await request(app).post('/api/registryusers/logout')
+    .set('Authorization', accessTokenAdmin)
+    .expect(204);
+    expect(await app.models.AccessToken.findById(accessTokenAdmin)).to.be.null;
+  });
+
 });

@@ -43,4 +43,14 @@ export default function(app){
     });
   });
 
+  app.post('/api/registryusers/logout', async (req, res) => {
+    try {
+      await app.models.RegistryUser.logout(req.query.access_token || req.get('Authorization'));
+      res.status(204).send('');
+    } catch (e) {
+      console.error(e);
+      res.status(500).send('Internal server error');
+    }
+  });
+
 }
