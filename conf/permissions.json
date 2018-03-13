@@ -7,7 +7,7 @@
   ],
   "registryAdmin": [
     "perform disallowed test action",
-    "view registy users",
+    "view registry users",
     "view own user information",
     "create registry users",
     "block and unblock users"
