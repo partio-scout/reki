@@ -312,45 +312,6 @@ export default function (Participant) {
     }
   };
 
-  Participant.getParticipantInformationForApp = (memberNumber, email, cb) => {
-    const findParticipant = Promise.promisify(Participant.findOne, { context: Participant });
-    Promise.try(() => {
-      if (!(memberNumber || email)) {
-        const err = new Error('email or memberNumber is required!');
-        err.status = 400;
-        throw err;
-      }
-
-      return memberNumber ? { memberNumber: memberNumber } : { email: email };
-    }).then(where =>
-      findParticipant({
-        where: where,
-        fields: [
-          'firstName',
-          'lastName',
-          'phoneNumber',
-          'localGroup',
-          'campGroup',
-          'subCamp',
-          'village',
-          'ageGroup',
-          'memberNumber',
-          'email',
-          'nickname',
-          'country',
-        ],
-      }
-    )).then(participant => {
-      if (!participant) {
-        const err = new Error('Participant not found');
-        err.status = 404;
-        throw err;
-      } else {
-        return participant;
-      }
-    }).asCallback(cb);
-  };
-
   Participant.participantAmount = (subCamp, cb) => {
     const countParticipants = Promise.promisify(Participant.count, { context: Participant });
     const filter = { presence: 3 };
@@ -370,17 +331,6 @@ export default function (Participant) {
         { arg: 'newValue', type: 'string', required: 'true' },
       ],
       returns: { arg: 'result', type: 'string' },
-    }
-  );
-
-  Participant.remoteMethod('getParticipantInformationForApp',
-    {
-      http: { path: '/appInformation', verb: 'get' },
-      accepts: [
-        { arg: 'memberNumber', type: 'string', required: false },
-        { arg: 'email', type: 'string', required: false },
-      ],
-      returns: { type: 'object', root: true },
     }
   );
 

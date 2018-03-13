@@ -24,8 +24,7 @@
     "fetch-from-kuksa": "npm run clear-temporary-tables && npm run fetch-data && npm run rebuild-tables",
     "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
     "console": "echo 'Run .load scripts/console-utils.js to use utils' && babel-node",
-    "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js",
-    "create-roihuapp-token": "babel-node scripts/create-roihuapp-token.js"
+    "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js"
   },
   "dependencies": {
     "alt": "^0.18.2",
