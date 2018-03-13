@@ -2,10 +2,15 @@
   "registryUser": [
     "perform allowed test action",
     "view searchfilters",
+    "view own user information",
     "modify searchfilters"
   ],
   "registryAdmin": [
-    "perform disallowed test action"
+    "perform disallowed test action",
+    "view registy users",
+    "view own user information",
+    "create registry users",
+    "block and unblock users"
   ],
   "roihuapp": []
 }
