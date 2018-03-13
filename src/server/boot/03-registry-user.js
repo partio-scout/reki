@@ -2,15 +2,18 @@ export default function(app){
   app.get('/api/registryusers', app.requirePermission('view registry users'), async (req, res) => {
     const users = await app.models.RegistryUser.find();
     res.json(users);
+    app.models.AuditEvent.createEvent.Registryuser(req.user.id, 0, 'find');
   });
 
   app.get('/api/registryusers/:id', app.requirePermission('view own user information'), async (req, res) => {
     try {
       if (req.user.id === +req.params.id){
-        const users = await app.models.RegistryUser.findById(req.params.id, { include: 'rekiRoles' });
-        res.json(users);
+        const user = await app.models.RegistryUser.findById(req.params.id, { include: 'rekiRoles' });
+        res.json(user);
+        app.models.AuditEvent.createEvent.Registryuser(req.user.id, user.id, 'find');
       } else {
         return res.status(401).send('Unauthorized');
+        app.models.AuditEvent.createEvent.Registryuser(req.user.id, user.id, 'find:unauthorized');
       }
     } catch (e) {
       console.error(e);
@@ -24,6 +27,7 @@ export default function(app){
         res.status(500).send('Internal server error');
       } else {
         res.status(204).send('');
+        app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'block');
       }
     });
   });
@@ -34,6 +38,7 @@ export default function(app){
         res.status(500).send('Internal server error');
       } else {
         res.status(204).send('');
+        app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'add');
       }
     });
   });
