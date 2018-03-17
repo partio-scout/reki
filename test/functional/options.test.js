@@ -23,18 +23,18 @@ const testOptions = [
   {
     'id':0,
     'property': 'village',
-    'value': 'Mallikylä'
+    'value': 'Mallikylä',
   },
   {
     'id':1,
     'property': 'village',
-    'value': 'muu'
+    'value': 'muu',
   },
   {
     'id':2,
     'property': 'campGroup',
-    'value': 'muu'
-  }
+    'value': 'muu',
+  },
 ];
 
 describe('Options', () => {
@@ -47,6 +47,12 @@ describe('Options', () => {
     await testUtils.createFixture('Option', testOptions);
     accessToken = accessToken.id;
   });
+
+  afterEach( async () => {
+    await testUtils.deleteFixturesIfExist('Option');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
+  });
+
 
   it('GET request to options', async () =>
     await request(app)

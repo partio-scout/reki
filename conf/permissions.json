@@ -10,7 +10,6 @@
     "perform disallowed test action",
     "view registry users",
     "view own user information",
-    "create registry users",
     "block and unblock users"
   ]
 }

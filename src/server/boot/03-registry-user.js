@@ -37,7 +37,7 @@ export default function(app){
         res.status(500).send('Internal server error');
       } else {
         res.status(204).send('');
-        app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'add');
+        app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
       }
     });
   });

@@ -61,12 +61,18 @@ describe('particpantDates', () => {
 
   let accessToken = null;
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     await resetDatabase();
     accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
     await testUtils.createFixture('Participant', testParticipants);
     await testUtils.createFixture('ParticipantDate', testParticipantDates);
     accessToken = accessToken.id;
+  });
+
+  afterEach(async () => {
+    await testUtils.deleteFixturesIfExist('Participant');
+    await testUtils.deleteFixturesIfExist('ParticipantDate');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   it('GET request to participantdates', async () =>

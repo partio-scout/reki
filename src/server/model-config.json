@@ -46,7 +46,7 @@
   },
   "Option": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "AuditEvent": {
     "dataSource": "db",
