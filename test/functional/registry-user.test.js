@@ -50,7 +50,7 @@ describe('RegistryUser', () => {
   beforeEach( async () => {
     await resetDatabase();
     await testUtils.createUserWithRoles(['registryUser'], blockedUser);
-    accessTokenUser = await testUtils.createUserAndGetAccessToken(['registryUser'], unbLockedUser);
+    accessTokenUser = await testUtils.createUserAndGetAccessToken(['registryUser'], unBLockedUser);
     accessTokenUser = accessTokenUser.id;
     accessTokenAdmin = await testUtils.createUserAndGetAccessToken(['registryAdmin'], testUser);
     accessTokenAdmin = accessTokenAdmin.id;

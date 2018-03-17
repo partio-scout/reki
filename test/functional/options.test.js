@@ -53,7 +53,6 @@ describe('Options', () => {
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
-
   it('GET request to options', async () =>
     await request(app)
     .get(`/api/options/?access_token=${accessToken}`)
