@@ -30,7 +30,7 @@
   },
   "ParticipantDate": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "PresenceHistory": {
     "dataSource": "db",
