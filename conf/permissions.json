@@ -3,7 +3,8 @@
     "perform allowed test action",
     "view searchfilters",
     "view own user information",
-    "modify searchfilters"
+    "modify searchfilters",
+    "view participants"
   ],
   "registryAdmin": [
     "perform disallowed test action",
