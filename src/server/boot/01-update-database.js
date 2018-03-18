@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import { getModelCreationList } from '../../common/models-list';
+import { models, sequelize } from '../models';
 
 export default function(server, cb) {
   if (!server.get('standalone')) {
@@ -17,5 +18,6 @@ export default function(server, cb) {
       ? console.log('Database models are up to date.')
       : db.autoupdate(modelsToUpdate).then(() => console.log(`Models: ${modelsToUpdate} updated.`)))
     .catch(err => { console.error(`Error: ${err} when autoupdating models: ${modelsToUpdate}`); return Promise.reject(err); })
+    .then(() => sequelize.sync())
     .asCallback(cb);
 }

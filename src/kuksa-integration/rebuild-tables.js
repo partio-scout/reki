@@ -1,12 +1,16 @@
 import app from '../server/server';
+import sequelize from 'sequelize';
+import { models } from '../server/models';
 import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
 import paymentToDateMappings from '../../conf/payment-date-mappings.json';
 import optionFields from '../../conf/option-fields.json';
 
-const KuksaParticipant = app.models.KuksaParticipant;
-const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
+const Op = sequelize.Op;
+
+//TODO remove debug
+const tap = val => { console.log('TAP:', val); return val; }
 
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
@@ -37,13 +41,13 @@ function main() {
 function buildAllergyTable() {
   // Get all the possible allergies as Allergy-instances
   const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
-  const findExtraSelectionGroups = Promise.promisify(app.models.KuksaExtraSelectionGroup.find, { context: app.models.KuksaExtraSelectionGroup });
-  const findExtraSelections = Promise.promisify(app.models.KuksaExtraSelection.find, { context: app.models.KuksaExtraSelection });
 
   console.log('Rebuilding allergies table...');
-
-  return findExtraSelectionGroups({ where: { name: { inq: ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'] } } })
-    .then(selGroups => findExtraSelections({ where: { groupId: { inq: _.map(selGroups, group => group.id) } } }))
+  return models.KuksaExtraSelectionGroup.findAll({ where: { name: { [Op.in]: [
+      'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+      'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'
+    ] } } })
+    .then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
     .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
     .then(selections => Promise.each(selections, s => upsertAllergy(s)));
 }
@@ -84,18 +88,19 @@ function rebuildParticipantsTable() {
 
   console.log('Rebuilding participants table...');
 
-  return findKuksaParticipants({
+  return models.KuksaParticipant.findAll({
     include: [
-      { 'localGroup': 'subCamp' },
-      'campGroup',
-      'subCamp',
-      'village',
-      { 'extraInfos': 'field' },
-      { 'extraSelections': 'group' },
-      'paymentStatus',
+      //TODO fix missing associations
+      //{ 'kuksa_localgroup': 'kuksa_subcamp' },
+      'kuksa_campgroup',
+      'kuksa_subcamp',
+      'kuksa_village',
+      //{ 'extraInfos': 'field' },
+      //{ 'extraSelections': 'group' },
+      'kuksa_participantpaymentstatus',
     ],
   })
-  .then(participants => participants.map(participant => participant.toObject()))
+  //.then(participants => participants.map(participant => participant.toObject()))
   .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
@@ -146,12 +151,18 @@ function addAllergiesToParticipants() {
 
   function findParticipantsAllergies(participant) {
     const findAllergies = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
-    const findSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
 
     return findAllergies()
     .then(allergies => _.map(allergies, 'allergyId'))
-    .then(allergies => findSelections({ where: { and: [{ participantId: participant.participantId }, { selectionId: { inq: allergies } }] } }))
-    .then(participantsAllergies => _.map(participantsAllergies, 'selectionId'));
+    .then(allergies => models.KuksaParticipantExtraSelection.findAll({
+      where: {
+        [Op.and]: [
+          { kuksaParticipantId: participant.participantId },
+          { kuksaExtraselectionId: { [Op.in]: allergies } }
+        ]
+      }
+    }))
+    .then(participantsAllergies => _.map(participantsAllergies, 'kuksaExtraselectionId'));
   }
 
   console.log('Adding allergies and diets to participants...');
@@ -164,12 +175,11 @@ function addAllergiesToParticipants() {
 
 function addDatesToParticipants() {
   const ParticipantDate = app.models.ParticipantDate;
-  const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
   const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
   const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
 
   console.log('Adding dates to participants...');
-  return findKuksaParticipants({ include: 'payments' }).each(setParticipantDates);
+  return models.KuksaParticipant.findAll({ include: 'kuksa_payments' }).each(setParticipantDates);
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
@@ -193,7 +203,6 @@ function buildSelectionTable() {
   const Selection = app.models.Selection;
   const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
   const createSelections = Promise.promisify(Selection.create, { context: Selection });
-  const findKuksaParticipantExtraSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
   const groupsToCreate = [
     '0-11-vuotias lapsi osallistuu',
     'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
@@ -208,8 +217,9 @@ function buildSelectionTable() {
   return destroyAllSelections()
   .then(() => findParticipants())
   .then(participants => Promise.each(participants, p =>
-    findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
-    .then(participantSelections => participantSelections.map(selections => selections.toObject()))
+    //TODO fix association below
+    models.KuksaParticipantExtraSelection.findAll({ where: { kuksaParticipantId: p.participantId }/*, include: { selection: 'group' }*/ })
+    //.then(participantSelections => participantSelections.map(selections => selections.toObject()))
     .then(participantSelections => _.filter(participantSelections, s => !!(s.selection && s.selection.group))) // Apparently some selections don't have a group, so handle only selections with group
     .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
@@ -225,7 +235,7 @@ function buildSelectionTable() {
 
 function deleteCancelledParticipants() {
   console.log('Deleting cancelled participants...');
-  return findKuksaParticipants({ where: { cancelled: true } })
+  return models.KuksaParticipant.findAll({ where: { cancelled: true } })
     .then(participants => _.map(participants, 'id'))
     .then(idsToDelete => destroyAllParticipants({ participantId: { inq: idsToDelete } }))
     .then(info => console.log(`Deleted ${info.count} cancelled participants.`));

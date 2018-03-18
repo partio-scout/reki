@@ -1,4 +1,5 @@
 import app from '../server/server';
+import { models } from '../server/models';
 import Promise from 'bluebird';
 import EventEmitter from 'events';
 
@@ -21,12 +22,7 @@ const modelsToClear = [
 ];
 
 function clearTemporaryTables() {
-  function clearTable(model) {
-    const destroyAll = Promise.promisify(app.models[model].destroyAll, { context: app.models[model] });
-    return destroyAll();
-  }
-
-  return Promise.each(modelsToClear, model => clearTable(model));
+  return Promise.each(modelsToClear, model => models[model].destroy({ where: {} }));
 }
 
 if (require.main === module) {

@@ -1,4 +1,5 @@
 import app from '../server/server';
+import { models } from '../server/models';
 import Promise from 'bluebird';
 import moment from 'moment';
 import transfer from './transfer';
@@ -43,11 +44,11 @@ function transferTablesOnlyOnce(eventApi) {
   return transfer([
     {
       getFromSource: eventApi.getSubCamps,
-      targetModel: app.models.KuksaSubCamp,
+      targetModel: models.KuksaSubCamp,
     },
     {
       getFromSource: eventApi.getVillages,
-      targetModel: app.models.KuksaVillage,
+      targetModel: models.KuksaVillage,
       transform: village => ({
         id: village.id,
         subCampId: village.subCamp,
@@ -56,7 +57,7 @@ function transferTablesOnlyOnce(eventApi) {
     },
     {
       getFromSource: eventApi.getCampGroups,
-      targetModel: app.models.KuksaCampGroup,
+      targetModel: models.KuksaCampGroup,
       transform: campGroup => ({
         id: campGroup.id,
         subCampId: campGroup.subCamp,
@@ -66,7 +67,7 @@ function transferTablesOnlyOnce(eventApi) {
     },
     {
       getFromSource: eventApi.getLocalGroups,
-      targetModel: app.models.KuksaLocalGroup,
+      targetModel: models.KuksaLocalGroup,
       transform: localGroup => ({
         id: localGroup.id,
         subCampId: localGroup.subCamp,
@@ -81,7 +82,7 @@ function transferTablesOnlyOnce(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraInfoFields,
-      targetModel: app.models.KuksaExtraInfoField,
+      targetModel: models.KuksaExtraInfoField,
       transform: field => ({
         id: field.id,
         name: field.name.fi,
@@ -89,7 +90,7 @@ function transferTablesOnlyOnce(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraSelectionGroups,
-      targetModel: app.models.KuksaExtraSelectionGroup,
+      targetModel: models.KuksaExtraSelectionGroup,
       transform: group => ({
         id: group.id,
         name: group.name.fi,
@@ -97,16 +98,16 @@ function transferTablesOnlyOnce(eventApi) {
     },
     {
       getFromSource: eventApi.getExtraSelections,
-      targetModel: app.models.KuksaExtraSelection,
+      targetModel: models.KuksaExtraSelection,
       transform: selection => ({
         id: selection.id,
-        groupId: selection.extraSelectionGroup,
+        kuksaExtraselectiongroupId: selection.extraSelectionGroup,
         name: selection.name.fi,
       }),
     },
     {
       getFromSource: eventApi.getPayments,
-      targetModel: app.models.KuksaPayment,
+      targetModel: models.KuksaPayment,
       transform: field => ({
         id: field.id,
         name: field.name.fi,
@@ -121,7 +122,7 @@ function transferParticipants(eventApi) {
     return transfer([
       {
         getFromSource: eventApi.getParticipants,
-        targetModel: app.models.KuksaParticipant,
+        targetModel: models.KuksaParticipant,
         transform: participant => ({
           id: participant.id,
           firstName: participant.firstName || 'x',
@@ -144,9 +145,9 @@ function transferParticipants(eventApi) {
       },
       {
         getFromSource: eventApi.getParticipantExtraInfos,
-        targetModel: app.models.KuksaParticipantExtraInfo,
+        targetModel: models.KuksaParticipantExtraInfo,
         transform: answer => ({
-          participantId: answer.for,
+          kuksaParticipantId: answer.for,
           fieldId: answer.extraInfoField,
           value: answer.value && answer.value.substring(0, 254),
         }),
@@ -154,20 +155,20 @@ function transferParticipants(eventApi) {
       },
       {
         getFromSource: eventApi.getParticipantExtraSelections,
-        targetModel: app.models.KuksaParticipantExtraSelection,
+        targetModel: models.KuksaParticipantExtraSelection,
         transform: selection => ({
-          participantId: selection.from,
-          selectionId: selection.to,
+          kuksaParticipantId: selection.from,
+          kuksaExtraselectionId: selection.to,
         }),
         joinTable: true,
         dateRange: daterange,
       },
       {
         getFromSource: eventApi.getParticipantPayments,
-        targetModel: app.models.KuksaParticipantPayment,
+        targetModel: models.KuksaParticipantPayment,
         transform: field => ({
-          participantId: field.from,
-          paymentId: field.to,
+          kuksaParticipantId: field.from,
+          kuksaPaymentId: field.to,
         }),
         joinTable: true,
         dateRange: daterange,
@@ -189,7 +190,7 @@ function transferPayments(eventApi) {
   return transfer([
     {
       getFromSource: eventApi.getParticipantPaymentStatus,
-      targetModel: app.models.KuksaParticipantPaymentStatus,
+      targetModel: models.KuksaParticipantPaymentStatus,
       transform: status => ({
         participantId: status.for,
         billed: status.billed,

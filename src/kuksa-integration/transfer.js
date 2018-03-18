@@ -11,12 +11,12 @@ export default function transfer(models) {
 }
 
 function transferModel(model) {
-  const opts = { context: model.targetModel };
-  const create = Promise.promisify(model.targetModel.create, opts);
-  const destroyExisting = Promise.promisify(model.targetModel.destroyAll, opts);
   const recreate = objects => recreateObjects(model.targetModel, objects);
   const upsert = objects => upsertObjects(model.targetModel, objects);
-  const recreateAll = objects => destroyExisting().then(() => create(objects));
+  const recreateAll = async objects => {
+    await model.targetModel.destroy({ where: {} });
+    await model.targetModel.bulkCreate(objects);
+  }
 
   return model.getFromSource(model.dateRange)
     .then(transformWith(model.transform))
@@ -35,15 +35,15 @@ function transferModel(model) {
 }
 
 function recreateObjects(model, objects) {
-  const destroy = Promise.promisify(model.destroyAll, { context: model });
-  const create = Promise.promisify(model.create, { context: model });
-  const recreates = _.map(objects, obj => () => destroy(obj).then(() => create(obj)));
+  const recreates = _.map(objects, obj => async () => {
+    await model.destroy({ where: obj });
+    await model.create(obj);
+  });
   return waterfall(recreates);
 }
 
 function upsertObjects(model, objects) {
-  const upsertObject = Promise.promisify(model.upsert, { context: model });
-  const upserts = _.map(objects, obj => () => upsertObject(obj));
+  const upserts = _.map(objects, obj => () => model.upsert(obj));
   return waterfall(upserts);
 }
 
