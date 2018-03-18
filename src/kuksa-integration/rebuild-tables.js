@@ -54,7 +54,7 @@ function buildAllergyTable() {
 
 function rebuildParticipantsTable() {
   function getInfoForField(participant, fieldName) {
-    const field = _.find(participant.extraInfos, o => _.get(o, 'field.name') === fieldName);
+    const field = _.find(participant.kuksa_participantextrainfos, o => _.get(o, 'kuksa_extrainfofield.name') === fieldName);
     return field ? field.value : null;
   }
 
@@ -95,11 +95,17 @@ function rebuildParticipantsTable() {
       'kuksa_campgroup',
       'kuksa_subcamp',
       'kuksa_village',
+      {
+        model: models.KuksaParticipantExtraInfo,
+        include: [ models.KuksaExtraInfoField ]
+      },
       //{ 'extraInfos': 'field' },
       //{ 'extraSelections': 'group' },
       'kuksa_participantpaymentstatus',
     ],
   })
+  .then(tap)
+  .then(x => { console.log(_.map(x, y => y.kuksa_participantextrainfos)); return x; })
   //.then(participants => participants.map(participant => participant.toObject()))
   .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({

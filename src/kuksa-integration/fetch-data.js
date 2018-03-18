@@ -148,7 +148,7 @@ function transferParticipants(eventApi) {
         targetModel: models.KuksaParticipantExtraInfo,
         transform: answer => ({
           kuksaParticipantId: answer.for,
-          fieldId: answer.extraInfoField,
+          kuksaExtrainfofieldId: answer.extraInfoField,
           value: answer.value && answer.value.substring(0, 254),
         }),
         dateRange: daterange,
