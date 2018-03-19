@@ -159,7 +159,7 @@ const KuksaVillage = db.define('kuksa_village', {
 // Relationships
 
 KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup);
-KuksaExtraSelection.hasMany(KuksaParticipant);
+KuksaExtraSelection.belongsToMany(KuksaParticipant, {through: KuksaParticipantExtraSelection});
 
 KuksaLocalGroup.belongsTo(KuksaCampGroup);
 KuksaLocalGroup.belongsTo(KuksaSubCamp);
@@ -169,6 +169,7 @@ KuksaParticipant.belongsTo(KuksaCampGroup);
 KuksaParticipant.belongsTo(KuksaVillage);
 KuksaParticipant.belongsTo(KuksaSubCamp);
 KuksaParticipant.hasMany(KuksaParticipantExtraInfo);
+KuksaParticipant.belongsToMany(KuksaExtraSelection, {through: KuksaParticipantExtraSelection});
 KuksaParticipant.hasOne(KuksaParticipantPaymentStatus);
 //KuksaParticipant.hasMany(KuksaPayment);
 
@@ -177,9 +178,6 @@ KuksaPayment.belongsToMany(KuksaParticipant, {through: KuksaParticipantPayment})
 
 KuksaParticipantExtraInfo.belongsTo(KuksaParticipant);
 KuksaParticipantExtraInfo.belongsTo(KuksaExtraInfoField);
-
-KuksaParticipantExtraSelection.belongsTo(KuksaParticipant);
-KuksaParticipantExtraSelection.belongsTo(KuksaExtraSelection);
 
 // Exports
 

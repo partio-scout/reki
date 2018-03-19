@@ -59,7 +59,7 @@ function rebuildParticipantsTable() {
   }
 
   function getSelectionForGroup(participant, fieldName) {
-    const selection = _.find(participant.extraSelections, o => _.get(o, 'group.name') === fieldName);
+    const selection = _.find(participant.kuksa_extraselections, o => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName);
     return selection ? selection.name : null;
   }
 
@@ -99,13 +99,16 @@ function rebuildParticipantsTable() {
         model: models.KuksaParticipantExtraInfo,
         include: [ models.KuksaExtraInfoField ]
       },
-      //{ 'extraInfos': 'field' },
+      {
+        model: models.KuksaExtraSelection,
+        include: models.KuksaExtraSelectionGroup
+      },
       //{ 'extraSelections': 'group' },
       'kuksa_participantpaymentstatus',
     ],
   })
   .then(tap)
-  .then(x => { console.log(_.map(x, y => y.kuksa_participantextrainfos)); return x; })
+  .then(x => { console.log(_.map(x, y => y.kuksa_extraselections)); return x; })
   //.then(participants => participants.map(participant => participant.toObject()))
   .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({
