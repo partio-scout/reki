@@ -4,18 +4,7 @@ import { resetDatabase } from '../../scripts/seed-database';
 import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 
-const testUser = {
-  'id': 3,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
-describe.skip('Search', () => {
+describe('Search', () => {
   let accessToken;
 
   // Only run this once because it's so heavy and these tests don't change state
@@ -28,10 +17,10 @@ describe.skip('Search', () => {
     });
   });
 
-  beforeEach(async () => {
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    accessToken = accessToken.id;
-  });
+  beforeEach(() =>
+    testUtils.createUserAndGetAccessToken(['registryUser'], { username: 'testuser' })
+      .then(token => { accessToken = token; })
+  );
 
   it('should initally display all results', () =>
     browser
