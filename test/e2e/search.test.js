@@ -8,7 +8,7 @@ describe('Search', () => {
   let accessToken;
 
   // Only run this once because it's so heavy and these tests don't change state
-  before(function(done) {
+  before.skip(function(done) {
     this.timeout(80000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
