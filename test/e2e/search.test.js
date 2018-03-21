@@ -4,11 +4,11 @@ import { resetDatabase } from '../../scripts/seed-database';
 import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 
-describe('Search', () => {
+describe.skip('Search', () => {
   let accessToken;
 
   // Only run this once because it's so heavy and these tests don't change state
-  before.skip(function(done) {
+  before(function(done) {
     this.timeout(80000);
     return resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
