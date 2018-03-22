@@ -22,7 +22,7 @@
   },
   "RegistryUser": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "Participant": {
     "dataSource": "db",
@@ -30,7 +30,7 @@
   },
   "ParticipantDate": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "PresenceHistory": {
     "dataSource": "db",
@@ -46,7 +46,7 @@
   },
   "Option": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "AuditEvent": {
     "dataSource": "db",
