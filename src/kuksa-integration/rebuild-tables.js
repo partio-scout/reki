@@ -9,9 +9,6 @@ import optionFields from '../../conf/option-fields.json';
 
 const Op = sequelize.Op;
 
-//TODO remove debug
-const tap = val => { console.log('TAP:', val); return val; }
-
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
 const findParticipants = Promise.promisify(Participant.find, { context: Participant });
@@ -43,11 +40,16 @@ function buildAllergyTable() {
   const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
 
   console.log('Rebuilding allergies table...');
-  return models.KuksaExtraSelectionGroup.findAll({ where: { name: { [Op.in]: [
-      'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-      'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'
-    ] } } })
-    .then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
+  return models.KuksaExtraSelectionGroup.findAll({
+    where: {
+      name: {
+        [Op.in]: [
+          'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+          'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+        ],
+      },
+    },
+  }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
     .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
     .then(selections => Promise.each(selections, s => upsertAllergy(s)));
 }
@@ -90,30 +92,26 @@ function rebuildParticipantsTable() {
 
   return models.KuksaParticipant.findAll({
     include: [
-      //TODO fix missing associations
       {
         model: models.KuksaLocalGroup,
-        include: [ models.KuksaSubCamp ]
+        include: [ models.KuksaSubCamp ],
       },
       models.KuksaCampGroup,
       models.KuksaSubCamp,
       models.KuksaVillage,
       {
         model: models.KuksaParticipantExtraInfo,
-        include: [ models.KuksaExtraInfoField ]
+        include: [ models.KuksaExtraInfoField ],
       },
       {
         model: models.KuksaExtraSelection,
-        include: models.KuksaExtraSelectionGroup
+        include: models.KuksaExtraSelectionGroup,
       },
-      //{ 'extraSelections': 'group' },
       models.KuksaParticipantPaymentStatus,
     ],
   })
-  //.then(tap)
-  .then(x => { console.log(_.map(x, y => y.kuksa_participantpaymentstatus)); return x; })
-  //.then(participants => participants.map(participant => participant.toObject()))
-  .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
+  // don't add participants that are cancelled
+  .then(participants => _.filter(participants, p => !p.cancelled))
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
     firstName: participant.firstName,
@@ -170,9 +168,9 @@ function addAllergiesToParticipants() {
       where: {
         [Op.and]: [
           { kuksaParticipantId: participant.participantId },
-          { kuksaExtraselectionId: { [Op.in]: allergies } }
-        ]
-      }
+          { kuksaExtraselectionId: { [Op.in]: allergies } },
+        ],
+      },
     }))
     .then(participantsAllergies => _.map(participantsAllergies, 'kuksaExtraselectionId'));
   }
@@ -195,7 +193,6 @@ function addDatesToParticipants() {
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    console.log(kuksaParticipant)
     destroyParticipantDates({ participantId: kuksaParticipant.id })
       .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
   }
@@ -235,7 +232,7 @@ function buildSelectionTable() {
       where: { kuksaParticipantId: p.participantId },
       include: {
         model: models.KuksaExtraSelection,
-        include: [ models.KuksaExtraSelectionGroup ]
+        include: [ models.KuksaExtraSelectionGroup ],
       },
     })
     .then(participantSelections => _.filter(participantSelections, s => !!(s.kuksa_extraselection && s.kuksa_extraselection.kuksa_extraselectiongroup))) // Apparently some selections don't have a group, so handle only selections with group

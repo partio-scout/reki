@@ -45,5 +45,5 @@ if (require.main === module) {
 
   resetDatabase()
     .catch(err => console.error('Database reset and seeding failed: ', err))
-    .finally(() => { db.disconnect(); sequelize.close() });
+    .finally(() => { db.disconnect(); sequelize.close(); });
 }

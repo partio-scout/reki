@@ -16,7 +16,7 @@ function transferModel(model) {
   const recreateAll = async objects => {
     await model.targetModel.destroy({ where: {} });
     await model.targetModel.bulkCreate(objects);
-  }
+  };
 
   return model.getFromSource(model.dateRange)
     .then(transformWith(model.transform))

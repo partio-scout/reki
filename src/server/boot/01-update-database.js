@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 import { getModelCreationList } from '../../common/models-list';
-import { models, sequelize } from '../models';
+import { sequelize } from '../models';
 
 export default function(server, cb) {
   if (!server.get('standalone')) {

@@ -1,4 +1,3 @@
-import app from '../server/server';
 import { models } from '../server/models';
 import Promise from 'bluebird';
 import moment from 'moment';
