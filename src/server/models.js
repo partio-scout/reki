@@ -173,8 +173,6 @@ KuksaParticipant.belongsToMany(KuksaExtraSelection, { through: KuksaParticipantE
 KuksaParticipantExtraSelection.belongsTo(KuksaExtraSelection);
 KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup);
 
-//KuksaParticipant.hasMany(KuksaPayment);
-
 KuksaParticipant.belongsToMany(KuksaPayment, { through: KuksaParticipantPayment });
 KuksaPayment.belongsToMany(KuksaParticipant, { through: KuksaParticipantPayment });
 

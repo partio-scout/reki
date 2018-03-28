@@ -19,19 +19,6 @@ const modelList = [
   ['AuditEvent', false],
   ['SearchFilter', false],
   ['Selection', false],
-  // ['KuksaSubCamp', false],
-  // ['KuksaVillage', false],
-  // ['KuksaCampGroup', false],
-  // ['KuksaLocalGroup', false],
-  // ['KuksaParticipant', false],
-  // ['KuksaExtraInfoField', false],
-  // ['KuksaParticipantExtraInfo', false],
-  // ['KuksaParticipantPaymentStatus', false],
-  // ['KuksaExtraSelectionGroup', false],
-  // ['KuksaExtraSelection', false],
-  // ['KuksaParticipantExtraSelection', false],
-  // ['KuksaPayment', false],
-  // ['KuksaParticipantPayment', false],
 ];
 
 export function getModelCreationList() {
