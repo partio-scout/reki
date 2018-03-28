@@ -74,7 +74,7 @@ function rebuildParticipantsTable() {
     if (participant.accommodation === 'Perheleirissä') {
       return 'Riehu';
     }
-    return _.get(participant, 'subCamp.name') || 'Muu';
+    return _.get(participant, 'kuksa_subcamp.name') || 'Muu';
   }
 
   function getAgeGroup(participant) {
@@ -91,10 +91,13 @@ function rebuildParticipantsTable() {
   return models.KuksaParticipant.findAll({
     include: [
       //TODO fix missing associations
-      //{ 'kuksa_localgroup': 'kuksa_subcamp' },
-      'kuksa_campgroup',
-      'kuksa_subcamp',
-      'kuksa_village',
+      {
+        model: models.KuksaLocalGroup,
+        include: [ models.KuksaSubCamp ]
+      },
+      models.KuksaCampGroup,
+      models.KuksaSubCamp,
+      models.KuksaVillage,
       {
         model: models.KuksaParticipantExtraInfo,
         include: [ models.KuksaExtraInfoField ]
@@ -107,8 +110,8 @@ function rebuildParticipantsTable() {
       'kuksa_participantpaymentstatus',
     ],
   })
-  .then(tap)
-  .then(x => { console.log(_.map(x, y => y.kuksa_extraselections)); return x; })
+  //.then(tap)
+  .then(x => { console.log(_.map(x, y => y.kuksa_localgroup)); return x; })
   //.then(participants => participants.map(participant => participant.toObject()))
   .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({
@@ -125,14 +128,14 @@ function rebuildParticipantsTable() {
     internationalGuest: !!participant.localGroup,
     diet: participant.diet,
     accommodation: participant.accommodation || 'Muu',
-    localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
-    campGroup: _.get(participant, 'campGroup.name') || 'Muu',
+    localGroup: participant.representedParty || _.get(participant, 'kuksa_localgroup.name') || 'Muu',
+    campGroup: _.get(participant, 'kuksa_campgroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
-    village: _.get(participant, 'village.name') || 'Muu',
-    country: _.get(participant, 'localGroup.country') || 'Suomi',
+    village: _.get(participant, 'kuksa_village.name') || 'Muu',
+    country: _.get(participant, 'kuksa_localgroup.country') || 'Suomi',
     ageGroup: getAgeGroup(participant),
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
-    nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
+    nonScout: !participant.memberNumber && !_.get(participant, 'kuksa_localgroup.name'),
     staffPosition: getInfoForField(participant, 'Pesti'),
     staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
     willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),
