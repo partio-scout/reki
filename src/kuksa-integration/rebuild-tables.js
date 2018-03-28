@@ -107,11 +107,11 @@ function rebuildParticipantsTable() {
         include: models.KuksaExtraSelectionGroup
       },
       //{ 'extraSelections': 'group' },
-      'kuksa_participantpaymentstatus',
+      models.KuksaParticipantPaymentStatus,
     ],
   })
   //.then(tap)
-  .then(x => { console.log(_.map(x, y => y.kuksa_localgroup)); return x; })
+  .then(x => { console.log(_.map(x, y => y.kuksa_participantpaymentstatus)); return x; })
   //.then(participants => participants.map(participant => participant.toObject()))
   .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
   .then(participants => participants.map(participant => ({
@@ -121,11 +121,11 @@ function rebuildParticipantsTable() {
     nickname: participant.nickname,
     memberNumber: participant.memberNumber,
     dateOfBirth: participant.dateOfBirth,
-    billedDate: getPaymentStatus(participant.paymentStatus, 'billed'),
-    paidDate: getPaymentStatus(participant.paymentStatus, 'paid'),
+    billedDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'billed'),
+    paidDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'paid'),
     phoneNumber: participant.phoneNumber,
     email: participant.email,
-    internationalGuest: !!participant.localGroup,
+    internationalGuest: !!participant.kuksa_localgroup,
     diet: participant.diet,
     accommodation: participant.accommodation || 'Muu',
     localGroup: participant.representedParty || _.get(participant, 'kuksa_localgroup.name') || 'Muu',
@@ -191,18 +191,20 @@ function addDatesToParticipants() {
   const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
 
   console.log('Adding dates to participants...');
-  return models.KuksaParticipant.findAll({ include: 'kuksa_payments' }).each(setParticipantDates);
+  return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
+    console.log(kuksaParticipant)
     destroyParticipantDates({ participantId: kuksaParticipant.id })
       .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
-    return _(kuksaParticipant.payments)
+    return _(kuksaParticipant.kuksa_payments)
       .flatMap(payment => paymentToDateMappings[payment.name])
       .uniq()
+      .sort()
       .map(date => ({
         participantId: kuksaParticipant.id,
         date: moment(date).toDate(),

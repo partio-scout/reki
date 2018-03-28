@@ -192,7 +192,7 @@ function transferPayments(eventApi) {
       getFromSource: eventApi.getParticipantPaymentStatus,
       targetModel: models.KuksaParticipantPaymentStatus,
       transform: status => ({
-        participantId: status.for,
+        kuksaParticipantId: status.for,
         billed: status.billed,
         paid: status.paid,
       }),
