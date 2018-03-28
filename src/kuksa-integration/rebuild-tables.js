@@ -231,17 +231,21 @@ function buildSelectionTable() {
   return destroyAllSelections()
   .then(() => findParticipants())
   .then(participants => Promise.each(participants, p =>
-    //TODO fix association below
-    models.KuksaParticipantExtraSelection.findAll({ where: { kuksaParticipantId: p.participantId }/*, include: { selection: 'group' }*/ })
-    //.then(participantSelections => participantSelections.map(selections => selections.toObject()))
-    .then(participantSelections => _.filter(participantSelections, s => !!(s.selection && s.selection.group))) // Apparently some selections don't have a group, so handle only selections with group
-    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
+    models.KuksaParticipantExtraSelection.findAll({
+      where: { kuksaParticipantId: p.participantId },
+      include: {
+        model: models.KuksaExtraSelection,
+        include: [ models.KuksaExtraSelectionGroup ]
+      },
+    })
+    .then(participantSelections => _.filter(participantSelections, s => !!(s.kuksa_extraselection && s.kuksa_extraselection.kuksa_extraselectiongroup))) // Apparently some selections don't have a group, so handle only selections with group
+    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.kuksa_extraselection.kuksa_extraselectiongroup.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
-      participantId: sel.participantId,
-      kuksaGroupId: sel.selection.group.id,
-      kuksaSelectionId: sel.selection.id,
-      groupName: sel.selection.group.name.trim(),
-      selectionName: sel.selection.name,
+      participantId: sel.kuksaParticipantId,
+      kuksaGroupId: sel.kuksa_extraselection.kuksa_extraselectiongroup.id,
+      kuksaSelectionId: sel.kuksa_extraselection.id,
+      groupName: sel.kuksa_extraselection.kuksa_extraselectiongroup.name.trim(),
+      selectionName: sel.kuksa_extraselection.name,
     })))
     .then(selections => createSelections(selections))))
   .then(() => console.log('Selections table built.'));
