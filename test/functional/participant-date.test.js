@@ -57,7 +57,7 @@ const testUser = {
   'phoneNumber': '0000000003',
 };
 
-describe('particpantDates', () => {
+describe.skip('particpantDates', () => {
 
   let accessToken = null;
 
