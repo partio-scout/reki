@@ -58,7 +58,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
         <form className="form-inline">
           <DebouncedTextFieldContainer
             onChange={ handleChange }
-            currentSelection={ currentSelection }
+            currentTextValue={ currentSelection.textSearch }
           />
           <PropertyFilterContainer
             onChange={ handleChange }
