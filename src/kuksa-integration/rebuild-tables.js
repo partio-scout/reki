@@ -1,12 +1,13 @@
 import app from '../server/server';
+import sequelize from 'sequelize';
+import { models } from '../server/models';
 import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
 import paymentToDateMappings from '../../conf/payment-date-mappings.json';
 import optionFields from '../../conf/option-fields.json';
 
-const KuksaParticipant = app.models.KuksaParticipant;
-const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
+const Op = sequelize.Op;
 
 const Participant = app.models.Participant;
 const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
@@ -37,25 +38,30 @@ function main() {
 function buildAllergyTable() {
   // Get all the possible allergies as Allergy-instances
   const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
-  const findExtraSelectionGroups = Promise.promisify(app.models.KuksaExtraSelectionGroup.find, { context: app.models.KuksaExtraSelectionGroup });
-  const findExtraSelections = Promise.promisify(app.models.KuksaExtraSelection.find, { context: app.models.KuksaExtraSelection });
 
   console.log('Rebuilding allergies table...');
-
-  return findExtraSelectionGroups({ where: { name: { inq: ['Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.', 'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.'] } } })
-    .then(selGroups => findExtraSelections({ where: { groupId: { inq: _.map(selGroups, group => group.id) } } }))
+  return models.KuksaExtraSelectionGroup.findAll({
+    where: {
+      name: {
+        [Op.in]: [
+          'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+          'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+        ],
+      },
+    },
+  }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
     .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
     .then(selections => Promise.each(selections, s => upsertAllergy(s)));
 }
 
 function rebuildParticipantsTable() {
   function getInfoForField(participant, fieldName) {
-    const field = _.find(participant.extraInfos, o => _.get(o, 'field.name') === fieldName);
+    const field = _.find(participant.kuksa_participantextrainfos, o => _.get(o, 'kuksa_extrainfofield.name') === fieldName);
     return field ? field.value : null;
   }
 
   function getSelectionForGroup(participant, fieldName) {
-    const selection = _.find(participant.extraSelections, o => _.get(o, 'group.name') === fieldName);
+    const selection = _.find(participant.kuksa_extraselections, o => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName);
     return selection ? selection.name : null;
   }
 
@@ -70,7 +76,7 @@ function rebuildParticipantsTable() {
     if (participant.accommodation === 'Perheleirissä') {
       return 'Riehu';
     }
-    return _.get(participant, 'subCamp.name') || 'Muu';
+    return _.get(participant, 'kuksa_subcamp.name') || 'Muu';
   }
 
   function getAgeGroup(participant) {
@@ -84,19 +90,28 @@ function rebuildParticipantsTable() {
 
   console.log('Rebuilding participants table...');
 
-  return findKuksaParticipants({
+  return models.KuksaParticipant.findAll({
     include: [
-      { 'localGroup': 'subCamp' },
-      'campGroup',
-      'subCamp',
-      'village',
-      { 'extraInfos': 'field' },
-      { 'extraSelections': 'group' },
-      'paymentStatus',
+      {
+        model: models.KuksaLocalGroup,
+        include: [ models.KuksaSubCamp ],
+      },
+      models.KuksaCampGroup,
+      models.KuksaSubCamp,
+      models.KuksaVillage,
+      {
+        model: models.KuksaParticipantExtraInfo,
+        include: [ models.KuksaExtraInfoField ],
+      },
+      {
+        model: models.KuksaExtraSelection,
+        include: models.KuksaExtraSelectionGroup,
+      },
+      models.KuksaParticipantPaymentStatus,
     ],
   })
-  .then(participants => participants.map(participant => participant.toObject()))
-  .then(participants => _.filter(participants, p => !p.cancelled)) // don't add participants that are cancelled
+  // don't add participants that are cancelled
+  .then(participants => _.filter(participants, p => !p.cancelled))
   .then(participants => participants.map(participant => ({
     participantId: participant.id,
     firstName: participant.firstName,
@@ -104,21 +119,21 @@ function rebuildParticipantsTable() {
     nickname: participant.nickname,
     memberNumber: participant.memberNumber,
     dateOfBirth: participant.dateOfBirth,
-    billedDate: getPaymentStatus(participant.paymentStatus, 'billed'),
-    paidDate: getPaymentStatus(participant.paymentStatus, 'paid'),
+    billedDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'billed'),
+    paidDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'paid'),
     phoneNumber: participant.phoneNumber,
     email: participant.email,
-    internationalGuest: !!participant.localGroup,
+    internationalGuest: !!participant.kuksa_localgroup,
     diet: participant.diet,
     accommodation: participant.accommodation || 'Muu',
-    localGroup: participant.representedParty || _.get(participant, 'localGroup.name') || 'Muu',
-    campGroup: _.get(participant, 'campGroup.name') || 'Muu',
+    localGroup: participant.representedParty || _.get(participant, 'kuksa_localgroup.name') || 'Muu',
+    campGroup: _.get(participant, 'kuksa_campgroup.name') || 'Muu',
     subCamp: getSubCamp(participant),
-    village: _.get(participant, 'village.name') || 'Muu',
-    country: _.get(participant, 'localGroup.country') || 'Suomi',
+    village: _.get(participant, 'kuksa_village.name') || 'Muu',
+    country: _.get(participant, 'kuksa_localgroup.country') || 'Suomi',
     ageGroup: getAgeGroup(participant),
     // Not a scout if a) no finnish member number 2) not part of international group ("local group")
-    nonScout: !participant.memberNumber && !_.get(participant, 'localGroup.name'),
+    nonScout: !participant.memberNumber && !_.get(participant, 'kuksa_localgroup.name'),
     staffPosition: getInfoForField(participant, 'Pesti'),
     staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
     willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),
@@ -146,12 +161,18 @@ function addAllergiesToParticipants() {
 
   function findParticipantsAllergies(participant) {
     const findAllergies = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
-    const findSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
 
     return findAllergies()
     .then(allergies => _.map(allergies, 'allergyId'))
-    .then(allergies => findSelections({ where: { and: [{ participantId: participant.participantId }, { selectionId: { inq: allergies } }] } }))
-    .then(participantsAllergies => _.map(participantsAllergies, 'selectionId'));
+    .then(allergies => models.KuksaParticipantExtraSelection.findAll({
+      where: {
+        [Op.and]: [
+          { kuksaParticipantId: participant.participantId },
+          { kuksaExtraselectionId: { [Op.in]: allergies } },
+        ],
+      },
+    }))
+    .then(participantsAllergies => _.map(participantsAllergies, 'kuksaExtraselectionId'));
   }
 
   console.log('Adding allergies and diets to participants...');
@@ -164,12 +185,11 @@ function addAllergiesToParticipants() {
 
 function addDatesToParticipants() {
   const ParticipantDate = app.models.ParticipantDate;
-  const findKuksaParticipants = Promise.promisify(KuksaParticipant.find, { context: KuksaParticipant });
   const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
   const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
 
   console.log('Adding dates to participants...');
-  return findKuksaParticipants({ include: 'payments' }).each(setParticipantDates);
+  return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
@@ -178,9 +198,10 @@ function addDatesToParticipants() {
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
-    return _(kuksaParticipant.payments)
+    return _(kuksaParticipant.kuksa_payments)
       .flatMap(payment => paymentToDateMappings[payment.name])
       .uniq()
+      .sort()
       .map(date => ({
         participantId: kuksaParticipant.id,
         date: moment(date).toDate(),
@@ -193,7 +214,6 @@ function buildSelectionTable() {
   const Selection = app.models.Selection;
   const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
   const createSelections = Promise.promisify(Selection.create, { context: Selection });
-  const findKuksaParticipantExtraSelections = Promise.promisify(app.models.KuksaParticipantExtraSelection.find, { context: app.models.KuksaParticipantExtraSelection });
   const groupsToCreate = [
     '0-11-vuotias lapsi osallistuu',
     'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
@@ -208,16 +228,21 @@ function buildSelectionTable() {
   return destroyAllSelections()
   .then(() => findParticipants())
   .then(participants => Promise.each(participants, p =>
-    findKuksaParticipantExtraSelections({ where: { participantId: p.participantId }, include: { selection: 'group' } })
-    .then(participantSelections => participantSelections.map(selections => selections.toObject()))
-    .then(participantSelections => _.filter(participantSelections, s => !!(s.selection && s.selection.group))) // Apparently some selections don't have a group, so handle only selections with group
-    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.selection.group.name) > -1)))
+    models.KuksaParticipantExtraSelection.findAll({
+      where: { kuksaParticipantId: p.participantId },
+      include: {
+        model: models.KuksaExtraSelection,
+        include: [ models.KuksaExtraSelectionGroup ],
+      },
+    })
+    .then(participantSelections => _.filter(participantSelections, s => !!(s.kuksa_extraselection && s.kuksa_extraselection.kuksa_extraselectiongroup))) // Apparently some selections don't have a group, so handle only selections with group
+    .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.kuksa_extraselection.kuksa_extraselectiongroup.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
-      participantId: sel.participantId,
-      kuksaGroupId: sel.selection.group.id,
-      kuksaSelectionId: sel.selection.id,
-      groupName: sel.selection.group.name.trim(),
-      selectionName: sel.selection.name,
+      participantId: sel.kuksaParticipantId,
+      kuksaGroupId: sel.kuksa_extraselection.kuksa_extraselectiongroup.id,
+      kuksaSelectionId: sel.kuksa_extraselection.id,
+      groupName: sel.kuksa_extraselection.kuksa_extraselectiongroup.name.trim(),
+      selectionName: sel.kuksa_extraselection.name,
     })))
     .then(selections => createSelections(selections))))
   .then(() => console.log('Selections table built.'));
@@ -225,7 +250,7 @@ function buildSelectionTable() {
 
 function deleteCancelledParticipants() {
   console.log('Deleting cancelled participants...');
-  return findKuksaParticipants({ where: { cancelled: true } })
+  return models.KuksaParticipant.findAll({ where: { cancelled: true } })
     .then(participants => _.map(participants, 'id'))
     .then(idsToDelete => destroyAllParticipants({ participantId: { inq: idsToDelete } }))
     .then(info => console.log(`Deleted ${info.count} cancelled participants.`));

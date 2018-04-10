@@ -2,6 +2,7 @@ import path from 'path';
 import Promise from 'bluebird';
 import EventEmitter from 'events';
 import app from '../src/server/server';
+import { sequelize } from '../src/server/models';
 import { getModelCreationList, getFixtureCreationList } from '../src/common/models-list';
 
 EventEmitter.prototype._maxListeners = 20;
@@ -26,13 +27,14 @@ function forAll(values, promiseReturningFunction) {
 }
 
 export function resetDatabase() {
-  function automigrate() {
+  function automigrateLoobBackModels() {
     const db = app.datasources.db;
     const modelsToCreate = getModelCreationList();
     return new Promise((resolve, reject) => db.automigrate(modelsToCreate).then(resolve, reject));
   }
 
-  return automigrate()
+  return automigrateLoobBackModels()
+    .then(() => sequelize.sync({ force: true }))
     .then(() => forAll(getFixtureCreationList(), createFixtures));
 }
 
@@ -43,5 +45,5 @@ if (require.main === module) {
 
   resetDatabase()
     .catch(err => console.error('Database reset and seeding failed: ', err))
-    .finally(() => db.disconnect());
+    .finally(() => { db.disconnect(); sequelize.close(); });
 }
