@@ -87,7 +87,7 @@ describe('particpant', () => {
     await testUtils.deleteFixturesIfExist('Selection');
   });
 
-  it('GET request to participant', async () =>
+  it('request for single participant returns correct info', async () =>
     request(app)
       .get(`/api/participants/1?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
       .expect(200)
@@ -104,9 +104,9 @@ describe('particpant', () => {
         expect(res.body.selections).to.be.an('array').with.length(1);
         expect(res.body.selections[0]).to.have.property('participantId',1);
       })
-  );
+  );s
 
-  it('GET request to unknown participant id returns 404', async () =>
+  it('request for unknown participant id returns 404', async () =>
     request(app)
       .get(`/api/participants/404?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
       .expect(404)

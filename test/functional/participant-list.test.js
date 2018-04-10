@@ -85,7 +85,7 @@ describe('particpant', () => {
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
-  it('GET request to participants', async () =>
+  it('GET request to participants returs all participants', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
       .expect(200)
@@ -115,7 +115,7 @@ describe('particpant', () => {
       })
   );
 
-  it('GET request to participants skips participants', async () =>
+  it('GET request to participants skips correct amount of participants', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{},"skip":2,"limit":1,"include":["dates"],"count":true}&access_token=${accessToken}`)
       .expect(200)
@@ -126,7 +126,7 @@ describe('particpant', () => {
       })
   );
 
-  it('GET request to participants limits participants', async () =>
+  it('GET request to participants limits correct amount participants', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{},"skip":0,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)
       .expect(200)
@@ -146,7 +146,7 @@ describe('particpant', () => {
       })
   );
 
-  //count should retun the number of alla maches regardless of the paging
+  //count should retrun the number of all maches regardless of the paging
   it('count is calculated correctly when skip and limit are present', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{},"skip":1,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)

@@ -70,7 +70,6 @@ export default function(Registryuser) {
     } else {
       return result;
     }
-
   };
 
   Registryuser.unblock = function(userId, callback) {
