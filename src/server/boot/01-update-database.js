@@ -18,6 +18,6 @@ export default function(server, cb) {
       ? console.log('Database models are up to date.')
       : db.autoupdate(modelsToUpdate).then(() => console.log(`Models: ${modelsToUpdate} updated.`)))
     .catch(err => { console.error(`Error: ${err} when autoupdating models: ${modelsToUpdate}`); return Promise.reject(err); })
-    .then(() => sequelize.sync())
+    .then(() => sequelize.sync({ alter: true }))
     .asCallback(cb);
 }
