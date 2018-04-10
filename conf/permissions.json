@@ -2,9 +2,14 @@
   "registryUser": [
     "perform allowed test action",
     "view searchfilters",
-    "modify searchfilters"
+    "view own user information",
+    "modify searchfilters",
+    "view participants"
   ],
   "registryAdmin": [
-    "perform disallowed test action"
+    "perform disallowed test action",
+    "view registry users",
+    "view own user information",
+    "block and unblock users"
   ]
 }
