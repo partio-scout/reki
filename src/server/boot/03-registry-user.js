@@ -16,17 +16,15 @@ export default function(app){
   }));
 
   app.post('/api/registryusers/:id/block', app.requirePermission('block and unblock users'), app.wrap( async (req, res) => {
-    app.models.RegistryUser.block(req.params.id, (err, result) => {
-      res.status(204).send('');
-      app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'block');
-    });
+    await app.models.RegistryUser.block(req.params.id);
+    res.status(204).send('');
+    app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'block');
   }));
 
   app.post('/api/registryusers/:id/unblock', app.requirePermission('block and unblock users'), app.wrap( async (req, res) => {
-    app.models.RegistryUser.unblock(req.params.id, (err, result) => {
-      res.status(204).send('');
-      app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
-    });
+    await app.models.RegistryUser.unblock(req.params.id);
+    res.status(204).send('');
+    app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
   }));
 
   app.post('/api/registryusers/logout', app.wrap( async (req, res) => {

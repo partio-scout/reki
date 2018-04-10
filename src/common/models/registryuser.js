@@ -60,17 +60,28 @@ export default function(Registryuser) {
     const deleteAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
 
     const newPassword = crypto.randomBytes(24).toString('hex');
-
-    Promise.join(
+    const result = Promise.join(
       updateRegistryUser({ id: userId }, { status: 'blocked', password: newPassword }),
       deleteAccessTokens({ userId: userId })
-    ).asCallback(callback);
+    );
+
+    if (callback) {
+      result.asCallback(callback);
+    } else {
+      return result;
+    }
+
   };
 
   Registryuser.unblock = function(userId, callback) {
     const updateRegistryUser = Promise.promisify(app.models.RegistryUser.updateAll, { context: app.models.RegistryUser });
 
-    updateRegistryUser({ id: userId }, { status: null }).asCallback(callback);
+    const result = updateRegistryUser({ id: userId }, { status: null });
+    if (callback) {
+      result.asCallback(callback);
+    } else {
+      return result;
+    }
   };
 
   Registryuser.afterRemote('find', (ctx, instance, next) => {

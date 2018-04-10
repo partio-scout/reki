@@ -1,5 +1,4 @@
 export default function(app){
-
   app.get('/api/participants/:id', app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const participant = await app.models.Participant.findById(req.params.id, {
       include:[
