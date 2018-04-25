@@ -47,6 +47,11 @@ app.use(helmet.contentSecurityPolicy({
   },
 }));
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send('Internal server error');
+});
+
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, err => {
