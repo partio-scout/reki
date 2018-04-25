@@ -104,7 +104,7 @@ describe('particpant', () => {
         expect(res.body.selections).to.be.an('array').with.length(1);
         expect(res.body.selections[0]).to.have.property('participantId',1);
       })
-  );s
+  );
 
   it('request for unknown participant id returns 404', async () =>
     request(app)
