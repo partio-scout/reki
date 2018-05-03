@@ -14,10 +14,6 @@ const upsertParticipant = Promise.promisify(Participant.upsert, { context: Parti
 const findParticipants = Promise.promisify(Participant.find, { context: Participant });
 const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
-const Option = app.models.Option;
-const destroyAllOptions = Promise.promisify(Option.destroyAll, { context: Option });
-const upsertOption = Promise.promisify(Option.upsert, { context: Option });
-
 if (require.main === module) {
   main().then(
     () => { console.log('Finished successfully.'); process.exit(0); },
@@ -257,10 +253,16 @@ function deleteCancelledParticipants() {
 }
 
 function buildOptionTable() {
-  const addFieldValues = ({ field, values }) => Promise.each(values, value => upsertOption({ property: field, value: value }));
-  return destroyAllOptions()
+  const tap = x => {
+    console.log(x);
+    return x;
+  };
+  const addFieldValues = ({ field, values }) => Promise.each(values, value => models.Option.create({ property: field, value: value }));
+  return models.Option.destroy({ where: {} })
     .then(() => Promise.mapSeries(optionFields, getFieldValues))
-    .then(items => Promise.each(items, addFieldValues));
+    .then(tap)
+    .then(items => Promise.each(items, addFieldValues))
+    .then(tap);
 
   function getFieldValues(field) {
     const filter = { fields: { } };

@@ -7,6 +7,7 @@ import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa';
 import { exec } from 'child_process';
 import Promise from 'bluebird';
 import moment from 'moment';
+import { models } from '../../src/server/models';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -19,7 +20,6 @@ describe('Kuksa integration', () => {
   const findAllergyById = Promise.promisify(app.models.Allergy.findById, { context: app.models.Allergy });
   const findSelections = Promise.promisify(app.models.Selection.find, { context: app.models.Selection });
   const countSelections = Promise.promisify(app.models.Selection.count, { context: app.models.Selection });
-  const countOptions = Promise.promisify(app.models.Option.count, { context: app.models.Option });
 
   before(function(done) {
     this.timeout(80000);
@@ -158,18 +158,22 @@ describe('Kuksa integration', () => {
   );
 
   it('builds options in advance',
-    () => expect(countOptions()).to.eventually.be.above(0)
+    () => expect(models.Option.count()).to.eventually.be.above(0)
   );
 
   it('creates each option only once',
-    () => expect(countOptions({ property: 'subCamp', value: 'Unity' })).to.eventually.equal(1)
+    () => expect(models.Option.count({
+      where:{ property: 'subCamp', value: 'Unity' },
+    })).to.eventually.equal(1)
   );
 
   it('builds correct amount of options',
-    () => expect(countOptions({ property: 'village' })).to.eventually.equal(4)
+    () => expect(models.Option.count({
+      where:{ property: 'village' },
+    })).to.eventually.equal(4)
   );
 
-  //TODO Check it saves correct optinos for each field
+  //TODO Check it saves correct options for each field
 
   after(() => {
     mockKuksa.stop();
