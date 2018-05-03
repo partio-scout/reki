@@ -248,46 +248,7 @@ export default function (Participant) {
     }
   });
 
-  Participant.observe('before save', (ctx, next) => {
-
-    if ( ctx.isNewInstance || !ctx.instance ) {
-      return next();
-    }
-
-    const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
-
-    const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
-
-    findParticipantById(ctx.instance.participantId)
-      .then( currentParticipant => {
-        if ( currentParticipant != null && currentParticipant.presence != ctx.instance.presence ) {
-          ctx.instance.presenceUpdated = true;
-          ctx.instance.presenceUpdateAuthor = userId;
-        }
-      }).asCallback(next);
-
-  });
-
-  Participant.observe('after save', (ctx, next) => {
-
-    if ( !ctx.instance || !ctx.instance.presenceUpdated ) {
-      return next();
-    }
-
-    const PresenceHistory = app.models.PresenceHistory;
-
-    const createPresenceHistory = Promise.promisify(PresenceHistory.create, { context: PresenceHistory });
-
-    createPresenceHistory({
-      participantId: ctx.instance.participantId,
-      presence: ctx.instance.presence,
-      timestamp: new Date(),
-      authorId: ctx.instance.presenceUpdateAuthor,
-    }).asCallback(next);
-
-  });
-
-  Participant.massAssignField = (ids, fieldName, newValue, callback) => {
+  Participant.massAssignField = (ids, fieldName, newValue, authorId) => {
     // field name : validation function
     const allowedFields = {
       presence: value => _.includes([ 1, 2, 3 ], +value),
@@ -298,30 +259,26 @@ export default function (Participant) {
     const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
-      Participant.findByIds(ids).then(rows => {
-        const updates = _.map(rows, row => {
+      return Participant.findByIds(ids).then(rows => {
+        const updates = _.map(rows, async row => {
+          if (fieldName === 'presence' && row[fieldName] != newValue) {
+            await app.models.PresenceHistory.create({
+              participantId: row.id,
+              presence: newValue,
+              timestamp: new Date(),
+              authorId: authorId,
+            });
+          }
+
           row[fieldName] = newValue;
           return row.save();
         });
-        Promise.all(updates).nodeify(callback);
+        return Promise.all(updates);
       });
     } else {
       const err = new Error(`Editing ${fieldName} not allowed.`);
       err.status = 400;
-      return callback(err);
+      return Promise.reject(err);
     }
   };
-
-  Participant.remoteMethod('massAssignField',
-    {
-      http: { path: '/massAssign', verb: 'post' },
-      accepts: [
-        { arg: 'ids', type: 'array', required: 'true' },
-        { arg: 'fieldName', type: 'string', required: 'true' },
-        { arg: 'newValue', type: 'string', required: 'true' },
-      ],
-      returns: { arg: 'result', type: 'string' },
-    }
-  );
-
 }

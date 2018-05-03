@@ -16,4 +16,14 @@ export default function(app){
       res.status(404).send('Not found');
     }
   }));
+
+  app.post('/api/participants/massAssign', app.requirePermission('edit participants'), app.wrap(async (req, res) => {
+    const updates = await app.models.Participant.massAssignField(
+      req.body.ids,
+      req.body.fieldName,
+      req.body.newValue,
+      req.user.id
+    );
+    res.json(updates);
+  }));
 }
