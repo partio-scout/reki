@@ -1,4 +1,21 @@
 export default function(app){
+  app.get('/api/participants', app.requirePermission('view participants'), app.wrap(async (req, res) => {
+
+    let filter = JSON.parse(req.query.filter || '{}');
+    filter = app.models.Participant.handleTextSearch(filter);
+    filter = await app.models.Participant.handleDateSearch(filter);
+
+    if (filter.count) {
+      res.json({
+        result: await app.models.Participant.find(filter || {}),
+        count: await app.models.Participant.count(filter.where || {}),
+      });
+    } else {
+      res.json(await app.models.Participant.find(filter || {}));
+    }
+
+  }));
+
   app.get('/api/participants/:id', app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const participant = await app.models.Participant.findById(req.params.id, {
       include: [

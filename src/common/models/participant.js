@@ -4,9 +4,7 @@ import _ from 'lodash';
 
 export default function (Participant) {
 
-  function handleDateSearch(ctx, participantInstance, next) {
-
-    const args = ctx && ctx.args || null;
+  Participant.handleDateSearch = function(args) {
 
     let where;
 
@@ -18,7 +16,7 @@ export default function (Participant) {
       }
 
       if (!where || _.isEmpty(where) || (!where.dates && !where.and)) {
-        return next();
+        return args;
       }
 
       if (_.isString(where)) {
@@ -27,7 +25,7 @@ export default function (Participant) {
 
       if (where.dates && where.dates.length == 0) {
         delete where.dates;
-        return next();
+        return args;
       }
 
       let dates;
@@ -43,12 +41,12 @@ export default function (Participant) {
       }
 
       if (_.isEmpty(dates)) {
-        return next();
+        return args;
       }
 
       const getParticipantIdsForDates = Promise.promisify(app.models.ParticipantDate.find, { context: app.models.ParticipantDate });
 
-      getParticipantIdsForDates(constructParticipantDateFilters(dates))
+      return getParticipantIdsForDates(constructParticipantDateFilters(dates))
       .then( res => _.map(res, 'participantId'))
       .then( ids => constructInternalDateFilter(ids) )
       .then( newWhere => {
@@ -70,9 +68,8 @@ export default function (Participant) {
         } else if (args.filter && args.filter.where) {
           args.filter.where = where;
         }
-        next();
-      })
-      .catch( err => next(err));
+        return args;
+      });
     }
 
     function constructParticipantDateFilters(dates){
@@ -90,10 +87,10 @@ export default function (Participant) {
     function constructInternalDateFilter(participantIds) {
       return { participantId: { inq: participantIds } };
     }
-  }
+  };
 
-  function handleTextSearch(ctx, participantInstance, next) {
-    const args = ctx && ctx.args || null;
+  Participant.handleTextSearch = function(args) {
+
     if (args) {
       if (args.where && _.isString(args.where)) {
         args.where = JSON.parse(args.where);
@@ -110,7 +107,7 @@ export default function (Participant) {
       }
     }
 
-    next();
+    return args;
 
     function constructTextSearchArray(string) {
       const stripRegex = function(s) {
@@ -176,43 +173,7 @@ export default function (Participant) {
 
       return (where.length > 0 ? JSON.stringify(where) : where);
     }
-  }
-
-  function checkFullParticipantCount(ctx, participantInstance, next) {
-    Promise.try(() => getFilterIfShouldCount())
-      .then(filterForCount => {
-        if (filterForCount) {
-          const countParticipants = Promise.promisify(Participant.count, { context: Participant });
-          return countParticipants(filterForCount)
-            .then(count => {
-              const findResult = ctx.result;
-              ctx.result = {
-                result: findResult,
-                count: count,
-              };
-            });
-        }
-      }).asCallback(next);
-
-    function getFilterIfShouldCount() {
-      const args = ctx && ctx.args || null;
-
-      if (args && args.filter && _.isString(args.filter)) {
-        // This if clause is technically not needed since the textsearch hook does the same but I left it here for robustness, in case the text search is changed
-        args.filter = JSON.parse(args.filter);
-      }
-
-      return args && args.filter && args.filter.count && args.filter.where || false;
-    }
-  }
-
-  Participant.beforeRemote('find', handleTextSearch);
-  Participant.afterRemote('find', checkFullParticipantCount);
-
-  Participant.beforeRemote('count', handleTextSearch);
-
-  Participant.beforeRemote('find', handleDateSearch);
-  Participant.beforeRemote('count', handleDateSearch);
+  };
 
   Participant.massAssignField = (ids, fieldName, newValue, authorId) => {
     // field name : validation function
