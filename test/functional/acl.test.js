@@ -264,16 +264,12 @@ describe('http api access control', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants').expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1').expect(UNAUTHORIZED));
-      it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne').expect(UNAUTHORIZED));
-      it('count: UNAUTHORIZED', () => get('/api/participants/count').expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
     });
 
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('count: UNAUTHORIZED', () => get('/api/participants/count', noRolesAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
     });
 
@@ -286,8 +282,6 @@ describe('http api access control', () => {
     describe('registryAdmin', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('count: UNAUTHORIZED', () => get('/api/participants/count', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
     });
   });
