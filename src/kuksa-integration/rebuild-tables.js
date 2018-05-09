@@ -253,16 +253,11 @@ function deleteCancelledParticipants() {
 }
 
 function buildOptionTable() {
-  const tap = x => {
-    console.log(x);
-    return x;
-  };
+
   const addFieldValues = ({ field, values }) => Promise.each(values, value => models.Option.create({ property: field, value: value }));
   return models.Option.destroy({ where: {} })
     .then(() => Promise.mapSeries(optionFields, getFieldValues))
-    .then(tap)
-    .then(items => Promise.each(items, addFieldValues))
-    .then(tap);
+    .then(items => Promise.each(items, addFieldValues));
 
   function getFieldValues(field) {
     const filter = { fields: { } };

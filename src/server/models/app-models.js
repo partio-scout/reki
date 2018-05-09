@@ -10,12 +10,10 @@ export default function(db) {
     },
     property: {
       type: Sequelize.STRING,
-      primaryKey: true,
       allowNull: false,
     },
     value: {
       type: Sequelize.STRING,
-      primaryKey: true,
       allowNull: false,
     },
   });

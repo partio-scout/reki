@@ -21,17 +21,14 @@ const testUser = {
 
 const testOptions = [
   {
-    //'id':0,
     'property': 'village',
     'value': 'Mallikylä',
   },
   {
-    //'id':1,
     'property': 'village',
     'value': 'muu',
   },
   {
-    //'id':2,
     'property': 'campGroup',
     'value': 'muu',
   },

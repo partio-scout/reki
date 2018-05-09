@@ -163,13 +163,13 @@ describe('Kuksa integration', () => {
 
   it('creates each option only once',
     () => expect(models.Option.count({
-      where:{ property: 'subCamp', value: 'Unity' },
+      where: { property: 'subCamp', value: 'Unity' },
     })).to.eventually.equal(1)
   );
 
   it('builds correct amount of options',
     () => expect(models.Option.count({
-      where:{ property: 'village' },
+      where: { property: 'village' },
     })).to.eventually.equal(4)
   );
 
