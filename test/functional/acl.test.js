@@ -467,4 +467,26 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/options', registryAdminAccessToken).expect(UNAUTHORIZED))
     );
   });
+
+  describe('ParticipantDate', () => {
+    const dateFixture = [{
+      participantId: 1,
+      date: new Date(),
+    }];
+
+    beforeEach( () => testUtils.createFixture('ParticipantDate', dateFixture));
+    afterEach(() => testUtils.deleteFixturesIfExist('ParticipantDate'));
+
+    describe('Unauthenticated user', () =>
+      it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED))
+    );
+
+    describe('registryUser', () =>
+      it('find: OK', () => get('/api/participantdates', registryUserAccessToken).expect(OK))
+    );
+
+    describe('registryAdmin', () =>
+      it('find: UNAUTHORIZED', () => get('/api/participantdates', registryAdminAccessToken).expect(UNAUTHORIZED))
+    );
+  });
 });
