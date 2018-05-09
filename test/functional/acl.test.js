@@ -4,7 +4,9 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
+import _ from 'lodash';
 
+const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 function get(endpoint, accessToken) {
@@ -168,6 +170,49 @@ describe('http api access control', () => {
     phoneNumber: '123456',
   };
   before(() => testUtils.createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
+
+  describe('Access control tests', () => {
+    it('exist for all endpoints under /api', () => {
+      /*
+        If this test just failed, it means that you probably added, moved or removed an API endpoint.
+        To make this test pass, write the relevant tests for your endpoint in this file and update the
+        list of known endpoints below - even if your endpoint is accessible to everyone (which
+        it probably shouldn't be). It's very important to have access control tests for all
+        endpoints.
+      */
+
+      const apiRoutesWithAccessControlTests = [
+        'GET /api/test/rbac-test-success',
+        'GET /api/test/rbac-test-fail',
+        'GET /api/options',
+        'GET /api/participantdates',
+        'GET /api/participants',
+        'GET /api/participants/:id',
+        'POST /api/participants/massAssign',
+        'GET /api/registryusers',
+        'GET /api/registryusers/:id',
+        'POST /api/registryusers/:id/block',
+        'POST /api/registryusers/:id/unblock',
+        'POST /api/registryusers/logout',
+        'GET /api/searchfilters',
+        'DELETE /api/searchfilters/:id',
+        'POST /api/searchfilters',
+      ];
+
+      const apiRoutesInApp = _(app._router.stack)
+        .filter(item => !!item.route && !!item.route.path)
+        .flatMap(item => _.map(_.keys(item.route.methods),
+          method => `${method.toUpperCase()} ${item.route.path}`))
+        .filter(item => _.includes(item, ' /api')) //API endpoints only
+        .value();
+
+      apiRoutesInApp.forEach(route => expect(apiRoutesWithAccessControlTests).to.contain(route,
+        `There seems to be no access control test for "${route}" - please add it`));
+
+      apiRoutesWithAccessControlTests.forEach(route => expect(apiRoutesInApp).to.contain(route,
+        `"${route}" seems to have been removed - please remove it from this test`));
+    });
+  });
 
   describe('Participant', () => {
     describe('Unauthenticated user', () => {
