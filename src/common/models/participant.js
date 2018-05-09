@@ -1,13 +1,10 @@
 import Promise from 'bluebird';
 import app from '../../server/server';
-import loopback from 'loopback';
 import _ from 'lodash';
 
 export default function (Participant) {
 
-  function handleDateSearch(ctx, participantInstance, next) {
-
-    const args = ctx && ctx.args || null;
+  Participant.handleDateSearch = function(args) {
 
     let where;
 
@@ -19,7 +16,7 @@ export default function (Participant) {
       }
 
       if (!where || _.isEmpty(where) || (!where.dates && !where.and)) {
-        return next();
+        return args;
       }
 
       if (_.isString(where)) {
@@ -28,7 +25,7 @@ export default function (Participant) {
 
       if (where.dates && where.dates.length == 0) {
         delete where.dates;
-        return next();
+        return args;
       }
 
       let dates;
@@ -44,12 +41,12 @@ export default function (Participant) {
       }
 
       if (_.isEmpty(dates)) {
-        return next();
+        return args;
       }
 
       const getParticipantIdsForDates = Promise.promisify(app.models.ParticipantDate.find, { context: app.models.ParticipantDate });
 
-      getParticipantIdsForDates(constructParticipantDateFilters(dates))
+      return getParticipantIdsForDates(constructParticipantDateFilters(dates))
       .then( res => _.map(res, 'participantId'))
       .then( ids => constructInternalDateFilter(ids) )
       .then( newWhere => {
@@ -71,9 +68,8 @@ export default function (Participant) {
         } else if (args.filter && args.filter.where) {
           args.filter.where = where;
         }
-        next();
-      })
-      .catch( err => next(err));
+        return args;
+      });
     }
 
     function constructParticipantDateFilters(dates){
@@ -91,10 +87,10 @@ export default function (Participant) {
     function constructInternalDateFilter(participantIds) {
       return { participantId: { inq: participantIds } };
     }
-  }
+  };
 
-  function handleTextSearch(ctx, participantInstance, next) {
-    const args = ctx && ctx.args || null;
+  Participant.handleTextSearch = function(args) {
+
     if (args) {
       if (args.where && _.isString(args.where)) {
         args.where = JSON.parse(args.where);
@@ -111,7 +107,7 @@ export default function (Participant) {
       }
     }
 
-    next();
+    return args;
 
     function constructTextSearchArray(string) {
       const stripRegex = function(s) {
@@ -177,117 +173,9 @@ export default function (Participant) {
 
       return (where.length > 0 ? JSON.stringify(where) : where);
     }
-  }
+  };
 
-  function checkFullParticipantCount(ctx, participantInstance, next) {
-    Promise.try(() => getFilterIfShouldCount())
-      .then(filterForCount => {
-        if (filterForCount) {
-          const countParticipants = Promise.promisify(Participant.count, { context: Participant });
-          return countParticipants(filterForCount)
-            .then(count => {
-              const findResult = ctx.result;
-              ctx.result = {
-                result: findResult,
-                count: count,
-              };
-            });
-        }
-      }).asCallback(next);
-
-    function getFilterIfShouldCount() {
-      const args = ctx && ctx.args || null;
-
-      if (args && args.filter && _.isString(args.filter)) {
-        // This if clause is technically not needed since the textsearch hook does the same but I left it here for robustness, in case the text search is changed
-        args.filter = JSON.parse(args.filter);
-      }
-
-      return args && args.filter && args.filter.count && args.filter.where || false;
-    }
-  }
-
-  Participant.afterRemote('create', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, participantInstance.participantId, 'add')
-    .asCallback(next);
-  });
-
-  Participant.beforeRemote('findById', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'find')
-    .asCallback(next);
-  });
-
-  Participant.beforeRemote('prototype.updateAttributes', (ctx, participantInstance, next) => {
-    const userId = ctx.req.accessToken ? ctx.req.accessToken.userId : 0;
-    app.models.AuditEvent.createEvent.Participant(userId, ctx.req.params.id, 'update')
-    .asCallback(next);
-  });
-
-  Participant.beforeRemote('find', handleTextSearch);
-  Participant.afterRemote('find', checkFullParticipantCount);
-
-  Participant.beforeRemote('count', handleTextSearch);
-
-  Participant.beforeRemote('find', handleDateSearch);
-  Participant.beforeRemote('count', handleDateSearch);
-
-  Participant.observe('before delete', (ctx, next) => {
-    const findParticipant = Promise.promisify(app.models.Participant.find, { context: app.models.Participant });
-    if (ctx.instance) {
-      const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
-      app.models.AuditEvent.createEvent.Participant(userId, ctx.instance.participantId, 'delete')
-      .asCallback(next);
-    } else {
-      findParticipant({ where: ctx.where, fields: { participantId: true } })
-        .each(participant => {
-          const userId = (loopback.getCurrentContext() && loopback.getCurrentContext().get('accessToken')) ? loopback.getCurrentContext().get('accessToken').userId : 0;
-          return app.models.AuditEvent.createEvent.Participant(userId, participant.participantId, 'delete');
-        }).asCallback(next);
-    }
-  });
-
-  Participant.observe('before save', (ctx, next) => {
-
-    if ( ctx.isNewInstance || !ctx.instance ) {
-      return next();
-    }
-
-    const userId = loopback.getCurrentContext() ? loopback.getCurrentContext().get('accessToken').userId : 0;
-
-    const findParticipantById = Promise.promisify(Participant.findById, { context: Participant });
-
-    findParticipantById(ctx.instance.participantId)
-      .then( currentParticipant => {
-        if ( currentParticipant != null && currentParticipant.presence != ctx.instance.presence ) {
-          ctx.instance.presenceUpdated = true;
-          ctx.instance.presenceUpdateAuthor = userId;
-        }
-      }).asCallback(next);
-
-  });
-
-  Participant.observe('after save', (ctx, next) => {
-
-    if ( !ctx.instance || !ctx.instance.presenceUpdated ) {
-      return next();
-    }
-
-    const PresenceHistory = app.models.PresenceHistory;
-
-    const createPresenceHistory = Promise.promisify(PresenceHistory.create, { context: PresenceHistory });
-
-    createPresenceHistory({
-      participantId: ctx.instance.participantId,
-      presence: ctx.instance.presence,
-      timestamp: new Date(),
-      authorId: ctx.instance.presenceUpdateAuthor,
-    }).asCallback(next);
-
-  });
-
-  Participant.massAssignField = (ids, fieldName, newValue, callback) => {
+  Participant.massAssignField = (ids, fieldName, newValue, authorId) => {
     // field name : validation function
     const allowedFields = {
       presence: value => _.includes([ 1, 2, 3 ], +value),
@@ -298,30 +186,29 @@ export default function (Participant) {
     const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
-      Participant.findByIds(ids).then(rows => {
-        const updates = _.map(rows, row => {
+      return Participant.findByIds(ids).then(rows => {
+        const updates = _.map(rows, async row => {
+          if (fieldName === 'presence' && row[fieldName] != newValue) {
+            await app.models.PresenceHistory.create({
+              participantId: row.id,
+              presence: newValue,
+              timestamp: new Date(),
+              authorId: authorId,
+            });
+          }
           row[fieldName] = newValue;
+
+          // TODO Test this audit event
+          app.models.AuditEvent.createEvent.Participant(authorId, row.id, 'update');
+
           return row.save();
         });
-        Promise.all(updates).nodeify(callback);
+        return Promise.all(updates);
       });
     } else {
       const err = new Error(`Editing ${fieldName} not allowed.`);
       err.status = 400;
-      return callback(err);
+      return Promise.reject(err);
     }
   };
-
-  Participant.remoteMethod('massAssignField',
-    {
-      http: { path: '/massAssign', verb: 'post' },
-      accepts: [
-        { arg: 'ids', type: 'array', required: 'true' },
-        { arg: 'fieldName', type: 'string', required: 'true' },
-        { arg: 'newValue', type: 'string', required: 'true' },
-      ],
-      returns: { arg: 'result', type: 'string' },
-    }
-  );
-
 }
