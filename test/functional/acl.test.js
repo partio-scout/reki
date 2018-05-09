@@ -85,7 +85,6 @@ function logInRegistryAdmin() {
 const OK = 200;
 const NO_CONTENT = 204;
 const UNAUTHORIZED = 401;
-const NOT_FOUND = 404;
 
 describe('http api access control', () => {
   let noRolesAccessToken;
