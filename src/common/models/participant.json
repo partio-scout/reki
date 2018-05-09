@@ -462,20 +462,6 @@
       "principalId": "registryUser",
       "permission": "ALLOW",
       "property": "*"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "registryUser",
-      "permission": "ALLOW",
-      "property": "massAssignField"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "participantAmount"
     }
   ],
   "methods": {}
