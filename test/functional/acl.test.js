@@ -249,36 +249,11 @@ describe('http api access control', () => {
   });
 
   describe('Participant', () => {
-    const participantFixtureToCreate = {
-      participantId: 2,
-      firstName: 'derp',
-      lastName: 'durp',
-      nonScout: false,
-      internationalGuest: false,
-      memberNumber: '1234',
-      dateOfBirth: new Date(),
-      email: 'derp@example.com',
-      localGroup: 'localgroup',
-      campGroup: 'campGroup',
-      village: 'village',
-      subCamp: 'subCamp',
-      ageGroup: 'vaeltaja',
-    };
-    afterEach(() => testUtils.deleteFixturesIfExist('Participant', { participantId: 2 }));
-
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants').expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1').expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne').expect(UNAUTHORIZED));
-      it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists').expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count').expect(UNAUTHORIZED));
-
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/participants/1').expect(UNAUTHORIZED));
-      it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate).expect(UNAUTHORIZED));
-      it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }).expect(UNAUTHORIZED));
-
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }).expect(UNAUTHORIZED));
     });
 
@@ -286,29 +261,13 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1', noRolesAccessToken).expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', noRolesAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', noRolesAccessToken).expect(UNAUTHORIZED));
-
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, noRolesAccessToken).expect(UNAUTHORIZED));
-
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants', registryUserAccessToken).expect(OK));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1', registryUserAccessToken).expect(OK));
-      it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', registryUserAccessToken).expect(OK));
-
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', registryUserAccessToken).expect(UNAUTHORIZED));
-      it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryUserAccessToken).expect(UNAUTHORIZED));
-
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
     });
 
@@ -316,15 +275,7 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/participants', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('findById: UNAUTHORIZED', () => get('/api/participants/1', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('exists: UNAUTHORIZED', () => get('/api/participants/1/exists', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', registryAdminAccessToken).expect(UNAUTHORIZED));
-
-      it('create: UNAUTHORIZED', () => post('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/participants/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('update: UNAUTHORIZED', () => put('/api/participants/1', { firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('upsert (insert): UNAUTHORIZED', () => put('/api/participants', participantFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('upsert (update): UNAUTHORIZED', () => put('/api/participants', { participantId: 1, firstName: 'updated' }, registryAdminAccessToken).expect(UNAUTHORIZED));
-
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
     });
   });
