@@ -411,7 +411,6 @@ describe('http api access control', () => {
   });
 
   describe('SearchFilter', () => {
-
     const searchFilterFixture = [{
       id: 111,
       name: 'derp',
@@ -445,5 +444,27 @@ describe('http api access control', () => {
       it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', registryAdminAccessToken).expect(UNAUTHORIZED));
     });
+  });
+
+  describe('Option', () => {
+    const optionFixture = [{
+      property: 'subCamp',
+      value: 'Kolina',
+    }];
+
+    beforeEach( () => testUtils.createFixtureSequelize('Option', optionFixture));
+    afterEach(() => testUtils.deleteFixturesIfExistSequelize('Option'));
+
+    describe('Unauthenticated user', () =>
+      it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED))
+    );
+
+    describe('registryUser', () =>
+      it('find: OK', () => get('/api/options', registryUserAccessToken).expect(OK))
+    );
+
+    describe('registryAdmin', () =>
+      it('find: UNAUTHORIZED', () => get('/api/options', registryAdminAccessToken).expect(UNAUTHORIZED))
+    );
   });
 });
