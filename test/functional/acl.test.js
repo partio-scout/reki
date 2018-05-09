@@ -181,8 +181,8 @@ describe('http api access control', () => {
       */
 
       const apiRoutesWithAccessControlTests = [
-        'GET /api/test/rbac-test-success',
-        'GET /api/test/rbac-test-fail',
+        'GET /api/test/rbac-test-success', // tested in other file
+        'GET /api/test/rbac-test-fail', // tested in other file
         'GET /api/options',
         'GET /api/participantdates',
         'GET /api/participants',
