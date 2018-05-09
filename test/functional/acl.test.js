@@ -204,6 +204,10 @@ describe('http api access control', () => {
     it('Should not be exposed through http', () => get('/api/accesstokens').expect(NOT_FOUND));
   });
 
+  describe('PresenceHistory', () => {
+    it('Should not be exposed through http', () => get('/api/PresenceHistories').expect(NOT_FOUND));
+  });
+
   describe('KuksaSubCamp', () => {
     it('Should not be exposed through http', () => get('/api/kuksasubcamps').expect(NOT_FOUND));
   });
@@ -277,108 +281,6 @@ describe('http api access control', () => {
       it('findOne: UNAUTHORIZED', () => get('/api/participants/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('count: UNAUTHORIZED', () => get('/api/participants/count', registryAdminAccessToken).expect(UNAUTHORIZED));
       it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
-    });
-  });
-
-  describe('PresenceHistory', () => {
-    describe('Directly', () => {
-      describe('Unauthenticated user', () => {
-        it('find: UNAUTHORIZED', () => get('/api/PresenceHistories').expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/PresenceHistories/1').expect(UNAUTHORIZED));
-        it('findOne: UNAUTHORIZED', () => get('/api/PresenceHistories/findOne').expect(UNAUTHORIZED));
-        it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists').expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count').expect(UNAUTHORIZED));
-
-        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
-        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1').expect(NOT_FOUND));
-        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }).expect(NOT_FOUND));
-        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture).expect(NOT_FOUND));
-        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }).expect(NOT_FOUND));
-      });
-
-      describe('Authenticated user without roles', () => {
-        it('find: UNAUTHORIZED', () => get('/api/PresenceHistories', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/PresenceHistories/1', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('findOne: UNAUTHORIZED', () => get('/api/PresenceHistories/findOne', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', noRolesAccessToken).expect(UNAUTHORIZED));
-
-        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, noRolesAccessToken).expect(NOT_FOUND));
-        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', noRolesAccessToken).expect(NOT_FOUND));
-        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, noRolesAccessToken).expect(NOT_FOUND));
-        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, noRolesAccessToken).expect(NOT_FOUND));
-        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, noRolesAccessToken).expect(NOT_FOUND));
-      });
-
-      describe('registryUser', () => {
-        it('find: UNAUTHORIZED', () => get('/api/PresenceHistories', registryUserAccessToken).expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/PresenceHistories/1', registryUserAccessToken).expect(UNAUTHORIZED));
-        it('findOne: UNAUTHORIZED', () => get('/api/PresenceHistories/findOne', registryUserAccessToken).expect(UNAUTHORIZED));
-        it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', registryUserAccessToken).expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', registryUserAccessToken).expect(UNAUTHORIZED));
-
-        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, registryUserAccessToken).expect(NOT_FOUND));
-        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', registryUserAccessToken).expect(NOT_FOUND));
-        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, registryUserAccessToken).expect(NOT_FOUND));
-        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, registryUserAccessToken).expect(NOT_FOUND));
-        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, registryUserAccessToken).expect(NOT_FOUND));
-      });
-
-      describe('registryAdmin', () => {
-        it('find: UNAUTHORIZED', () => get('/api/PresenceHistories', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/PresenceHistories/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('findOne: UNAUTHORIZED', () => get('/api/PresenceHistories/findOne', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('exists: UNAUTHORIZED', () => get('/api/PresenceHistories/1/exists', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/PresenceHistories/count', registryAdminAccessToken).expect(UNAUTHORIZED));
-
-        it('create: NOT_FOUND', () => post('/api/PresenceHistories', presenceHistoryFixture, registryAdminAccessToken).expect(NOT_FOUND));
-        it('deleteById: NOT_FOUND', () => del('/api/PresenceHistories/1', registryAdminAccessToken).expect(NOT_FOUND));
-        it('update: NOT_FOUND', () => put('/api/PresenceHistories/1', { arrived: new Date() }, registryAdminAccessToken).expect(NOT_FOUND));
-        it('upsert (insert): NOT_FOUND', () => put('/api/PresenceHistories', presenceHistoryFixture, registryAdminAccessToken).expect(NOT_FOUND));
-        it('upsert (update): NOT_FOUND', () => put('/api/PresenceHistories', { id: 1, departed: new Date() }, registryAdminAccessToken).expect(NOT_FOUND));
-      });
-    });
-
-    describe('Through the participant', () => {
-      describe('Unauthenticated user', () => {
-        it('find: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory').expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/1').expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/count').expect(UNAUTHORIZED));
-
-        it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1').expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }).expect(UNAUTHORIZED));
-      });
-
-      describe('Authenticated user without roles', () => {
-        it('find: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/1', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/count', noRolesAccessToken).expect(UNAUTHORIZED));
-
-        it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, noRolesAccessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', noRolesAccessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, noRolesAccessToken).expect(UNAUTHORIZED));
-      });
-
-      describe('registryUser', () => {
-        it('find: ok', () => get('/api/participants/1/presenceHistory', registryUserAccessToken).expect(OK));
-        it('findById: ok', () => get('/api/participants/1/presenceHistory/1', registryUserAccessToken).expect(OK));
-        it('count: ok', () => get('/api/participants/1/presenceHistory/count', registryUserAccessToken).expect(OK));
-
-        it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, registryUserAccessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', registryUserAccessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, registryUserAccessToken).expect(UNAUTHORIZED));
-      });
-
-      describe('registryAdmin', () => {
-        it('find: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('findById: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('count: UNAUTHORIZED', () => get('/api/participants/1/presenceHistory/count', registryAdminAccessToken).expect(UNAUTHORIZED));
-
-        it('create: UNAUTHORIZED', () => post('/api/participants/1/presenceHistory', presenceHistoryFixture, registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('deleteById: UNAUTHORIZED', () => del('/api/participants/1/presenceHistory/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-        it('update: UNAUTHORIZED', () => put('/api/participants/1/presenceHistory/1', { arrived: new Date() }, registryAdminAccessToken).expect(UNAUTHORIZED));
-      });
     });
   });
 
