@@ -2,6 +2,7 @@ import app from '../../src/server/server';
 import Promise from 'bluebird';
 import _ from 'lodash';
 import { expect } from 'chai';
+import { models } from '../../src/server/models';
 
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
@@ -15,6 +16,10 @@ export function loginUser(username, userpass) {
 export function createFixture(modelName, fixture) {
   const create = Promise.promisify(app.models[modelName].create, { context: app.models[modelName] });
   return create(fixture);
+}
+
+export function createFixtureSequelize(modelName, fixture) {
+  return models[modelName].bulkCreate(fixture);
 }
 
 export function createUserWithRoles(rolesToAdd, userData) {
@@ -57,9 +62,17 @@ export function deleteFixtureIfExists(modelName, id) {
   return del(id);
 }
 
+export function deleteFixtureIfExistsSequelize(modelName, id) {
+  return models[modelName].destroyById(id);
+}
+
 export function deleteFixturesIfExist(modelName, whereClause) {
   const del = Promise.promisify(app.models[modelName].destroyAll, { context: app.models[modelName] });
   return del(whereClause);
+}
+
+export function deleteFixturesIfExistSequelize(modelName, whereClause = { where: {} }) {
+  return models[modelName].destroy(whereClause);
 }
 
 export function expectModelToBeDeleted(modelName, id, cb) {

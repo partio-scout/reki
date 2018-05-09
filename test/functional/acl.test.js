@@ -761,21 +761,21 @@ describe('http api access control', () => {
 
   describe('SearchFilter', () => {
 
-    const searchFilterFixture = {
-      id: '111',
+    const searchFilterFixture = [{
+      id: 111,
       name: 'derp',
       filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
-    };
-    before(() =>
-      testUtils.createFixture('SearchFilter', searchFilterFixture)
-    );
+    }];
 
+    beforeEach( () =>
+      testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture)
+    );
     const searchFilterFixtureToCreate = {
       id: 2,
       name: 'durp',
       filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
     };
-    afterEach(() => testUtils.deleteFixturesIfExist('SearchFilter', { name: 'durp' }));
+    afterEach(() => testUtils.deleteFixturesIfExistSequelize('SearchFilter'));
 
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));

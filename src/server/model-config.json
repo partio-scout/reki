@@ -36,17 +36,9 @@
     "dataSource": "db",
     "public": true
   },
-  "SearchFilter": {
-    "dataSource": "db",
-    "public": false
-  },
   "Selection": {
     "dataSource": "db",
     "public": true
-  },
-  "Option": {
-    "dataSource": "db",
-    "public": false
   },
   "AuditEvent": {
     "dataSource": "db",

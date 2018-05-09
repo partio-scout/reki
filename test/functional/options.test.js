@@ -21,17 +21,14 @@ const testUser = {
 
 const testOptions = [
   {
-    'id':0,
     'property': 'village',
     'value': 'Mallikylä',
   },
   {
-    'id':1,
     'property': 'village',
     'value': 'muu',
   },
   {
-    'id':2,
     'property': 'campGroup',
     'value': 'muu',
   },
@@ -44,12 +41,12 @@ describe('Options', () => {
   beforeEach( async () => {
     await resetDatabase();
     accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    await testUtils.createFixture('Option', testOptions);
+    await testUtils.createFixtureSequelize('Option', testOptions);
     accessToken = accessToken.id;
   });
 
   afterEach( async () => {
-    await testUtils.deleteFixturesIfExist('Option');
+    await testUtils.deleteFixturesIfExistSequelize('Option');
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
