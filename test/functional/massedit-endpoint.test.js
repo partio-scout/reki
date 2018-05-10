@@ -104,6 +104,10 @@ describe('Participant mass edit endpoint test', () => {
   it('Should update whitelisted fields', () =>
     postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
       .expect(200)
+      .expect(result => {
+        expect(result.body).to.be.an('array').with.length(2);
+        expect(result.body[0]).to.have.property('firstName', 'Teemu');
+      })
       .then( () => queryParticipants(accessToken)
       .then( res => expectParticipantInCampValues([ inCamp, inCamp, tmpLeftCamp ], res.body) )
    )
