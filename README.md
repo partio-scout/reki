@@ -1,6 +1,22 @@
 # REKI
 Camp registry system that integrates with Kuksa. Originally developed for Roihu.
 
+## Developing with Docker
+### Prerequisites
+You need to install [Docker](https://docker.com) and [Docker compose](https://docs.docker.com/compose/install/). Nvm is also highly recommended, but you can also just install the correct (or equivalent) node version globally. See the correct version in the .nvmrc file.
+
+### Installation
+Clone this repository into a local directory.
+- If you are using nvm, run `nvm install` in that directory.
+- Run `npm install`.
+- Run `docker-compose build` to build the docker containers.
+
+### Running the app
+- If you are using nvm, run `nvm use`.
+- Run `docker-compose up` to start the services.
+
+The app is now running at `http://localhost:3000`.
+
 ## Developing with Vagrant
 ### Prerequisites
 You will need [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/) on your machine.
