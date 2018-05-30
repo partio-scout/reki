@@ -1,7 +1,9 @@
 import _ from 'lodash';
+import { models } from '../models';
+
 export default function(app) {
   app.get('/api/participantdates/', app.requirePermission('view participants'), async (req, res) => {
-    const participantDates = await app.models.ParticipantDate.find({
+    const participantDates = await models.ParticipantDate.findAll({
       fields: { date : true, participantId : false },
       order: 'date ASC',
     });

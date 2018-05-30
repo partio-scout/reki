@@ -10,13 +10,7 @@ const modelList = [
   ['Role', true],
   ['RoleMapping', false],
   ['RegistryUser', false],
-  ['Allergy', false],
-  ['Participant', false],
-  ['ParticipantAllergy', false],
-  ['ParticipantDate', false],
-  ['PresenceHistory', false],
   ['AuditEvent', false],
-  ['Selection', false],
 ];
 
 export function getModelCreationList() {

@@ -21,6 +21,7 @@ const testParticipants = [
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
     'memberNumber': 123,
+    'dateOfBirth': new Date(2018,5,10),
   },
   {
     'participantId': 2,
@@ -34,6 +35,7 @@ const testParticipants = [
     'subCamp': 'Alaleiri2',
     'ageGroup': 'seikkailija',
     'memberNumber': 345,
+    'dateOfBirth': new Date(2018,5,10),
   },
 ];
 
@@ -64,15 +66,15 @@ describe('particpantDates', () => {
   beforeEach(async () => {
     await resetDatabase();
     accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    await testUtils.createFixture('Participant', testParticipants);
-    await testUtils.createFixture('ParticipantDate', testParticipantDates);
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
     accessToken = accessToken.id;
   });
 
   afterEach(async () => {
-    await testUtils.deleteFixturesIfExist('Participant');
-    await testUtils.deleteFixturesIfExist('ParticipantDate');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
+    await testUtils.deleteFixturesIfExistSequelize('Participant');
+    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
+    await testUtils.deleteFixturesIfExistSequelize('RegistryUser');
   });
 
   it('GET request to participantdates', async () =>

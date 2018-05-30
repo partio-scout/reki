@@ -1,4 +1,3 @@
-import app from '../server/server';
 import sequelize from 'sequelize';
 import { models } from '../server/models';
 import Promise from 'bluebird';
@@ -8,11 +7,6 @@ import paymentToDateMappings from '../../conf/payment-date-mappings.json';
 import optionFields from '../../conf/option-fields.json';
 
 const Op = sequelize.Op;
-
-const Participant = app.models.Participant;
-const upsertParticipant = Promise.promisify(Participant.upsert, { context: Participant });
-const findParticipants = Promise.promisify(Participant.find, { context: Participant });
-const destroyAllParticipants = Promise.promisify(Participant.destroyAll, { context: Participant });
 
 if (require.main === module) {
   main().then(
@@ -32,8 +26,6 @@ function main() {
 }
 
 function buildAllergyTable() {
-  // Get all the possible allergies as Allergy-instances
-  const upsertAllergy = Promise.promisify(app.models.Allergy.upsert, { context: app.models.Allergy });
 
   console.log('Rebuilding allergies table...');
   return models.KuksaExtraSelectionGroup.findAll({
@@ -47,7 +39,7 @@ function buildAllergyTable() {
     },
   }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
     .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
-    .then(selections => Promise.each(selections, s => upsertAllergy(s)));
+    .then(selections => Promise.each(selections, s => models.Allergy.upsert(s)));
 }
 
 function rebuildParticipantsTable() {
@@ -142,7 +134,7 @@ function rebuildParticipantsTable() {
   .then(participants =>
     _.reduce(
       participants,
-      (acc, participant) => acc.then(() => upsertParticipant(participant)),
+      (acc, participant) => acc.then(() => models.Participant.upsert(participant)),
       Promise.resolve()
     )
   ).then(() => console.log('Rebuild complete.'));
@@ -151,14 +143,16 @@ function rebuildParticipantsTable() {
 function addAllergiesToParticipants() {
   function removeOldAndAddNewAllergies(participant, newAllergies) {
     Promise.promisifyAll(participant);
-    return participant.allergies.destroyAll()
-    .then(() => Promise.each(newAllergies, a => participant.allergies.add(a)));
+    return models.ParticipantAllergy.destroy( { where: { participantParticipantId: participant.participantId } } )
+    .then(() => Promise.each(newAllergies, allergyId => models.ParticipantAllergy.create({
+      participantParticipantId: participant.participantId,
+      allergyAllergyId: allergyId,
+    })));
   }
 
   function findParticipantsAllergies(participant) {
-    const findAllergies = Promise.promisify(app.models.Allergy.find, { context: app.models.Allergy });
 
-    return findAllergies()
+    return models.Allergy.findAll()
     .then(allergies => _.map(allergies, 'allergyId'))
     .then(allergies => models.KuksaParticipantExtraSelection.findAll({
       where: {
@@ -173,24 +167,23 @@ function addAllergiesToParticipants() {
 
   console.log('Adding allergies and diets to participants...');
 
-  return findParticipants()
+  return models.Participant.findAll({ include: [models.Allergy] })
   .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
     .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
     .then(() => console.log('Allergies and diets added.'));
 }
 
 function addDatesToParticipants() {
-  const ParticipantDate = app.models.ParticipantDate;
-  const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
-  const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });
 
   console.log('Adding dates to participants...');
   return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    destroyParticipantDates({ participantId: kuksaParticipant.id })
-      .then(() => createParticipantDates(mapPaymentsToDates(kuksaParticipant)));
+    console.log(kuksaParticipant);
+    models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
+
+      .then(() => console.log(kuksaParticipant.kuksa_payments),models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
@@ -207,9 +200,6 @@ function addDatesToParticipants() {
 }
 
 function buildSelectionTable() {
-  const Selection = app.models.Selection;
-  const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
-  const createSelections = Promise.promisify(Selection.create, { context: Selection });
   const groupsToCreate = [
     '0-11-vuotias lapsi osallistuu',
     'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
@@ -221,8 +211,8 @@ function buildSelectionTable() {
 
   console.log('Building selections table...');
 
-  return destroyAllSelections()
-  .then(() => findParticipants())
+  return models.Selection.destroy( { where: {} } )
+  .then(() => models.Participant.findAll())
   .then(participants => Promise.each(participants, p =>
     models.KuksaParticipantExtraSelection.findAll({
       where: { kuksaParticipantId: p.participantId },
@@ -240,7 +230,8 @@ function buildSelectionTable() {
       groupName: sel.kuksa_extraselection.kuksa_extraselectiongroup.name.trim(),
       selectionName: sel.kuksa_extraselection.name,
     })))
-    .then(selections => createSelections(selections))))
+    .then(selections => models.Selection.bulkCreate(selections))
+    ))
   .then(() => console.log('Selections table built.'));
 }
 
@@ -248,8 +239,8 @@ function deleteCancelledParticipants() {
   console.log('Deleting cancelled participants...');
   return models.KuksaParticipant.findAll({ where: { cancelled: true } })
     .then(participants => _.map(participants, 'id'))
-    .then(idsToDelete => destroyAllParticipants({ participantId: { inq: idsToDelete } }))
-    .then(info => console.log(`Deleted ${info.count} cancelled participants.`));
+    .then(idsToDelete => models.Participant.destroy({ where: { participantId: { [Op.in]: idsToDelete } } }))
+    .then(count => console.log(`Deleted ${count} cancelled participants.`));
 }
 
 function buildOptionTable() {
@@ -262,10 +253,10 @@ function buildOptionTable() {
   function getFieldValues(field) {
     const filter = { fields: { } };
     filter['fields'][field] = true;
-    return findParticipants(filter)
+    return models.Participant.aggregate( field, 'DISTINCT', { plain: false } )
       .then(values => ({
         field: field,
-        values: _(values).map(obj => obj[field]).uniq().reject(_.isNull).value().sort(),
+        values: _(values).map(obj => obj['DISTINCT']).uniq().reject(_.isNull).value().sort(),
       }));
   }
 }
