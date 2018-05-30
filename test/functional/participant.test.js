@@ -119,4 +119,10 @@ describe('particpant', () => {
       .expect(404)
   );
 
+  it('request for participant with string id returns 404', async () =>
+    request(app)
+      .get(`/api/participants/hello?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .expect(404)
+  );
+
 });

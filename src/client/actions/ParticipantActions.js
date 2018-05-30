@@ -73,10 +73,10 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       return dispatch => {
         dispatch();
         participantResource.raw('post', 'massAssign', {
-          body: { ids: participantId, fieldName: property, newValue: value } })
+          body: { ids: [ participantId ], fieldName: property, newValue: value } })
           .then(participants => {
             if (property === 'presence') {
-              this.fetchParticipantByIdWithPresenceHistory(participants.result[0].participantId);
+              this.fetchParticipantByIdWithPresenceHistory(participants[0].participantId);
             }
             this.participantPropertyUpdated(property, participants);
           }, err => errorActions.error(err, 'Osallistujan tallennus epäonnistui'));
@@ -86,7 +86,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
     participantPropertyUpdated(property, participants) {
       return {
         property: property,
-        newValue: participants.result[0][property],
+        newValue: participants[0][property],
       };
     }
 

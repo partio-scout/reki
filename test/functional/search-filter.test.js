@@ -60,7 +60,7 @@ describe('SearchFilter', () => {
     expect(filters).to.be.an('array').with.length(1);
   });
 
-  it('DELETE request destroys the filter we tried to destroy from the database', async () =>{
+  it('DELETE request destroys the filter we tried to destroy from the database', async () => {
     await testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture);
     await request(app).delete('/api/searchfilters/1')
       .set('Authorization', accessToken)
@@ -69,7 +69,7 @@ describe('SearchFilter', () => {
     expect(filters).to.be.an('array').with.length(0);
   });
 
-  it('DELETE request returns 404 if filter is not found', async () =>{
+  it('DELETE request returns 404 if filter is not found', async () => {
     await testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture);
     await request(app).delete('/api/searchfilters/3')
       .set('Authorization', accessToken)
@@ -77,5 +77,11 @@ describe('SearchFilter', () => {
     const filters = await models.SearchFilter.findAll();
     expect(filters).to.be.an('array').with.length(1);
   });
+
+  it('DELETE request returns 404 for non-integer ids', () =>
+    request(app).delete('/api/searchfilters/hello')
+      .set('Authorization', accessToken)
+      .expect(404)
+  );
 
 });
