@@ -41,7 +41,6 @@
     "babel-register": "^6.3.13",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
-    "bootstrap": "^3.3.6",
     "bootstrap-sass": "^3.3.6",
     "commander": "^2.9.0",
     "compression": "^1.6.0",
