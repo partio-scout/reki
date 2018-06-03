@@ -65,7 +65,7 @@
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
     "node-sass": "^3.4.2",
-    "passport-saml": "^0.14.0",
+    "passport-saml": "^0.33.0",
     "react": "^0.14.3",
     "react-bootstrap": "^0.28.1",
     "react-dom": "^0.14.3",
