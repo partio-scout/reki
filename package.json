@@ -61,7 +61,7 @@
     "loopback": "^2.25.0",
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
-    "loopback-datasource-juggler": "2.46.0",
+    "loopback-datasource-juggler": "2.57.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
     "node-sass": "^3.4.2",
