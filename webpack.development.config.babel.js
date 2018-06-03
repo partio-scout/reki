@@ -6,6 +6,7 @@ const buildPath = path.resolve(__dirname, 'src', 'public', 'build');
 const mainPath = path.resolve(__dirname, 'src', 'client', 'main.jsx');
 
 export default {
+  mode: 'development',
   context: __dirname,
   devtool: 'eval-source-map',
   entry: [
@@ -20,31 +21,34 @@ export default {
   },
   resolve: {
     extensions: [
-      '',
+      //'',
       '.js',
       '.jsx',
     ],
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$|\.jsx$/,
-        loaders: ['react-hot','babel?{"presets":["react", "es2015"]}'],
+        loader: 'babel-loader',
         exclude: [nodeModulesPath],
+        options: {
+          plugins: ['react-hot-loader/babel'],
+        },
       },
       {
         test: /\.css$/,
-        loader: 'style!css',
+        loader: 'style-loader!css',
       },
       {
         test: /\.scss$/,
-        loader: 'style!css!sass?outputStyle=expanded',
+        loader: 'style-loader!css-loader!sass-loader?outputStyle=expanded',
       },
-      { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   loader: 'url?limit=10000&minetype=application/font-woff' },
-      { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  loader: 'url?limit=10000&minetype=application/font-woff' },
-      { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url?limit=10000&minetype=application/octet-stream' },
-      { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    loader: 'file' },
-      { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url?limit=10000&minetype=image/svg+xml' },
+      { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   loader: 'url-loader?limit=10000&minetype=application/font-woff' },
+      { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  loader: 'url-loader?limit=10000&minetype=application/font-woff' },
+      { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url-loader?limit=10000&minetype=application/octet-stream' },
+      { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    loader: 'file-loader' },
+      { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url-loader?limit=10000&minetype=image/svg+xml' },
     ],
   },
   plugins: [new HotModuleReplacementPlugin()],
