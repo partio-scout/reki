@@ -6,7 +6,9 @@ function loadConfig(fileName) {
   return {
     getFetchDateRanges: () => config.fetchDateRanges,
     getPaymentToDatesMappings: () => config.paymentToDatesMappings,
+    getSelectionGroupTitles: () => config.selectionGroupTitles,
     getOptionFieldNames: () => config.optionFields,
+    getAllergyFieldTitles: () => config.allergyFields,
   };
 }
 

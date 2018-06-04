@@ -69,6 +69,22 @@ const paymentToDatesMappings = {
   "Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.": []
 };
 
+// Titles of multi-select fields containing the allergy information
+const allergyFields = [
+  'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+  'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+];
+
+// Titles of the multi-select groups that should be synced
+const selectionGroupTitles = [
+  '0-11-vuotias lapsi osallistuu',
+  'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
+  '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
+  'Lapsen uimataito',
+  'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
+  '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+];
+
 // TODO refactor so this is determined from fields list
 const optionFields = [
   "subCamp",
@@ -87,5 +103,7 @@ const optionFields = [
 export default {
   paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
+  selectionGroupTitles: selectionGroupTitles,
   optionFields: optionFields,
+  allergyFields: allergyFields,
 }

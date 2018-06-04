@@ -38,10 +38,7 @@ function buildAllergyTable() {
   return models.KuksaExtraSelectionGroup.findAll({
     where: {
       name: {
-        [Op.in]: [
-          'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-          'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-        ],
+        [Op.in]: config.getAllergyFieldTitles(),
       },
     },
   }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
@@ -210,14 +207,7 @@ function buildSelectionTable() {
   const Selection = app.models.Selection;
   const destroyAllSelections = Promise.promisify(Selection.destroyAll, { context: Selection });
   const createSelections = Promise.promisify(Selection.create, { context: Selection });
-  const groupsToCreate = [
-    '0-11-vuotias lapsi osallistuu',
-    'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
-    '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
-    'Lapsen uimataito',
-    'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
-    '\tLapsi tarvitsee päiväunien aikaan vaippaa',
-  ];
+  const groupsToCreate = config.getSelectionGroupTitles();
 
   console.log('Building selections table...');
 
