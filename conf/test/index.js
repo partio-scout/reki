@@ -100,10 +100,29 @@ const optionFields = [
   "internationalGuest"
 ];
 
+const permissions = {
+  "registryUser": [
+    "perform allowed test action",
+    "view searchfilters",
+    "view own user information",
+    "modify searchfilters",
+    "view participants",
+    "edit participants"
+  ],
+  "registryAdmin": [
+    "perform disallowed test action",
+    "view registry users",
+    "view own user information",
+    "block and unblock users"
+  ]
+};
+
+
 export default {
   paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
   selectionGroupTitles: selectionGroupTitles,
   optionFields: optionFields,
   allergyFields: allergyFields,
+  permissions: permissions,
 }

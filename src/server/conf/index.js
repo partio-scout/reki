@@ -9,6 +9,7 @@ function loadConfig(fileName) {
     getSelectionGroupTitles: () => config.selectionGroupTitles,
     getOptionFieldNames: () => config.optionFields,
     getAllergyFieldTitles: () => config.allergyFields,
+    getActionPermissions: () => config.permissions,
   };
 }
 
