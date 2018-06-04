@@ -4,7 +4,6 @@ import { models } from '../server/models';
 import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
-import optionFields from '../../conf/option-fields.json';
 import config from '../server/conf';
 
 const Op = sequelize.Op;
@@ -257,7 +256,7 @@ function buildOptionTable() {
 
   const addFieldValues = ({ field, values }) => Promise.each(values, value => models.Option.create({ property: field, value: value }));
   return models.Option.destroy({ where: {} })
-    .then(() => Promise.mapSeries(optionFields, getFieldValues))
+    .then(() => Promise.mapSeries(config.getOptionFieldNames(), getFieldValues))
     .then(items => Promise.each(items, addFieldValues));
 
   function getFieldValues(field) {

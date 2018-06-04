@@ -6,6 +6,7 @@ function loadConfig(fileName) {
   return {
     getFetchDateRanges: () => config.fetchDateRanges,
     getPaymentToDatesMappings: () => config.paymentToDatesMappings,
+    getOptionFieldNames: () => config.optionFields,
   };
 }
 

@@ -69,7 +69,23 @@ const paymentToDatesMappings = {
   "Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.": []
 };
 
+// TODO refactor so this is determined from fields list
+const optionFields = [
+  "subCamp",
+  "village",
+  "campGroup",
+  "localGroup",
+  "ageGroup",
+  "childNaps",
+  "accommodation",
+  "country",
+  "willOfTheWisp",
+  "willOfTheWispWave",
+  "internationalGuest"
+];
+
 export default {
   paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
+  optionFields: optionFields,
 }
