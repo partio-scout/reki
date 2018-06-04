@@ -4,8 +4,8 @@ import { models } from '../server/models';
 import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
-import paymentToDateMappings from '../../conf/payment-date-mappings.json';
 import optionFields from '../../conf/option-fields.json';
+import config from '../server/conf';
 
 const Op = sequelize.Op;
 
@@ -180,6 +180,7 @@ function addAllergiesToParticipants() {
 }
 
 function addDatesToParticipants() {
+  const paymentToDateMappings = config.getPaymentToDatesMappings();
   const ParticipantDate = app.models.ParticipantDate;
   const destroyParticipantDates = Promise.promisify(ParticipantDate.destroyAll, { context: ParticipantDate });
   const createParticipantDates = Promise.promisify(ParticipantDate.create, { context: ParticipantDate });

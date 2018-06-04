@@ -20,7 +20,7 @@ const fetchDateRanges = [
 ];
 
 // Map payment names to sets of dates when the participant is present
-const paymentsToDatesMappings = {
+const paymentToDatesMappings = {
   "pe 15.7.": ["2016-07-15"],
   "la 16.7.": ["2016-07-16"],
   "su 17.7.": ["2016-07-17"],
@@ -70,6 +70,6 @@ const paymentsToDatesMappings = {
 };
 
 export default {
-  paymentsToDatesMappings: paymentsToDatesMappings,
+  paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
 }
