@@ -1,3 +1,10 @@
+/*
+ * This is the config file used for tests - don't change it unless you plan to change the tests too!
+ *
+ * Use production.config.js for setting your production config and default.config.js for your dev
+ * environment. If you just want to get the app running and do some development, the default config
+ * files should work just fine.
+ */
 
 // Split fetching participants to date ranges in order to avoid overloading Kuksa
 const fetchDateRanges = [
