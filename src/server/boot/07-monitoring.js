@@ -1,11 +1,10 @@
 export default function(app) {
-  app.get('/monitoring', (req, res) => {
-    app.models.RegistryUser.count((err, count) => {
-      if (err || count === 0) {
-        res.status(500).send('ERROR');
-      } else {
-        res.status(200).send('OK');
-      }
-    });
-  });
+  app.get('/monitoring', app.wrap(async (req, res) => {
+    try {
+      await app.models.RegistryUser.count();
+      res.status(200).send('OK');
+    } catch (err) {
+      res.status(500).send('ERROR');
+    }
+  }));
 }
