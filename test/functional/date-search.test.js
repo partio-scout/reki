@@ -23,6 +23,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 2,
@@ -36,6 +37,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri2',
       'ageGroup': 'seikkailija',
       'memberNumber': 345,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 3,
@@ -49,6 +51,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
+      'dateOfBirth': new Date(),
     },
   ];
 
@@ -77,8 +80,8 @@ describe('Date search', () => {
   beforeEach(() =>
     resetDatabase()
       .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
-      .then(() => testUtils.createFixture('Participant', testParticipants))
-      .then(() => testUtils.createFixture('ParticipantDate', testParticipantDates))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
   );

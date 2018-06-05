@@ -30,6 +30,8 @@ describe('Presence history', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
     {
       'participantId': 2,
@@ -43,6 +45,8 @@ describe('Presence history', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
     {
       'participantId': 3,
@@ -56,6 +60,8 @@ describe('Presence history', () => {
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
   ];
 
@@ -74,7 +80,7 @@ describe('Presence history', () => {
       .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
-      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
   );
 
   function expectPresenceHistoryValues(expectedPresences, participantId, response) {

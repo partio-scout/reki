@@ -186,7 +186,7 @@ export default function (Participant) {
     const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
-      return Participant.findByIds(ids).then(rows => {
+      return Participant.findAll(ids).then(rows => {
         const updates = _.map(rows, async row => {
           if (fieldName === 'presence' && row[fieldName] != newValue) {
             await app.models.PresenceHistory.create({

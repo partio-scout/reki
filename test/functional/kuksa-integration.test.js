@@ -142,7 +142,7 @@ describe('Kuksa integration', () => {
     () => models.Selection.findAll({ where: { kuksaSelectionId: 487 } })
       .then(s => {
         expect(s).to.have.length(1);
-        expect(s[0]).to.have.property('participantId', 544);
+        expect(s[0]).to.have.property('participantParticipantId', 544);
         expect(s[0]).to.have.property('groupName', 'Lapsi tarvitsee päiväunien aikaan vaippaa');
         expect(s[0]).to.have.property('selectionName', 'Ei');
       })

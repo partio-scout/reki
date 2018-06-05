@@ -21,6 +21,8 @@ const testParticipants = [
     'ageGroup': 'sudenpentu',
     'memberNumber': 123,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
   {
     'participantId': 2,
@@ -34,6 +36,8 @@ const testParticipants = [
     'ageGroup': 'sudenpentu',
     'memberNumber': 345,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
   {
     'participantId': 3,
@@ -47,6 +51,8 @@ const testParticipants = [
     'ageGroup': 'seikkailija',
     'memberNumber': 859,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
 ];
 
@@ -67,21 +73,21 @@ const testParticipantDates = [
   { participantId: 1, date: new Date(2016,6,23) },
 ];
 
-describe('particpant', () => {
+describe('particpant list', () => {
 
   let accessToken = null;
 
   beforeEach(async () => {
     await resetDatabase();
-    await testUtils.createFixture('Participant', testParticipants);
-    await testUtils.createFixture('ParticipantDate', testParticipantDates);
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
     accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
     accessToken = accessToken.id;
   });
 
   afterEach(async () => {
-    await testUtils.deleteFixturesIfExist('Participant');
-    await testUtils.deleteFixturesIfExist('ParticipantDate');
+    await testUtils.deleteFixturesIfExistSequelize('Participant');
+    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 

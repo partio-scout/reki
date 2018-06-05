@@ -26,6 +26,7 @@ describe('Text search', () => {
       'staffPosition': null,
       'staffPositionInGenerator': 'Tiskari',
       'editableInfo': 'Muokattava teksti',
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 2,
@@ -42,6 +43,7 @@ describe('Text search', () => {
       'staffPosition': 'Jumppaohjaaja',
       'staffPositionInGenerator': null,
       'campOfficeNotes': 'Leiritoimiston jutut',
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 3,
@@ -57,6 +59,7 @@ describe('Text search', () => {
       'memberNumber': 859,
       'staffPosition': 'Kaivaja',
       'staffPositionInGenerator': '#Tiskari',
+      'dateOfBirth': new Date(),
     },
   ];
 
@@ -75,7 +78,7 @@ describe('Text search', () => {
   beforeEach(() =>
     resetDatabase()
       .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
-      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
   );

@@ -29,7 +29,7 @@ describe('Audit Event', () => {
     'lastName': 'Testailija',
     'phoneNumber': 'n/a',
   };
-  const testParticipant = {
+  const testParticipant = [ {
     'participantId': 42,
     'firstName': 'Testi',
     'lastName': 'Henkilö',
@@ -40,7 +40,8 @@ describe('Audit Event', () => {
     'village': 'Kylä',
     'subCamp': 'Alaleiri',
     'ageGroup': 'sudenpentu',
-  };
+    'dateOfBirth': new Date(),
+  } ];
 
   beforeEach(() =>
     resetDatabase()
@@ -74,7 +75,7 @@ describe('Audit Event', () => {
   });
 
   it('should create audit event when finding participant', () =>
-    testUtils.createFixture('Participant', testParticipant)
+    testUtils.createFixtureSequelize('Participant', testParticipant)
       .then(participant => queryInstanceFromDb('Participants', participant.participantId, accessToken)
         .then(() => expectAuditEventToEventuallyExist({
           'eventType': 'find',

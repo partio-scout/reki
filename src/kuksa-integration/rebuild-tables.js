@@ -224,7 +224,7 @@ function buildSelectionTable() {
     .then(participantSelections => _.filter(participantSelections, s => !!(s.kuksa_extraselection && s.kuksa_extraselection.kuksa_extraselectiongroup))) // Apparently some selections don't have a group, so handle only selections with group
     .then(participantSelections => _.filter(participantSelections, s => (_.indexOf(groupsToCreate, s.kuksa_extraselection.kuksa_extraselectiongroup.name) > -1)))
     .then(participantSelections => participantSelections.map(sel => ({
-      participantId: sel.kuksaParticipantId,
+      participantParticipantId: sel.kuksaParticipantId,
       kuksaGroupId: sel.kuksa_extraselection.kuksa_extraselectiongroup.id,
       kuksaSelectionId: sel.kuksa_extraselection.id,
       groupName: sel.kuksa_extraselection.kuksa_extraselectiongroup.name.trim(),

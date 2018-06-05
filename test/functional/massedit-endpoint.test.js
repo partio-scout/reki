@@ -30,6 +30,7 @@ describe('Participant mass edit endpoint test', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
       'presence': leftCamp,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 2,
@@ -44,6 +45,7 @@ describe('Participant mass edit endpoint test', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
       'presence': leftCamp,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 3,
@@ -58,6 +60,7 @@ describe('Participant mass edit endpoint test', () => {
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
       'presence': tmpLeftCamp,
+      'dateOfBirth': new Date(),
     },
   ];
 
@@ -76,19 +79,20 @@ describe('Participant mass edit endpoint test', () => {
       .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
-      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
   );
 
   function expectParticipantInCampValues(expectedResult, response) {
-    const inCampValues = _.map(response, row => row.presence);
+    const inCampValues = _.map(response.result, row => row.presence);
     return expect(inCampValues).to.eql(expectedResult);
   }
 
   function expectParticipantSubCampValues(expectedResult, response) {
-    const subCampValues = _.map(response, row => row.subCamp);
+    const subCampValues = _.map(response.result, row => row.subCamp);
     return expect(subCampValues).to.eql(expectedResult);
   }
 
+  //TODO: refactor this to query DB directly
   function queryParticipants(accessToken) {
     return request(app)
     .get(`/api/participants?access_token=${accessToken}`)

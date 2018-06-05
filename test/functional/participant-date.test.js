@@ -74,7 +74,7 @@ describe('particpantDates', () => {
   afterEach(async () => {
     await testUtils.deleteFixturesIfExistSequelize('Participant');
     await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExistSequelize('RegistryUser');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   it('GET request to participantdates', async () =>

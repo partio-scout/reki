@@ -1,4 +1,7 @@
 import Sequelize from 'sequelize';
+import _ from 'lodash';
+
+const Op = Sequelize.Op;
 
 export default function(db) {
 
@@ -191,6 +194,43 @@ export default function(db) {
   Selection.belongsTo(Participant);
 
   ParticipantDate.belongsTo(Participant);
+
+  Participant.massAssignField = function(ids, fieldName, newValue, authorId) {
+    // field name : validation function
+    const allowedFields = {
+      presence: value => _.includes([ 1, 2, 3 ], +value),
+      campOfficeNotes: value => _.isString(value),
+      editableInfo: value => _.isString(value),
+    };
+
+    const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
+
+    if (fieldIsValid(fieldName, newValue)) {
+      return Participant.findAll({where: {'participantId': { [Op.in]: ids } }}).then(rows => {
+        const updates = _.map(rows, async row => {
+          if (fieldName === 'presence' && row[fieldName] != newValue) {
+            await app.models.PresenceHistory.create({
+              participantId: row.id,
+              presence: newValue,
+              timestamp: new Date(),
+              authorId: authorId,
+            });
+          }
+          row[fieldName] = newValue;
+
+          // TODO Test this audit event
+          app.models.AuditEvent.createEvent.Participant(authorId, row.id, 'update');
+
+          return row.save();
+        });
+        return Promise.all(updates);
+      });
+    } else {
+      const err = new Error(`Editing ${fieldName} not allowed.`);
+      err.status = 400;
+      return Promise.reject(err);
+    }
+  };
 
   return {
     Option: Option,
