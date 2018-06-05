@@ -2,6 +2,7 @@
 Camp registry system that integrates with Kuksa. Originally developed for Roihu.
 
 ## Developing with Docker
+
 ### Prerequisites
 You need to install [Docker](https://docker.com) and [Docker compose](https://docs.docker.com/compose/install/). Nvm is also highly recommended, but you can also just install the correct (or equivalent) node version globally. See the correct version in the .nvmrc file.
 
@@ -18,6 +19,7 @@ Clone this repository into a local directory.
 The app is now running at `http://localhost:3000`.
 
 ## Developing with Vagrant
+
 ### Prerequisites
 You will need [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/) on your machine.
 
@@ -39,6 +41,74 @@ By default file change events do not propagate between the host and virtual mach
 ## ES6
 ES6 syntax is supported and should be used in all files, including the module syntax.
 
-## Kuksa-integration
-### Adding new properties to Participant-model
-First create a new property to Participant-model in src/common/models/participant.json. After that, edit src/kuksa-integration/rebuild-tables.js. If the desired property is in Kuksa as an extra selection or extra info field, map the info for participant in rebuildParticipantsTable with the correct function (getSelectionForGroup or getInfoForField). If the property is given in participant's information, make sure it is mapped to KuksaParticipant in transferParticipants-function in src/kuksa-integration/fetch-data.js. You can check the name of the property from [Kuksa event api](https://github.com/partio-scout/kuksa-event-api-client/blob/master/src/eventApi.ts). After that, map the property to participant in rebuild-tables.js/rebuildParticipantsTable.
+## Configuring your REKI installation
+
+See conf/test.config.js for an example configuration.
+
+## Setting up a production environment in Heroku
+
+The easiest way to set up a production environment is to use [Heroku](https://heroku.com/).
+
+### Setting up the application
+
+Create a Heroku account and get familiar with the basics in the [Heroku documentation](https://devcenter.heroku.com/).
+
+Create a new Heroku application and deploy REKI there as described in [Getting Started on Heroku with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs). These instructions assume your application is called your-heroku-app, but you should of course give it a descriptive name.
+
+Provision a Heroku Postgres database. This should automatically set the DATABASE_URL environment variable for the application and it should be able to connect to the database automatically.
+
+Go to https://your-heroku-app.herokuapp.com/monitoring. If you see the text "OK", congratulations! The application is up and running. If you see "ERROR", the database connection does not work or the automatic database setup has failed. Wait for a couple of minutes to see if it's just slow, then check Heroku logs to investigate further. Also make sure the DATABASE_URL environment variable has been set.
+
+Set the NODE_ENV environment variable to "production" in your Heroku app, if it's not already set. This is necessary from performance and security reasons. **Never** run REKI in development mode in production.
+
+You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://your-heroku-app.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
+
+### Setting up PartioID login
+
+Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). For this you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi. Ask them to add the following config in the identity provider settings (replace https://my-heroku-app.herokuapp.com with your real URL):
+
+  $metadata['https://my-heroku-app.herokuapp.com'] = array(
+    'AssertionConsumerService' => 'https://my-heroku-app.herokuapp.com/saml/consume',
+    'SingleLogoutService' => 'https://my-heroku-app.herokuapp.com/saml/logout'
+  );
+
+In the configuration, the string between [ and ] is the **entityId** of your service. It can be any string, but we recommend you use the root URL of your REKI installation, e.g. https://your-heroku-app.herokuapp.com.
+
+When the configuration in the PartioID end has been done, set the following environment variables in your Heroku app:
+
+- Set PARTIOID_USE_PRODUCTION to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will use the PartioID test environment, qaid.partio.fi.
+- Set PARTIOID_SP_ISSUER to the entityId that's set in the PartioID configuration (see above). Make sure you set them **exactly the same way**, for example https://example.org and https://example.org/ (with a trailing slash) are interpreted as different strings. Capitalization also matters, so be careful.
+
+#### Creating your fist user
+
+To test the PartioID login, create a user. Matching users from PartioID to the REKI user database happens with the member number. Thus, create a user with e.g. your own information and member number. You can do this by opening executing `npm run create-user` through `heroku run`, for example:
+
+  heroku run npm run create-user
+
+Make sure to enter the member number correctly.
+
+Once the user has been created, you can log in using PartioID and see if it works.
+
+#### Troubleshooting PartioID
+
+- If you get an error in the PartioID end, most likely the entityId has been set incorrectly in REKI (check your trailing slashes!) or the configuration for REKI in the PartioID end is missing altogether.
+- If you get an error from the REKI end, see Heroku logs for errors. Possible causes include (but are not limited to) system time differing for more than 30 seconds between PartioID and REKI, outdated certificate (see certs/partioid) or incorrect member number of the local user.
+
+### Configuring the Kuksa integration
+
+**Notice:** The Kuksa integration doesn't yet work on Heroku, because Kuksa allows the event API to be used only from a single whitelisted IP address. For this reason, REKI needs to use a proxy server with a static IP for accessing Kuksa. Support for proxies is being implemented soon.
+
+Using the Kuksa integration requires that:
+
+- the event is a "suurtapahtuma" in Kuksa (regular events don't expose an API)
+- the fields you want to appear in REKI have been set to be visible over the API in the Kuksa event settings
+- the source IP address you will use to access the API has been whitelisted in Kuksa
+
+You will need to contact the member registry coordinator at the main office of Suomen Partiolaiset to make the configurations at the Kuksa end. You'll most likely want to set up the Kuksa integration together. Reserve several hours for this.
+
+You will need to set the following environment variables for the Kuksa integration to work:
+
+- KUKSA_API_ENDPOINT: set this to the full address of the Kuksa REST API
+- KUKSA_API_USERNAME: the username for the Kuksa integration
+- KUKSA_API_PASSWORD: the password for the Kuksa integration
+- KUKSA_API_EVENTID: the id (a GUID) of the event
