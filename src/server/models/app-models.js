@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
+import app from '../server';
 
 const Op = Sequelize.Op;
 
@@ -206,11 +207,11 @@ export default function(db) {
     const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
-      return Participant.findAll({where: {'participantId': { [Op.in]: ids } }}).then(rows => {
+      return Participant.findAll({ where: { 'participantId': { [Op.in]: ids } } }).then(rows => {
         const updates = _.map(rows, async row => {
           if (fieldName === 'presence' && row[fieldName] != newValue) {
-            await app.models.PresenceHistory.create({
-              participantId: row.id,
+            await PresenceHistory.create({
+              participantParticipantId: row.participantId,
               presence: newValue,
               timestamp: new Date(),
               authorId: authorId,
@@ -219,7 +220,7 @@ export default function(db) {
           row[fieldName] = newValue;
 
           // TODO Test this audit event
-          app.models.AuditEvent.createEvent.Participant(authorId, row.id, 'update');
+          await app.models.AuditEvent.createEvent.Participant(authorId, row.participantId, 'update');
 
           return row.save();
         });

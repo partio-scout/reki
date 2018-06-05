@@ -76,7 +76,7 @@ describe('Audit Event', () => {
 
   it('should create audit event when finding participant', () =>
     testUtils.createFixtureSequelize('Participant', testParticipant)
-      .then(participant => queryInstanceFromDb('Participants', participant.participantId, accessToken)
+      .then(participant => queryInstanceFromDb('participants', participant[0].participantId, accessToken)
         .then(() => expectAuditEventToEventuallyExist({
           'eventType': 'find',
           'model': 'Participant',
