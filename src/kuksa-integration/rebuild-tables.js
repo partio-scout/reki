@@ -3,8 +3,7 @@ import { models } from '../server/models';
 import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
-import paymentToDateMappings from '../../conf/payment-date-mappings.json';
-import optionFields from '../../conf/option-fields.json';
+import config from '../server/conf';
 
 const Op = sequelize.Op;
 
@@ -31,10 +30,7 @@ function buildAllergyTable() {
   return models.KuksaExtraSelectionGroup.findAll({
     where: {
       name: {
-        [Op.in]: [
-          'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-          'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-        ],
+        [Op.in]: config.getAllergyFieldTitles(),
       },
     },
   }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
@@ -175,6 +171,8 @@ function addAllergiesToParticipants() {
 
 function addDatesToParticipants() {
 
+  const paymentToDateMappings = config.getPaymentToDatesMappings();
+
   console.log('Adding dates to participants...');
   return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
 
@@ -200,14 +198,8 @@ function addDatesToParticipants() {
 }
 
 function buildSelectionTable() {
-  const groupsToCreate = [
-    '0-11-vuotias lapsi osallistuu',
-    'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
-    '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
-    'Lapsen uimataito',
-    'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
-    '\tLapsi tarvitsee päiväunien aikaan vaippaa',
-  ];
+
+  const groupsToCreate = config.getSelectionGroupTitles();
 
   console.log('Building selections table...');
 
@@ -247,7 +239,7 @@ function buildOptionTable() {
 
   const addFieldValues = ({ field, values }) => Promise.each(values, value => models.Option.create({ property: field, value: value }));
   return models.Option.destroy({ where: {} })
-    .then(() => Promise.mapSeries(optionFields, getFieldValues))
+    .then(() => Promise.mapSeries(config.getOptionFieldNames(), getFieldValues))
     .then(items => Promise.each(items, addFieldValues));
 
   function getFieldValues(field) {

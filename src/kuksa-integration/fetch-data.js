@@ -3,7 +3,7 @@ import Promise from 'bluebird';
 import moment from 'moment';
 import transfer from './transfer';
 import { getEventApi } from 'kuksa-event-api-client';
-import participantDateRanges from '../../conf/participant-fetch-dates.json';
+import config from '../server/conf';
 
 if (require.main === module) {
   main().then(
@@ -175,6 +175,7 @@ function transferParticipants(eventApi) {
     ]);
   }
 
+  const participantDateRanges = config.getFetchDateRanges();
   // set the last date to be current date
   const lastIndex = participantDateRanges.length - 1;
   participantDateRanges[lastIndex].endDate = moment().toDate();
