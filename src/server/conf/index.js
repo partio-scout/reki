@@ -6,7 +6,7 @@ let configFile = path.resolve(__dirname, `../../../conf/${env}.config.js`);
 if (!existsSync(configFile)) {
   configFile = path.resolve(__dirname, '../../../conf/default.config.js');
 }
-const config = require(configFile);
+const config = require(configFile).default;
 
 export default {
   getFetchDateRanges: () => config.fetchDateRanges,
