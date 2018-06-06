@@ -15,4 +15,5 @@ export default {
   getOptionFieldNames: () => config.optionFields,
   getAllergyFieldTitles: () => config.allergyFields,
   getActionPermissions: () => config.permissions,
+  getRoles: () => Object.keys(config.permissions),
 };
