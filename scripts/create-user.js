@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import app from '../src/server/server.js';
+import config from '../src/server/conf';
 import crypto from 'crypto';
 import inquirer from 'inquirer';
 import _ from 'lodash';
@@ -45,10 +46,10 @@ const questions = [
     type: 'checkbox',
     name: 'roles',
     message: 'Choose the roles this user should have',
-    choices: [
-      { name: 'user', value:'registryUser', checked: true },
-      { name: 'admin', value: 'registryAdmin' },
-    ],
+    choices: config.getRoles().map(role => ({
+      name: role,
+      value: role,
+    })),
   },
 ];
 
