@@ -2,4 +2,5 @@
 // For documentation on babel, see: http://babeljs.io/
 
 require('babel-register');
+require('babel-polyfill');
 require('./server');
