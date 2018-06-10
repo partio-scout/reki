@@ -96,8 +96,6 @@ Once the user has been created, you can log in using PartioID and see if it work
 
 ### Configuring the Kuksa integration
 
-**Notice:** The Kuksa integration doesn't yet work on Heroku, because Kuksa allows the event API to be used only from a single whitelisted IP address. For this reason, REKI needs to use a proxy server with a static IP for accessing Kuksa. Support for proxies is being implemented soon.
-
 Using the Kuksa integration requires that:
 
 - the event is a "suurtapahtuma" in Kuksa (regular events don't expose an API)
@@ -106,9 +104,12 @@ Using the Kuksa integration requires that:
 
 You will need to contact the member registry coordinator at the main office of Suomen Partiolaiset to make the configurations at the Kuksa end. You'll most likely want to set up the Kuksa integration together. Reserve several hours for this.
 
+Due to the IP whitelisting in Kuksa, the integration won't work on Heroku directly. The IP addresses of Heroku dynos change often and Kuksa expects a certain IP every time. For this reason you will need to use a proxy with a static IP. There are several Heroku addons that provide this as a service. Notice that most of these services expose the proxy url in their own environment variable such as PROXIMO_URL - you will need to copy this value to KUKSA_API_PROXY_URL. We recommend using an HTTP proxy.
+
 You will need to set the following environment variables for the Kuksa integration to work:
 
 - KUKSA_API_ENDPOINT: set this to the full address of the Kuksa REST API
 - KUKSA_API_USERNAME: the username for the Kuksa integration
 - KUKSA_API_PASSWORD: the password for the Kuksa integration
 - KUKSA_API_EVENTID: the id (a GUID) of the event
+- KUKSA_API_PROXY_URL: the URL of the proxy you use to access Kuksa (optional)
