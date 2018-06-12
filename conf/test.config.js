@@ -6,27 +6,141 @@
  * files should work just fine.
  */
 
-// Split fetching participants to date ranges in order to avoid overloading Kuksa
-const fetchDateRanges = [
+/*
+  Extra fields to sync from Kuksa in addition to the default ones.
+
+  Field name (name): this is the internal name of the field used by REKI. Use only lowercase letters,
+  uppercase letters and numbers and camelCase. E.g. "firstName".
+
+  Data types (dataType):
+  - string: string with maximum length of 255 characters.
+  - date: date, without time part
+  - boolean: a true/false value
+
+  Field types (type):
+  - participant_field: fields that exist on the participant object directly, such as
+    name or member number. These are the same for all events.
+    For available fields, see: https://github.com/partio-scout/kuksa-event-api-client
+  - extra_info_field: configurable text field in Kuksa, e.g. "Huoltajan nimi". These
+    depend on the event.
+  - single_select_field: configurable single-select field in Kuksa, e.g. "Ikäkausi". These
+    depend on the event.
+*/
+const participantCustomFields = [
   {
-    "startDate": "2015-01-01T00:00:00",
-    "endDate": "2016-01-22T06:00:00"
+    name: 'nickname',
+    type: 'participant_field',
+    dataType: 'string',
+    nullable: true,
   },
   {
-    "startDate": "2016-01-22T00:00:00",
-    "endDate": "2016-02-25T06:00:00"
+    name: 'dateOfBirth',
+    type: 'participant_field',
+    dataType: 'date',
   },
   {
-    "startDate": "2016-02-25T00:00:00",
-    "endDate": "2016-07-15T05:00:00"
+    name: 'phoneNumber',
+    type: 'participant_field',
+    dataType: 'string',
+    nullable: true,
   },
   {
-    "startDate": "2016-07-15T05:00:00",
-    "endDate": ""
-  }
+    name: 'email',
+    type: 'participant_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'diet',
+    type: 'participant_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'ageGroup',
+    type: 'participant_field',
+    dataType: 'string',
+  },
+  {
+    name: 'staffPosition',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'staffPositionInGenerator',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'willOfTheWisp',
+    type: 'single_select_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'willOfTheWispWave',
+    type: 'single_select_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'guardianOne',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'guardianTwo',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'familyCampProgramInfo',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'childNaps',
+    type: 'single_select_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'homeCity',
+    type: 'extra_info_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'swimmingSkill',
+    type: 'single_select_field',
+    dataType: 'string',
+    nullable: true,
+  },
+  {
+    name: 'gender',
+    type: 'single_select_field',
+    dataType: 'string',
+    nullable: true,
+  },
 ];
 
-// Map payment names to sets of dates when the participant is present
+// Titles of the multi-select groups that should be synced from Kuksa.
+// Each item represents the name of the selection group.
+const customMultipleSelectionFields = [
+  '0-11-vuotias lapsi osallistuu',
+  'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
+  '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
+  'Lapsen uimataito',
+  'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
+  '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+];
+
+// Map payment names to arrays of dates when the participant is present
 const paymentToDatesMappings = {
   "pe 15.7.": ["2016-07-15"],
   "la 16.7.": ["2016-07-16"],
@@ -82,18 +196,8 @@ const allergyFields = [
   'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
 ];
 
-// Titles of the multi-select groups that should be synced
-const selectionGroupTitles = [
-  '0-11-vuotias lapsi osallistuu',
-  'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
-  '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
-  'Lapsen uimataito',
-  'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
-  '\tLapsi tarvitsee päiväunien aikaan vaippaa',
-];
-
-// TODO refactor so this is determined from fields list
-const optionFields = [
+// Field by which the view can be filtered (participantFields only)
+const filterableByFields = [
   "subCamp",
   "village",
   "campGroup",
@@ -125,12 +229,32 @@ const permissions = {
   ]
 };
 
+// Split fetching participants to date ranges in order to avoid overloading Kuksa
+const fetchDateRanges = [
+  {
+    "startDate": "2015-01-01T00:00:00",
+    "endDate": "2016-01-22T06:00:00"
+  },
+  {
+    "startDate": "2016-01-22T00:00:00",
+    "endDate": "2016-02-25T06:00:00"
+  },
+  {
+    "startDate": "2016-02-25T00:00:00",
+    "endDate": "2016-07-15T05:00:00"
+  },
+  {
+    "startDate": "2016-07-15T05:00:00",
+    "endDate": "" // Defaults to right now
+  }
+];
 
 export default {
+  participantCustomFields: participantCustomFields,
   paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
-  selectionGroupTitles: selectionGroupTitles,
-  optionFields: optionFields,
+  customMultipleSelectionFields: customMultipleSelectionFields,
+  filterableByFields: filterableByFields,
   allergyFields: allergyFields,
   permissions: permissions,
 }
