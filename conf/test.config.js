@@ -211,6 +211,7 @@ const filterableByFields = [
   "internationalGuest"
 ];
 
+// Roles and their permissions
 const permissions = {
   "registryUser": [
     "perform allowed test action",

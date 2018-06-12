@@ -5,8 +5,7 @@ import React from 'react';
 import Alt from 'alt';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
-import superagent from 'superagent';
-import superagentAsPromised from 'superagent-as-promised';
+import request from 'superagent';
 import Cookie from 'js-cookie';
 import moment from 'moment';
 
@@ -20,8 +19,6 @@ moment.locale('fi');
 // Get REST API access token
 
 const accessToken = Cookie.getJSON('accessToken');
-
-const request = superagentAsPromised(superagent);
 
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants', accessToken);

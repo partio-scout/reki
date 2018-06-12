@@ -6,7 +6,7 @@ let configFile = path.resolve(__dirname, `../../../conf/${env}.config.js`);
 if (!existsSync(configFile)) {
   configFile = path.resolve(__dirname, '../../../conf/default.config.js');
 }
-const config = require(configFile);
+const config = require(configFile).default;
 
 const alwaysIncludedFields = [
   {
@@ -104,4 +104,5 @@ export default {
   getAllergyFieldTitles: () => config.allergyFields,
   getActionPermissions: () => config.permissions,
   getParticipantFields: () => alwaysIncludedFields.concat(config.participantCustomFields),
+  getRoles: () => Object.keys(config.permissions),
 };
