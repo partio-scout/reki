@@ -1,6 +1,10 @@
 import Sequelize from 'sequelize';
+import config from '../conf';
 
 export default function(db) {
+
+  //TODO Generate Participant model from these fields
+  console.log(config.getParticipantFields());
 
   const Option = db.define('option', {
     id: {
