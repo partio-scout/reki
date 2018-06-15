@@ -1,11 +1,11 @@
 // List of LoopBack models to create
 const modelList = [
-  ['AccessToken', false],
-  ['ACL', false],
-  ['Role', true],
-  ['RoleMapping', false],
-  ['RegistryUser', false],
-  ['AuditEvent', false],
+  'AccessToken',
+  'ACL',
+  'Role',
+  'RoleMapping',
+  'RegistryUser',
+  'AuditEvent',
 ];
 
 export function getModelCreationList() {
