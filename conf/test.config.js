@@ -66,12 +66,14 @@ const participantCustomFields = [
     type: 'extra_info_field',
     dataType: 'string',
     nullable: true,
+    searchable: true,
   },
   {
     name: 'staffPositionInGenerator',
     type: 'extra_info_field',
     dataType: 'string',
     nullable: true,
+    searchable: true,
   },
   {
     name: 'willOfTheWisp',

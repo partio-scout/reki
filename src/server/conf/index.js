@@ -1,5 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
+import _ from 'lodash';
 
 const env = process.env.NODE_ENV || 'default';
 let configFile = path.resolve(__dirname, `../../../conf/${env}.config.js`);
@@ -18,17 +19,20 @@ const alwaysIncludedFields = [
     name: 'firstName',
     type: 'mandatory_field',
     dataType: 'string',
+    searchable: true,
   },
   {
     name: 'lastName',
     type: 'mandatory_field',
     dataType: 'string',
+    searchable: true,
   },
   {
     name: 'memberNumber',
     type: 'mandatory_field',
     dataType: 'string',
     nullable: true,
+    searchable: true,
   },
   {
     name: 'billedDate',
@@ -88,21 +92,28 @@ const alwaysIncludedFields = [
     name: 'campOfficeNotes',
     type: 'mandatory_field',
     dataType: 'string',
+    searchable: true,
   },
   {
     name: 'editableInfo',
     type: 'mandatory_field',
     dataType: 'string',
+    searchable: true,
   },
 ];
+
+const participantFields = alwaysIncludedFields.concat(config.participantCustomFields);
+
+const searchableFieldNames = _(participantFields).filter('searchable').map('name').value();
 
 export default {
   getFetchDateRanges: () => config.fetchDateRanges,
   getPaymentToDatesMappings: () => config.paymentToDatesMappings,
   getSelectionGroupTitles: () => config.customMultipleSelectionFields,
   getOptionFieldNames: () => config.filterableByFields,
+  getSearchableFieldNames: () => searchableFieldNames,
   getAllergyFieldTitles: () => config.allergyFields,
   getActionPermissions: () => config.permissions,
-  getParticipantFields: () => alwaysIncludedFields.concat(config.participantCustomFields),
+  getParticipantFields: () => participantFields,
   getRoles: () => Object.keys(config.permissions),
 };

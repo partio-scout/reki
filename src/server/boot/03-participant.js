@@ -1,6 +1,7 @@
 import { models } from '../models';
 import { Op } from 'sequelize';
 import _ from 'lodash';
+import config from '../conf';
 
 export default function(app){
 
@@ -33,21 +34,11 @@ export default function(app){
       where = _.reduce(where.and, (cond, acc) => Object.assign(acc, cond), {});
     }
 
-    const textSearchableFields = [
-      'firstName',
-      'lastName',
-      'memberNumber',
-      'staffPosition',
-      'staffPositionInGenerator',
-      'campOfficeNotes',
-      'editableInfo',
-    ];
-
     // For free-text searching we need to add ILIKE filter for all searchable text fields
     if (where.textSearch) {
       const words = where.textSearch.split(/\s+/);
       where[Op.and] = words.map(word => {
-        const searches = textSearchableFields.map(field => ({
+        const searches = config.getSearchableFieldNames().map(field => ({
           [field]: {
             [Op.iLike]: `%${word}%`,
           },
