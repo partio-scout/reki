@@ -101,13 +101,23 @@ describe('particpant list', () => {
       })
   );
 
-  it('GET request to participants with filters', async () =>
+  it('GET request to participants with one where filter', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(1);
         expect(res.body.result[0]).to.have.property('firstName','Teemu');
+      })
+  );
+
+  it('GET request to participants with several where filters', async () =>
+    request(app)
+      .get(`/api/participants/?filter={"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.result).to.be.an('array').with.length(1);
+        expect(res.body.result[0]).to.have.property('firstName','Tero');
       })
   );
 
@@ -140,6 +150,18 @@ describe('particpant list', () => {
         expect(res.body.result).to.be.an('array').with.length(2);
         expect(res.body.result[0]).to.have.property('participantId',1);
         expect(res.body.result[0]).to.have.property('firstName','Teemu');
+      })
+  );
+
+  it('GET request to participants sorts participants correctly', async () =>
+    request(app)
+      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}&access_token=${accessToken}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.result).to.be.an('array').with.length(3);
+        expect(res.body.result[0]).to.have.property('lastName','Testihenkilö');
+        expect(res.body.result[1]).to.have.property('lastName','Jukola');
+        expect(res.body.result[2]).to.have.property('lastName','Esimerkki');
       })
   );
 
