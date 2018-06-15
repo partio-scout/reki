@@ -84,7 +84,7 @@ describe('Text search', () => {
   );
 
   function expectParticipants(expectedResult, response) {
-    const firstNames = _.map(response, 'firstName');
+    const firstNames = _.map(response.result, 'firstName');
     return expect(firstNames).to.have.members(expectedResult);
   }
 

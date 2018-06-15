@@ -1,4 +1,5 @@
 import { models } from '../models';
+import { Op } from 'sequelize';
 import _ from 'lodash';
 
 export default function(app){
@@ -26,10 +27,35 @@ export default function(app){
 
     let where = filter.where || {};
 
-    // TODO refactor this out: it's silly to have and-array coming from frontend :)
+    // TODO refactor this out: it's silly to have an and-array coming from frontend :)
     // More than one condition is represented as array for leagacy reasons -> move back to object
     if (where.and) {
       where = _.reduce(where.and, (cond, acc) => Object.assign(acc, cond), {});
+    }
+
+    const textSearchableFields = [
+      'firstName',
+      'lastName',
+      'memberNumber',
+      'staffPosition',
+      'staffPositionInGenerator',
+      'campOfficeNotes',
+      'editableInfo',
+    ];
+
+    // For free-text searching we need to add ILIKE filter for all searchable text fields
+    if (where.textSearch) {
+      const words = where.textSearch.split(/\s+/);
+      where[Op.and] = words.map(word => {
+        const searches = textSearchableFields.map(field => ({
+          [field]: {
+            [Op.iLike]: `%${word}%`,
+          },
+        }));
+        return { [Op.or]: searches };
+      });
+
+      delete where.textSearch; // textSearch is not a real field -> remove, or Sequelize would throw error
     }
 
     // TODO Filter/validate where filter + order so it doesn't contain e.g. nested objects
