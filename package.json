@@ -14,7 +14,7 @@
     "test": "npm run linter && npm run test-functional && npm run test-e2e",
     "linter": "eslint --ext js --ext jsx src test scripts webpack.development.config.babel.js webpack.production.config.babel.js",
     "test-functional": "NODE_ENV=test mocha --timeout 4000 --require babel-core/register --require babel-polyfill test/functional",
-    "test-one": "NODE_ENV=test mocha --timeout 4000 --compilers js:babel-core/register ",
+    "test-one": "NODE_ENV=test mocha --timeout 4000 --require babel-core/register --require babel-polyfill ",
     "pretest-e2e": "NODE_ENV=test npm run seed-database && npm run bundle",
     "test-e2e": "NODE_ENV=test wdio wdio.conf.js",
     "seed-database": "babel-node scripts/seed-database.js",
