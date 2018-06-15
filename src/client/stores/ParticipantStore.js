@@ -22,11 +22,9 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
       this.participantDetails = participant;
     }
 
-    handleLoadParticipantList(countParticipants) {
+    handleLoadParticipantList() {
       this.loading = true;
-      if (countParticipants) {
-        this.participantCount = undefined;
-      }
+      this.participantCount = undefined;
     }
 
     handleParticipantListUpdated({ participants, newCount }) {

@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 export function getParticipantListUpdater(participantActions) {
   class ParticipantListUpdater extends React.Component {
-    reloadList(nextProps, recount) {
+    reloadList(nextProps) {
       const {
         offset,
         limit,
@@ -11,7 +11,7 @@ export function getParticipantListUpdater(participantActions) {
         filter,
       } = nextProps;
 
-      participantActions.loadParticipantList(offset, limit, order, filter, recount);
+      participantActions.loadParticipantList(offset, limit, order, filter);
     }
 
     componentWillMount() {
@@ -20,9 +20,7 @@ export function getParticipantListUpdater(participantActions) {
 
     componentWillReceiveProps(nextProps) {
       if (!_.isEqual(this.props, nextProps)) {
-        const recount = !_.isEqual(this.props.filter, nextProps.filter);
-
-        this.reloadList(nextProps, recount);
+        this.reloadList(nextProps);
       }
     }
 

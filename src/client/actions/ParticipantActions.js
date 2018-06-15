@@ -13,7 +13,7 @@ export function getParticipantActions(alt, participantResource, errorActions) {
       return participant;
     }
 
-    loadParticipantList(offset, limit, order, filter, countParticipants) {
+    loadParticipantList(offset, limit, order, filter) {
       function getLoopbackOrderParameter() {
         if (!order) {
           return undefined;
@@ -35,21 +35,15 @@ export function getParticipantActions(alt, participantResource, errorActions) {
         limit: limit,
         order: getLoopbackOrderParameter(),
         include: ['dates'],
-        count: countParticipants,
       };
 
       const filterString = `filter=${encodeURIComponent(JSON.stringify(filters))}`;
 
       return dispatch => {
-        dispatch(countParticipants);
+        dispatch();
         participantResource.findAll(filterString)
-          .then(participantList => {
-            if (countParticipants) {
-              this.participantListUpdated(participantList.result, participantList.count);
-            } else {
-              this.participantListUpdated(participantList);
-            }
-          }, err => errorActions.error(err, 'Osallistujia ei voitu ladata'));
+          .then(participantList => this.participantListUpdated(participantList.result, participantList.count)
+          , err => errorActions.error(err, 'Osallistujia ei voitu ladata'));
       };
     }
 
