@@ -79,6 +79,11 @@ export default function(db) {
   });
 
   const PresenceHistory = db.define('presence_history', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     presence: Sequelize.INTEGER,
     timestamp: Sequelize.DATE,
     authorId: Sequelize.INTEGER,
