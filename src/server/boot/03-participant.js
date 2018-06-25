@@ -37,6 +37,9 @@ export default function(app){
     // For free-text searching we need to add ILIKE filter for all searchable text fields
     if (where.textSearch) {
       const words = where.textSearch.split(/\s+/);
+      // Why or statement inside an and statement? Because we want to every word in textSearch
+      // to match at least once, but possibly match in different fields. For example "Firstname Lastname"
+      // should match "Firstname" in first name and "Lastname" in last name.
       where[Op.and] = words.map(word => {
         const searches = config.getSearchableFieldNames().map(field => ({
           [field]: {
