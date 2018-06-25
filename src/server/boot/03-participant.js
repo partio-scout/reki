@@ -52,11 +52,32 @@ export default function(app){
       delete where.textSearch; // textSearch is not a real field -> remove, or Sequelize would throw error
     }
 
-    // TODO Filter/validate where filter + order so it doesn't contain e.g. nested objects
+    // Date search
+    let dateFilter;
+    if (where.dates && where.dates.length && where.dates.length > 0) {
+      dateFilter = {
+        date: {
+          [Op.in]: _.map(where.dates, dateStr => new Date(dateStr)),
+        },
+      };
+    }
+    delete where.dates;
 
     const result = await models.Participant.findAndCount( {
       where: where,
-      include: [{ all: true, nested: true }],
+      include: [
+        // Filter results using datesearch
+        {
+          model: models.ParticipantDate,
+          as: 'datesearch',
+          where: dateFilter,
+        },
+        // Get all dates of participant
+        {
+          model: models.ParticipantDate,
+          as: 'dates',
+        },
+      ],
       offset: offset,
       limit: limit,
       order: [ order ],

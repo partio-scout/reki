@@ -87,7 +87,7 @@ describe('Date search', () => {
   );
 
   function expectParticipants(expectedResult, response) {
-    const firstNames = _.map(response, 'firstName');
+    const firstNames = _.map(response.result, 'firstName');
     return expect(firstNames).to.have.members(expectedResult);
   }
 
@@ -143,6 +143,14 @@ describe('Date search', () => {
     queryParticipants({ 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] }, accessToken)
     .then(res => {
       expectParticipants([ 'Teemu', 'Jussi' ], res.body);
+    })
+  );
+
+  it('Query return all dates of participant, not just matching ones', () =>
+    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
+    .then(res => {
+      expect(res.body.result[0].firstName).to.equal('Teemu');
+      expect(res.body.result[0].dates).to.have.length(4);
     })
   );
 

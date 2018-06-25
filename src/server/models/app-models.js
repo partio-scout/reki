@@ -185,7 +185,11 @@ export default function(db) {
 
   Participant.hasMany(PresenceHistory, { as: 'presenceHistory' });
   Participant.belongsToMany(Allergy, { through: ParticipantAllergy });
-  Participant.hasMany(ParticipantDate, { as: 'dates', foreignKey: 'participantId', sourceKey: 'participantId' }); //!!
+  Participant.hasMany(ParticipantDate, { as: 'dates', foreignKey: 'participantId', sourceKey: 'participantId' });
+  // "datesearch" association is identical with dates, but is needed for searching
+  // if we only has dates, it would be difficult to both filter by dates and return all
+  // dates of the participant
+  Participant.hasMany(ParticipantDate, { as: 'datesearch', foreignKey: 'participantId', sourceKey: 'participantId' });
   Participant.hasMany(Selection);
 
   Allergy.belongsToMany(Participant, { through: ParticipantAllergy });
