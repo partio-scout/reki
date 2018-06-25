@@ -112,7 +112,7 @@ describe('http api access control', () => {
     registryAdminUserId = at.userId;
   }));
 
-  const participantFixture = [ {
+  const participantFixture = [{
     participantId: 1,
     firstName: 'derp',
     lastName: 'durp',
@@ -126,41 +126,41 @@ describe('http api access control', () => {
     village: 'village',
     subCamp: 'subCamp',
     ageGroup: 'vaeltaja',
-  } ];
+  }];
   before(() => testUtils.createFixtureSequelize('Participant', participantFixture));
 
-  const presenceHistoryFixture = [ {
+  const presenceHistoryFixture = [{
     participantId: 1,
     presence: 3,
     timestamp: new Date(),
     authorId: 1,
-  } ];
+  }];
   before(() =>
     testUtils.createFixtureSequelize('PresenceHistory', presenceHistoryFixture)
   );
 
-  const allergyFixture = [ {
+  const allergyFixture = [{
     allergyId: 1,
     name: 'allergia',
-  } ];
+  }];
 
-  const participantAllergyFixture = [ {
+  const participantAllergyFixture = [{
     'allergyAllergyId': 1,
     'participantParticipantId': 1,
-  } ];
+  }];
 
   before( async () => {
     await testUtils.createFixtureSequelize('Allergy', allergyFixture);
     await testUtils.createFixtureSequelize('ParticipantAllergy', participantAllergyFixture);
   });
 
-  const selectionFixture = [ {
+  const selectionFixture = [{
     participantId: 1,
     kuksaGroupId: 1,
     kuksaSelectionId: 1,
     groupName: 'Ryhmänimi',
     selectionName: 'Valintanimi',
-  } ];
+  }];
   before(() =>
     testUtils.createFixtureSequelize('Selection', selectionFixture)
   );

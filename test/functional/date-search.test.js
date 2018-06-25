@@ -146,7 +146,7 @@ describe('Date search', () => {
     })
   );
 
-  it('Query return all dates of participant, not just matching ones', () =>
+  it('Query returns all dates of participant, not just matching ones', () =>
     queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
     .then(res => {
       expect(res.body.result[0].firstName).to.equal('Teemu');

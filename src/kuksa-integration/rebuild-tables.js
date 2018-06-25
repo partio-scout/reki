@@ -178,10 +178,8 @@ function addDatesToParticipants() {
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    console.log(kuksaParticipant);
     models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
-
-      .then(() => console.log(kuksaParticipant.kuksa_payments),models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
+      .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
@@ -243,8 +241,6 @@ function buildOptionTable() {
     .then(items => Promise.each(items, addFieldValues));
 
   function getFieldValues(field) {
-    const filter = { fields: { } };
-    filter['fields'][field] = true;
     return models.Participant.aggregate( field, 'DISTINCT', { plain: false } )
       .then(values => ({
         field: field,

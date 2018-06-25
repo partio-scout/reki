@@ -8,7 +8,7 @@ import { resetDatabase } from '../../scripts/seed-database';
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const testParticipants = [ {
+const testParticipants = [{
   'participantId': 1,
   'firstName': 'Teemu',
   'lastName': 'Testihenkilö',
@@ -21,7 +21,7 @@ const testParticipants = [ {
   'ageGroup': 'sudenpentu',
   'memberNumber': 123,
   'dateOfBirth': new Date(2018,5,10),
-} ];
+}];
 
 const testUser = {
   'id': 3,
