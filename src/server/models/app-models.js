@@ -76,24 +76,6 @@ export default function(db) {
     childNaps: Sequelize.STRING,
     campOfficeNotes: Sequelize.STRING,
     editableInfo: Sequelize.STRING,
-
-  }, {
-    indexes: [ {
-      fields: [
-        'firstName',
-        'lastName',
-        'phoneNumber',
-        'presence',
-        'localGroup',
-        'campGroup',
-        'village',
-        'subCamp',
-        'accommodation',
-        'ageGroup',
-        'campOfficeNotes',
-        'editableInfo',
-      ] },
-    ],
   });
 
   const PresenceHistory = db.define('presence_history', {
