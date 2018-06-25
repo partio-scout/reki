@@ -47,24 +47,24 @@ const testParticipantPrecenceHistory = [ {
   'authorId': 3,
 } ];
 
-const testAllergies = [ {
+const testAllergies = [{
   'allergyId': 1,
   'name': 'hernekeitto',
-} ];
+}];
 
-const testParticipantsSelections = [ {
+const testParticipantsSelections = [{
   'selectionId': 0,
   'participantParticipantId': 1,
   'kuksaGroupId': 0,
   'kuksaSelectionId': 0,
   'groupName': 'herneenpalvojat',
   'selectionName': 'ok',
-} ];
+}];
 
-const testParticipantAllergies = [ {
+const testParticipantAllergies = [{
   'allergyAllergyId': 1,
   'participantParticipantId': 1,
-} ];
+}];
 
 describe('particpant', () => {
 
