@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 export default function(db) {
 
-  const Participant = db.define('participant', _.reduce(conf.getParticipantFields(), ( acc, field ) => {
+  const Participant = db.define('participant', _.reduce(conf.getParticipantFields(), (acc, field) => {
     acc[field.name] = {
       type: Sequelize[field.dataType.toUpperCase()],
       allowNull: field.nullable || false,
@@ -19,8 +19,7 @@ export default function(db) {
       primaryKey: true,
       autoIncrement: true,
     },
-  }
-  ));
+  }));
 
   const PresenceHistory = db.define('presence_history', {
     id: {
