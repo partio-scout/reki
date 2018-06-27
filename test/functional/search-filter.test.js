@@ -1,5 +1,5 @@
 import app from '../../src/server/server';
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import chai from 'chai';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';

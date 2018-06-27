@@ -1,5 +1,5 @@
 import app from '../../src/server/server';
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
