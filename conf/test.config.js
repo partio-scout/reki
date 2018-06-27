@@ -16,6 +16,7 @@
   - string: string with maximum length of 255 characters.
   - date: date, without time part
   - boolean: a true/false value
+  - integer: integer value
 
   Field types (type):
   - participant_field: fields that exist on the participant object directly, such as

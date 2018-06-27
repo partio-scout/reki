@@ -13,7 +13,8 @@ const alwaysIncludedFields = [
   {
     name: 'presence',
     type: 'mandatory_field',
-    dataType: 'number',
+    dataType: 'integer',
+    nullable: true,
   },
   {
     name: 'firstName',
@@ -93,12 +94,14 @@ const alwaysIncludedFields = [
     type: 'mandatory_field',
     dataType: 'string',
     searchable: true,
+    nullable: true,
   },
   {
     name: 'editableInfo',
     type: 'mandatory_field',
     dataType: 'string',
     searchable: true,
+    nullable: true,
   },
 ];
 

@@ -1,82 +1,26 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
 import app from '../server';
+import conf from '../conf';
 
 const Op = Sequelize.Op;
 
 export default function(db) {
 
-  const Participant = db.define('participant', {
-    participantId:{
+  const Participant = db.define('participant', _.reduce(conf.getParticipantFields(), ( acc, field ) => {
+    acc[field.name] = {
+      type: Sequelize[field.dataType.toUpperCase()],
+      allowNull: field.nullable || false,
+    };
+    return acc;
+  }, {
+    participantId: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    firstName:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    lastName:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    nickname: Sequelize.STRING,
-    nonScout:{
-      type: Sequelize.BOOLEAN,
-      allowNull: false,
-    },
-    internationalGuest:{
-      type: Sequelize.BOOLEAN,
-      allowNull: false,
-    },
-    memberNumber: Sequelize.STRING,
-    billedDate: Sequelize.DATE,
-    paidDate: Sequelize.DATE,
-    dateOfBirth:{
-      type: Sequelize.DATE,
-      allowNull: false,
-    },
-    phoneNumber: Sequelize.STRING,
-    email: Sequelize.STRING,
-    homeCity: Sequelize.STRING,
-    country: Sequelize.STRING,
-    staffPosition: Sequelize.STRING,
-    staffPositionInGenerator: Sequelize.STRING,
-    swimmingSkill: Sequelize.BOOLEAN,
-    gender: Sequelize.BOOLEAN,
-    interestedInHomeHospitality: Sequelize.BOOLEAN,
-    presence: Sequelize.INTEGER,
-    localGroup:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    campGroup:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    village:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    subCamp:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    accommodation: Sequelize.STRING,
-    ageGroup:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    willOfTheWisp: Sequelize.STRING,
-    willOfTheWispWave: Sequelize.STRING,
-    guardianOne: Sequelize.STRING,
-    guardianTwo: Sequelize.STRING,
-    diet: Sequelize.STRING,
-    familyCampProgramInfo: Sequelize.STRING,
-    childNaps: Sequelize.STRING,
-    campOfficeNotes: Sequelize.STRING,
-    editableInfo: Sequelize.STRING,
-  });
+  }
+  ));
 
   const PresenceHistory = db.define('presence_history', {
     id: {
