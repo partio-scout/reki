@@ -5,13 +5,7 @@ const modelList = [
   'Role',
   'RoleMapping',
   'RegistryUser',
-  'Allergy',
-  'Participant',
-  'ParticipantAllergy',
-  'ParticipantDate',
-  'PresenceHistory',
   'AuditEvent',
-  'Selection',
 ];
 
 export function getModelCreationList() {

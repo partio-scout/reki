@@ -24,28 +24,8 @@
     "dataSource": "db",
     "public": false
   },
-  "Participant": {
-    "dataSource": "db",
-    "public": true
-  },
-  "ParticipantDate": {
-    "dataSource": "db",
-    "public": false
-  },
-  "PresenceHistory": {
-    "dataSource": "db",
-    "public": true
-  },
-  "Selection": {
-    "dataSource": "db",
-    "public": true
-  },
   "AuditEvent": {
     "dataSource": "db",
     "public": false
-  },
-  "Allergy": {
-    "dataSource": "db",
-    "public": true
   }
 }

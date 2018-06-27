@@ -3,9 +3,9 @@ import _ from 'lodash';
 import request from 'supertest-as-promised';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import Promise from 'bluebird';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
+import { models } from '../../src/server/models';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -30,6 +30,8 @@ describe('Presence history', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
     {
       'participantId': 2,
@@ -43,6 +45,8 @@ describe('Presence history', () => {
       'ageGroup': 'sudenpentu',
       'memberNumber': 345,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
     {
       'participantId': 3,
@@ -56,6 +60,8 @@ describe('Presence history', () => {
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
       'presence': 0,
+      'dateOfBirth': new Date(),
+      'internationalGuest': false,
     },
   ];
 
@@ -74,15 +80,11 @@ describe('Presence history', () => {
       .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
-      .then(() => testUtils.createFixture('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
   );
 
   function expectPresenceHistoryValues(expectedPresences, participantId, response) {
-    const PresenceHistory = app.models.PresenceHistory;
-
-    const findHistory = Promise.promisify(PresenceHistory.find, { context: PresenceHistory } );
-
-    return findHistory({ where: { participantId: participantId } })
+    return models.PresenceHistory.findAll({ where: { participantParticipantId: participantId } })
       .then( rows => {
         const presenceHistory = _.map(rows, row => row.presence);
         expect(presenceHistory).to.eql(expectedPresences);
@@ -91,11 +93,7 @@ describe('Presence history', () => {
   }
 
   function expectPresenceAuthorValue(expectedAuthors, participantId, response) {
-    const PresenceHistory = app.models.PresenceHistory;
-
-    const findHistory = Promise.promisify(PresenceHistory.find, { context: PresenceHistory } );
-
-    return findHistory({ where: { participantId: participantId } })
+    return models.PresenceHistory.findAll({ where: { participantParticipantId: participantId } })
       .then( rows => {
         const AuthorHistory = _.map(rows, row => row.authorId);
         expect(AuthorHistory).to.eql(expectedAuthors);

@@ -4,6 +4,7 @@ import moment from 'moment';
 import { getPresenceLabel } from '../../components';
 
 export class PresenceHistory extends React.Component {
+  // TODO Show name of author once backend is able to return it
   render() {
     return (
       <Table responsive className="noborder">
@@ -15,7 +16,7 @@ export class PresenceHistory extends React.Component {
           </tr>
         </thead>
         <tbody>
-          { this.props.value.map( row => <tr><td>{ moment(row.timestamp).format('L [klo] LT') }</td><td>{ getPresenceLabel(row.presence) }</td><td>{ row.author.firstName } { row.author.lastName }</td></tr> ) }
+          { this.props.value.map( row => <tr><td>{ moment(row.timestamp).format('L [klo] LT') }</td><td>{ getPresenceLabel(row.presence) }</td><td>Käyttäjä #{ row.authorId }</td></tr> ) }
         </tbody>
       </Table>
     );

@@ -23,6 +23,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'sudenpentu',
       'memberNumber': 123,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 2,
@@ -36,6 +37,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri2',
       'ageGroup': 'seikkailija',
       'memberNumber': 345,
+      'dateOfBirth': new Date(),
     },
     {
       'participantId': 3,
@@ -49,6 +51,7 @@ describe('Date search', () => {
       'subCamp': 'Alaleiri',
       'ageGroup': 'seikkailija',
       'memberNumber': 859,
+      'dateOfBirth': new Date(),
     },
   ];
 
@@ -77,14 +80,14 @@ describe('Date search', () => {
   beforeEach(() =>
     resetDatabase()
       .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
-      .then(() => testUtils.createFixture('Participant', testParticipants))
-      .then(() => testUtils.createFixture('ParticipantDate', testParticipantDates))
+      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
+      .then(() => testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates))
       .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
       .then(newAccessToken => accessToken = newAccessToken.id)
   );
 
   function expectParticipants(expectedResult, response) {
-    const firstNames = _.map(response, 'firstName');
+    const firstNames = _.map(response.result, 'firstName');
     return expect(firstNames).to.have.members(expectedResult);
   }
 
@@ -140,6 +143,14 @@ describe('Date search', () => {
     queryParticipants({ 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] }, accessToken)
     .then(res => {
       expectParticipants([ 'Teemu', 'Jussi' ], res.body);
+    })
+  );
+
+  it('Query returns all dates of participant, not just matching ones', () =>
+    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
+    .then(res => {
+      expect(res.body.result[0].firstName).to.equal('Teemu');
+      expect(res.body.result[0].dates).to.have.length(4);
     })
   );
 

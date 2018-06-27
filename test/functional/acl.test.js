@@ -112,7 +112,7 @@ describe('http api access control', () => {
     registryAdminUserId = at.userId;
   }));
 
-  const participantFixture = {
+  const participantFixture = [{
     participantId: 1,
     firstName: 'derp',
     lastName: 'durp',
@@ -126,38 +126,43 @@ describe('http api access control', () => {
     village: 'village',
     subCamp: 'subCamp',
     ageGroup: 'vaeltaja',
-  };
-  before(() => testUtils.createFixture('Participant', participantFixture));
+  }];
+  before(() => testUtils.createFixtureSequelize('Participant', participantFixture));
 
-  const presenceHistoryFixture = {
+  const presenceHistoryFixture = [{
     participantId: 1,
     presence: 3,
     timestamp: new Date(),
     authorId: 1,
-  };
+  }];
   before(() =>
-    testUtils.createFixture('PresenceHistory', presenceHistoryFixture)
+    testUtils.createFixtureSequelize('PresenceHistory', presenceHistoryFixture)
   );
 
-  const allergyFixture = {
+  const allergyFixture = [{
     allergyId: 1,
     name: 'allergia',
-  };
-  before(() =>
-    testUtils.createFixture('Allergy', allergyFixture)
-      .then(participant => testUtils.find('Participant', { participantId: participantFixture.participantId }))
-      .then(participants => participants[0].allergies.add(allergyFixture.allergyId))
-  );
+  }];
 
-  const selectionFixture = {
+  const participantAllergyFixture = [{
+    'allergyAllergyId': 1,
+    'participantParticipantId': 1,
+  }];
+
+  before( async () => {
+    await testUtils.createFixtureSequelize('Allergy', allergyFixture);
+    await testUtils.createFixtureSequelize('ParticipantAllergy', participantAllergyFixture);
+  });
+
+  const selectionFixture = [{
     participantId: 1,
     kuksaGroupId: 1,
     kuksaSelectionId: 1,
     groupName: 'Ryhmänimi',
     selectionName: 'Valintanimi',
-  };
+  }];
   before(() =>
-    testUtils.createFixture('Selection', selectionFixture)
+    testUtils.createFixtureSequelize('Selection', selectionFixture)
   );
 
   const userFixture = {
@@ -227,9 +232,9 @@ describe('http api access control', () => {
     });
 
     describe('registryUser', () => {
-      it('find: UNAUTHORIZED', () => get('/api/participants', registryUserAccessToken).expect(OK));
-      it('findById: UNAUTHORIZED', () => get('/api/participants/1', registryUserAccessToken).expect(OK));
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
+      it('find: OK', () => get('/api/participants', registryUserAccessToken).expect(OK));
+      it('findById: OK', () => get('/api/participants/1', registryUserAccessToken).expect(OK));
+      it('massedit: OK', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
     });
 
     describe('registryAdmin', () => {
@@ -358,8 +363,8 @@ describe('http api access control', () => {
       date: new Date(),
     }];
 
-    beforeEach( () => testUtils.createFixture('ParticipantDate', dateFixture));
-    afterEach(() => testUtils.deleteFixturesIfExist('ParticipantDate'));
+    beforeEach( () => testUtils.createFixtureSequelize('ParticipantDate', dateFixture));
+    afterEach(() => testUtils.deleteFixturesIfExistSequelize('ParticipantDate'));
 
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED))

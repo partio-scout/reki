@@ -21,6 +21,8 @@ const testParticipants = [
     'ageGroup': 'sudenpentu',
     'memberNumber': 123,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
   {
     'participantId': 2,
@@ -34,6 +36,8 @@ const testParticipants = [
     'ageGroup': 'sudenpentu',
     'memberNumber': 345,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
   {
     'participantId': 3,
@@ -47,6 +51,8 @@ const testParticipants = [
     'ageGroup': 'seikkailija',
     'memberNumber': 859,
     'presence': 0,
+    'internationalGuest': false,
+    'dateOfBirth': new Date(),
   },
 ];
 
@@ -67,21 +73,21 @@ const testParticipantDates = [
   { participantId: 1, date: new Date(2016,6,23) },
 ];
 
-describe('particpant', () => {
+describe('particpant list', () => {
 
   let accessToken = null;
 
   beforeEach(async () => {
     await resetDatabase();
-    await testUtils.createFixture('Participant', testParticipants);
-    await testUtils.createFixture('ParticipantDate', testParticipantDates);
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
     accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
     accessToken = accessToken.id;
   });
 
   afterEach(async () => {
-    await testUtils.deleteFixturesIfExist('Participant');
-    await testUtils.deleteFixturesIfExist('ParticipantDate');
+    await testUtils.deleteFixturesIfExistSequelize('Participant');
+    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
@@ -95,13 +101,23 @@ describe('particpant', () => {
       })
   );
 
-  it('GET request to participants with filters', async () =>
+  it('GET request to participants with one where filter', async () =>
     request(app)
       .get(`/api/participants/?filter={"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(1);
         expect(res.body.result[0]).to.have.property('firstName','Teemu');
+      })
+  );
+
+  it('GET request to participants with several where filters', async () =>
+    request(app)
+      .get(`/api/participants/?filter={"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.result).to.be.an('array').with.length(1);
+        expect(res.body.result[0]).to.have.property('firstName','Tero');
       })
   );
 
@@ -134,6 +150,18 @@ describe('particpant', () => {
         expect(res.body.result).to.be.an('array').with.length(2);
         expect(res.body.result[0]).to.have.property('participantId',1);
         expect(res.body.result[0]).to.have.property('firstName','Teemu');
+      })
+  );
+
+  it('GET request to participants sorts participants correctly', async () =>
+    request(app)
+      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}&access_token=${accessToken}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.result).to.be.an('array').with.length(3);
+        expect(res.body.result[0]).to.have.property('lastName','Testihenkilö');
+        expect(res.body.result[1]).to.have.property('lastName','Jukola');
+        expect(res.body.result[2]).to.have.property('lastName','Esimerkki');
       })
   );
 
