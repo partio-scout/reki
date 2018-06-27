@@ -59,7 +59,7 @@
     "loopback-boot": "^2.14.2",
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "2.57.0",
-    "moment": "^2.13.0",
+    "moment": "^2.22.2",
     "morgan": "^1.7.0",
     "node-sass": "^4.9.0",
     "passport-saml": "^0.33.0",
