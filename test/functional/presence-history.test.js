@@ -84,12 +84,13 @@ describe('Presence history', () => {
   );
 
   function expectPresenceHistoryValues(expectedPresences, participantId, response) {
-    return models.PresenceHistory.findAll({ where: { participantParticipantId: participantId } })
-      .then( rows => {
-        const presenceHistory = _.map(rows, row => row.presence);
-        expect(presenceHistory).to.eql(expectedPresences);
-      }
-    );
+    return models.PresenceHistory.findAll({
+      where: { participantParticipantId: participantId },
+      order: [[ 'id', 'ASC' ]],
+    }).then(rows => {
+      const presenceHistory = _.map(rows, row => row.presence);
+      expect(presenceHistory).to.eql(expectedPresences);
+    });
   }
 
   function expectPresenceAuthorValue(expectedAuthors, participantId, response) {
