@@ -91,7 +91,7 @@
     "react-hot-loader": "^4.2.0",
     "sinon": "^4.3.0",
     "sinon-express-mock": "^2.0.0",
-    "supertest": "^1.2.0",
+    "supertest": "^3.1.0",
     "supertest-as-promised": "^3.0.0",
     "webdriverio": "^3.2.6",
     "webpack-cli": "^3.0.1"
