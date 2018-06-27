@@ -87,7 +87,7 @@
     "eslint-plugin-react": "^7.6.1",
     "express": "^4.14.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.17.4",
+    "nodemon": "^1.17.5",
     "react-hot-loader": "^4.3.3",
     "sinon": "^4.3.0",
     "sinon-express-mock": "^2.0.0",
