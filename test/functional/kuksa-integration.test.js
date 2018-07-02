@@ -15,7 +15,7 @@ describe('Kuksa integration', () => {
 
   before(function(done) {
     this.timeout(800000);
-    return resetDatabase().then(() => {
+    resetDatabase().then(() => {
       mockKuksa.serveFixtures('all');
       mockKuksa.start();
       exec('npm run fetch-from-kuksa', mockKuksa.getOptionsForExec(), () => done());
