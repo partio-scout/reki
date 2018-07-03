@@ -248,13 +248,15 @@ const permissions = {
     "view own user information",
     "modify searchfilters",
     "view participants",
-    "edit participants"
+    "edit participants",
+    "view app configuration",
   ],
   "registryAdmin": [
     "perform disallowed test action",
     "view registry users",
     "view own user information",
-    "block and unblock users"
+    "block and unblock users",
+    "view app configuration",
   ]
 };
 

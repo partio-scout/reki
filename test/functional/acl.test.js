@@ -201,6 +201,7 @@ describe('http api access control', () => {
         'GET /api/searchfilters',
         'DELETE /api/searchfilters/:id',
         'POST /api/searchfilters',
+        'GET /api/config',
       ];
 
       const apiRoutesInApp = _(app._router.stack)
@@ -378,4 +379,20 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/participantdates', registryAdminAccessToken).expect(UNAUTHORIZED))
     );
   });
+
+  describe('Config', () => {
+
+    describe('Unauthenticated user', () =>
+      it('find: UNAUTHORIZED', () => get('/api/config').expect(UNAUTHORIZED))
+    );
+
+    describe('registryUser', () =>
+      it('find: OK', () => get('/api/config', registryUserAccessToken).expect(OK))
+    );
+
+    describe('registryAdmin', () =>
+      it('find: OK', () => get('/api/config', registryAdminAccessToken).expect(OK))
+    );
+  });
+
 });
