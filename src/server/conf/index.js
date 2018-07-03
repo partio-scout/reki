@@ -119,4 +119,7 @@ export default {
   getActionPermissions: () => config.permissions,
   getParticipantFields: () => participantFields,
   getRoles: () => Object.keys(config.permissions),
+  getParticipantTableFields: () => config.participantTableFields,
+  getFilters: () => config.filters,
+  getDetailsPageFields: () => config.detailsPageFields,
 };
