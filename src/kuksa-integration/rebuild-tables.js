@@ -39,12 +39,12 @@ function buildAllergyTable() {
 }
 
 function rebuildParticipantsTable() {
-  function getInfoForField(participant, fieldName) {
+  function getExtraInfo(participant, fieldName) {
     const field = _.find(participant.kuksa_participantextrainfos, o => _.get(o, 'kuksa_extrainfofield.name') === fieldName);
     return field ? field.value : null;
   }
 
-  function getSelectionForGroup(participant, fieldName) {
+  function getExtraSelection(participant, fieldName) {
     const selection = _.find(participant.kuksa_extraselections, o => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName);
     return selection ? selection.name : null;
   }
@@ -54,22 +54,6 @@ function rebuildParticipantsTable() {
       return null;
     }
     return statuses[type] || null;
-  }
-
-  function getSubCamp(participant) {
-    if (participant.accommodation === 'Perheleirissä') {
-      return 'Riehu';
-    }
-    return _.get(participant, 'kuksa_subcamp.name') || 'Muu';
-  }
-
-  function getAgeGroup(participant) {
-    const ageGroup = getSelectionForGroup(participant, 'Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
-    if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
-      return 'perheleiri (0-11v.)';
-    } else {
-      return ageGroup;
-    }
   }
 
   console.log('Rebuilding participants table...');
@@ -96,37 +80,16 @@ function rebuildParticipantsTable() {
   })
   // don't add participants that are cancelled
   .then(participants => _.filter(participants, p => !p.cancelled))
-  .then(participants => participants.map(participant => ({
-    participantId: participant.id,
-    firstName: participant.firstName,
-    lastName: participant.lastName,
-    nickname: participant.nickname,
-    memberNumber: participant.memberNumber,
-    dateOfBirth: participant.dateOfBirth,
-    billedDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'billed'),
-    paidDate: getPaymentStatus(participant.kuksa_participantpaymentstatus, 'paid'),
-    phoneNumber: participant.phoneNumber,
-    email: participant.email,
-    internationalGuest: !!participant.kuksa_localgroup,
-    diet: participant.diet,
-    accommodation: participant.accommodation || 'Muu',
-    localGroup: participant.representedParty || _.get(participant, 'kuksa_localgroup.name') || 'Muu',
-    campGroup: _.get(participant, 'kuksa_campgroup.name') || 'Muu',
-    subCamp: getSubCamp(participant),
-    village: _.get(participant, 'kuksa_village.name') || 'Muu',
-    country: _.get(participant, 'kuksa_localgroup.country') || 'Suomi',
-    ageGroup: getAgeGroup(participant),
-    // Not a scout if a) no finnish member number 2) not part of international group ("local group")
-    nonScout: !participant.memberNumber && !_.get(participant, 'kuksa_localgroup.name'),
-    staffPosition: getInfoForField(participant, 'Pesti'),
-    staffPositionInGenerator: getInfoForField(participant, 'Pesti kehittimessä'),
-    willOfTheWisp: getSelectionForGroup(participant, 'Virvatuli'),
-    willOfTheWispWave: getSelectionForGroup(participant, 'Virvatulen aalto'),
-    guardianOne: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 1)'),
-    guardianTwo: getInfoForField(participant, 'Leirillä olevan lapsen huoltaja (nro 2)'),
-    familyCampProgramInfo: getInfoForField(participant, 'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
-    childNaps: getSelectionForGroup(participant, 'Lapsi nukkuu päiväunet'),
-  })))
+  .then(participants => participants.map(participant => {
+    const wrappedParticipant = {
+      get: path => _.get(participant, path),
+      getPaymentStatus: type => getPaymentStatus(participant.kuksa_participantpaymentstatus, type),
+      getExtraInfo: field => getExtraInfo(participant, field),
+      getExtraSelection: groupName => getExtraSelection(participant, groupName),
+      getRawFields: () => participant,
+    };
+    return config.getParticipantBuilderFunction()(wrappedParticipant);
+  }))
   .then(participants =>
     _.reduce(
       participants,
