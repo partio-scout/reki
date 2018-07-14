@@ -16,13 +16,13 @@ export default function(app){
   }));
 
   app.post('/api/registryusers/:id/block', app.requirePermission('block and unblock users'), app.wrap(async (req, res) => {
-    await app.models.RegistryUser.block(req.params.id);
+    await app.models.RegistryUser.block(+req.params.id);
     res.status(204).send('');
     app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'block');
   }));
 
   app.post('/api/registryusers/:id/unblock', app.requirePermission('block and unblock users'), app.wrap(async (req, res) => {
-    await app.models.RegistryUser.unblock(req.params.id);
+    await app.models.RegistryUser.unblock(+req.params.id);
     res.status(204).send('');
     app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
   }));

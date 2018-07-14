@@ -4,7 +4,7 @@ import app from '../../server/server.js';
 export default function (AuditEvent) {
   AuditEvent.createEvent = {};
 
-  AuditEvent.createEvent.Participant = function(userId, instanceId, description) {
+  AuditEvent.createEvent.Participant = function(userId, instanceId, description, comment) {
     const createAuditEvent = Promise.promisify(app.models.AuditEvent.create, { context: app.models.AuditEvent });
     return createAuditEvent(
       {
@@ -13,7 +13,7 @@ export default function (AuditEvent) {
         'modelId': instanceId,
         'timestamp': (new Date()).toISOString(),
         'registryuserId': userId,
-        'comment': '',
+        'comment': comment || '',
       }
     );
   };

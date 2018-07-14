@@ -18,8 +18,8 @@ export default function(app){
 
   app.post('/api/searchfilters', app.requirePermission('modify searchfilters'), app.wrap(async (req, res) => {
     const filter = await models.SearchFilter.create({
-      filter: req.body.filter,
-      name: req.body.name,
+      filter: ''+req.body.filter,
+      name: ''+req.body.me,
     });
     res.json(filter);
   }));

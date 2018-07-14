@@ -12,7 +12,7 @@ export default function(app){
     });
 
     if (participant) {
-      await app.models.AuditEvent.createEvent.Participant(req.user.id, participant.participantId, 'find');
+      await app.models.AuditEvent.createEvent.Participant(req.user.id, participant.participantId, 'findOne');
       res.json(participant);
     } else {
       res.status(404).send('Not found');
@@ -28,6 +28,7 @@ export default function(app){
 
     let where = filter.where || {};
 
+    await app.models.AuditEvent.createEvent.Participant(req.user.id, null , 'findAll', req.query.filter);
     // TODO refactor this out: it's silly to have an and-array coming from frontend :)
     // More than one condition is represented as array for leagacy reasons -> move back to object
     if (where.and) {
