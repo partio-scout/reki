@@ -149,7 +149,6 @@ function addAllergiesToParticipants() {
 }
 
 function addDatesToParticipants() {
-
   const participantDatesMapper = config.getParticipantDatesMapper();
 
   console.log('Adding dates to participants...');
