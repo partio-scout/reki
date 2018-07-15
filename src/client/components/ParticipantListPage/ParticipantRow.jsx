@@ -46,8 +46,6 @@ export class ParticipantRow extends React.Component {
       lastName,
       dateOfBirth,
       nonScout,
-      billedDate,
-      paidDate,
       memberNumber,
       phoneNumber,
       ageGroup,
@@ -99,15 +97,13 @@ export class ParticipantRow extends React.Component {
         <td><Presence value={ presence } /></td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
+        <TdWithTitle value={ ageGroup } />
         <TdWithTitle value={ formatDate(dateOfBirth) } />
-        <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
-        <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
         <TdWithTitle value={ memberNumber } />
         <td>{ notes }</td>
         <td>{ info }</td>
         <TdWithTitle value={ formatNonScout(nonScout) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
-        <TdWithTitle value={ ageGroup } />
         <TdWithTitle value={ localGroup } />
         <TdWithTitle value={ subCamp } />
         <TdWithTitle value={ campGroup } />
