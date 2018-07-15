@@ -35,7 +35,7 @@ if (app.get('standalone')) {
   app.middleware('routes:before', morgan('combined'));
 }
 
-const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'", `'ws://${process.env.REKI_LOCATION}'`];
+const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'"];
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
