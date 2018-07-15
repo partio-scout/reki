@@ -179,7 +179,7 @@ function transferParticipants(eventApi) {
   const participantDateRanges = config.getFetchDateRanges();
   // set the last date to be current date
   const lastIndex = participantDateRanges.length - 1;
-  participantDateRanges[lastIndex].endDate = moment().toDate();
+  participantDateRanges[lastIndex].endDate = moment().toISOString();
 
   console.log('Transferring participants, their extra infos, selections and payments');
   return Promise.each(participantDateRanges, daterange => transferDaterange(daterange));
