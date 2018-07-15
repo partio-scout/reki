@@ -132,6 +132,32 @@ const participantCustomFields = [
   },
 ];
 
+const participantTableFields = [
+  'firstName',
+  'lastName',
+];
+
+const filters = [
+  {
+    field: "ageGroup",
+    primary: true,
+  },
+  {
+    field: "staffPositionInGenerator",
+    title: "Pesti (kehitin)"
+  },
+]
+
+const detailsPageFields = [
+  {
+    groupTitle: "Yhteystiedot",
+    fields: [
+      "phone",
+      "email",
+    ]
+  }
+]
+
 // Titles of the multi-select groups that should be synced from Kuksa.
 // Each item represents the name of the selection group.
 const customMultipleSelectionFields = [
@@ -222,13 +248,15 @@ const permissions = {
     "view own user information",
     "modify searchfilters",
     "view participants",
-    "edit participants"
+    "edit participants",
+    "view app configuration",
   ],
   "registryAdmin": [
     "perform disallowed test action",
     "view registry users",
     "view own user information",
-    "block and unblock users"
+    "block and unblock users",
+    "view app configuration",
   ]
 };
 
@@ -311,4 +339,7 @@ export default {
   filterableByFields: filterableByFields,
   allergyFields: allergyFields,
   permissions: permissions,
+  participantTableFields: participantTableFields,
+  filters: filters,
+  detailsPageFields: detailsPageFields,
 }

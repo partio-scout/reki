@@ -2,7 +2,7 @@ import path from 'path';
 import { existsSync } from 'fs';
 import _ from 'lodash';
 
-const env = process.env.NODE_ENV || 'default';
+const env = process.env.REKI_CONF || process.env.NODE_ENV || 'default';
 let configFile = path.resolve(__dirname, `../../../conf/${env}.config.js`);
 if (!existsSync(configFile)) {
   configFile = path.resolve(__dirname, '../../../conf/default.config.js');
@@ -120,4 +120,7 @@ export default {
   getActionPermissions: () => config.permissions,
   getParticipantFields: () => participantFields,
   getRoles: () => Object.keys(config.permissions),
+  getParticipantTableFields: () => config.participantTableFields,
+  getFilters: () => config.filters,
+  getDetailsPageFields: () => config.detailsPageFields,
 };
