@@ -141,8 +141,11 @@ function addDatesToParticipants() {
 
   function setParticipantDates(kuksaParticipantInstance) {
     const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
-      .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
+
+    if (!kuksaParticipant.cancelled) {
+      models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
+        .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
+    }
   }
 
   function mapPaymentsToDates(kuksaParticipant) {
