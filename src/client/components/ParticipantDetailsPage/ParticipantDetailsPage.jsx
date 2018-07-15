@@ -103,27 +103,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           memberNumber,
           homeCity,
           country,
-          email,
           phoneNumber,
           ageGroup,
           localGroup,
           subCamp,
           campGroup,
-          village,
           internationalGuest,
-          staffPosition,
-          staffPositionInGenerator,
-          swimmingSkill,
-          willOfTheWisp,
-          willOfTheWispWave,
-          guardianOne,
-          guardianTwo,
-          diet,
-          familyCampProgramInfo,
-          childNaps,
           dates,
           allergies,
-          selections,
         } = this.state.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
@@ -136,13 +123,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const presenceHistory = this.state.participantDetails.presenceHistory || [];
 
         const allergyNames = _.map(allergies, row => row.name);
-
-        const familyCampSelections = _.groupBy(selections, row => row.kuksaGroupId);
-
-        const renderedFamilyCampSelections = _.map(familyCampSelections, selection => {
-          const rows = _.map(selection, row => <dd>{ row.selectionName }</dd>);
-          return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
-        });
 
         return (
           <div>
@@ -161,11 +141,6 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <dl>
                     <dt>Puhelin</dt>
                     <dd>{ phoneNumber || '–' }</dd>
-                    <dt>Sähköposti</dt>
-                    <dd>{ email || '–' }</dd>
-                    <dt>Huoltajat</dt>
-                    <dd>{ guardianOne || '–' }</dd>
-                    <dd>{ guardianTwo || '–' }</dd>
                     <dt>Kotikunta</dt>
                     <dd>{ homeCity || '–' }</dd>
                   </dl>
@@ -178,46 +153,21 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dd>{ formattedPaidDate || '–' }</dd>
                   </dl>
                 </Panel>
-                <Panel header="Pesti">
-                  <dl>
-                    <dt>Pesti</dt>
-                    <dd>{ staffPosition || '–' }</dd>
-                    <dt>Pestitieto kehittimestä</dt>
-                    <dd>{ staffPositionInGenerator || '–' }</dd>
-                  </dl>
-                </Panel>
                 <Panel header="Osallistujan tiedot">
                   <dl>
                     <dt>Partionimi</dt>
                     <dd>{ nickname || '–' }</dd>
                     <dt>Ikäkausi</dt>
                     <dd>{ ageGroup || '–' }</dd>
-                    <dt>Uimataito</dt>
-                    <dd>{ swimmingSkill || '–' }</dd>
                     <dt>Lippukunta</dt>
                     <dd>{ localGroup || '–' }</dd>
                     <dt>Maa</dt>
                     <dd>{ country || '–' }</dd>
                     <dt>Leirilippukunta</dt>
                     <dd>{ campGroup || '–' }</dd>
-                    <dt>Kylä</dt>
-                    <dd>{ village || '–' }</dd>
                     <dt>Alaleiri</dt>
                     <dd>{ subCamp || '–' }</dd>
-                    <dt>Virvatuli</dt>
-                    <dd>{ willOfTheWisp || '–' }</dd>
-                    <dt>Virvatuliaalto</dt>
-                    <dd>{ willOfTheWispWave || '–' }</dd>
                   </dl>
-                </Panel>
-                <Panel header="Perheleiri">
-                  <dl>
-                    <dt>Ohjelma</dt>
-                    <dd>{ familyCampProgramInfo || '–' }</dd>
-                    <dt>Päiväunet</dt>
-                    <dd>{ childNaps || '–' }</dd>
-                  </dl>
-                  { renderedFamilyCampSelections }
                 </Panel>
               </Col>
               <Col md={ 9 }>
@@ -233,9 +183,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                   <ParticipantDates dates={ dates } />
                 </Panel>
                 <Panel header="Allergiat ja erityisruokavaliot">
-                  { _.isEmpty(allergyNames) && _.isEmpty(diet)  ? <p>Ei allergioita</p> : '' }
+                  { _.isEmpty(allergyNames) ? <p>Ei allergioita</p> : '' }
                   { allergyNames ? <p>{ allergyNames.join(', ') }</p> : '' }
-                  { diet ? <p>{ diet }</p> : '' }
                 </Panel>
                 <Panel header="Leiritoimiston merkinnät">
                   <PropertyTextArea

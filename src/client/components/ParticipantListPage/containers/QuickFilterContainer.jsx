@@ -77,13 +77,6 @@ export function getQuickFilterContainer(participantStore, participantActions, se
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
-            label="Kylä"
-            property="village"
-            className="village-filter"
-          />
-          <PropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
             label="Lippukunta"
             property="localGroup"
             className="local-group-filter"
@@ -104,10 +97,6 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             currentSelection={ currentSelection }
             label="Ilmoittautumispäivät"
             property="dates"
-          />
-          <GenericPropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
           />
           <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
           <SaveSearchButtonContainer location={ props.location } />
