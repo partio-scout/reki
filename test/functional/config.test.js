@@ -44,7 +44,7 @@ describe('Config api endpoint', () => {
     })
   );
 
-  it('participant has custom fields form config', async () =>
+  it('participant has custom fields from config', async () =>
     await request(app)
     .get(`/api/config?access_token=${accessToken}`)
     .expect(res => {
