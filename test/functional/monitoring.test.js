@@ -1,5 +1,5 @@
 import app from '../../src/server/server';
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import { resetDatabase } from '../../scripts/seed-database';
 
 describe('Monitoring endpoint', () => {

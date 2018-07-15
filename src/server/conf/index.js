@@ -111,6 +111,7 @@ const searchableFieldNames = _(participantFields).filter('searchable').map('name
 
 export default {
   getFetchDateRanges: () => config.fetchDateRanges,
+  getParticipantBuilderFunction: () => config.participantBuilderFunction,
   getPaymentToDatesMappings: () => config.paymentToDatesMappings,
   getSelectionGroupTitles: () => config.customMultipleSelectionFields,
   getOptionFieldNames: () => config.filterableByFields,

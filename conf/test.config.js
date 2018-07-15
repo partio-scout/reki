@@ -280,8 +280,59 @@ const fetchDateRanges = [
   }
 ];
 
+// Takes the participant as fetched from Kuksa and maps it to the participant to
+// save in the database
+const participantBuilderFunction = (participant) => {
+  const p = participant;
+
+  // Shorten family camp age group a bit
+  let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
+  if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
+    ageGroup = 'perheleiri (0-11v.)';
+  }
+
+  // Family camp residence needs to be deduced differently
+  let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
+  if (p.get('accommodation') === 'Perheleirissä') {
+    subCamp = 'Riehu';
+  }
+
+  return {
+    participantId: p.get('id'),
+    firstName: p.get('firstName'),
+    lastName: p.get('lastName'),
+    nickname: p.get('nickname'),
+    memberNumber: p.get('memberNumber'),
+    dateOfBirth: p.get('dateOfBirth'),
+    billedDate: p.getPaymentStatus('billed'),
+    paidDate: p.getPaymentStatus('paid'),
+    phoneNumber: p.get('phoneNumber'),
+    email: p.get('email'),
+    internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
+    diet: p.get('diet'),
+    accommodation: p.get('accommodation') || 'Muu',
+    localGroup: p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
+    campGroup: p.get('kuksa_campgroup.name') || 'Muu',
+    subCamp: subCamp,
+    village: p.get('kuksa_village.name') || 'Muu',
+    country: p.get('kuksa_localgroup.country') || 'Suomi',
+    ageGroup: ageGroup,
+    // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
+    nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
+    staffPosition: p.getExtraInfo('Pesti'),
+    staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
+    willOfTheWisp: p.getExtraSelection('Virvatuli'),
+    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
+    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
+    guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
+    familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
+    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
+  };
+}
+
 export default {
   participantCustomFields: participantCustomFields,
+  participantBuilderFunction: participantBuilderFunction,
   paymentToDatesMappings: paymentToDatesMappings,
   fetchDateRanges: fetchDateRanges,
   customMultipleSelectionFields: customMultipleSelectionFields,
