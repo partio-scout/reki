@@ -18,6 +18,11 @@ services:
       - DATABASE_URL=postgres://reki:password@postgres/rekidb
       - TEST_DATABASE_URL=postgres://reki:password@postgres/rekitestdb
       - PORT=3000
+      - KUKSA_API_PROXY_URL
+      - KUKSA_API_USERNAME
+      - KUKSA_API_PASSWORD
+      - KUKSA_API_EVENTID
+      - KUKSA_API_ENDPOINT
 
   postgres:
     build:
