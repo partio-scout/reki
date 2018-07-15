@@ -54,77 +54,9 @@ const participantCustomFields = [
     nullable: true,
   },
   {
-    name: 'diet',
-    type: 'participant_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
     name: 'ageGroup',
     type: 'participant_field',
     dataType: 'string',
-  },
-  {
-    name: 'staffPosition',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-    searchable: true,
-  },
-  {
-    name: 'staffPositionInGenerator',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-    searchable: true,
-  },
-  {
-    name: 'willOfTheWisp',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'willOfTheWispWave',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'guardianOne',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'guardianTwo',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'familyCampProgramInfo',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'childNaps',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'homeCity',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'swimmingSkill',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
   },
   {
     name: 'gender',
@@ -163,12 +95,6 @@ const detailsPageFields = [
 // Titles of the multi-select groups that should be synced from Kuksa.
 // Each item represents the name of the selection group.
 const customMultipleSelectionFields = [
-  '0-11-vuotias lapsi osallistuu',
-  'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
-  '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
-  'Lapsen uimataito',
-  'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
-  '\tLapsi tarvitsee päiväunien aikaan vaippaa',
 ];
 
 const participantDatesMapper = wrappedParticipant => {
@@ -236,22 +162,15 @@ const participantDatesMapper = wrappedParticipant => {
 
 // Titles of multi-select fields containing the allergy information
 const allergyFields = [
-  'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-  'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
 ];
 
 // Field by which the view can be filtered (participantFields only)
 const filterableByFields = [
   'subCamp',
-  'village',
   'campGroup',
   'localGroup',
   'ageGroup',
-  'childNaps',
-  'accommodation',
   'country',
-  'willOfTheWisp',
-  'willOfTheWispWave',
   'internationalGuest',
 ];
 
@@ -278,19 +197,11 @@ const permissions = {
 // Split fetching participants to date ranges in order to avoid overloading Kuksa
 const fetchDateRanges = [
   {
-    'startDate': '2015-01-01T00:00:00',
-    'endDate': '2016-01-22T06:00:00',
+    'startDate': '2017-01-01T00:00:00Z',
+    'endDate': '2018-01-01T00:00:00Z',
   },
   {
-    'startDate': '2016-01-22T00:00:00',
-    'endDate': '2016-02-25T06:00:00',
-  },
-  {
-    'startDate': '2016-02-25T00:00:00',
-    'endDate': '2016-07-15T05:00:00',
-  },
-  {
-    'startDate': '2016-07-15T05:00:00',
+    'startDate': '2018-01-01T00:00:00Z',
     'endDate': '', // Defaults to right now
   },
 ];
@@ -301,16 +212,10 @@ const participantBuilderFunction = participant => {
   const p = participant;
 
   // Shorten family camp age group a bit
-  let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
-  if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
-    ageGroup = 'perheleiri (0-11v.)';
-  }
+  const ageGroup = p.getExtraSelection('Olen leirillä') || 'Muu';
 
   // Family camp residence needs to be deduced differently
-  let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
-  if (p.get('accommodation') === 'Perheleirissä') {
-    subCamp = 'Riehu';
-  }
+  const subCamp = p.get('kuksa_subcamp.name') || 'Muu';
 
   return {
     participantId: p.get('id'),
@@ -334,14 +239,6 @@ const participantBuilderFunction = participant => {
     ageGroup: ageGroup,
     // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
     nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
-    staffPosition: p.getExtraInfo('Pesti'),
-    staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    willOfTheWisp: p.getExtraSelection('Virvatuli'),
-    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
-    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
-    guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
-    familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
-    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
   };
 };
 
