@@ -4,6 +4,7 @@ import moment from 'moment';
 import transfer from './transfer';
 import { getEventApi } from 'kuksa-event-api-client';
 import config from '../server/conf';
+import { startSpinner } from './util';
 
 if (require.main === module) {
   main().then(
@@ -13,11 +14,15 @@ if (require.main === module) {
 }
 
 function main() {
+  const stopSpinner = startSpinner();
   return getOptionsFromEnvironment()
     .then(getEventApi)
     .then(eventApi => transferTablesOnlyOnce(eventApi)
       .then(() => transferParticipants(eventApi))
-      .then(() => transferPayments(eventApi)));
+      .then(() => transferPayments(eventApi)))
+    .then(() => {
+      stopSpinner();
+    });
 }
 
 function getOptionsFromEnvironment() {

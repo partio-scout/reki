@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
 import config from '../server/conf';
+import { startSpinner } from './util';
 
 const Op = sequelize.Op;
 
@@ -15,13 +16,17 @@ if (require.main === module) {
 }
 
 function main() {
+  const stopSpinner = startSpinner();
   return buildAllergyTable()
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
     .then(addDatesToParticipants)
     .then(buildSelectionTable)
     .then(deleteCancelledParticipants)
-    .then(buildOptionTable);
+    .then(buildOptionTable)
+    .then(() => {
+      stopSpinner();
+    });
 }
 
 function buildAllergyTable() {
