@@ -100,7 +100,7 @@ function rebuildParticipantsTable() {
   console.log('Rebuilding participants table...');
 
   return getWrappedParticipants()
-  .then(config.getParticipantBuilderFunction())
+  .then(wrappedParticipants => wrappedParticipants.map(config.getParticipantBuilderFunction()))
   .then(participants =>
     _.reduce(
       participants,
@@ -145,35 +145,24 @@ function addAllergiesToParticipants() {
 
 function addDatesToParticipants() {
 
-  const paymentToDateMappings = config.getPaymentToDatesMappings();
+  const participantDatesMapper = config.getParticipantDatesMapper();
 
   console.log('Adding dates to participants...');
-  return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
+  return getWrappedParticipants().each(setParticipantDates);
 
-  function setParticipantDates(kuksaParticipantInstance) {
-    const kuksaParticipant = kuksaParticipantInstance.toJSON();
-
-    if (!kuksaParticipant.cancelled) {
-      models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
-        .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
-    }
+  function setParticipantDates(wrappedParticipant) {
+    models.ParticipantDate.destroy( { where: { participantId: wrappedParticipant.get('id') } } )
+      .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(wrappedParticipant)));
   }
 
-  function mapPaymentsToDates(kuksaParticipant) {
-    return _(kuksaParticipant.kuksa_payments)
-      .flatMap(payment => {
-        const dateMappings = paymentToDateMappings[payment.name];
+  function mapPaymentsToDates(wrappedParticipant) {
+    const participantId = wrappedParticipant.get('id');
 
-        if (dateMappings === undefined) {
-          console.log(`Warning! A mapping from payment type '${payment.name}' to participation dates is missing!`);
-        }
-
-        return dateMappings || [];
-      })
+    return _(participantDatesMapper(wrappedParticipant))
       .uniq()
       .sort()
       .map(date => ({
-        participantId: kuksaParticipant.id,
+        participantId: participantId,
         date: moment(date).toDate(),
       }))
       .value();
