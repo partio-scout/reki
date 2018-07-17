@@ -150,7 +150,15 @@ function addDatesToParticipants() {
 
   function mapPaymentsToDates(kuksaParticipant) {
     return _(kuksaParticipant.kuksa_payments)
-      .flatMap(payment => paymentToDateMappings[payment.name])
+      .flatMap(payment => {
+        const dateMappings = paymentToDateMappings[payment.name];
+
+        if (dateMappings === undefined) {
+          console.log(`Warning! A mapping from payment type '${payment.name}' to participation dates is missing!`);
+        }
+
+        return dateMappings || [];
+      })
       .uniq()
       .sort()
       .map(date => ({
