@@ -38,10 +38,16 @@ function buildAllergyTable() {
     .then(selections => Promise.each(selections, s => models.Allergy.upsert(s)));
 }
 
-function rebuildParticipantsTable() {
+function getWrappedParticipants() {
   function getExtraInfo(participant, fieldName) {
     const field = _.find(participant.kuksa_participantextrainfos, o => _.get(o, 'kuksa_extrainfofield.name') === fieldName);
     return field ? field.value : null;
+  }
+
+  function getAllExtraSelections(participant, fieldName) {
+    return participant.kuksa_extraselections
+      .filter(o => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName)
+      .map(selection => selection.name);
   }
 
   function getExtraSelection(participant, fieldName) {
@@ -55,8 +61,6 @@ function rebuildParticipantsTable() {
     }
     return statuses[type] || null;
   }
-
-  console.log('Rebuilding participants table...');
 
   return models.KuksaParticipant.findAll({
     include: [
@@ -76,20 +80,27 @@ function rebuildParticipantsTable() {
         include: models.KuksaExtraSelectionGroup,
       },
       models.KuksaParticipantPaymentStatus,
+      models.KuksaPayment,
     ],
   })
   // don't add participants that are cancelled
-  .then(participants => _.filter(participants, p => !p.cancelled))
-  .then(participants => participants.map(participant => {
-    const wrappedParticipant = {
+    .then(participants => _.filter(participants, p => !p.cancelled))
+    .then(participants => participants.map(participant => ({
       get: path => _.get(participant, path),
       getPaymentStatus: type => getPaymentStatus(participant.kuksa_participantpaymentstatus, type),
       getExtraInfo: field => getExtraInfo(participant, field),
       getExtraSelection: groupName => getExtraSelection(participant, groupName),
+      getAllExtraSelections: groupName => getAllExtraSelections(participant, groupName),
+      getPayments: () => participant.kuksa_payments.map(payment => payment.name),
       getRawFields: () => participant,
-    };
-    return config.getParticipantBuilderFunction()(wrappedParticipant);
-  }))
+    })));
+}
+
+function rebuildParticipantsTable() {
+  console.log('Rebuilding participants table...');
+
+  return getWrappedParticipants()
+  .then(config.getParticipantBuilderFunction())
   .then(participants =>
     _.reduce(
       participants,
