@@ -7,11 +7,8 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   const properties = [
-    { childNaps: 'Lapsi nukkuu päiväunet' },
     { accommodation: 'Majoittautuminen' },
     { country: 'Maa' },
-    { willOfTheWisp: 'Virvatuli' },
-    { willOfTheWispWave: 'Virvatulen aalto' },
     { internationalGuest: 'KV-osallistuja' },
   ];
 
