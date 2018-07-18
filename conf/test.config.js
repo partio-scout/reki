@@ -285,7 +285,7 @@ const participantBuilderFunction = participant => {
   // Family camp residence needs to be deduced differently
   let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
   if (p.get('accommodation') === 'Perheleirissä') {
-    subCamp = 'Riehu';
+    subCamp = 'Kliffa';
   }
 
   return {
@@ -312,12 +312,9 @@ const participantBuilderFunction = participant => {
     nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
     staffPosition: p.getExtraInfo('Pesti'),
     staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    willOfTheWisp: p.getExtraSelection('Virvatuli'),
-    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
     guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
     guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
     familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
-    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
   };
 };
 
