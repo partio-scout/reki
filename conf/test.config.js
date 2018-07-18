@@ -79,18 +79,6 @@ const participantCustomFields = [
     searchable: true,
   },
   {
-    name: 'willOfTheWisp',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'willOfTheWispWave',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
     name: 'guardianOne',
     type: 'extra_info_field',
     dataType: 'string',
