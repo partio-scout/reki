@@ -255,18 +255,18 @@ const permissions = {
 const fetchDateRanges = [
   {
     'startDate': '2015-01-01T00:00:00',
-    'endDate': '2016-01-22T06:00:00',
+    'endDate': '2018-01-01T00:00:00',
   },
   {
-    'startDate': '2016-01-22T00:00:00',
-    'endDate': '2016-02-25T06:00:00',
+    'startDate': '2018-01-01T00:00:00',
+    'endDate': '2018-03-01T00:00:00',
   },
   {
-    'startDate': '2016-02-25T00:00:00',
-    'endDate': '2016-07-15T05:00:00',
+    'startDate': '2018-03-01T00:00:00',
+    'endDate': '2018-04-01T00:00:00',
   },
   {
-    'startDate': '2016-07-15T05:00:00',
+    'startDate': '2018-04-01T00:00:00',
     'endDate': '', // Defaults to right now
   },
 ];

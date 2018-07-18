@@ -6,6 +6,12 @@ const dbUrl = process.env.NODE_ENV === 'test' ? process.env.TEST_DATABASE_URL : 
 const db = new Sequelize(dbUrl, {
   logging: false,
   operatorsAliases: false,
+  pool: {
+    max: 100,
+    min: 0,
+    idle: 20000,
+    acquire: 20000,
+  },
 });
 
 export const sequelize = db;
