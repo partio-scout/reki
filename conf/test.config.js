@@ -214,8 +214,6 @@ const filterableByFields = [
   'childNaps',
   'accommodation',
   'country',
-  'willOfTheWisp',
-  'willOfTheWispWave',
   'internationalGuest',
 ];
 
@@ -273,7 +271,7 @@ const participantBuilderFunction = participant => {
   // Family camp residence needs to be deduced differently
   let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
   if (p.get('accommodation') === 'Perheleirissä') {
-    subCamp = 'Kliffa';
+    subCamp = 'Snadila';
   }
 
   return {
@@ -298,9 +296,9 @@ const participantBuilderFunction = participant => {
     ageGroup: ageGroup,
     // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
     nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
-    staffPosition: p.getExtraInfo('Pesti'),
+    staffPosition: p.getExtraInfo('Pestini ja minut pestanneen henkilön nimi'),
     staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
+    guardianOne: p.get('guardianOne'),
     guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
     familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
   };

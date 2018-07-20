@@ -140,6 +140,7 @@ function transferParticipants(eventApi) {
           cancelled: participant.cancelled,
           diet: participant.diet,
           accommodation: participant.accommodation,
+          guardianOne: `${participant.guardian.name} ${participant.guardian.phoneNumber} ${participant.guardian.email}`,
         }),
         dateRange: daterange,
       },
