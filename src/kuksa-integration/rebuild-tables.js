@@ -15,27 +15,11 @@ if (require.main === module) {
 }
 
 function main() {
-  return buildAllergyTable()
-    .then(rebuildParticipantsTable)
-    .then(addAllergiesToParticipants)
+  return rebuildParticipantsTable
     .then(addDatesToParticipants)
     .then(buildSelectionTable)
     .then(deleteCancelledParticipants)
     .then(buildOptionTable);
-}
-
-function buildAllergyTable() {
-
-  console.log('Rebuilding allergies table...');
-  return models.KuksaExtraSelectionGroup.findAll({
-    where: {
-      name: {
-        [Op.in]: config.getAllergyFieldTitles(),
-      },
-    },
-  }).then(selGroups => models.KuksaExtraSelection.findAll({ where: { kuksaExtraselectiongroupId: { [Op.in]: _.map(selGroups, group => group.id) } } }))
-    .then(selections => selections.map(selection => ({ name: selection.name, allergyId: selection.id })))
-    .then(selections => Promise.each(selections, s => models.Allergy.upsert(s)));
 }
 
 function getWrappedParticipants() {
@@ -108,39 +92,6 @@ function rebuildParticipantsTable() {
       Promise.resolve()
     )
   ).then(() => console.log('Rebuild complete.'));
-}
-
-function addAllergiesToParticipants() {
-  function removeOldAndAddNewAllergies(participant, newAllergies) {
-    Promise.promisifyAll(participant);
-    return models.ParticipantAllergy.destroy( { where: { participantParticipantId: participant.participantId } } )
-    .then(() => Promise.each(newAllergies, allergyId => models.ParticipantAllergy.create({
-      participantParticipantId: participant.participantId,
-      allergyAllergyId: allergyId,
-    })));
-  }
-
-  function findParticipantsAllergies(participant) {
-
-    return models.Allergy.findAll()
-    .then(allergies => _.map(allergies, 'allergyId'))
-    .then(allergies => models.KuksaParticipantExtraSelection.findAll({
-      where: {
-        [Op.and]: [
-          { kuksaParticipantId: participant.participantId },
-          { kuksaExtraselectionId: { [Op.in]: allergies } },
-        ],
-      },
-    }))
-    .then(participantsAllergies => _.map(participantsAllergies, 'kuksaExtraselectionId'));
-  }
-
-  console.log('Adding allergies and diets to participants...');
-
-  return models.Participant.findAll({ include: [models.Allergy] })
-  .then(participants => Promise.each(participants, participant => findParticipantsAllergies(participant)
-    .then(allergies => removeOldAndAddNewAllergies(participant, allergies))))
-    .then(() => console.log('Allergies and diets added.'));
 }
 
 function addDatesToParticipants() {
