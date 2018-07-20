@@ -1,4 +1,5 @@
 import React from 'react';
+import * as _ from 'lodash';
 import { getPropertySelect } from '../../../components';
 
 export function getPropertyFilterContainer(searchFilterStore, searchFilterActions) {
@@ -26,7 +27,7 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
     }
 
     extractState() {
-      return { options: searchFilterStore.getState().options[this.props.property] || [ ] };
+      return { options: _.sortBy(searchFilterStore.getState().options[this.props.property] || [ ]) };
     }
 
     render() {
