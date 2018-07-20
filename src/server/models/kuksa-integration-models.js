@@ -91,6 +91,9 @@ export default function(db) {
     accommodation: Sequelize.STRING,
     cancelled: Sequelize.BOOLEAN,
     diet: Sequelize.STRING,
+    guardianName: Sequelize.STRING,
+    guardianPhone: Sequelize.STRING,
+    guardianEmail: Sequelize.STRING,
   });
 
   const KuksaParticipantExtraInfo = db.define('kuksa_participantextrainfo', {
