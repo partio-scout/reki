@@ -253,7 +253,6 @@ export function getParticipantListPage(participantStore, participantActions, sea
         editableInfo: editableInfo,
         nonScout: 'Onko partiolainen?',
         homeCity: 'Kotikaupunki',
-        interestedInHomeHospitality: 'Home hospitality',
         email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
         ageGroup: 'Ikäkausi',
