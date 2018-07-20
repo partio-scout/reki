@@ -115,7 +115,6 @@ export class ParticipantRow extends React.Component {
         <td>{ info }</td>
         <TdWithTitle value={ formatNonScout(nonScout) } />
         <TdWithTitle value={ formatNullableString(homeCity) } />
-        <TdWithTitle value={ formatNullableBoolean(interestedInHomeHospitality) } />
         <TdWithTitle value={ formatNullableString(email) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
         <TdWithTitle value={ ageGroup } />
