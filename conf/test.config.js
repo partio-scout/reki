@@ -298,7 +298,7 @@ const participantBuilderFunction = participant => {
     nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
     staffPosition: p.getExtraInfo('Pestini ja minut pestanneen henkilön nimi'),
     staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    guardianOne: `p.get('guardianName')}, ${p.get('guardianPhone')}, ${p.get('guardianEmail')}`,
+    guardianOne: `${p.get('guardianName')}, ${p.get('guardianPhone')}, ${p.get('guardianEmail')}`,
     guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
     familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
   };
