@@ -15,7 +15,7 @@ if (require.main === module) {
 }
 
 function main() {
-  return rebuildParticipantsTable
+  return rebuildParticipantsTable()
     .then(addDatesToParticipants)
     .then(buildSelectionTable)
     .then(deleteCancelledParticipants)
