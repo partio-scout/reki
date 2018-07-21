@@ -67,14 +67,15 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
       // Create a link pointing to the ObjectURL containing the blob.
       const data = window.URL.createObjectURL(newBlob);
       const link = document.createElement('a');
+      document.body.appendChild(link);
       link.href = data;
       link.download = 'reki-print.csv';
       link.click();
+      link.remove();
       setTimeout(() => {
         // For Firefox it is necessary to delay revoking the ObjectURL
         window.URL.revokeObjectURL(data);
-      }
-      , 100);
+      }, 100);
     }
 
     render() {
