@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import { _ } from 'lodash';
 import moment from 'moment';
 import config from '../server/conf';
+import { startSpinner } from './util';
 
 const Op = sequelize.Op;
 
@@ -15,13 +16,17 @@ if (require.main === module) {
 }
 
 function main() {
+  const stopSpinner = startSpinner();
   return buildAllergyTable()
     .then(rebuildParticipantsTable)
     .then(addAllergiesToParticipants)
     .then(addDatesToParticipants)
     .then(buildSelectionTable)
     .then(deleteCancelledParticipants)
-    .then(buildOptionTable);
+    .then(buildOptionTable)
+    .then(() => {
+      stopSpinner();
+    });
 }
 
 function buildAllergyTable() {
@@ -38,10 +43,16 @@ function buildAllergyTable() {
     .then(selections => Promise.each(selections, s => models.Allergy.upsert(s)));
 }
 
-function rebuildParticipantsTable() {
+function getWrappedParticipants() {
   function getExtraInfo(participant, fieldName) {
     const field = _.find(participant.kuksa_participantextrainfos, o => _.get(o, 'kuksa_extrainfofield.name') === fieldName);
     return field ? field.value : null;
+  }
+
+  function getAllExtraSelections(participant, fieldName) {
+    return participant.kuksa_extraselections
+      .filter(o => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName)
+      .map(selection => selection.name);
   }
 
   function getExtraSelection(participant, fieldName) {
@@ -55,8 +66,6 @@ function rebuildParticipantsTable() {
     }
     return statuses[type] || null;
   }
-
-  console.log('Rebuilding participants table...');
 
   return models.KuksaParticipant.findAll({
     include: [
@@ -76,20 +85,27 @@ function rebuildParticipantsTable() {
         include: models.KuksaExtraSelectionGroup,
       },
       models.KuksaParticipantPaymentStatus,
+      models.KuksaPayment,
     ],
   })
   // don't add participants that are cancelled
-  .then(participants => _.filter(participants, p => !p.cancelled))
-  .then(participants => participants.map(participant => {
-    const wrappedParticipant = {
+    .then(participants => _.filter(participants, p => !p.cancelled))
+    .then(participants => participants.map(participant => ({
       get: path => _.get(participant, path),
       getPaymentStatus: type => getPaymentStatus(participant.kuksa_participantpaymentstatus, type),
       getExtraInfo: field => getExtraInfo(participant, field),
       getExtraSelection: groupName => getExtraSelection(participant, groupName),
+      getAllExtraSelections: groupName => getAllExtraSelections(participant, groupName),
+      getPayments: () => participant.kuksa_payments.map(payment => payment.name),
       getRawFields: () => participant,
-    };
-    return config.getParticipantBuilderFunction()(wrappedParticipant);
-  }))
+    })));
+}
+
+function rebuildParticipantsTable() {
+  console.log('Rebuilding participants table...');
+
+  return getWrappedParticipants()
+  .then(wrappedParticipants => wrappedParticipants.map(config.getParticipantBuilderFunction()))
   .then(participants =>
     _.reduce(
       participants,
@@ -134,24 +150,24 @@ function addAllergiesToParticipants() {
 
 function addDatesToParticipants() {
 
-  const paymentToDateMappings = config.getPaymentToDatesMappings();
+  const participantDatesMapper = config.getParticipantDatesMapper();
 
   console.log('Adding dates to participants...');
-  return models.KuksaParticipant.findAll({ include: models.KuksaPayment }).each(setParticipantDates);
+  return getWrappedParticipants().each(setParticipantDates);
 
-  function setParticipantDates(kuksaParticipantInstance) {
-    const kuksaParticipant = kuksaParticipantInstance.toJSON();
-    models.ParticipantDate.destroy( { where: { participantId: kuksaParticipant.id } } )
-      .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(kuksaParticipant)));
+  function setParticipantDates(wrappedParticipant) {
+    models.ParticipantDate.destroy( { where: { participantId: wrappedParticipant.get('id') } } )
+      .then(() => models.ParticipantDate.bulkCreate(mapPaymentsToDates(wrappedParticipant)));
   }
 
-  function mapPaymentsToDates(kuksaParticipant) {
-    return _(kuksaParticipant.kuksa_payments)
-      .flatMap(payment => paymentToDateMappings[payment.name])
+  function mapPaymentsToDates(wrappedParticipant) {
+    const participantId = wrappedParticipant.get('id');
+
+    return _(participantDatesMapper(wrappedParticipant))
       .uniq()
       .sort()
       .map(date => ({
-        participantId: kuksaParticipant.id,
+        participantId: participantId,
         date: moment(date).toDate(),
       }))
       .value();

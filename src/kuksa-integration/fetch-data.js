@@ -4,6 +4,7 @@ import moment from 'moment';
 import transfer from './transfer';
 import { getEventApi } from 'kuksa-event-api-client';
 import config from '../server/conf';
+import { startSpinner } from './util';
 
 if (require.main === module) {
   main().then(
@@ -13,11 +14,15 @@ if (require.main === module) {
 }
 
 function main() {
+  const stopSpinner = startSpinner();
   return getOptionsFromEnvironment()
     .then(getEventApi)
     .then(eventApi => transferTablesOnlyOnce(eventApi)
       .then(() => transferParticipants(eventApi))
-      .then(() => transferPayments(eventApi)));
+      .then(() => transferPayments(eventApi)))
+    .then(() => {
+      stopSpinner();
+    });
 }
 
 function getOptionsFromEnvironment() {
@@ -179,7 +184,7 @@ function transferParticipants(eventApi) {
   const participantDateRanges = config.getFetchDateRanges();
   // set the last date to be current date
   const lastIndex = participantDateRanges.length - 1;
-  participantDateRanges[lastIndex].endDate = moment().toDate();
+  participantDateRanges[lastIndex].endDate = moment().toISOString();
 
   console.log('Transferring participants, their extra infos, selections and payments');
   return Promise.each(participantDateRanges, daterange => transferDaterange(daterange));

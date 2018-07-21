@@ -1,6 +1,7 @@
 import { models } from '../server/models';
 import Promise from 'bluebird';
 import EventEmitter from 'events';
+import { startSpinner } from './util';
 
 EventEmitter.prototype._maxListeners = 20;
 
@@ -25,9 +26,13 @@ function clearTemporaryTables() {
 }
 
 if (require.main === module) {
+  const stopSpinner = startSpinner();
   clearTemporaryTables()
     .then(() => console.log(`Tables ${modelsToClear} cleared.`))
-    .then(() => process.exit(0))
+    .then(() => {
+      stopSpinner();
+      process.exit(0);
+    })
     .catch(err => {
       console.error('Temporary model creation failed: ', err);
       process.exit(1);

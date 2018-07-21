@@ -41,6 +41,11 @@ export function getParticipantActions(alt, participantResource, errorActions) {
 
       return dispatch => {
         dispatch();
+        if (filter === undefined || Object.keys(filter).length === 0) {
+          this.participantListUpdated([], 0);
+          return;
+        }
+
         participantResource.findAll(filterString)
           .then(participantList => this.participantListUpdated(participantList.result, participantList.count)
           , err => errorActions.error(err, 'Osallistujia ei voitu ladata'));
