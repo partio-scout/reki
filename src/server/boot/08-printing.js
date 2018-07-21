@@ -6,7 +6,7 @@ import { models } from '../models';
 import config from '../conf';
 
 export default function(app) {
-  app.get('/printing', app.wrap(async (req, res) => {
+  app.get('/printing', app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const filter = JSON.parse(req.query.filter || '{}');
     const limit = +filter.limit || undefined;
     const offset = +filter.skip || undefined;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import _ from 'lodash';
 import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
+import Cookie from 'js-cookie';
 
 export function getPrintButtonContainer(searchFilterStore, searchFilterActions) {
   const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
@@ -35,10 +36,17 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
         include: ['dates'],
       };
 
-      const filterString = `filter=${encodeURIComponent(JSON.stringify(filters))}`;
+      const printUrl = `/printing/?filter=${encodeURIComponent(JSON.stringify(filters))}`;
 
-      // fetch('/printing/?filter={%22where%22%3A{%22subCamp%22%3A%22Muu%22}%2C%22skip%22%3A0%2C%22limit%22%3A200%2C%22include%22%3A[%22dates%22]}')
-      fetch('/printing/?' + filterString)
+      const accessToken = Cookie.getJSON('accessToken');
+
+      fetch(printUrl, {
+        method: 'GET',
+        credentials: 'include',
+        headers: new Headers({
+          'Authorization': accessToken.id,
+        }),
+      })
         .then(r => r.blob())
         .then(this.showFile);
     }
@@ -60,7 +68,7 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
       const data = window.URL.createObjectURL(newBlob);
       const link = document.createElement('a');
       link.href = data;
-      link.download = 'print.csv';
+      link.download = 'reki-print.csv';
       link.click();
       setTimeout(() => {
         // For Firefox it is necessary to delay revoking the ObjectURL
