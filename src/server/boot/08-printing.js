@@ -94,7 +94,7 @@ export default function(app) {
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.charset = 'utf-8';
     let csvResult = '\uFEFF';
-    csvResult += 'Tila;Sukunimi;Etunimi;Syntympäivä;Jäsennumero;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
+    csvResult += 'Tila;Sukunimi;Etunimi;Syntymäpäivä;Jäsennumero;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
     for (let i = 0; i < result.rows.length; i++) {
       const phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
       const dates = result.rows[i].dates;
