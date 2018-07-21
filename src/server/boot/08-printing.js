@@ -6,6 +6,24 @@ import { models } from '../models';
 import config from '../conf';
 
 export default function(app) {
+  const cleanNull = input => input ? input : '';
+
+  const formatDate = dateString => {
+    if (!dateString) {
+      return null;
+    }
+    const date = new Date(dateString);
+    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}\t`;
+  };
+
+  const formatParticipationDate = dateString => {
+    if (!dateString) {
+      return null;
+    }
+    const date = new Date(dateString);
+    return `${date.getDate()}.${date.getMonth() + 1}.`;
+  };
+
   app.get('/printing', app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const filter = JSON.parse(req.query.filter || '{}');
     const limit = +filter.limit || undefined;
@@ -73,13 +91,24 @@ export default function(app) {
 
     //res.json( { result: result.rows, count: result.count });
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/csv');
-    let csvResult = '';
+    res.set('Content-Type', 'text/csv; charset=utf-16');
+    res.charset = 'utf-16';
+    let csvResult = '\ufeff';
     csvResult = 'Tila;Sukunimi;Etunimi;Syntympäivä;Jäsennumero;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
     for (let i = 0; i < result.rows.length; i++) {
-      let phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
-      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName};${result.rows[i].dateOfBirth};${result.rows[i].memberNumber};${result.rows[i].campOfficeNotes};${result.rows[i].editableInfo};${result.rows[i].nonScout ? 'ei' : 'partiolainen'};${phoneNumber};${result.rows[i].accommodation};${result.rows[i].localGroup};${result.rows[i].village};${result.rows[i].subCamp};${result.rows[i].campGroup};${result.rows[i].dates.toString()}\n`;
+      const phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
+      const dates = result.rows[i].dates;
+      let dateDescription = '';
+      for (let i = 0; i < dates.length; i++) {
+        dateDescription += formatParticipationDate(dates[i].dataValues.date);
+        if (i !== dates.length - 1) {
+          dateDescription += ' ';
+        }
+      }
+      dateDescription += '\t';
+      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName};${formatDate(result.rows[i].dateOfBirth)};${cleanNull(result.rows[i].memberNumber)};${cleanNull(result.rows[i].campOfficeNotes)};${cleanNull(result.rows[i].editableInfo)};${result.rows[i].nonScout ? 'ei' : 'partiolainen'};${phoneNumber}\t;${result.rows[i].accommodation};${result.rows[i].localGroup};${result.rows[i].village};${result.rows[i].subCamp};${result.rows[i].campGroup};${dateDescription}\n`;
     }
     res.send(csvResult);
   }));
+
 }
