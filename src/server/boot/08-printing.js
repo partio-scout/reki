@@ -75,9 +75,10 @@ export default function(app) {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/csv');
     let csvResult = '';
-    csvResult = 'Tila;Sukunimi;Etunimi\n';
+    csvResult = 'Tila;Sukunimi;Etunimi;Syntympäivä;Jäsennumero;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
     for (let i = 0; i < result.rows.length; i++) {
-      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName}\n`;
+      let phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
+      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName};${result.rows[i].dateOfBirth};${result.rows[i].memberNumber};${result.rows[i].campOfficeNotes};${result.rows[i].editableInfo};${result.rows[i].nonScout ? 'ei' : 'partiolainen'};${phoneNumber};${result.rows[i].accommodation};${result.rows[i].localGroup};${result.rows[i].village};${result.rows[i].subCamp};${result.rows[i].campGroup};${result.rows[i].dates.toString()}\n`;
     }
     res.send(csvResult);
   }));
