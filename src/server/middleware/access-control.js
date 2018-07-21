@@ -15,7 +15,7 @@ export default function(app, permissions) {
   }
 
   async function isRequestAllowed(permission, req) {
-    const tokenId = ''+(req.query.access_token || req.get('Authorization'));
+    const tokenId = String(req.query.access_token || req.get('Authorization'));
     if (!tokenId) {
       throw _err(UNAUTHORIZED, 'Unauthorized: No access token given');
     }
