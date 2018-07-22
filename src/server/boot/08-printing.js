@@ -89,7 +89,6 @@ export default function(app) {
       distinct: true, // without this count is calculated incorrectly
     });
 
-    //res.json( { result: result.rows, count: result.count });
     res.statusCode = 200;
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.charset = 'utf-8';
@@ -98,6 +97,15 @@ export default function(app) {
     for (let i = 0; i < result.rows.length; i++) {
       const phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
       const dates = result.rows[i].dates;
+      dates.sort((date1, date2) => {
+        if (date1.dataValues.date > date2.dataValues.date) {
+          return 1;
+        }
+        if (date1.dataValues.date < date2.dataValues.date) {
+          return -1;
+        }
+        return 0;
+      });
       let dateDescription = '';
       for (let i = 0; i < dates.length; i++) {
         dateDescription += formatParticipationDate(dates[i].dataValues.date);
