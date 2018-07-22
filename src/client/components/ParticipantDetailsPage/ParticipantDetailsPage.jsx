@@ -9,8 +9,9 @@ import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
+import Cookie from 'js-cookie';
 
-export function getParticipantDetailsPage(participantStore, participantActions) {
+export function getParticipantDetailsPage(participantStore, participantActions, registryUserStore, registryUserActions) {
 
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
@@ -20,9 +21,11 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       state.editableInfoSaving = false;
       state.presenceSaving = false;
       state.selectedPresence = null;
+      this.registryState = registryUserStore.getState();
       this.state = state;
 
       this.onStoreChanged = this.onStoreChanged.bind(this);
+      this.onRegistryStoreChanged = this.onRegistryStoreChanged.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.onPresenceChange = this.onPresenceChange.bind(this);
       this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
@@ -33,14 +36,18 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
 
     componentWillMount() {
       participantActions.fetchParticipantById(this.props.params.id);
+      const accessToken = Cookie.getJSON('accessToken');
+      registryUserActions.loadCurrentUser(accessToken.userId);
     }
 
     componentDidMount() {
       participantStore.listen(this.onStoreChanged);
+      registryUserStore.listen(this.onRegistryStoreChanged);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.onStoreChanged);
+      registryUserStore.listen(this.onRegistryStoreChanged);
     }
 
     onStoreChanged(state) {
@@ -49,6 +56,12 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       state.editableInfoSaving = false;
       state.presenceSaving = false;
       this.setState(newState);
+    }
+
+    onRegistryStoreChanged(state) {
+      const oldState = this.state;
+      oldState.registryState = state;
+      this.setState(oldState);
     }
 
     onPresenceChange(event) {
@@ -143,7 +156,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           const rows = _.map(selection, row => <dd>{ row.selectionName }</dd>);
           return <dl className="margin-top-0"><dt>{ _.head(selection).groupName }</dt>{ rows }</dl>;
         });
-
+        console.dir(this.state.registryState.currentUser.rekiRoles)
+        const rekiRoles = _.map(this.state.registryState.currentUser.rekiRoles, obj => obj.name);
         return (
           <div>
             <Row>
@@ -170,14 +184,16 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                     <dd>{ homeCity || '–' }</dd>
                   </dl>
                 </Panel>
-                <Panel header="Laskutustiedot">
-                  <dl>
-                    <dt>Laskutettu</dt>
-                    <dd>{ formattedBilledDate || '–' }</dd>
-                    <dt>Maksettu</dt>
-                    <dd>{ formattedPaidDate || '–' }</dd>
-                  </dl>
-                </Panel>
+                { _.includes(rekiRoles, 'registryUser') &&
+                  <Panel header="Laskutustiedot">
+                    <dl>
+                      <dt>Laskutettu</dt>
+                      <dd>{formattedBilledDate || '–'}</dd>
+                      <dt>Maksettu</dt>
+                      <dd>{formattedPaidDate || '–'}</dd>
+                    </dl>
+                  </Panel>
+                }
                 <Panel header="Pesti">
                   <dl>
                     <dt>Pesti</dt>
@@ -223,10 +239,14 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
               <Col md={ 9 }>
                 <Panel header="Läsnäolo">
                  <Presence value={ presence } />
-                 <form className="form-inline">
-                   <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa" />
-                   <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
-                 </form>
+                  { _.includes(rekiRoles, 'registryUser') &&
+                  <form className="form-inline">
+                    <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa"/>
+                    <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary"
+                      label="Tallenna" labelWhileLoading="Tallennetaan…"
+                    />
+                  </form>
+                  }
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
                 <Panel header="Ilmoittautumispäivät">

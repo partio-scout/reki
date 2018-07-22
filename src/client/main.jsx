@@ -46,7 +46,7 @@ const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
 const ParticipantDetailsPage = restrictComponent(
   registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions),
+  components.getParticipantDetailsPage(participantStore, participantActions, registryUserStore, registryUserActions),
   LoginPromptPage
 );
 const ParticipantListPage = restrictComponent(

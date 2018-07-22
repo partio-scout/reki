@@ -33,7 +33,7 @@ export function getMainNavigation() {
         );
       }
 
-      if (_.includes(rekiRoles, 'registryUser')) {
+      if (_.includes(rekiRoles, 'registryUser') || _.includes(rekiRoles, 'registryUserNoStateChange')) {
         navItems.push(
           {
             to: '/participants',
