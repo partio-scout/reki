@@ -9,6 +9,7 @@ import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
+import Cookie from 'js-cookie';
 
 function getOrder(query) {
   try {
@@ -36,14 +37,16 @@ function getLimit(query) {
   return query.limit && Number(query.limit) || 200;
 }
 
-export function getMassEdit(participantStore) {
+export function getMassEdit(participantStore, registryUserStore, registryUserActions) {
   class MassEdit extends React.Component {
     constructor(props){
       super(props);
       this.state = { loading: false };
+      this.state.registryState = registryUserStore.getState();
       this.onSubmit = this.onSubmit.bind(this);
       this.onChange = this.onChange.bind(this);
       this.onStoreChanged = this.onStoreChanged.bind(this);
+      this.onRegistryStoreChanged = this.onRegistryStoreChanged.bind(this);
     }
 
     onSubmit(event) {
@@ -54,16 +57,29 @@ export function getMassEdit(participantStore) {
       }
     }
 
+    componentWillMount() {
+      const accessToken = Cookie.getJSON('accessToken');
+      registryUserActions.loadCurrentUser(accessToken.userId);
+    }
+
     componentDidMount() {
       participantStore.listen(this.onStoreChanged);
+      registryUserStore.listen(this.onRegistryStoreChanged);
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.onStoreChanged);
+      registryUserStore.listen(this.onRegistryStoreChanged);
     }
 
     onStoreChanged() {
       this.setState({ loading: false });
+    }
+
+    onRegistryStoreChanged(state) {
+      const oldState = this.state;
+      oldState.registryState = state;
+      this.setState(oldState);
     }
 
     onChange(event){
@@ -72,11 +88,18 @@ export function getMassEdit(participantStore) {
     }
 
     render() {
+      const rekiRoles = (this.state && this.state.registryState.currentUser) ? _.map(this.state.registryState.currentUser.rekiRoles, obj => obj.name) : {};
       return (
         <form className="form-inline" onSubmit={ this.onSubmit }>
-          <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
-          <PresenceSelector label="Tila" onChange={ this.onChange }/>
-          <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+          {_.includes(rekiRoles, 'registryUser') &&
+            <p>{this.props.count} {(this.props.count == 1 ? 'henkilö' : 'henkilöä')} valittu</p>
+          }
+          {_.includes(rekiRoles, 'registryUser') &&
+            <PresenceSelector label="Tila" onChange={ this.onChange }/>
+          }
+          {_.includes(rekiRoles, 'registryUser') &&
+            <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+          }
         </form>
       );
     }
@@ -118,14 +141,14 @@ export function getSelectAll() {
   return SelectAll;
 }
 
-export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore) {
+export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore, registryUserStore, registryUserActions) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore);
   const ParticipantCount = getParticipantCount(participantStore);
-  const MassEdit = getMassEdit(participantStore);
+  const MassEdit = getMassEdit(participantStore, registryUserStore, registryUserActions);
   const SelectAll = getSelectAll();
 
   class ParticipantListPage extends React.Component {

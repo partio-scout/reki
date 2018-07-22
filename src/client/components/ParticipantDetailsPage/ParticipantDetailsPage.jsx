@@ -21,8 +21,8 @@ export function getParticipantDetailsPage(participantStore, participantActions, 
       state.editableInfoSaving = false;
       state.presenceSaving = false;
       state.selectedPresence = null;
-      this.registryState = registryUserStore.getState();
       this.state = state;
+      this.state.registryState = registryUserStore.getState();
 
       this.onStoreChanged = this.onStoreChanged.bind(this);
       this.onRegistryStoreChanged = this.onRegistryStoreChanged.bind(this);
