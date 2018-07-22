@@ -227,12 +227,21 @@ const filterableByFields = [
 
 // Roles and their permissions
 const permissions = {
+  registryUserNoStateChange: [
+    'perform allowed test action',
+    'view searchfilters',
+    'view own user information',
+    'modify searchfilters',
+    'view participants',
+    'view app configuration',
+  ],
   registryUser: [
     'perform allowed test action',
     'view searchfilters',
     'view own user information',
     'modify searchfilters',
     'view participants',
+    'view participant financial info',
     'edit participants',
     'view app configuration',
   ],
