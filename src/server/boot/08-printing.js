@@ -93,7 +93,7 @@ export default function(app) {
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.charset = 'utf-8';
     let csvResult = '\uFEFF';
-    csvResult += 'Tila;Sukunimi;Etunimi;Syntymäpäivä;Jäsennumero;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
+    csvResult += 'Tila;Sukunimi;Etunimi;Syntymäpäivä;Jäsennumero;Ikäkausi;Leiritoimiston merkinnät;Lisätiedot;Partiolainen?;Puhelinnumero;Majoittuminen;Lippukunta;Kylä;Alaleiri;Leirilippukunta;Ilmoittautumispäivät\n';
     for (let i = 0; i < result.rows.length; i++) {
       const phoneNumber = result.rows[i].phoneNumber ? result.rows[i].phoneNumber : 'ei tietoa';
       const dates = result.rows[i].dates;
@@ -114,7 +114,7 @@ export default function(app) {
         }
       }
       dateDescription += '\t';
-      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName};${formatDate(result.rows[i].dateOfBirth)};${cleanNull(result.rows[i].memberNumber)};${cleanNull(result.rows[i].campOfficeNotes)};${cleanNull(result.rows[i].editableInfo)};${result.rows[i].nonScout ? 'ei' : 'partiolainen'};${phoneNumber}\t;${result.rows[i].accommodation};${result.rows[i].localGroup};${result.rows[i].village};${result.rows[i].subCamp};${result.rows[i].campGroup};${dateDescription}\n`;
+      csvResult += `${result.rows[i].presence ? result.rows[i].presence : ''};${result.rows[i].lastName};${result.rows[i].firstName};${formatDate(result.rows[i].dateOfBirth)};${cleanNull(result.rows[i].memberNumber)};${cleanNull(result.rows[i].ageGroup)};${cleanNull(result.rows[i].campOfficeNotes)};${cleanNull(result.rows[i].editableInfo)};${result.rows[i].nonScout ? 'ei' : 'partiolainen'};${phoneNumber}\t;${result.rows[i].accommodation};${result.rows[i].localGroup};${result.rows[i].village};${result.rows[i].subCamp};${result.rows[i].campGroup};${dateDescription}\n`;
     }
     res.write(csvResult);
     res.end();
