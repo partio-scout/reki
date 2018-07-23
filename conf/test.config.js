@@ -315,7 +315,7 @@ const participantBuilderFunction = participant => {
     subCamp: subCamp,
     village: p.get('kuksa_village.name') || 'Muu',
     country: p.get('kuksa_localgroup.country') || 'Suomi',
-    ageGroup: ageGroup,
+    ageGroup: p.get('ageGroup'),
     // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
     nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
     staffPosition: p.getExtraInfo('Pestini ja minut pestanneen henkilön nimi'),
