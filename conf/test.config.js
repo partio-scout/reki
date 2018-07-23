@@ -280,10 +280,10 @@ const participantBuilderFunction = participant => {
   const p = participant;
 
   // Shorten family camp age group a bit
-  let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
-  if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
-    ageGroup = 'perheleiri (0-11v.)';
-  }
+  //let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
+  //if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
+  //  ageGroup = 'perheleiri (0-11v.)';
+  //}
 
   // Family camp residence needs to be deduced differently
   let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
