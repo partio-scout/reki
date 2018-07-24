@@ -36,8 +36,10 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
         include: ['dates'],
       };
 
-      const printUrl = `/printing/?filter=${encodeURIComponent(JSON.stringify(filters))}&order=${this.props.location.query.order ? encodeURIComponent(this.props.location.query.order) : ''}`;
-
+      let printUrl = `/printing/?filter=${encodeURIComponent(JSON.stringify(filters))}&order=${this.props.location.query.order ? encodeURIComponent(this.props.location.query.order) : ''}`;
+      if (this.props.printFormat && this.props.printFormat === 'Excel') {
+        printUrl += '&printFormat=xlsx';
+      }
       const accessToken = Cookie.getJSON('accessToken');
 
       fetch(printUrl, {
@@ -69,7 +71,11 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
       const link = document.createElement('a');
       document.body.appendChild(link);
       link.href = data;
-      link.download = 'reki-print.csv';
+      if (this.props.printFormat && this.props.printFormat === 'Excel') {
+        link.download = 'reki-print.xlsx';
+      } else {
+        link.download = 'reki-print.csv';
+      }
       link.click();
       link.remove();
       setTimeout(() => {
@@ -79,10 +85,11 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
     }
 
     render() {
+      const buttonText = this.props.printFormat ? this.props.printFormat: 'CSV';
       return (
         <div>
           <Button className="pull-right" bsStyle="primary" onClick={ this.loadCSV }>
-            Lataa CSV
+            Lataa { buttonText }
           </Button>
         </div>
       );

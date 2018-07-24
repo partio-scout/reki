@@ -114,6 +114,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
           <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
           <SaveSearchButtonContainer location={ props.location } />
           <PrintButtonContainer location={ props.location } filter={ props.filter }/>
+          <PrintButtonContainer location={ props.location } filter={ props.filter } printFormat="Excel"/>
         </form>
       </div>
     );
