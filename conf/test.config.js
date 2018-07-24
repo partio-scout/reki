@@ -63,6 +63,7 @@ const participantCustomFields = [
     name: 'ageGroup',
     type: 'participant_field',
     dataType: 'string',
+    nullable: true,
   },
   {
     name: 'staffPosition',
