@@ -28,10 +28,8 @@ export default function(app) {
     const filter = JSON.parse(req.query.filter || '{}');
     const limit = +filter.limit || undefined;
     const offset = +filter.skip || undefined;
-    // TODO refactor so this comes in right format already
     const filterOrder = req.query.order ? JSON.parse(req.query.order) : null;
     const order = filterOrder ? Object.keys(filterOrder).map(key => [ key, filterOrder[key] ] ) : [['ageGroup', 'ASC' ], [ 'lastName', 'ASC' ], [ 'firstName', 'ASC' ]];
-console.dir(order)
     let where = filter.where || {};
 
     // TODO refactor this out: it's silly to have an and-array coming from frontend :)
