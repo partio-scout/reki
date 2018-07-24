@@ -28,7 +28,11 @@ if ( !app.get('isDev') ) {
   app.use(expressEnforcesSsl());
 }
 
-app.use(helmet());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.xssFilter());
 app.use(helmet.noCache()); // noCache disabled by default
 
 if (app.get('standalone')) {

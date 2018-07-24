@@ -1,5 +1,6 @@
 import loopback from 'loopback';
 import path from 'path';
+import helmet from 'helmet';
 
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -55,7 +56,7 @@ export default function(server) {
       redirectBuildPathToDevServer(server);
     }
 
-    server.use(loopback.static(publicPath));
-    server.get('*', (req, res) => res.sendFile(indexFilePath));
+    server.use(helmet.frameguard(), loopback.static(publicPath));
+    server.get('*', helmet.frameguard(), (req, res) => res.sendFile(indexFilePath));
   });
 }
