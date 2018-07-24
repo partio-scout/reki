@@ -36,7 +36,7 @@ export function getPrintButtonContainer(searchFilterStore, searchFilterActions) 
         include: ['dates'],
       };
 
-      const printUrl = `/printing/?filter=${encodeURIComponent(JSON.stringify(filters))}`;
+      const printUrl = `/printing/?filter=${encodeURIComponent(JSON.stringify(filters))}&order=${this.props.location.query.order ? encodeURIComponent(this.props.location.query.order) : ''}`;
 
       const accessToken = Cookie.getJSON('accessToken');
 
