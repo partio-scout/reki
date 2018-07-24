@@ -42,7 +42,7 @@ app.use(helmet.contentSecurityPolicy({
     defaultSrc: ["'self'"],
     scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
     connectSrc: validConnectSrc,
-    styleSrc: ["'self'", "'unsafe-inline'"],
+    styleSrc: ["'self'", "'unsafe-inline'", 'https://stackpath.bootstrapcdn.com'],
     imgSrc: ["'self'"],
   },
 }));
