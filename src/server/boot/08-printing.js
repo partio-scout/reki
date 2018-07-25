@@ -169,7 +169,7 @@ export default function(app) {
       ws.column(11).setWidth(20);
       ws.column(12).setWidth(8);
       ws.column(14).setWidth(20);
-      ws.column(15).setWidth(40);
+      ws.column(15).setWidth(42);
       wb.write('reki-print.xlsx', res);
     } else {
       // print CSV
