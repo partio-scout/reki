@@ -58,7 +58,18 @@ ES6 syntax is supported and should be used in all files, including the module sy
 
 ## Configuring your REKI installation
 
-See `conf/test.config.js` for an example configuration.
+### Kuksa import related configuration
+
+See `conf/test.config.js` for an example configuration. 
+The minimum requirement is to configure the `paymentToDatesMappings` variable, which maps payment information coming from Kuksa to participation dates.
+This setting is used when the `rebuild-tables` script is run. 
+If any keys are missing, the script gives a warning.
+
+Also the `fetchDateRanges` should be changed in order to avoid overloading Kuksa.
+
+### User interface configuration
+
+Changing elements in the "Kenttä" dropdown menu: `GenericPropertyFilterContainer.jsx` file's array named `properties`.
 
 ## Setting up a production environment in Heroku
 
@@ -151,7 +162,7 @@ Due to the IP whitelisting in Kuksa, the integration won't work on Heroku direct
 The IP addresses of Heroku dynos change often and Kuksa expects a certain IP every time. 
 For this reason you will need to use a proxy with a static IP. 
 There are several Heroku addons that provide this as a service. 
-Notice that most of these services expose the proxy url in their own environment variable such as `PROXIMO_URL` - you will need to copy this value to `KUKSA_API_PROXY_URL`. 
+Notice that most of these services expose the proxy url in their own environment variable such as `PROXIMO_URL` - you will need to copy this value also to the to `KUKSA_API_PROXY_URL` configuration variable. 
 It is recommended to use an HTTP proxy.
 
 You will need to set the following environment variables for the Kuksa integration to work:
@@ -160,4 +171,42 @@ You will need to set the following environment variables for the Kuksa integrati
 - `KUKSA_API_USERNAME`: The username for the Kuksa integration
 - `KUKSA_API_PASSWORD`: The password for the Kuksa integration
 - `KUKSA_API_EVENTID`: The id (a GUID) of the event
-- `KUKSA_API_PROXY_URL`: The URL of the proxy you use to access Kuksa (optional)
+- `KUKSA_API_PROXY_URL` and `PROXIMO_URL` (or similar): The URL of the proxy you use to access Kuksa (optional)
+
+### Example Heroku configuration
+
+Example configuration variables: 
+
+![Config vars](docs/images/Heroku_settings_1.png)
+
+## Development tips
+
+### Heroku connections
+
+New shell session (creates new dyno): `heroku run bash -a herokuApplicationName`, e.g. `heroku run bash -a reki-production`
+
+Contacting an existing dyno: `heroku ps:exec -a herokuApplicationName`
+
+Running PostgreSQL commands: `heroku pg:psql -a herokuApplicationName`
+
+### PostgreSQL commands
+
+Note that database column names need to be quoted in SQL commands. Example:
+
+```sql
+select * from participants WHERE "memberNumber" = 'nnnnnnn';
+```
+
+### Kuksa raw data
+
+To check the data returned from Kuksa API `wget` can be utilised.
+The IP address whitelisting requires the proxy to be used.
+
+Example command:
+
+```shell
+wget -e https_proxy=http://proxy:xxxxx@proxy-nn-nn-nn-nn.proximo.io --user username --password pwd https://kuksa.partio.fi/Leirirekisteri_Rajapinta/api/Osallistujat?Guid=eventId
+```
+
+The `http://proxy:xxxxx@`... part is the same as the `KUKSA_API_PROXY_URL` configuration variable.
+Similarly the `username` is the same as the `KUKSA_API_USERNAME`, `pwd` is the same as `KUKSA_API_PASSWORD`, and `eventId` is `KUKSA_API_EVENTID`.
