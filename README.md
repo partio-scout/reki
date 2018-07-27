@@ -179,6 +179,23 @@ Example configuration variables:
 
 ![Config vars](docs/images/Heroku_settings_1.png)
 
+## Import steps from Kuksa
+
+Script: `fetch-from-kuksa`, which is split to three different scripts:
+1. `clear-temporary-tables`
+2. `fetch-data`
+3. `rebuild-tables`
+
+The `fetch-data` script performs two steps:
+1. Runs the actual import using the Kuksa REST API. 
+This is performed in the "kuksa-event-api-client" project.
+2. The data is written to PostgreSQL tables starting with "kuksa_", e.g. `kuksa_participants`.
+
+The second step can be fine-tuned in configuration files, typically `conf/test.config.js`.
+Note that there are two Sequelize models in use:
+1. For the "kuksa_" tables `src/server/models/kuksa-integration-models.js`
+2. For the runtime environment tables `conf/test.config.js`
+
 ## Development tips
 
 ### Heroku connections
@@ -210,3 +227,10 @@ wget -e https_proxy=http://proxy:xxxxx@proxy-nn-nn-nn-nn.proximo.io --user usern
 
 The `http://proxy:xxxxx@`... part is the same as the `KUKSA_API_PROXY_URL` configuration variable.
 Similarly the `username` is the same as the `KUKSA_API_USERNAME`, `pwd` is the same as `KUKSA_API_PASSWORD`, and `eventId` is `KUKSA_API_EVENTID`.
+
+The field names (e.g. `Osallistujat` in the sample above) can be found in the "kuksa-event-api-client" project, in the getEventApi.ts file.
+An example where the `Osallistujat` can be found:
+
+```js
+getParticipants: createCollectionRequestFunc<EventApi.Participant>('Osallistujat', mapParticipant),
+```
