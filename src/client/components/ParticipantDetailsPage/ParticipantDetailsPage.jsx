@@ -83,6 +83,10 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       }
     }
 
+    clearPresence() {
+      participantActions.updateProperty(this.state.participantDetails.participantId, 'presence', null);
+    }
+
     save(property) {
       participantActions.updateProperty(
         this.state.participantDetails.participantId,
@@ -176,6 +180,9 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                  <form className="form-inline">
                    <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa" />
                    <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                 </form>
+                 <form className="form-inline">
+                   <LoadingButton loading={ this.state.presenceSaving } onClick={ () => this.clearPresence() } bsStyle="primary" label="Tyhjennä tila" labelWhileLoading="Tallennetaan…"/>
                  </form>
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>

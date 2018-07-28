@@ -133,13 +133,12 @@ export default function(db) {
   Participant.massAssignField = function(ids, fieldName, newValue, authorId) {
     // field name : validation function
     const allowedFields = {
-      presence: value => _.includes([ 1, 2, 3 ], +value),
+      presence: value => value === null || _.includes([ 1, 2, 3 ], +value),
       campOfficeNotes: value => _.isString(value),
       editableInfo: value => _.isString(value),
     };
 
     const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
-
     if (fieldIsValid(fieldName, newValue)) {
       return Participant.findAll({ where: { 'participantId': { [Op.in]: ids } } }).then(rows => {
         const updates = _.map(rows, async row => {
