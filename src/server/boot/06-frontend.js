@@ -1,4 +1,4 @@
-import loopback from 'loopback';
+import express from 'express';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -55,7 +55,7 @@ export default function(server) {
       redirectBuildPathToDevServer(server);
     }
 
-    server.use(loopback.static(publicPath));
+    server.use(express.static(publicPath));
     server.get('*', (req, res) => res.sendFile(indexFilePath));
   });
 }

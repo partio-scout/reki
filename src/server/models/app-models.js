@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
-import app from '../server';
 import conf from '../conf';
 
 const Op = Sequelize.Op;
@@ -29,7 +28,6 @@ export default function(db) {
     },
     presence: Sequelize.INTEGER,
     timestamp: Sequelize.DATE,
-    authorId: Sequelize.INTEGER,
   });
 
   const Allergy = db.define('allergy', {
@@ -130,7 +128,7 @@ export default function(db) {
 
   ParticipantDate.belongsTo(Participant);
 
-  Participant.massAssignField = function(ids, fieldName, newValue, authorId) {
+  Participant.massAssignField = function(ids, fieldName, newValue) {
     // field name : validation function
     const allowedFields = {
       presence: value => _.includes([ 1, 2, 3 ], +value),
@@ -148,13 +146,9 @@ export default function(db) {
               participantParticipantId: row.participantId,
               presence: newValue,
               timestamp: new Date(),
-              authorId: authorId,
             });
           }
           row[fieldName] = newValue;
-
-          // TODO Test this audit event
-          await app.models.AuditEvent.createEvent.Participant(authorId, row.participantId, 'update');
 
           return row.save();
         });

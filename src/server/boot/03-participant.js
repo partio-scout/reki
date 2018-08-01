@@ -5,21 +5,20 @@ import config from '../conf';
 
 export default function(app){
 
-  app.get('/api/participants/:id', app.requirePermission('view participants'), app.wrap(async (req, res) => {
+  app.get('/api/participants/:id', app.wrap(async (req, res) => {
     const id = +req.params.id || 0;
     const participant = await models.Participant.findById(id , {
       include: [{ all: true, nested: true }],
     });
 
     if (participant) {
-      await app.models.AuditEvent.createEvent.Participant(req.user.id, participant.participantId, 'find');
       res.json(participant);
     } else {
       res.status(404).send('Not found');
     }
   }));
 
-  app.get('/api/participants', app.requirePermission('view participants'), app.wrap(async (req, res) => {
+  app.get('/api/participants', app.wrap(async (req, res) => {
     const filter = JSON.parse(req.query.filter || '{}');
     const limit = +filter.limit || undefined;
     const offset = +filter.skip || undefined;
@@ -86,12 +85,11 @@ export default function(app){
     res.json( { result: result.rows, count: result.count });
   }));
 
-  app.post('/api/participants/massAssign', app.requirePermission('edit participants'), app.wrap(async (req, res) => {
+  app.post('/api/participants/massAssign', app.wrap(async (req, res) => {
     const updates = await models.Participant.massAssignField(
       req.body.ids,
       req.body.fieldName,
       req.body.newValue,
-      req.user.id
     );
     res.json(updates);
   }));

@@ -1,12 +1,12 @@
 import { models } from '../models';
 
 export default function(app){
-  app.get('/api/searchfilters', app.requirePermission('view searchfilters'), async (req, res) => {
+  app.get('/api/searchfilters', async (req, res) => {
     const filters = await models.SearchFilter.findAll();
     res.json(filters);
   });
 
-  app.delete('/api/searchfilters/:id', app.requirePermission('modify searchfilters'), app.wrap(async (req, res) => {
+  app.delete('/api/searchfilters/:id', app.wrap(async (req, res) => {
     const id = +req.params.id || 0;
     const filter = await models.SearchFilter.findById(id);
     if (filter === null) {
@@ -16,7 +16,7 @@ export default function(app){
     res.json({ count: 1 });
   }));
 
-  app.post('/api/searchfilters', app.requirePermission('modify searchfilters'), app.wrap(async (req, res) => {
+  app.post('/api/searchfilters', app.wrap(async (req, res) => {
     const filter = await models.SearchFilter.create({
       filter: req.body.filter,
       name: req.body.name,
