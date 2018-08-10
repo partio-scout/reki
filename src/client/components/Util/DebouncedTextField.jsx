@@ -21,7 +21,7 @@ export function getDebouncedTextField() {
       this.delayedOnChange(value);
     }
 
-    disableEnter(event) {
+    handleEnter(event) {
       if (event.key === 'Enter') {
         event.preventDefault();
         this.delayedOnChange.flush();

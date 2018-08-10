@@ -1,13 +1,13 @@
 import React from 'react';
 import { Navbar, Grid, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router';
-import { getMainNavigationContainer } from './containers/MainNavigationContainer';
+import { getMainNavigation } from './MainNavigation';
 import { getErrorNotification } from './ErrorNotification';
 
-export function getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification) {
+export function getApp(errorStore, errorActions) {
   class App extends React.Component {
     render() {
-      const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
+      const MainNavigation = getMainNavigation();
       const ErrorNotification = getErrorNotification(errorStore, errorActions);
 
       return (
@@ -18,7 +18,7 @@ export function getApp(registryUserStore, registryUserActions, errorStore, error
                 <Link to="/">REKI</Link>
               </Navbar.Brand>
             </Navbar.Header>
-            <MainNavigationContainer />
+            <MainNavigation />
           </Navbar>
           <Grid fluid className="page-content">
             <Row>
@@ -31,7 +31,6 @@ export function getApp(registryUserStore, registryUserActions, errorStore, error
             </Row>
           </Grid>
           <ErrorNotification />
-          <SessionTimeoutNotification />
         </div>
       );
     }

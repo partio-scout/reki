@@ -3,4 +3,3 @@
 export { getRestfulResource } from './RestfulResource';
 export { pureShouldComponentUpdate } from './pureShouldComponentUpdate';
 export { changeQueryParameter, changeQueryParameters } from './changeQueryParameters';
-export { restrictComponent } from './restrictComponent';

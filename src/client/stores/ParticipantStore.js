@@ -1,4 +1,4 @@
-export function getParticipantStore(alt, ParticipantActions, RegistryUserActions) {
+export function getParticipantStore(alt, ParticipantActions) {
   class ParticipantStore  {
     constructor() {
       this.resetAllData();
@@ -10,7 +10,6 @@ export function getParticipantStore(alt, ParticipantActions, RegistryUserActions
         handleParticipantListUpdated: ParticipantActions.PARTICIPANT_LIST_UPDATED,
         handleParticipantPropertyUpdated: ParticipantActions.PARTICIPANT_PROPERTY_UPDATED,
         handleParticipantPresenceHistoryUpdated: ParticipantActions.PARTICIPANT_PRESENCE_HISTORY_UPDATED,
-        resetAllData: RegistryUserActions.RESET_ALL_DATA,
       });
     }
 
