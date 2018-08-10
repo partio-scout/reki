@@ -8,17 +8,6 @@ import { resetDatabase } from '../../scripts/seed-database';
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const testUser = {
-  'id': 1,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
 const testOptions = [
   {
     'property': 'village',
@@ -36,23 +25,18 @@ const testOptions = [
 
 describe('Options', () => {
 
-  let accessToken = null;
-
   beforeEach( async () => {
     await resetDatabase();
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
     await testUtils.createFixtureSequelize('Option', testOptions);
-    accessToken = accessToken.id;
   });
 
   afterEach( async () => {
     await testUtils.deleteFixturesIfExistSequelize('Option');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   it('GET request to options', async () =>
     await request(app)
-    .get(`/api/options/?access_token=${accessToken}`)
+    .get('/api/options/')
     .expect(200)
     .expect(res => {
       expect(res.body).to.be.an('array').with.length(3);

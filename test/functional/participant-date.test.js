@@ -48,38 +48,22 @@ const testParticipantDates = [
   { participantId: 2, date: new Date(2016,6,27) },
 ];
 
-const testUser = {
-  'id': 3,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
 describe('particpantDates', () => {
-
-  let accessToken = null;
 
   beforeEach(async () => {
     await resetDatabase();
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
     await testUtils.createFixtureSequelize('Participant', testParticipants);
     await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    accessToken = accessToken.id;
   });
 
   afterEach(async () => {
     await testUtils.deleteFixturesIfExistSequelize('Participant');
     await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   it('GET request to participantdates', async () =>
     await request(app)
-    .get(`/api/participantdates/?access_token=${accessToken}&filter=[fields][date]=true`)
+    .get('/api/participantdates/?filter=[fields][date]=true')
     .expect(200)
     .expect(res => {
       expect(res.body).to.be.an('array').with.length(5);

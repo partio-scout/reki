@@ -1,10 +1,10 @@
 /*global browser*/
 
 describe('REKI', () =>
-  it('should show a login button', () =>
+  it('should show a the homepage link', () =>
     browser
       .url('/')
-      .getText('a=Kirjaudu sisään')
+      .getText('a=REKI')
       .should.eventually.be.ok
   )
 );

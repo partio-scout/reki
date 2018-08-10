@@ -23,17 +23,6 @@ const testParticipants = [{
   'dateOfBirth': new Date(2018,5,10),
 }];
 
-const testUser = {
-  'id': 3,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
 const testParticipantDates = [
   { id: 1, participantId: 1, date: new Date(2016,6,20) },
   { id: 2, participantId: 1, date: new Date(2016,6,21) },
@@ -68,8 +57,6 @@ const testParticipantAllergies = [{
 
 describe('particpant', () => {
 
-  let accessToken = null;
-
   beforeEach(async () => {
     await resetDatabase();
     await testUtils.createFixtureSequelize('Participant', testParticipants);
@@ -77,15 +64,12 @@ describe('particpant', () => {
     await testUtils.createFixtureSequelize('PresenceHistory', testParticipantPrecenceHistory);
     await testUtils.createFixtureSequelize('Allergy', testAllergies);
     await testUtils.createFixtureSequelize('Selection', testParticipantsSelections);
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    accessToken = accessToken.id;
     await testUtils.createFixtureSequelize('ParticipantAllergy', testParticipantAllergies);
   });
 
   afterEach(async () => {
     await testUtils.deleteFixturesIfExistSequelize('Participant');
     await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
     await testUtils.deleteFixturesIfExistSequelize('PresenceHistory');
     await testUtils.deleteFixturesIfExistSequelize('Allergy');
     await testUtils.deleteFixturesIfExistSequelize('Selection');
@@ -93,7 +77,7 @@ describe('particpant', () => {
 
   it('request for single participant returns correct info', async () =>
     request(app)
-      .get(`/api/participants/1?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get('/api/participants/1?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}')
       .expect(200)
       .expect(res => {
         expect(res.body).to.have.property('firstName','Teemu');
@@ -113,13 +97,13 @@ describe('particpant', () => {
 
   it('request for unknown participant id returns 404', async () =>
     request(app)
-      .get(`/api/participants/404?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get('/api/participants/404?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}')
       .expect(404)
   );
 
   it('request for participant with string id returns 404', async () =>
     request(app)
-      .get(`/api/participants/hello?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get('/api/participants/hello?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}')
       .expect(404)
   );
 

@@ -65,25 +65,10 @@ describe('Date search', () => {
     { participantId: 2, date: new Date(2016,6,27) },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
-
-  let accessToken = null;
-
   beforeEach(() =>
     resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
       .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
       .then(() => testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
   );
 
   function expectParticipants(expectedResult, response) {
@@ -93,61 +78,61 @@ describe('Date search', () => {
 
   function queryParticipants(filter, accessToken) {
     return request(app)
-      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
+      .get(`/api/participants/?filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
       .expect(200);
   }
 
   it('Query without filters', () =>
-    queryParticipants({}, accessToken)
+    queryParticipants({})
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with other filter', () =>
-    queryParticipants({ 'ageGroup':'sudenpentu' }, accessToken)
+    queryParticipants({ 'ageGroup':'sudenpentu' })
     .then(res => {
       expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
   it('Query with empty date filter', () =>
-    queryParticipants({ 'dates': [] }, accessToken)
+    queryParticipants({ 'dates': [] })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with one date', () =>
-    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
+    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
 
   it('Query with one date and other filter', () =>
-    queryParticipants({ 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] }, accessToken)
+    queryParticipants({ 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] })
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with two dates', () =>
-    queryParticipants({ 'dates': ['2016-07-23T00:00:00.000Z','2016-07-21T00:00:00.000Z'] }, accessToken)
+    queryParticipants({ 'dates': ['2016-07-23T00:00:00.000Z','2016-07-21T00:00:00.000Z'] })
     .then(res => {
       expectParticipants([ 'Teemu', 'Tero' ], res.body);
     })
   );
 
   it('Query with empty date filter and other filter', () =>
-    queryParticipants({ 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] }, accessToken)
+    queryParticipants({ 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] })
     .then(res => {
       expectParticipants([ 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query returns all dates of participant, not just matching ones', () =>
-    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
+    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] })
     .then(res => {
       expect(res.body.result[0].firstName).to.equal('Teemu');
       expect(res.body.result[0].dates).to.have.length(4);

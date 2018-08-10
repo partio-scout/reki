@@ -1,29 +1,17 @@
 import app from '../../src/server/server';
 import request from 'supertest';
 import chai from 'chai';
-import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 
 describe('Config api endpoint', () => {
 
-  let accessToken = null;
-
   before(resetDatabase);
-
-  beforeEach(async () => {
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser']);
-    accessToken = accessToken.id;
-  });
-
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExist('RegistryUser');
-  });
 
   it('has participant fields', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(200)
     .expect(res => {
       expect(res.body).to.have.property('fields');
@@ -33,7 +21,7 @@ describe('Config api endpoint', () => {
 
   it('has participants allwaysIncudedFields', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(res => {
       expect(res.body.fields).to.deep.include({
         name: 'presence',
@@ -46,7 +34,7 @@ describe('Config api endpoint', () => {
 
   it('participant has custom fields from config', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(res => {
       expect(res.body.fields).to.deep.include({
         name: 'nickname',
@@ -59,7 +47,7 @@ describe('Config api endpoint', () => {
 
   it('returns fields to show in participant table', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(res => {
       expect(res.body.tableFields).to.be.an('array');
       expect(res.body.tableFields).to.include('firstName');
@@ -68,7 +56,7 @@ describe('Config api endpoint', () => {
 
   it('returns detail page fields', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(res => {
       expect(res.body.detailsPageFields).to.be.an('array');
       expect(res.body.detailsPageFields[0]).to.have.property('groupTitle', 'Yhteystiedot');
@@ -78,7 +66,7 @@ describe('Config api endpoint', () => {
 
   it('returns filters', async () =>
     await request(app)
-    .get(`/api/config?access_token=${accessToken}`)
+    .get('/api/config')
     .expect(res => {
       expect(res.body.filters).to.be.an('array');
       expect(res.body.filters).to.deep.include({

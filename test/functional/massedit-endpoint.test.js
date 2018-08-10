@@ -10,8 +10,6 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Participant mass edit endpoint test', () => {
-  let accessToken;
-
   const inCamp = 3;
   const tmpLeftCamp = 2;
   const leftCamp = 1;
@@ -64,21 +62,8 @@ describe('Participant mass edit endpoint test', () => {
     },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
-
   beforeEach(() =>
     resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
       .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
   );
 
@@ -93,34 +78,34 @@ describe('Participant mass edit endpoint test', () => {
   }
 
   //TODO: refactor this to query DB directly
-  function queryParticipants(accessToken) {
+  function queryParticipants() {
     return request(app)
-    .get(`/api/participants?access_token=${accessToken}`)
+    .get('/api/participants')
     .expect(200);
   }
 
-  function postInstanceToDb(modelInPlural, changes, accessToken, expectStatus) {
+  function postInstanceToDb(modelInPlural, changes) {
     return request(app)
-      .post(`/api/${modelInPlural}?access_token=${accessToken}`)
+      .post(`/api/${modelInPlural}`)
       .send(changes);
   }
 
   it('Should update whitelisted fields', () =>
-    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
+    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' })
       .expect(200)
       .expect(result => {
         expect(result.body).to.be.an('array').with.length(2);
         expect(result.body[0]).to.have.property('firstName', 'Teemu');
       })
-      .then( () => queryParticipants(accessToken)
+      .then( () => queryParticipants()
       .then( res => expectParticipantInCampValues([ inCamp, inCamp, tmpLeftCamp ], res.body) )
    )
   );
 
   it('Should not update fields that are not whitelisted', () =>
-    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken)
+    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: 'alaleiri2', fieldName: 'subCamp' })
       .expect(400)
-      .then( () => queryParticipants(accessToken)
+      .then( () => queryParticipants()
       .then( res => expectParticipantSubCampValues([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ], res.body) )
     )
   );

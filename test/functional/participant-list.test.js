@@ -56,17 +56,6 @@ const testParticipants = [
   },
 ];
 
-const testUser = {
-  'id': 3,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
 const testParticipantDates = [
   { participantId: 1, date: new Date(2016,6,20) },
   { participantId: 1, date: new Date(2016,6,21) },
@@ -75,25 +64,20 @@ const testParticipantDates = [
 
 describe('particpant list', () => {
 
-  let accessToken = null;
-
   beforeEach(async () => {
     await resetDatabase();
     await testUtils.createFixtureSequelize('Participant', testParticipants);
     await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    accessToken = accessToken.id;
   });
 
   afterEach(async () => {
     await testUtils.deleteFixturesIfExistSequelize('Participant');
     await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   it('GET request to participants returs all participants', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(3);
@@ -103,7 +87,7 @@ describe('particpant list', () => {
 
   it('GET request to participants with one where filter', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(1);
@@ -113,7 +97,7 @@ describe('particpant list', () => {
 
   it('GET request to participants with several where filters', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(1);
@@ -123,7 +107,7 @@ describe('particpant list', () => {
 
   it('GET request to participants returns dates', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result[0]).to.have.property('dates');
@@ -133,7 +117,7 @@ describe('particpant list', () => {
 
   it('GET request to participants skips correct amount of participants', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":2,"limit":1,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":2,"limit":1,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(1);
@@ -144,7 +128,7 @@ describe('particpant list', () => {
 
   it('GET request to participants limits correct amount participants', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":0,"limit":2,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(2);
@@ -155,7 +139,7 @@ describe('particpant list', () => {
 
   it('GET request to participants sorts participants correctly', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}')
       .expect(200)
       .expect(res => {
         expect(res.body.result).to.be.an('array').with.length(3);
@@ -167,7 +151,7 @@ describe('particpant list', () => {
 
   it('GET request to participants returns count', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.count).to.equal(3);
@@ -177,7 +161,7 @@ describe('particpant list', () => {
   //count should retrun the number of all maches regardless of the paging
   it('count is calculated correctly when skip and limit are present', async () =>
     request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":1,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)
+      .get('/api/participants/?filter={"where":{},"skip":1,"limit":2,"include":["dates"],"count":true}')
       .expect(200)
       .expect(res => {
         expect(res.body.count).to.equal(3);
