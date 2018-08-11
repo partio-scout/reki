@@ -9,4 +9,4 @@ const db = new Sequelize(dbUrl, {
 });
 
 export const sequelize = db;
-export const models = Object.assign(integrationModels(db), appModels(db));
+export const models = Object.assign({}, integrationModels(db), appModels(db));
