@@ -5,7 +5,10 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
     saveSearchFilter(name, filter) {
       return dispatch => {
         dispatch();
-        searchFilterResource.create({ name: name, filter: filter })
+        const freeText = filter.textSearch || '';
+        const dates = filter.dates || [];
+        const fields = _.omit(filter, ['textSearch', 'dates']);
+        searchFilterResource.create({ name, freeText, dates, fields })
           .then(response => this.searchFilterSaved(response),
                 err => errorActions.error(err, 'Haun tallennus epäonnistui'));
       };
@@ -72,7 +75,7 @@ export function getSearchFilterActions(alt, searchFilterResource, participantRes
 
       return dispatch => {
         dispatch();
-        participantDateResource.findAll('filter[fields][date]=true')
+        participantDateResource.findAll()
           .then(response => this.dateOptionsLoaded(processResults(response)),
                 err => this.optionsLoadingFailed(err));
       };

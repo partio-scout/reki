@@ -1,13 +1,6 @@
-import _ from 'lodash';
-import { models } from '../models';
-
 export default function(app) {
   app.get('/api/participantdates', app.wrap(async (req, res) => {
-    const participantDates = await models.ParticipantDate.findAll({
-      fields: { date : true, participantId : false },
-      order: [['date', 'ASC']],
-    });
-    const uniqueDates = _.uniqBy(participantDates, val => val.date.getTime());
-    res.json(uniqueDates);
+    const { rows } = await app.locals.pool.query('SELECT DISTINCT date FROM participant_date ORDER BY date ASC');
+    res.json(rows);
   }));
 }

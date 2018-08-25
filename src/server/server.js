@@ -22,7 +22,7 @@ export default app;
 
 const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
 app.set('standalone', require.main.filename === bootstrapFileName);
-app.set('isDev', process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' );
+app.set('isDev', [undefined, null, 'dev', 'development', 'test'].includes(process.env.NODE_ENV));
 app.set('useDevServer', process.env.NODE_ENV === 'dev' && app.get('standalone'));
 
 if ( !app.get('isDev') ) {

@@ -25,7 +25,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
 
     saveAndClose() {
-      searchFilterActions.saveSearchFilter(this.state.searchFilterName, this.props.location.search);
+      searchFilterActions.saveSearchFilter(this.state.searchFilterName, this.props.filter);
       this.close();
     }
 
@@ -69,7 +69,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
   }
 
   SaveSearchButtonContainer.propTypes = {
-    location: React.PropTypes.object.isRequired,
+    filter: React.PropTypes.object.isRequired,
   };
 
   return SaveSearchButtonContainer;

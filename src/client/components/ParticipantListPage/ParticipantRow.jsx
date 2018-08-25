@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash';
 import { Link } from 'react-router';
 import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Presence } from '../index';
@@ -125,7 +124,7 @@ export class ParticipantRow extends React.Component {
         <TdWithTitle value={ subCamp } />
         <TdWithTitle value={ campGroup } />
         {
-          this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
+          this.props.availableDates.map(row => row.date).map(date => dateCell(date, dates.indexOf(date) !== -1))
         }
       </tr>
     );

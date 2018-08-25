@@ -49,7 +49,7 @@ export function getMassEdit(participantStore) {
     onSubmit(event) {
       event.preventDefault();
       if (this.state.value !== null && this.state.value !== 'null') {
-        this.setState({ value: this.state.value, loading: true });
+        this.setState({ loading: true });
         this.props.onSubmit(this.state.value);
       }
     }
@@ -68,7 +68,7 @@ export function getMassEdit(participantStore) {
 
     onChange(event){
       event.persist();
-      this.setState({ value: event.target.value });
+      this.setState({ value: event.targetValue === null ? null : Number(event.target.value) });
     }
 
     render() {

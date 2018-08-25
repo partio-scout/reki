@@ -8,3 +8,12 @@ export const startSpinner = () => {
 
   return () => { clearInterval(intervalId); };
 };
+
+export const usingSpinner = handler => {
+  const stopSpinner = startSpinner();
+  try {
+    return handler();
+  } finally {
+    stopSpinner();
+  }
+};

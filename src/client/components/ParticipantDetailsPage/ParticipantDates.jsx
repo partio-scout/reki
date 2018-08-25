@@ -5,13 +5,13 @@ import { Table, Glyphicon } from 'react-bootstrap';
 
 export class ParticipantDates extends React.Component {
   render() {
-    const participantDays = _.sortBy(this.props.dates, 'date');
+    const participantDays = _.sortBy(this.props.dates);
 
     if (!_.isEmpty(participantDays)) {
-      const firstDay = _.head(participantDays).date;
-      const lastDay = _.last(participantDays).date;
+      const firstDay = _.head(participantDays);
+      const lastDay = _.last(participantDays);
 
-      const startOfFirstWeek = moment(firstDay).utc().startOf('week');
+      const startOfFirstWeek = moment(firstDay).startOf('week');
       const endOfLastWeek = moment(lastDay).endOf('week');
 
       const weeks = {};
@@ -23,7 +23,7 @@ export class ParticipantDates extends React.Component {
           weeks[currentWeekNum] = [];
         }
 
-        weeks[currentWeekNum].push({ date: moment(d), isParticipating: _.find(participantDays, { date: d.startOf('day').toISOString() }) });
+        weeks[currentWeekNum].push({ date: moment(d), isParticipating: participantDays.indexOf(d.format('YYYY-MM-DD')) !== -1 });
       }
 
       const showDay = day => <td className={ day.isParticipating ? 'active' : 'inactive' }>{ day.date.format('D.M.') }{ day.isParticipating ? <Glyphicon glyph="ok" /> : '' }</td>;

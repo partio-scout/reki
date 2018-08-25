@@ -18,10 +18,8 @@ export function getQuickFilterContainer(participantStore, participantActions, se
   const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
 
   function getCurrentSelection(properties, currentFilter) {
-    const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
-
     const selectionValues = properties.map(propertyName => ({
-      [propertyName]: currentFilter[propertyName] || andSelection[propertyName] || '',
+      [propertyName]: currentFilter[propertyName] || '',
     }));
     const currentSelection = _.reduce(selectionValues, _.merge, {});
 
@@ -47,8 +45,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
 
       const newSelection = _.pickBy(_.merge(currentSelection, changedSelection), (value, key) => value);
       const numberOfFilters = Object.keys(newSelection).length;
-      const loopbackFilter = numberOfFilters > 1 ? { and: _.transform(newSelection, (result, value, key) => result.push({ [key]: value }), []) } : newSelection;
-      const stringified = numberOfFilters > 0 && JSON.stringify(loopbackFilter);
+      const stringified = numberOfFilters > 0 && JSON.stringify(newSelection);
 
       context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
     }
@@ -110,7 +107,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             currentSelection={ currentSelection }
           />
           <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
-          <SaveSearchButtonContainer location={ props.location } />
+          <SaveSearchButtonContainer filter={ props.filter } />
         </form>
       </div>
     );

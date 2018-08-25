@@ -1,40 +1,43 @@
-import { models } from '../server/models';
-import Promise from 'bluebird';
-import EventEmitter from 'events';
-import { startSpinner } from './util';
+import { createConnection } from '../server/database';
+import { usingSpinner } from './util';
 
-EventEmitter.prototype._maxListeners = 20;
-
-const modelsToClear = [
-  'KuksaSubCamp',
-  'KuksaVillage',
-  'KuksaCampGroup',
-  'KuksaLocalGroup',
-  'KuksaParticipant',
-  'KuksaExtraInfoField',
-  'KuksaParticipantExtraInfo',
-  'KuksaParticipantPaymentStatus',
-  'KuksaExtraSelectionGroup',
-  'KuksaExtraSelection',
-  'KuksaParticipantExtraSelection',
-  'KuksaPayment',
-  'KuksaParticipantPayment',
+const temporaryTables = [
+  'kuksa_campgroup',
+  'kuksa_extrainfofield',
+  'kuksa_extraselection',
+  'kuksa_extraselectiongroup',
+  'kuksa_localgroup',
+  'kuksa_participant',
+  'kuksa_participantextrainfo',
+  'kuksa_participantextraselection',
+  'kuksa_participantpayment',
+  'kuksa_participantpaymentstatus',
+  'kuksa_payment',
+  'kuksa_subcamp',
+  'kuksa_subcamp',
+  'kuksa_village',
 ];
 
-function clearTemporaryTables() {
-  return Promise.each(modelsToClear, model => models[model].destroy({ where: {} }));
+const clearTemporaryTables = pool => usingSpinner(() =>
+  pool.query(`TRUNCATE TABLE ${temporaryTables.join(',')}`)
+);
+
+async function main() {
+  const pool = await createConnection();
+  try {
+    await clearTemporaryTables(pool);
+  } finally {
+    pool.end();
+  }
 }
 
 if (require.main === module) {
-  const stopSpinner = startSpinner();
-  clearTemporaryTables()
-    .then(() => console.log(`Tables ${modelsToClear} cleared.`))
-    .then(() => {
-      stopSpinner();
-      process.exit(0);
-    })
-    .catch(err => {
-      console.error('Temporary model creation failed: ', err);
-      process.exit(1);
-    });
+  main().then(() => {
+    console.log('Kuksa integration temporary tables cleared.');
+    process.exit(0);
+  })
+  .catch(err => {
+    console.error('Temporary model creation failed: ', err);
+    process.exit(1);
+  });
 }

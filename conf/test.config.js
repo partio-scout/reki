@@ -30,108 +30,23 @@ import { _ } from 'lodash';
     depend on the event.
 */
 const participantCustomFields = [
-  {
-    name: 'nickname',
-    type: 'participant_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'dateOfBirth',
-    type: 'participant_field',
-    dataType: 'date',
-  },
-  {
-    name: 'phoneNumber',
-    type: 'participant_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'email',
-    type: 'participant_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'diet',
-    type: 'participant_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'ageGroup',
-    type: 'participant_field',
-    dataType: 'string',
-  },
-  {
-    name: 'staffPosition',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-    searchable: true,
-  },
-  {
-    name: 'staffPositionInGenerator',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-    searchable: true,
-  },
-  {
-    name: 'willOfTheWisp',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'willOfTheWispWave',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'guardianOne',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'guardianTwo',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'familyCampProgramInfo',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'childNaps',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'homeCity',
-    type: 'extra_info_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'swimmingSkill',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
-  {
-    name: 'gender',
-    type: 'single_select_field',
-    dataType: 'string',
-    nullable: true,
-  },
+  'nickname',
+  'dateOfBirth',
+  'phoneNumber',
+  'email',
+  'diet',
+  'ageGroup',
+  'staffPosition',
+  'staffPositionInGenerator',
+  'willOfTheWisp',
+  'willOfTheWispWave',
+  'guardianOne',
+  'guardianTwo',
+  'familyCampProgramInfo',
+  'childNaps',
+  'homeCity',
+  'swimmingSkill',
+  'gender',
 ];
 
 const participantTableFields = [
@@ -171,7 +86,7 @@ const customMultipleSelectionFields = [
   '\tLapsi tarvitsee päiväunien aikaan vaippaa',
 ];
 
-const participantDatesMapper = wrappedParticipant => {
+const participantDatesMapper = async wrappedParticipant => {
   // Map payment names to arrays of dates when the participant is present
   const paymentToDatesMappings = {
     'pe 15.7.': ['2016-07-15'],
@@ -222,7 +137,7 @@ const participantDatesMapper = wrappedParticipant => {
     'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
   };
 
-  return _(wrappedParticipant.getPayments())
+  return _(await wrappedParticipant.getPayments())
     .flatMap(payment => {
       const dateMappings = paymentToDatesMappings[payment];
 
@@ -279,69 +194,53 @@ const permissions = {
 const fetchDateRanges = [
   {
     'startDate': '2015-01-01T00:00:00',
-    'endDate': '2016-01-22T06:00:00',
-  },
-  {
-    'startDate': '2016-01-22T00:00:00',
-    'endDate': '2016-02-25T06:00:00',
-  },
-  {
-    'startDate': '2016-02-25T00:00:00',
-    'endDate': '2016-07-15T05:00:00',
-  },
-  {
-    'startDate': '2016-07-15T05:00:00',
     'endDate': '', // Defaults to right now
   },
 ];
 
 // Takes the participant as fetched from Kuksa and maps it to the participant to
 // save in the database
-const participantBuilderFunction = participant => {
+const participantBuilderFunction = async participant => {
   const p = participant;
 
   // Shorten family camp age group a bit
-  let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
+  let ageGroup = await p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
   if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
     ageGroup = 'perheleiri (0-11v.)';
   }
 
   // Family camp residence needs to be deduced differently
-  let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
-  if (p.get('accommodation') === 'Perheleirissä') {
+  let subCamp = p.subCamp ? p.subCamp.name : 'Muu';
+  if (p.accommodation === 'Perheleirissä') {
     subCamp = 'Riehu';
   }
 
   return {
-    participantId: p.get('id'),
-    firstName: p.get('firstName'),
-    lastName: p.get('lastName'),
-    nickname: p.get('nickname'),
-    memberNumber: p.get('memberNumber'),
-    dateOfBirth: p.get('dateOfBirth'),
-    billedDate: p.getPaymentStatus('billed'),
-    paidDate: p.getPaymentStatus('paid'),
-    phoneNumber: p.get('phoneNumber'),
-    email: p.get('email'),
-    internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
-    diet: p.get('diet'),
-    accommodation: p.get('accommodation') || 'Muu',
-    localGroup: p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
-    campGroup: p.get('kuksa_campgroup.name') || 'Muu',
-    subCamp: subCamp,
-    village: p.get('kuksa_village.name') || 'Muu',
-    country: p.get('kuksa_localgroup.country') || 'Suomi',
+    subCamp,
+    village: p.village ? p.village.name : 'Muu',
+    campGroup: p.campGroup ? p.campGroup.name : 'Muu',
+    localGroup: p.representedParty || (p.localGroup ? p.localGroup.name : 'Muu'),
+
+    dateOfBirth: p.dateOfBirth,
+    billedDate: await p.getPaymentStatus('billed'),
+    paidDate: await p.getPaymentStatus('paid'),
+    phoneNumber: p.phoneNumber,
+    email: p.email,
+    internationalGuest: !!p.localGroup, // has local group == is international guest
+    diet: p.diet,
+    accommodation: p.accommodation || 'Muu',
+    country: p.localGroup ? p.localGroup.country : 'Suomi',
     ageGroup: ageGroup,
     // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
-    nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
-    staffPosition: p.getExtraInfo('Pesti'),
-    staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    willOfTheWisp: p.getExtraSelection('Virvatuli'),
-    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
-    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
-    guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
-    familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
-    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
+    nonScout: !(p.memberNumber) && !(p.localGroup),
+    staffPosition: await p.getExtraInfo('Pesti'),
+    staffPositionInGenerator: await p.getExtraInfo('Pesti kehittimessä'),
+    willOfTheWisp: await p.getExtraSelection('Virvatuli'),
+    willOfTheWispWave: await p.getExtraSelection('Virvatulen aalto'),
+    guardianOne: await p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
+    guardianTwo: await p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
+    familyCampProgramInfo: await p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
+    childNaps: await p.getExtraSelection('Lapsi nukkuu päiväunet'),
   };
 };
 
