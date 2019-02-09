@@ -1,5 +1,3 @@
-import app from '../../src/server/server';
-import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
@@ -9,17 +7,6 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Audit Event', () => {
-  let accessToken;
-
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  };
   const testUser = {
     'username': 'testUser',
     'memberNumber': '1234567',
@@ -43,45 +30,36 @@ describe('Audit Event', () => {
     'dateOfBirth': new Date(),
   }];
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-  );
+  beforeEach(async () => {
+    await resetDatabase();
+    await testUtils.createFixture('RegistryUser', testUser);
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+  });
 
-  function expectAuditEventToEventuallyExist(expectedEvent) {
-    return testUtils.find('AuditEvent', expectedEvent)
-      .then(res => {
-        expect(res).to.have.length(1);
-        expect(res[0]).to.have.property('timestamp').that.is.not.null;
-      });
-  }
-
-  function queryInstanceFromDb(modelInPlural, instanceId, accessToken) {
-    return request(app)
-      .get(`/api/${modelInPlural}/${instanceId}?access_token=${accessToken}`)
-      .expect(200);
+  async function expectAuditEventToEventuallyExist(expectedEvent) {
+    const res = await testUtils.find('AuditEvent', expectedEvent);
+    expect(res).to.have.length(1);
+    expect(res[0]).to.have.property('timestamp').that.is.not.null;
   }
 
   it('should create audit event when finding registryusers', async () => {
-    await testUtils.createFixture('RegistryUser', testUser);
-    await request(app).get(`/api/registryusers/?access_token=${accessToken}`)
-      .expect(200);
+    const response = await testUtils.getWithRoles('/api/registryusers', [ 'registryAdmin' ]);
+    testUtils.expectStatus(response.status, 200);
     await expectAuditEventToEventuallyExist({
       'eventType': 'find',
       'model': 'RegistryUser',
     });
   });
 
-  it('should create audit event when finding participant', () =>
-    testUtils.createFixtureSequelize('Participant', testParticipants)
-      .then(participant => queryInstanceFromDb('participants', participant[0].participantId, accessToken)
-        .then(() => expectAuditEventToEventuallyExist({
-          'eventType': 'find',
-          'model': 'Participant',
-          'modelId': participant.participantId,
-        }))
-      )
-  );
+  it('should create audit event when finding participant', async () => {
+    const response = await testUtils.getWithRoles('/api/participants/42', [ 'registryUser' ]);
+    testUtils.expectStatus(response.status, 200);
+    await expectAuditEventToEventuallyExist({
+      'eventType': 'find',
+      'model': 'Participant',
+      'modelId': 42,
+    });
+  });
+
+  after(resetDatabase);
 });

@@ -3,6 +3,7 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import { expect } from 'chai';
 import { models } from '../../src/server/models';
+import request from 'supertest';
 
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
@@ -86,4 +87,13 @@ export function find(modelName, whereClause, includeClause) {
   const what = { where: whereClause, include: includeClause };
   const find = Promise.promisify(app.models[modelName].find, { context: app.models[modelName] });
   return find(what);
+}
+
+export function getWithRoles(path, roleNames) {
+  return createUserAndGetAccessToken(roleNames)
+    .then(token => request(app).get(path).set('Authorization', token.id));
+}
+
+export function expectStatus(status, expectedStatus) {
+  expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }
