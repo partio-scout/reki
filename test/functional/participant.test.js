@@ -93,7 +93,7 @@ describe('particpant', () => {
 
   it('request for single participant returns correct info', async () =>
     request(app)
-      .get(`/api/participants/1?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get(`/api/participants/1?access_token=${accessToken}`)
       .expect(200)
       .expect(res => {
         expect(res.body).to.have.property('firstName','Teemu');
@@ -113,13 +113,13 @@ describe('particpant', () => {
 
   it('request for unknown participant id returns 404', async () =>
     request(app)
-      .get(`/api/participants/404?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get(`/api/participants/404?access_token=${accessToken}`)
       .expect(404)
   );
 
   it('request for participant with string id returns 404', async () =>
     request(app)
-      .get(`/api/participants/hello?filter={"include":[{"presenceHistory":"author"},"allergies","dates","selections"]}&access_token=${accessToken}`)
+      .get(`/api/participants/hello?access_token=${accessToken}`)
       .expect(404)
   );
 
