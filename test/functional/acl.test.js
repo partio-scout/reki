@@ -211,7 +211,6 @@ describe('http api access control', () => {
         testUtils.expectStatus(res.status, UNAUTHORIZED);
       });
 
-      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, []).expect(NO_CONTENT));
 
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, []).expect(UNAUTHORIZED));
@@ -227,7 +226,6 @@ describe('http api access control', () => {
         testUtils.expectStatus(res.status, OK);
       });
 
-      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryUser']).expect(NO_CONTENT));
 
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, ['registryUser']).expect(UNAUTHORIZED));
@@ -243,7 +241,6 @@ describe('http api access control', () => {
         testUtils.expectStatus(res.status, OK);
       });
 
-      //Use separate access token for logout because the access token used here will cease working on logout
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryAdmin']).expect(NO_CONTENT));
 
       it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, ['registryAdmin']).expect(NO_CONTENT));
