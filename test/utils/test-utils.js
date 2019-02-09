@@ -103,6 +103,11 @@ export function postWithRoles(path, roleNames, data) {
     .then(token => request(app).post(path).set('Authorization', token.id).send(data));
 }
 
+export async function getWithUser(path, user) {
+  const token = await user.createAccessToken(1000);
+  return request(app).get(path).set('Authorization', token.id);
+}
+
 export async function postWithUser(path, user, data) {
   const token = await user.createAccessToken(1000);
   return request(app).post(path).set('Authorization', token.id).send(data);
