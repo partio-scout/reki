@@ -23,7 +23,11 @@ export function createFixture(modelName, fixture) {
 }
 
 export function createFixtureSequelize(modelName, fixture) {
-  return models[modelName].bulkCreate(fixture);
+  if (Array.isArray(fixture)) {
+    return models[modelName].bulkCreate(fixture);
+  } else {
+    return models[modelName].create(fixture);
+  }
 }
 
 export function createUserWithRoles(rolesToAdd, overrides) {
