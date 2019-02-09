@@ -1,13 +1,9 @@
-import app from '../../src/server/server';
-import request from 'supertest';
 import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import _ from 'lodash';
 import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
-chai.use(chaiAsPromised);
 
 describe('Date search', () => {
   const testParticipants = [
@@ -65,93 +61,71 @@ describe('Date search', () => {
     { participantId: 2, date: new Date(2016,6,27) },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
+  // Since we're only querying, not changing state, we only add the fixtures once
+  before(async () => {
+    await resetDatabase();
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
+  });
 
-  let accessToken = null;
+  after(resetDatabase);
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-      .then(() => testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-  );
-
-  function expectParticipants(expectedResult, response) {
-    const firstNames = _.map(response.result, 'firstName');
-    return expect(firstNames).to.have.members(expectedResult);
+  async function queryParticipants(filter) {
+    const res = await testUtils.getWithRoles(
+      `/api/participants/?filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`,
+      ['registryUser']
+    );
+    testUtils.expectStatus(res.status, 200);
+    return res;
   }
 
-  function queryParticipants(filter, accessToken) {
-    return request(app)
-      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`)
-      .expect(200);
+  async function expectParticipantsForQuery(query, expectedParticipants) {
+    const res = await queryParticipants(query);
+    const firstNames = _.map(res.body.result, 'firstName');
+    return expect(firstNames).to.have.members(expectedParticipants);
   }
 
   it('Query without filters', () =>
-    queryParticipants({}, accessToken)
-    .then(res => {
-      expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
-    })
+    expectParticipantsForQuery({}, [ 'Tero', 'Teemu', 'Jussi' ])
   );
 
   it('Query with other filter', () =>
-    queryParticipants({ 'ageGroup':'sudenpentu' }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Teemu' ], res.body);
-    })
+    expectParticipantsForQuery({ 'ageGroup':'sudenpentu' }, [ 'Teemu' ])
   );
 
   it('Query with empty date filter', () =>
-    queryParticipants({ 'dates': [] }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
-    })
+    expectParticipantsForQuery({ 'dates': [] }, [ 'Tero', 'Teemu', 'Jussi' ])
   );
 
   it('Query with one date', () =>
-    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Tero', 'Teemu' ], res.body);
-    })
+    expectParticipantsForQuery({ 'dates': ['2016-07-22T00:00:00.000Z'] }, [ 'Tero', 'Teemu' ])
   );
 
   it('Query with one date and other filter', () =>
-    queryParticipants({ 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Tero' ], res.body);
-    })
+    expectParticipantsForQuery(
+      { 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] },
+      [ 'Tero' ]
+    )
   );
 
   it('Query with two dates', () =>
-    queryParticipants({ 'dates': ['2016-07-23T00:00:00.000Z','2016-07-21T00:00:00.000Z'] }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Teemu', 'Tero' ], res.body);
-    })
+    expectParticipantsForQuery(
+      { 'dates': ['2016-07-23T00:00:00.000Z','2016-07-21T00:00:00.000Z'] },
+      [ 'Teemu', 'Tero' ]
+    )
   );
 
   it('Query with empty date filter and other filter', () =>
-    queryParticipants({ 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] }, accessToken)
-    .then(res => {
-      expectParticipants([ 'Teemu', 'Jussi' ], res.body);
-    })
+    expectParticipantsForQuery(
+      { 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] },
+      [ 'Teemu', 'Jussi' ]
+    )
   );
 
-  it('Query returns all dates of participant, not just matching ones', () =>
-    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] }, accessToken)
-    .then(res => {
-      expect(res.body.result[0].firstName).to.equal('Teemu');
-      expect(res.body.result[0].dates).to.have.length(4);
-    })
-  );
+  it('Query returns all dates of participant, not just matching ones', async () => {
+    const res = await queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] });
+    expect(res.body.result[0].firstName).to.equal('Teemu');
+    expect(res.body.result[0].dates).to.have.length(4);
+  });
 
 });
