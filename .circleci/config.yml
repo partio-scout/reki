@@ -22,7 +22,8 @@ jobs:
   test:
     docker:
       - image: circleci/node:8.9.4-jessie
-        TEST_DATABASE_URL: postgres://reki@localhost/reki
+        environment:
+          TEST_DATABASE_URL: postgres://reki@localhost/reki
       - image: circleci/postgres:9.4.12-alpine
         environment:
           POSTGRES_USER: reki
