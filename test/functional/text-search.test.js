@@ -130,7 +130,7 @@ describe('Text search', () => {
   );
 
   it('Query with part of name', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'textSearch':'Te' }] })
+    queryParticipants({ 'and':[{ 'localGroup':'Testilippukunta' },{ 'textSearch':'Te' }] })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
