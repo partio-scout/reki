@@ -1,6 +1,5 @@
-import app from '../../src/server/server';
+import { models } from '../../src/server/models';
 import _ from 'lodash';
-import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
@@ -10,8 +9,6 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 
 describe('Participant mass edit endpoint test', () => {
-  let accessToken;
-
   const inCamp = 3;
   const tmpLeftCamp = 2;
   const leftCamp = 1;
@@ -64,65 +61,39 @@ describe('Participant mass edit endpoint test', () => {
     },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
+  beforeEach(async() => {
+    await resetDatabase();
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+  });
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-  );
+  after(resetDatabase);
 
-  function expectParticipantInCampValues(expectedResult, response) {
-    const inCampValues = _.map(response.result, row => row.presence);
-    return expect(inCampValues).to.eql(expectedResult);
-  }
+  it('Should update whitelisted fields', async () => {
+    const res = await testUtils.postWithRoles('/api/participants/massAssign', ['registryUser'], {
+      ids: [ 1,2 ],
+      newValue: inCamp,
+      fieldName: 'presence',
+    });
 
-  function expectParticipantSubCampValues(expectedResult, response) {
-    const subCampValues = _.map(response.result, row => row.subCamp);
-    return expect(subCampValues).to.eql(expectedResult);
-  }
+    testUtils.expectStatus(res.status, 200);
+    expect(res.body).to.be.an('array').with.length(2);
+    expect(res.body[0]).to.have.property('firstName', 'Teemu');
 
-  //TODO: refactor this to query DB directly
-  function queryParticipants(accessToken) {
-    return request(app)
-    .get(`/api/participants?access_token=${accessToken}`)
-    .expect(200);
-  }
+    const participants = await models.Participant.findAll({ order: ['participantId'] });
+    expect(_.map(participants, 'presence')).to.eql([ inCamp, inCamp, tmpLeftCamp ]);
+  });
 
-  function postInstanceToDb(modelInPlural, changes, accessToken, expectStatus) {
-    return request(app)
-      .post(`/api/${modelInPlural}?access_token=${accessToken}`)
-      .send(changes);
-  }
+  it('Should not update fields that are not whitelisted', async () => {
+    const res = await testUtils.postWithRoles('/api/participants/massAssign', ['registryUser'], {
+      ids: [ 1,2 ],
+      newValue: 'alaleiri2',
+      fieldName: 'subCamp',
+    });
 
-  it('Should update whitelisted fields', () =>
-    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .expect(result => {
-        expect(result.body).to.be.an('array').with.length(2);
-        expect(result.body[0]).to.have.property('firstName', 'Teemu');
-      })
-      .then( () => queryParticipants(accessToken)
-      .then( res => expectParticipantInCampValues([ inCamp, inCamp, tmpLeftCamp ], res.body) )
-   )
-  );
+    testUtils.expectStatus(res.status, 400);
 
-  it('Should not update fields that are not whitelisted', () =>
-    postInstanceToDb('participants/massAssign', { ids: [ 1,2 ], newValue: 'alaleiri2', fieldName: 'subCamp' }, accessToken)
-      .expect(400)
-      .then( () => queryParticipants(accessToken)
-      .then( res => expectParticipantSubCampValues([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ], res.body) )
-    )
-  );
+    const participants = await models.Participant.findAll({ order: ['participantId'] });
+    expect(_.map(participants, 'subCamp')).to.eql([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ]);
+  });
 
 });

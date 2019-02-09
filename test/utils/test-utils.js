@@ -98,6 +98,11 @@ export function getWithRoles(path, roleNames) {
     .then(token => request(app).get(path).set('Authorization', token.id));
 }
 
+export function postWithRoles(path, roleNames, data) {
+  return createUserAndGetAccessToken(roleNames)
+    .then(token => request(app).post(path).set('Authorization', token.id).send(data));
+}
+
 export function expectStatus(status, expectedStatus) {
   expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }
