@@ -103,6 +103,11 @@ export function postWithRoles(path, roleNames, data) {
     .then(token => request(app).post(path).set('Authorization', token.id).send(data));
 }
 
+export async function postWithUser(path, user, data) {
+  const token = await user.createAccessToken(1000);
+  return request(app).post(path).set('Authorization', token.id).send(data);
+}
+
 export function expectStatus(status, expectedStatus) {
   expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }
