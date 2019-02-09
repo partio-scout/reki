@@ -79,7 +79,7 @@ describe('particpant list', () => {
 
   it('GET request to participants returs all participants', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}'
+      '{"where":{},"skip":0,"limit":200}'
     );
     expect(response.result).to.be.an('array').with.length(3);
     expect(response.result[0]).to.have.property('firstName','Teemu');
@@ -87,7 +87,7 @@ describe('particpant list', () => {
 
   it('GET request to participants with one where filter', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}'
+      '{"where":{"village":"Kattivaara"},"skip":0,"limit":200}'
     );
     expect(response.result).to.be.an('array').with.length(1);
     expect(response.result[0]).to.have.property('firstName','Teemu');
@@ -95,7 +95,7 @@ describe('particpant list', () => {
 
   it('GET request to participants with several where filters', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}'
+      '{"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200}'
     );
     expect(response.result).to.be.an('array').with.length(1);
     expect(response.result[0]).to.have.property('firstName','Tero');
@@ -103,7 +103,7 @@ describe('particpant list', () => {
 
   it('GET request to participants returns dates', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}'
+      '{"where":{},"skip":0,"limit":200}'
     );
     expect(response.result[0]).to.have.property('dates');
     expect(response.result[0].dates).to.be.an('array').with.length(3);
@@ -111,7 +111,7 @@ describe('particpant list', () => {
 
   it('GET request to participants skips correct amount of participants', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":2,"limit":1,"include":["dates"],"count":true}'
+      '{"where":{},"skip":2,"limit":1}'
     );
     expect(response.result).to.be.an('array').with.length(1);
     expect(response.result[0]).to.have.property('participantId',3);
@@ -120,7 +120,7 @@ describe('particpant list', () => {
 
   it('GET request to participants limits correct amount participants', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":2,"include":["dates"],"count":true}'
+      '{"where":{},"skip":0,"limit":2}'
     );
     expect(response.result).to.be.an('array').with.length(2);
     expect(response.result[0]).to.have.property('participantId',1);
@@ -129,7 +129,7 @@ describe('particpant list', () => {
 
   it('GET request to participants sorts participants correctly', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}'
+      '{"where":{},"skip":0,"limit":200,"order":"lastName DESC"}'
     );
     expect(response.result).to.be.an('array').with.length(3);
     expect(response.result[0]).to.have.property('lastName','Testihenkilö');
@@ -139,7 +139,7 @@ describe('particpant list', () => {
 
   it('GET request to participants returns count', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}'
+      '{"where":{},"skip":0,"limit":200}'
     );
     expect(response.count).to.equal(3);
   });
@@ -147,7 +147,7 @@ describe('particpant list', () => {
   //count should return the number of all maches regardless of the paging
   it('count is calculated correctly when skip and limit are present', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":1,"limit":2,"include":["dates"],"count":true}'
+      '{"where":{},"skip":1,"limit":2}'
     );
     expect(response.count).to.equal(3);
   });
