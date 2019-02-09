@@ -26,7 +26,18 @@ export function createFixtureSequelize(modelName, fixture) {
   return models[modelName].bulkCreate(fixture);
 }
 
-export function createUserWithRoles(rolesToAdd, userData) {
+export function createUserWithRoles(rolesToAdd, overrides) {
+  uniqueIdCounter++;
+  const userData = {
+    'username': `testuser${uniqueIdCounter}`,
+    'memberNumber': String(100000 + uniqueIdCounter),
+    'email': `test${uniqueIdCounter}@example.org`,
+    'password': 'salasana',
+    'firstName': 'Testi',
+    'lastName': 'Testailija',
+    'phoneNumber': 'n/a',
+  };
+  Object.assign(userData, overrides);
   return Promise.join(
     getRolesByName(rolesToAdd),
     createFixture('RegistryUser', userData),
@@ -48,18 +59,7 @@ function addRolesToUser(roles, user) {
 }
 
 export function createUserAndGetAccessToken(roles, overrides) {
-  uniqueIdCounter++;
-  const userData = {
-    'username': `testuser${uniqueIdCounter}`,
-    'memberNumber': String(100000 + uniqueIdCounter),
-    'email': `test${uniqueIdCounter}@example.org`,
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  };
-  Object.assign(userData, overrides);
-  return createUserWithRoles(roles, userData).then(() => loginUser(userData.username, userData.password));
+  return createUserWithRoles(roles, overrides).then(user => user.createAccessToken(1000));
 }
 
 export function deleteFixtureIfExists(modelName, id) {
