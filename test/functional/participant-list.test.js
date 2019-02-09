@@ -152,4 +152,7 @@ describe('particpant list', () => {
     expect(response.count).to.equal(3);
   });
 
+  // TODO add test for no filters at all
+  // TODO add test for invalid filters
+
 });
