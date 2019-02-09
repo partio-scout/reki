@@ -16,7 +16,7 @@ jobs:
           paths:
             - node_modules
       - save_cache:
-          key: selenium-cache-{{ checksum "selenium-server-standalone.jar" }}
+          key: selenium-cache
           paths:
             - selenium-server-standalone.jar
   test:
@@ -33,7 +33,7 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - restore_cache:
-          key: selenium-cache-{{ checksum "selenium-server-standalone.jar" }}
+          key: selenium-cache
       - run:
           name: Start Selenium
           command: java -jar selenium-server-standalone.jar
