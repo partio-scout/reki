@@ -13,10 +13,6 @@ describe('Config API endpoint', () => {
     testUtils.expectStatus(response.status, 200);
   });
 
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExist('RegistryUser');
-  });
-
   it('has participant fields', async () => {
     expect(response.body).to.have.property('fields');
     expect(response.body.fields).to.be.an('array');

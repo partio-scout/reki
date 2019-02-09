@@ -5,6 +5,9 @@ import { expect } from 'chai';
 import { models } from '../../src/server/models';
 import request from 'supertest';
 
+// Counter for generating e.g. unique users automatically
+let uniqueIdCounter = 1;
+
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
   const promiseUserLogin = Promise.promisify(app.models.RegistryUser.login, { context: app.models.RegistryUser });
@@ -45,10 +48,11 @@ function addRolesToUser(roles, user) {
 }
 
 export function createUserAndGetAccessToken(roles, overrides) {
+  uniqueIdCounter++;
   const userData = {
-    'username': 'testuser',
-    'memberNumber': '7654321',
-    'email': 'testi@example.org',
+    'username': `testuser${uniqueIdCounter}`,
+    'memberNumber': String(100000 + uniqueIdCounter),
+    'email': `test${uniqueIdCounter}@example.org`,
     'password': 'salasana',
     'firstName': 'Testi',
     'lastName': 'Testailija',
