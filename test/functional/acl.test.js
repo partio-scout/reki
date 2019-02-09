@@ -9,77 +9,43 @@ import _ from 'lodash';
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-function get(endpoint, accessToken) {
-  const req = request(app)
-    .get(endpoint);
-
-  if (accessToken) {
-    req.set('Authorization', accessToken);
-  }
-
-  return req;
+function get(endpoint, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await testUtils.getWithRoles(endpoint, roles);
+        testUtils.expectStatus(res.status, code);
+      } else {
+        await request(app).get(endpoint).expect(code);
+      }
+    },
+  };
 }
 
-function post(endpoint, data, accessToken) {
-  const req = request(app)
-    .post(endpoint);
-
-  if (accessToken) {
-    req.set('Authorization', accessToken);
-  }
-
-  if (data) {
-    req.send(data);
-  }
-
-  return req;
+function post(endpoint, data, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await testUtils.postWithRoles(endpoint, roles, data);
+        testUtils.expectStatus(res.status, code);
+      } else {
+        await request(app).post(endpoint).send(data).expect(code);
+      }
+    },
+  };
 }
 
-function del(endpoint, accessToken) {
-  const req = request(app)
-    .delete(endpoint);
-
-  if (accessToken) {
-    req.set('Authorization', accessToken);
-  }
-
-  return req;
-}
-
-function logInUserWithoutRoles() {
-  return testUtils.createFixture('RegistryUser', {
-    'username': 'noRoles',
-    'memberNumber': '7654321',
-    'email': 'noRoles@example.org',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  }).then(() => testUtils.loginUser('noRoles', 'salasana'));
-}
-
-function logInRegistryUser() {
-  return testUtils.createUserWithRoles(['registryUser'], {
-    'username': 'registryUser',
-    'memberNumber': '7654321',
-    'email': 'registryUser@example.org',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  }).then(() => testUtils.loginUser('registryUser', 'salasana'));
-}
-
-function logInRegistryAdmin() {
-  return testUtils.createUserWithRoles(['registryAdmin'], {
-    'username': 'registryAdmin',
-    'memberNumber': '7654321',
-    'email': 'registryAdmin@example.org',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  }).then(() => testUtils.loginUser('registryAdmin', 'salasana'));
+function del(endpoint, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await testUtils.deleteWithRoles(endpoint, roles);
+        testUtils.expectStatus(res.status, code);
+      } else {
+        await request(app).del(endpoint).expect(code);
+      }
+    },
+  };
 }
 
 const OK = 200;
@@ -87,30 +53,12 @@ const NO_CONTENT = 204;
 const UNAUTHORIZED = 401;
 
 describe('http api access control', () => {
-  let noRolesAccessToken;
-  let registryUserAccessToken;
-  let registryAdminAccessToken;
   let otherUserId;
-  let noRolesUserId;
-  let registryUserId;
-  let registryAdminUserId;
 
   // Create fixtures for use in all tests - do not modify these in your tests!
   // These fixtures are created only once for performance reasons.
 
-  before(() => resetDatabase());
-  before(() => logInUserWithoutRoles().tap(at => {
-    noRolesAccessToken = at.id;
-    noRolesUserId = at.userId;
-  }));
-  before(() => logInRegistryUser().tap(at => {
-    registryUserAccessToken = at.id;
-    registryUserId = at.userId;
-  }));
-  before(() => logInRegistryAdmin().tap(at => {
-    registryAdminAccessToken = at.id;
-    registryAdminUserId = at.userId;
-  }));
+  before(resetDatabase);
 
   const participantFixture = [{
     participantId: 1,
@@ -227,21 +175,21 @@ describe('http api access control', () => {
     });
 
     describe('Authenticated user without roles', () => {
-      it('find: UNAUTHORIZED', () => get('/api/participants', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById: UNAUTHORIZED', () => get('/api/participants/1', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('find: UNAUTHORIZED', () => get('/api/participants', []).expect(UNAUTHORIZED));
+      it('findById: UNAUTHORIZED', () => get('/api/participants/1', []).expect(UNAUTHORIZED));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, []).expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
-      it('find: OK', () => get('/api/participants', registryUserAccessToken).expect(OK));
-      it('findById: OK', () => get('/api/participants/1', registryUserAccessToken).expect(OK));
-      it('massedit: OK', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryUserAccessToken).expect(OK));
+      it('find: OK', () => get('/api/participants', ['registryUser']).expect(OK));
+      it('findById: OK', () => get('/api/participants/1', ['registryUser']).expect(OK));
+      it('massedit: OK', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, ['registryUser']).expect(OK));
     });
 
     describe('registryAdmin', () => {
-      it('find: UNAUTHORIZED', () => get('/api/participants', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('findById: UNAUTHORIZED', () => get('/api/participants/1', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('find: UNAUTHORIZED', () => get('/api/participants', ['registryAdmin']).expect(UNAUTHORIZED));
+      it('findById: UNAUTHORIZED', () => get('/api/participants/1', ['registryAdmin']).expect(UNAUTHORIZED));
+      it('massedit: UNAUTHORIZED', () => post('/api/participants/massAssign', { ids: [1], newValue: 1, fieldName: 'presence' }, ['registryAdmin']).expect(UNAUTHORIZED));
     });
   });
 
@@ -255,48 +203,51 @@ describe('http api access control', () => {
     });
 
     describe('Authenticated user without roles', () => {
-      let accessTokenForLogout;
-      before(() => testUtils.loginUser('noRoles', 'salasana').tap(at => accessTokenForLogout = at.id));
-
-      it('find: UNAUTHORIZED', () => get('/api/registryusers', noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', () => get(`/api/registryusers/${noRolesUserId}`, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('find: UNAUTHORIZED', () => get('/api/registryusers', []).expect(UNAUTHORIZED));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, []).expect(UNAUTHORIZED));
+      it('findById (own): UNAUTHORIZED', async () => {
+        const user = await testUtils.createUserWithRoles([]);
+        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
+        testUtils.expectStatus(res.status, UNAUTHORIZED);
+      });
 
       //Use separate access token for logout because the access token used here will cease working on logout
-      it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
+      it('logout: OK', () => post('/api/registryusers/logout', null, []).expect(NO_CONTENT));
 
-      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, noRolesAccessToken).expect(UNAUTHORIZED));
-      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, noRolesAccessToken).expect(UNAUTHORIZED));
+      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, []).expect(UNAUTHORIZED));
+      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, []).expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
-      let accessTokenForLogout;
-      before(() => testUtils.loginUser('registryUser', 'salasana').tap(at => accessTokenForLogout = at.id));
-
-      it('find: UNAUTHORIZED', () => get('/api/registryusers', registryUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): ok', () => get(`/api/registryusers/${registryUserId}`, registryUserAccessToken).expect(OK));
+      it('find: UNAUTHORIZED', () => get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryUser']).expect(UNAUTHORIZED));
+      it('findById (own): ok', async () => {
+        const user = await testUtils.createUserWithRoles(['registryUser']);
+        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
+        testUtils.expectStatus(res.status, OK);
+      });
 
       //Use separate access token for logout because the access token used here will cease working on logout
-      it('logout: OK', () => post('/api/registryusers/logout', null,  accessTokenForLogout).expect(NO_CONTENT));
+      it('logout: OK', () => post('/api/registryusers/logout', null, ['registryUser']).expect(NO_CONTENT));
 
-      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, registryUserAccessToken).expect(UNAUTHORIZED));
-      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryUserAccessToken).expect(UNAUTHORIZED));
+      it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`, null, ['registryUser']).expect(UNAUTHORIZED));
+      it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`, null, ['registryUser']).expect(UNAUTHORIZED));
     });
 
     describe('registryAdmin', () => {
-      let accessTokenForLogout;
-      before(() => testUtils.loginUser('registryAdmin', 'salasana').tap(at => accessTokenForLogout = at.id));
-
-      it('find: ok', () => get('/api/registryusers', registryAdminAccessToken).expect(OK));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('findById (own): ok', () => get(`/api/registryusers/${registryAdminUserId}`, registryAdminAccessToken).expect(OK));
+      it('find: ok', () => get('/api/registryusers', ['registryAdmin']).expect(OK));
+      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryAdmin']).expect(UNAUTHORIZED));
+      it('findById (own): ok', async () => {
+        const user = await testUtils.createUserWithRoles(['registryAdmin']);
+        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
+        testUtils.expectStatus(res.status, OK);
+      });
 
       //Use separate access token for logout because the access token used here will cease working on logout
-      it('logout: OK', () => post('/api/registryusers/logout', null, accessTokenForLogout).expect(NO_CONTENT));
+      it('logout: OK', () => post('/api/registryusers/logout', null, ['registryAdmin']).expect(NO_CONTENT));
 
-      it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, registryAdminAccessToken).expect(NO_CONTENT));
-      it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, registryAdminAccessToken).expect(NO_CONTENT));
+      it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, ['registryAdmin']).expect(NO_CONTENT));
+      it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, ['registryAdmin']).expect(NO_CONTENT));
     });
   });
 
@@ -324,15 +275,15 @@ describe('http api access control', () => {
     });
 
     describe('registryUser', () => {
-      it('find: ok', () => get('/api/searchfilters', registryUserAccessToken).expect(OK));
-      it('create: ok', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryUserAccessToken).expect(OK));
-      it('deleteById: ok', () => del('/api/searchfilters/111', registryUserAccessToken).expect(OK));
+      it('find: ok', () => get('/api/searchfilters', ['registryUser']).expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterFixtureToCreate, ['registryUser']).expect(OK));
+      it('deleteById: ok', () => del('/api/searchfilters/111', ['registryUser']).expect(OK));
     });
 
     describe('registryAdmin', () => {
-      it('find: UNAUTHORIZED', () => get('/api/searchfilters', registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, registryAdminAccessToken).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', registryAdminAccessToken).expect(UNAUTHORIZED));
+      it('find: UNAUTHORIZED', () => get('/api/searchfilters', ['registryAdmin']).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, ['registryAdmin']).expect(UNAUTHORIZED));
+      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', ['registryAdmin']).expect(UNAUTHORIZED));
     });
   });
 
@@ -350,11 +301,11 @@ describe('http api access control', () => {
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/options', registryUserAccessToken).expect(OK))
+      it('find: OK', () => get('/api/options', ['registryUser']).expect(OK))
     );
 
     describe('registryAdmin', () =>
-      it('find: UNAUTHORIZED', () => get('/api/options', registryAdminAccessToken).expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/options', ['registryAdmin']).expect(UNAUTHORIZED))
     );
   });
 
@@ -372,11 +323,11 @@ describe('http api access control', () => {
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/participantdates', registryUserAccessToken).expect(OK))
+      it('find: OK', () => get('/api/participantdates', ['registryUser']).expect(OK))
     );
 
     describe('registryAdmin', () =>
-      it('find: UNAUTHORIZED', () => get('/api/participantdates', registryAdminAccessToken).expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/participantdates', ['registryAdmin']).expect(UNAUTHORIZED))
     );
   });
 
@@ -387,11 +338,11 @@ describe('http api access control', () => {
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/config', registryUserAccessToken).expect(OK))
+      it('find: OK', () => get('/api/config', ['registryUser']).expect(OK))
     );
 
     describe('registryAdmin', () =>
-      it('find: OK', () => get('/api/config', registryAdminAccessToken).expect(OK))
+      it('find: OK', () => get('/api/config', ['registryAdmin']).expect(OK))
     );
   });
 
