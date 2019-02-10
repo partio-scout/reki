@@ -45,17 +45,19 @@ const testParticipantDates = [
 ];
 
 describe('particpantDates endpoint', () => {
+  let user;
 
   beforeEach(async () => {
     await resetDatabase();
     await testUtils.createFixtureSequelize('Participant', testParticipants);
     await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
+    user = await testUtils.createUserWithRoles(['registryUser']);
   });
 
   afterEach(resetDatabase);
 
   it('it returns unique dates when participants may be present', async () => {
-    const res = await testUtils.getWithRoles('/api/participantdates', ['registryUser']);
+    const res = await testUtils.getWithUser('/api/participantdates', user);
 
     testUtils.expectStatus(res.status, 200);
 
