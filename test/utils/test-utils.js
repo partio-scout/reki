@@ -97,21 +97,6 @@ export function find(modelName, whereClause, includeClause) {
   return find(what);
 }
 
-export function getWithRoles(path, roleNames) {
-  return createUserAndGetAccessToken(roleNames)
-    .then(token => request(app).get(path).set('Authorization', token.id));
-}
-
-export function postWithRoles(path, roleNames, data) {
-  return createUserAndGetAccessToken(roleNames)
-    .then(token => request(app).post(path).set('Authorization', token.id).send(data));
-}
-
-export function deleteWithRoles(path, roleNames) {
-  return createUserAndGetAccessToken(roleNames)
-    .then(token => request(app).delete(path).set('Authorization', token.id));
-}
-
 export async function getWithUser(path, user) {
   const token = await user.createAccessToken(1000);
   return request(app).get(path).set('Authorization', token.id);
