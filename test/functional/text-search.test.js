@@ -61,10 +61,19 @@ describe('Text search', () => {
     },
   ];
 
+  let user;
+
   before(resetDatabase);
 
-  beforeEach(() => testUtils.createFixtureSequelize('Participant', testParticipants));
-  afterEach(() => testUtils.deleteFixturesIfExistSequelize('Participant'));
+  beforeEach(async () => {
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    user = await testUtils.createUserWithRoles(['registryUser']);
+  });
+
+  afterEach(async () => {
+    await testUtils.deleteFixturesIfExistSequelize('Participant');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
+  });
 
   function expectParticipants(expectedResult, response) {
     const firstNames = _.map(response.result, 'firstName');
@@ -72,9 +81,9 @@ describe('Text search', () => {
   }
 
   async function queryParticipants(filter) {
-    const res = await testUtils.getWithRoles(
+    const res = await testUtils.getWithUser(
       `/api/participants/?filter={"where":${encodeURIComponent(JSON.stringify(filter))},"skip":0,"limit":20}`,
-      ['registryUser']
+      user
     );
     testUtils.expectStatus(res.status, 200);
     return res;
