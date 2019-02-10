@@ -20,16 +20,18 @@ const testOptions = [
 ];
 
 describe('Options', () => {
+  let user;
 
   beforeEach(async () => {
     await resetDatabase();
     await testUtils.createFixtureSequelize('Option', testOptions);
+    user = await testUtils.createUserWithRoles(['registryUser']);
   });
 
   afterEach(resetDatabase);
 
   it('It returns filter options', async () => {
-    const res = await testUtils.getWithRoles('/api/options', ['registryUser']);
+    const res = await testUtils.getWithUser('/api/options', user);
     testUtils.expectStatus(res.status, 200);
 
     expect(res.body).to.be.an('array').with.length(3);
