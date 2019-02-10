@@ -13,6 +13,8 @@ describe('Presence history', () => {
   const tmpLeftCamp = 2;
   const leftCamp = 1;
 
+  let user;
+
   const testParticipants = [
     {
       'participantId': 1,
@@ -63,7 +65,11 @@ describe('Presence history', () => {
 
   before(resetDatabase);
 
-  beforeEach(() => testUtils.createFixtureSequelize('Participant', testParticipants));
+  beforeEach(async () => {
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    user = await testUtils.createUserWithRoles(['registryUser']);
+  });
+
   afterEach(() => testUtils.deleteFixturesIfExistSequelize('Participant'));
 
   function expectPresenceHistoryValues(expectedPresences, participantId, response) {
@@ -86,9 +92,9 @@ describe('Presence history', () => {
   }
 
   it('Should save history when updating one presence', async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 200);
@@ -96,7 +102,6 @@ describe('Presence history', () => {
   });
 
   it('Should save author correctly when updating presence twice', async () => {
-    const user = await testUtils.createUserWithRoles(['registryUser'], { username: 'presenceUser' });
     const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
       user,
@@ -113,15 +118,15 @@ describe('Presence history', () => {
   });
 
   it('Should save history when updating presences twice', async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 200);
-    const res2 = await testUtils.postWithRoles(
+    const res2 = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res2.status, 200);
@@ -129,15 +134,15 @@ describe('Presence history', () => {
   });
 
   it("Should save history when updating two participants' presences at once", async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 200);
-    const res2 = await testUtils.postWithRoles(
+    const res2 = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res2.status, 200);
@@ -146,15 +151,15 @@ describe('Presence history', () => {
   });
 
   it('Should not save history when saving value doesn\'t change', async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 200);
-    const res2 = await testUtils.postWithRoles(
+    const res2 = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res2.status, 200);
@@ -162,9 +167,9 @@ describe('Presence history', () => {
   });
 
   it("Should not update wrong participants' presence", async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 200);
@@ -172,9 +177,9 @@ describe('Presence history', () => {
   });
 
   it('Should not save history when invalid presence data', async () => {
-    const res = await testUtils.postWithRoles(
+    const res = await testUtils.postWithUser(
       '/api/participants/massAssign',
-      ['registryUser'],
+      user,
       { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }
     );
     testUtils.expectStatus(res.status, 400);
