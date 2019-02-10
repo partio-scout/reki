@@ -1,16 +1,22 @@
 import chai from 'chai';
-import * as testUtils from '../utils/test-utils';
+import {
+  createUserWithRoles as createUser,
+  getWithUser,
+  expectStatus,
+} from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 
 describe('Config API endpoint', () => {
   let response;
-  before(resetDatabase);
+
+  after(resetDatabase);
 
   beforeEach(async() => {
-    response = await testUtils.getWithRoles('/api/config', [ 'registryUser' ]);
-    testUtils.expectStatus(response.status, 200);
+    const user = await createUser(['registryUser']);
+    response = await getWithUser('/api/config', user);
+    expectStatus(response.status, 200);
   });
 
   it('has participant fields', async () => {
