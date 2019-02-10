@@ -54,6 +54,7 @@ const testParticipantAllergies = [{
 }];
 
 describe('particpant', () => {
+  let user;
 
   before(resetDatabase);
 
@@ -64,6 +65,7 @@ describe('particpant', () => {
     await testUtils.createFixtureSequelize('Allergy', testAllergies);
     await testUtils.createFixtureSequelize('Selection', testParticipantsSelections);
     await testUtils.createFixtureSequelize('ParticipantAllergy', testParticipantAllergies);
+    user = await testUtils.createUserWithRoles(['registryUser']);
   });
 
   afterEach(async () => {
@@ -76,7 +78,7 @@ describe('particpant', () => {
   });
 
   it('request for single participant returns correct info', async () => {
-    const res = await testUtils.getWithRoles('/api/participants/1', ['registryUser']);
+    const res = await testUtils.getWithUser('/api/participants/1', user);
     testUtils.expectStatus(res.status, 200);
 
     expect(res.body).to.have.property('firstName','Teemu');
@@ -94,12 +96,12 @@ describe('particpant', () => {
   });
 
   it('request for unknown participant id returns 404', async () => {
-    const res = await testUtils.getWithRoles('/api/participants/404', ['registryUser']);
+    const res = await testUtils.getWithUser('/api/participants/404', user);
     testUtils.expectStatus(res.status, 404);
   });
 
   it('request for participant with string id returns 404', async () => {
-    const res = await testUtils.getWithRoles('/api/participants/hello', ['registryUser']);
+    const res = await testUtils.getWithUser('/api/participants/hello', user);
     testUtils.expectStatus(res.status, 404);
   });
 
