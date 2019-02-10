@@ -43,7 +43,8 @@ describe('Audit Event', () => {
   }
 
   it('should create audit event when finding registryusers', async () => {
-    const response = await testUtils.getWithRoles('/api/registryusers', [ 'registryAdmin' ]);
+    const user = await testUtils.createUserWithRoles(['registryAdmin']);
+    const response = await testUtils.getWithUser('/api/registryusers', user);
     testUtils.expectStatus(response.status, 200);
     await expectAuditEventToEventuallyExist({
       'eventType': 'find',
@@ -52,7 +53,8 @@ describe('Audit Event', () => {
   });
 
   it('should create audit event when finding participant', async () => {
-    const response = await testUtils.getWithRoles('/api/participants/42', [ 'registryUser' ]);
+    const user = await testUtils.createUserWithRoles(['registryUser']);
+    const response = await testUtils.getWithUser('/api/participants/42', user);
     testUtils.expectStatus(response.status, 200);
     await expectAuditEventToEventuallyExist({
       'eventType': 'find',
