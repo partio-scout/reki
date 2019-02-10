@@ -71,9 +71,10 @@ describe('Date search', () => {
   after(resetDatabase);
 
   async function queryParticipants(filter) {
-    const res = await testUtils.getWithRoles(
+    const user = await testUtils.createUserWithRoles(['registryUser']);
+    const res = await testUtils.getWithUser(
       `/api/participants/?filter={"where":${JSON.stringify(filter)},"skip":0,"limit":20}`,
-      ['registryUser']
+      user,
     );
     testUtils.expectStatus(res.status, 200);
     return res;
