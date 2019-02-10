@@ -59,20 +59,24 @@ const testParticipantDates = [
 ];
 
 describe('particpant list', () => {
+  let user;
+
   before(resetDatabase);
 
   beforeEach(async () => {
     await testUtils.createFixtureSequelize('Participant', testParticipants);
     await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
+    user = await testUtils.createUserWithRoles(['registryUser']);
   });
 
   afterEach(async () => {
     await testUtils.deleteFixturesIfExistSequelize('Participant');
     await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
   async function getParticipantsWithFilter(filter) {
-    const res = await testUtils.getWithRoles(`/api/participants/?filter=${filter}`, ['registryUser']);
+    const res = await testUtils.getWithUser(`/api/participants/?filter=${filter}`, user);
     testUtils.expectStatus(res.status, 200);
     return res.body;
   }
