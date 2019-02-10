@@ -122,6 +122,11 @@ export async function postWithUser(path, user, data) {
   return request(app).post(path).set('Authorization', token.id).send(data);
 }
 
+export async function deleteWithUser(path, user) {
+  const token = await user.createAccessToken(1000);
+  return request(app).delete(path).set('Authorization', token.id);
+}
+
 export function expectStatus(status, expectedStatus) {
   expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }

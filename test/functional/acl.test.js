@@ -9,11 +9,13 @@ import _ from 'lodash';
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
+const createUser = testUtils.createUserWithRoles;
+
 function get(endpoint, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.getWithRoles(endpoint, roles);
+        const res = await testUtils.getWithUser(endpoint, await createUser(roles));
         testUtils.expectStatus(res.status, code);
       } else {
         await request(app).get(endpoint).expect(code);
@@ -26,7 +28,7 @@ function post(endpoint, data, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.postWithRoles(endpoint, roles, data);
+        const res = await testUtils.postWithUser(endpoint, await createUser(roles), data);
         testUtils.expectStatus(res.status, code);
       } else {
         await request(app).post(endpoint).send(data).expect(code);
@@ -39,7 +41,7 @@ function del(endpoint, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.deleteWithRoles(endpoint, roles);
+        const res = await testUtils.deleteWithUser(endpoint, await createUser(roles));
         testUtils.expectStatus(res.status, code);
       } else {
         await request(app).del(endpoint).expect(code);
