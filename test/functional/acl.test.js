@@ -2,21 +2,28 @@ import app from '../../src/server/server';
 import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import * as testUtils from '../utils/test-utils';
+import {
+  createFixture,
+  createFixtureSequelize,
+  deleteFixturesIfExistSequelize,
+  createUserWithRoles as createUser,
+  getWithUser,
+  postWithUser,
+  deleteWithUser,
+  expectStatus,
+} from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 import _ from 'lodash';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const createUser = testUtils.createUserWithRoles;
-
 function get(endpoint, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.getWithUser(endpoint, await createUser(roles));
-        testUtils.expectStatus(res.status, code);
+        const res = await getWithUser(endpoint, await createUser(roles));
+        expectStatus(res.status, code);
       } else {
         await request(app).get(endpoint).expect(code);
       }
@@ -28,8 +35,8 @@ function post(endpoint, data, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.postWithUser(endpoint, await createUser(roles), data);
-        testUtils.expectStatus(res.status, code);
+        const res = await postWithUser(endpoint, await createUser(roles), data);
+        expectStatus(res.status, code);
       } else {
         await request(app).post(endpoint).send(data).expect(code);
       }
@@ -41,8 +48,8 @@ function del(endpoint, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await testUtils.deleteWithUser(endpoint, await createUser(roles));
-        testUtils.expectStatus(res.status, code);
+        const res = await deleteWithUser(endpoint, await createUser(roles));
+        expectStatus(res.status, code);
       } else {
         await request(app).del(endpoint).expect(code);
       }
@@ -77,7 +84,7 @@ describe('http api access control', () => {
     subCamp: 'subCamp',
     ageGroup: 'vaeltaja',
   }];
-  before(() => testUtils.createFixtureSequelize('Participant', participantFixture));
+  before(() => createFixtureSequelize('Participant', participantFixture));
 
   const presenceHistoryFixture = [{
     participantId: 1,
@@ -86,7 +93,7 @@ describe('http api access control', () => {
     authorId: 1,
   }];
   before(() =>
-    testUtils.createFixtureSequelize('PresenceHistory', presenceHistoryFixture)
+    createFixtureSequelize('PresenceHistory', presenceHistoryFixture)
   );
 
   const allergyFixture = [{
@@ -100,8 +107,8 @@ describe('http api access control', () => {
   }];
 
   before( async () => {
-    await testUtils.createFixtureSequelize('Allergy', allergyFixture);
-    await testUtils.createFixtureSequelize('ParticipantAllergy', participantAllergyFixture);
+    await createFixtureSequelize('Allergy', allergyFixture);
+    await createFixtureSequelize('ParticipantAllergy', participantAllergyFixture);
   });
 
   const selectionFixture = [{
@@ -112,7 +119,7 @@ describe('http api access control', () => {
     selectionName: 'Valintanimi',
   }];
   before(() =>
-    testUtils.createFixtureSequelize('Selection', selectionFixture)
+    createFixtureSequelize('Selection', selectionFixture)
   );
 
   const userFixture = {
@@ -123,7 +130,7 @@ describe('http api access control', () => {
     email: 'derp@example.com',
     phoneNumber: '123456',
   };
-  before(() => testUtils.createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
+  before(() => createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
 
   describe('Access control tests', () => {
     it('exist for all endpoints under /api', () => {
@@ -208,9 +215,9 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', []).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, []).expect(UNAUTHORIZED));
       it('findById (own): UNAUTHORIZED', async () => {
-        const user = await testUtils.createUserWithRoles([]);
-        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
-        testUtils.expectStatus(res.status, UNAUTHORIZED);
+        const user = await createUser([]);
+        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
+        expectStatus(res.status, UNAUTHORIZED);
       });
 
       it('logout: OK', () => post('/api/registryusers/logout', null, []).expect(NO_CONTENT));
@@ -223,9 +230,9 @@ describe('http api access control', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryUser']).expect(UNAUTHORIZED));
       it('findById (own): ok', async () => {
-        const user = await testUtils.createUserWithRoles(['registryUser']);
-        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
-        testUtils.expectStatus(res.status, OK);
+        const user = await createUser(['registryUser']);
+        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
+        expectStatus(res.status, OK);
       });
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryUser']).expect(NO_CONTENT));
@@ -238,9 +245,9 @@ describe('http api access control', () => {
       it('find: ok', () => get('/api/registryusers', ['registryAdmin']).expect(OK));
       it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryAdmin']).expect(UNAUTHORIZED));
       it('findById (own): ok', async () => {
-        const user = await testUtils.createUserWithRoles(['registryAdmin']);
-        const res = await testUtils.getWithUser(`/api/registryusers/${user.id}`, user);
-        testUtils.expectStatus(res.status, OK);
+        const user = await createUser(['registryAdmin']);
+        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
+        expectStatus(res.status, OK);
       });
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryAdmin']).expect(NO_CONTENT));
@@ -258,14 +265,14 @@ describe('http api access control', () => {
     }];
 
     beforeEach( () =>
-      testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture)
+      createFixtureSequelize('SearchFilter', searchFilterFixture)
     );
     const searchFilterFixtureToCreate = {
       id: 2,
       name: 'durp',
       filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
     };
-    afterEach(() => testUtils.deleteFixturesIfExistSequelize('SearchFilter'));
+    afterEach(() => deleteFixturesIfExistSequelize('SearchFilter'));
 
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
@@ -292,8 +299,8 @@ describe('http api access control', () => {
       value: 'Kolina',
     }];
 
-    beforeEach( () => testUtils.createFixtureSequelize('Option', optionFixture));
-    afterEach(() => testUtils.deleteFixturesIfExistSequelize('Option'));
+    beforeEach( () => createFixtureSequelize('Option', optionFixture));
+    afterEach(() => deleteFixturesIfExistSequelize('Option'));
 
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED))
@@ -314,8 +321,8 @@ describe('http api access control', () => {
       date: new Date(),
     }];
 
-    beforeEach( () => testUtils.createFixtureSequelize('ParticipantDate', dateFixture));
-    afterEach(() => testUtils.deleteFixturesIfExistSequelize('ParticipantDate'));
+    beforeEach( () => createFixtureSequelize('ParticipantDate', dateFixture));
+    afterEach(() => deleteFixturesIfExistSequelize('ParticipantDate'));
 
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED))
