@@ -3,6 +3,10 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import { expect } from 'chai';
 import { models } from '../../src/server/models';
+import request from 'supertest';
+
+// Counter for generating e.g. unique users automatically
+let uniqueIdCounter = 1;
 
 export function loginUser(username, userpass) {
   userpass = userpass || 'salasana';
@@ -19,10 +23,25 @@ export function createFixture(modelName, fixture) {
 }
 
 export function createFixtureSequelize(modelName, fixture) {
-  return models[modelName].bulkCreate(fixture);
+  if (Array.isArray(fixture)) {
+    return models[modelName].bulkCreate(fixture);
+  } else {
+    return models[modelName].create(fixture);
+  }
 }
 
-export function createUserWithRoles(rolesToAdd, userData) {
+export function createUserWithRoles(rolesToAdd, overrides) {
+  uniqueIdCounter++;
+  const userData = {
+    'username': `testuser${uniqueIdCounter}`,
+    'memberNumber': String(100000 + uniqueIdCounter),
+    'email': `test${uniqueIdCounter}@example.org`,
+    'password': 'salasana',
+    'firstName': 'Testi',
+    'lastName': 'Testailija',
+    'phoneNumber': 'n/a',
+  };
+  Object.assign(userData, overrides);
   return Promise.join(
     getRolesByName(rolesToAdd),
     createFixture('RegistryUser', userData),
@@ -44,17 +63,7 @@ function addRolesToUser(roles, user) {
 }
 
 export function createUserAndGetAccessToken(roles, overrides) {
-  const userData = {
-    'username': 'testuser',
-    'memberNumber': '7654321',
-    'email': 'testi@example.org',
-    'password': 'salasana',
-    'firstName': 'Testi',
-    'lastName': 'Testailija',
-    'phoneNumber': 'n/a',
-  };
-  Object.assign(userData, overrides);
-  return createUserWithRoles(roles, userData).then(() => loginUser(userData.username, userData.password));
+  return createUserWithRoles(roles, overrides).then(user => user.createAccessToken(1000));
 }
 
 export function deleteFixtureIfExists(modelName, id) {
@@ -86,4 +95,23 @@ export function find(modelName, whereClause, includeClause) {
   const what = { where: whereClause, include: includeClause };
   const find = Promise.promisify(app.models[modelName].find, { context: app.models[modelName] });
   return find(what);
+}
+
+export async function getWithUser(path, user) {
+  const token = await user.createAccessToken(1000);
+  return request(app).get(path).set('Authorization', token.id);
+}
+
+export async function postWithUser(path, user, data) {
+  const token = await user.createAccessToken(1000);
+  return request(app).post(path).set('Authorization', token.id).send(data);
+}
+
+export async function deleteWithUser(path, user) {
+  const token = await user.createAccessToken(1000);
+  return request(app).delete(path).set('Authorization', token.id);
+}
+
+export function expectStatus(status, expectedStatus) {
+  expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }

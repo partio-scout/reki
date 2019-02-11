@@ -1,21 +1,17 @@
-import app from '../../src/server/server';
 import _ from 'lodash';
-import request from 'supertest';
 import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 import { models } from '../../src/server/models';
 
 const expect = chai.expect;
-chai.use(chaiAsPromised);
 
 describe('Presence history', () => {
-  let accessToken;
-
   const inCamp = 3;
   const tmpLeftCamp = 2;
   const leftCamp = 1;
+
+  let user;
 
   const testParticipants = [
     {
@@ -65,23 +61,14 @@ describe('Presence history', () => {
     },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
+  before(resetDatabase);
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser', 'registryAdmin'], adminUserFixture))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-  );
+  beforeEach(async () => {
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    user = await testUtils.createUserWithRoles(['registryUser']);
+  });
+
+  afterEach(() => testUtils.deleteFixturesIfExistSequelize('Participant'));
 
   function expectPresenceHistoryValues(expectedPresences, participantId, response) {
     return models.PresenceHistory.findAll({
@@ -102,57 +89,99 @@ describe('Presence history', () => {
     );
   }
 
-  function postOverRest(modelInPlural, changes, accessToken) {
-    return request(app)
-      .post(`/api/${modelInPlural}?access_token=${accessToken}`)
-      .send(changes);
-  }
+  it('Should save history when updating one presence', async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    await expectPresenceHistoryValues([ inCamp ], 1 );
+  });
 
-  it('Should save history when updating one presence', () =>
-    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .then( () => expectPresenceHistoryValues([ inCamp ], 1 ) )
-  );
+  it('Should save author correctly when updating presence twice', async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    const res2 = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res2.status, 200);
+    await expectPresenceAuthorValue([ user.id, user.id ], 1 );
+  });
 
-  it('Should save author correctly when updating presence', () =>
-    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .then( () => postOverRest('participants/massAssign', { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
-      .then( () => expectPresenceAuthorValue([ 1, 1 ], 1 ) )
-  );
+  it('Should save history when updating presences twice', async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    const res2 = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res2.status, 200);
+    await expectPresenceHistoryValues([ inCamp, leftCamp ], 1 );
+  });
 
-  it('Should save history when updating two presences', () =>
-    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .then( () => postOverRest('participants/massAssign', { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }, accessToken).expect(200) )
-      .then( () => expectPresenceHistoryValues([ inCamp, leftCamp ], 1 ) )
-  );
+  it("Should save history when updating two participants' presences at once", async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    const res2 = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res2.status, 200);
+    await expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 2 );
+    await expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 3 );
+  });
 
-  it('Should save history when updating two participants presences at once', () =>
-    postOverRest('participants/massAssign', { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .then( () => postOverRest('participants/massAssign', { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }, accessToken).expect(200) )
-      .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 2 ) )
-      .then( () => expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 3 ) )
-  );
+  it('Should not save history when saving value doesn\'t change', async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    const res2 = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res2.status, 200);
+    await expectPresenceHistoryValues([ inCamp ], 2 );
+  });
 
-  it('Should not save history when saving value doesn\'t change', () =>
-    postOverRest('participants/massAssign', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-    .then( () => postOverRest('participants/massAssign', { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }, accessToken).expect(200) )
-      .then( () => expectPresenceHistoryValues([ inCamp ], 2 ) )
-  );
+  it("Should not update wrong participants' presence", async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 200);
+    await expectPresenceHistoryValues([ ], 2 );
+  });
 
-  it('Should not update wrong participants presence', () =>
-    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }, accessToken)
-      .expect(200)
-      .then( () => expectPresenceHistoryValues([ ], 2 ) )
-  );
-
-  it('Should not save history when unvalid presence data', () =>
-    postOverRest('participants/massAssign', { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }, accessToken)
-      .expect(400)
-      .then( () => expectPresenceHistoryValues([ ], 1 ) )
-  );
+  it('Should not save history when invalid presence data', async () => {
+    const res = await testUtils.postWithUser(
+      '/api/participants/massAssign',
+      user,
+      { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }
+    );
+    testUtils.expectStatus(res.status, 400);
+    await expectPresenceHistoryValues([ ], 1 );
+  });
 
 });
