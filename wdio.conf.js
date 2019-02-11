@@ -15,7 +15,7 @@ exports.config = {
   logLevel: 'silent',
   coloredLogs: true,
   screenshotPath: './errorShots/',
-  baseUrl: 'http://localhost:3005',
+  baseUrl: 'http://localhost:' + (process.env.PORT),
   waitforTimeout: 10000,
   framework: 'mocha',
   reporter: 'spec',
@@ -26,7 +26,6 @@ exports.config = {
   },
 
   before: function() {
-
     // Initialize Chai As Promised assertion library
     var chai = require('chai');
     var chaiAsPromised = require('chai-as-promised');
@@ -34,25 +33,6 @@ exports.config = {
     expect = chai.expect;
     chai.Should();
     chaiAsPromised.transferPromiseness = browser.transferPromiseness;
-
-    // Start the app
-    var options = process.env;
-    options.PORT = 3005;
-    return new Promise((resolve, reject) => {
-      appProcess = require('child_process').spawn('node', ['.'], options);
-      appProcess.stdout.on('data', data => {
-
-        // This is ugly, but only way to know the app is ready to accept connections
-        var dataString = data.toString();
-        if (dataString && dataString.indexOf('listening') !== -1) {
-          resolve();
-        }
-
-      });
-    });
   },
 
-  after: function() {
-    appProcess.kill();
-  },
 };

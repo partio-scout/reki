@@ -5,6 +5,7 @@
   "main": "src/server/bootstrap.js",
   "scripts": {
     "start": "node .",
+    "start-silent": "node . > /dev/null 2>&1",
     "watch": "nodemon --watch src",
     "set-password": "babel-node scripts/set-password.js",
     "create-user": "babel-node scripts/create-user.js",
@@ -17,7 +18,8 @@
     "test-one": "NODE_ENV=test mocha --timeout 4000 --require babel-core/register --require babel-polyfill --exit",
     "test-watch": "NODE_ENV=test mocha --watch --timeout 4000 --require babel-core/register --require babel-polyfill --exit",
     "pretest-e2e": "NODE_ENV=test npm run seed-database && npm run bundle",
-    "test-e2e": "NODE_ENV=test wdio wdio.conf.js",
+    "test-e2e-wdio": "NODE_ENV=test wdio wdio.conf.js",
+    "test-e2e": "NODE_ENV=test PORT=3005 start-test start-silent 3005 test-e2e-wdio",
     "seed-database": "babel-node scripts/seed-database.js",
     "create-fake-data": "babel-node scripts/create-fake-data.js",
     "clear-temporary-tables": "babel-node src/kuksa-integration/clear-temporary-tables.js",
@@ -92,6 +94,7 @@
     "react-hot-loader": "^4.3.3",
     "sinon": "^4.5.0",
     "sinon-express-mock": "^2.0.4",
+    "start-server-and-test": "^1.7.11",
     "supertest": "^3.1.0",
     "webdriverio": "^3.2.6",
     "webpack-cli": "^3.0.8"
