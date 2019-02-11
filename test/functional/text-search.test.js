@@ -1,5 +1,3 @@
-import app from '../../src/server/server';
-import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
@@ -63,144 +61,141 @@ describe('Text search', () => {
     },
   ];
 
-  const adminUserFixture = {
-    'username': 'testAdmin',
-    'memberNumber': '7654321',
-    'email': 'testi@adm.in',
-    'password': 'salasana',
-    'phone': 'n/a',
-    'firstName': 'Testi',
-    'lastName': 'Admin',
-  };
+  let user;
 
-  let accessToken = null;
+  before(resetDatabase);
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser'], adminUserFixture))
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-      .then(() => testUtils.loginUser(adminUserFixture.username, adminUserFixture.password))
-      .then(newAccessToken => accessToken = newAccessToken.id)
-  );
+  beforeEach(async () => {
+    await testUtils.createFixtureSequelize('Participant', testParticipants);
+    user = await testUtils.createUserWithRoles(['registryUser']);
+  });
+
+  afterEach(async () => {
+    await testUtils.deleteFixturesIfExistSequelize('Participant');
+    await testUtils.deleteFixturesIfExist('RegistryUser');
+  });
 
   function expectParticipants(expectedResult, response) {
     const firstNames = _.map(response.result, 'firstName');
     return expect(firstNames).to.have.members(expectedResult);
   }
 
-  function queryParticipants(filter, accessToken) {
-    return request(app)
-      .get(`/api/participants/?access_token=${accessToken}&filter={"where":${encodeURIComponent(JSON.stringify(filter))},"skip":0,"limit":20}`)
-      .expect(200);
+  async function queryParticipants(filter) {
+    const res = await testUtils.getWithUser(
+      `/api/participants/?filter={"where":${encodeURIComponent(JSON.stringify(filter))},"skip":0,"limit":20}`,
+      user
+    );
+    testUtils.expectStatus(res.status, 200);
+    return res;
   }
 
   it('Query without filters', () =>
-    queryParticipants({}, accessToken)
+    queryParticipants({})
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with ageGroup filter', () =>
-    queryParticipants({ 'ageGroup':'sudenpentu' }, accessToken)
+    queryParticipants({ 'ageGroup':'sudenpentu' })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
 
   it('Query with search by last name', () =>
-    queryParticipants({ 'textSearch':'Esimerkki' }, accessToken)
+    queryParticipants({ 'textSearch':'Esimerkki' })
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with search by first name small caps', () =>
-    queryParticipants({ 'textSearch':'tero' }, accessToken)
+    queryParticipants({ 'textSearch':'tero' })
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with multiple filters', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'subCamp':'Alaleiri' },{ 'textSearch':'Teemu' }] }, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'subCamp':'Alaleiri' },{ 'textSearch':'Teemu' }] })
     .then(res => {
       expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
   it('Query with multiple filters without results', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'textSearch':'Teemu' }] }, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'textSearch':'Teemu' }] })
     .then(res => {
       expectParticipants([ ], res.body);
     })
   );
 
   it('Query with multiple filters without text search', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'subCamp':'Alaleiri' }] }, accessToken)
+    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'subCamp':'Alaleiri' }] })
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with part of name', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'textSearch':'Te' }] }, accessToken)
+    queryParticipants({ 'and':[{ 'localGroup':'Testilippukunta' },{ 'textSearch':'Te' }] })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })
   );
 
   it('Query with member number', () =>
-    queryParticipants({ 'textSearch':'859' }, accessToken)
+    queryParticipants({ 'textSearch':'859' })
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with first and last name', () =>
-    queryParticipants({ 'textSearch':'Jukola Jussi' }, accessToken)
+    queryParticipants({ 'textSearch':'Jukola Jussi' })
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with staff position', () =>
-    queryParticipants({ 'textSearch':'Jumppaohjaaja' }, accessToken)
+    queryParticipants({ 'textSearch':'Jumppaohjaaja' })
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with staff position in generator', () =>
-    queryParticipants({ 'textSearch':'Tiskari' }, accessToken)
+    queryParticipants({ 'textSearch':'Tiskari' })
     .then(res => {
       expectParticipants([ 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with partial staff position', () =>
-    queryParticipants({ 'textSearch':'tisk' }, accessToken)
+    queryParticipants({ 'textSearch':'tisk' })
     .then(res => {
       expectParticipants([ 'Teemu', 'Jussi' ], res.body);
     })
   );
 
   it('Query with hashtag', () =>
-    queryParticipants({ 'textSearch':'#Tiskari' }, accessToken)
+    queryParticipants({ 'textSearch':'#Tiskari' })
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('Query with camp office notes', () =>
-    queryParticipants({ 'textSearch':'Leiritoimisto' }, accessToken)
+    queryParticipants({ 'textSearch':'Leiritoimisto' })
     .then(res => {
       expectParticipants([ 'Tero' ], res.body);
     })
   );
 
   it('Query with editable info', () =>
-    queryParticipants({ 'textSearch':'Muokattava' }, accessToken)
+    queryParticipants({ 'textSearch':'Muokattava' })
     .then(res => {
       expectParticipants([ 'Teemu' ], res.body);
     })

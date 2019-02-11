@@ -1,12 +1,8 @@
-import app from '../../src/server/server';
-import request from 'supertest';
 import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
-chai.use(chaiAsPromised);
 
 const testParticipants = [
   {
@@ -56,17 +52,6 @@ const testParticipants = [
   },
 ];
 
-const testUser = {
-  'id': 3,
-  'username': 'testLooser',
-  'memberNumber': '00000002',
-  'email': 'jukka.pekka@example.com',
-  'password': 'salasa',
-  'firstName': 'Jukka',
-  'lastName': 'Pekka',
-  'phoneNumber': '0000000003',
-};
-
 const testParticipantDates = [
   { participantId: 1, date: new Date(2016,6,20) },
   { participantId: 1, date: new Date(2016,6,21) },
@@ -74,15 +59,14 @@ const testParticipantDates = [
 ];
 
 describe('particpant list', () => {
+  let user;
 
-  let accessToken = null;
+  before(resetDatabase);
 
   beforeEach(async () => {
-    await resetDatabase();
     await testUtils.createFixtureSequelize('Participant', testParticipants);
     await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    accessToken = await testUtils.createUserAndGetAccessToken(['registryUser'], testUser);
-    accessToken = accessToken.id;
+    user = await testUtils.createUserWithRoles(['registryUser']);
   });
 
   afterEach(async () => {
@@ -91,97 +75,88 @@ describe('particpant list', () => {
     await testUtils.deleteFixturesIfExist('RegistryUser');
   });
 
-  it('GET request to participants returs all participants', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(3);
-        expect(res.body.result[0]).to.have.property('firstName','Teemu');
-      })
-  );
+  async function getParticipantsWithFilter(filter) {
+    const res = await testUtils.getWithUser(`/api/participants/?filter=${filter}`, user);
+    testUtils.expectStatus(res.status, 200);
+    return res.body;
+  }
 
-  it('GET request to participants with one where filter', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{"village":"Kattivaara"},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(1);
-        expect(res.body.result[0]).to.have.property('firstName','Teemu');
-      })
-  );
+  it('GET request to participants returs all participants', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":0,"limit":200}'
+    );
+    expect(response.result).to.be.an('array').with.length(3);
+    expect(response.result[0]).to.have.property('firstName','Teemu');
+  });
 
-  it('GET request to participants with several where filters', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(1);
-        expect(res.body.result[0]).to.have.property('firstName','Tero');
-      })
-  );
+  it('GET request to participants with one where filter', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{"village":"Kattivaara"},"skip":0,"limit":200}'
+    );
+    expect(response.result).to.be.an('array').with.length(1);
+    expect(response.result[0]).to.have.property('firstName','Teemu');
+  });
 
-  it('GET request to participants returns dates', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result[0]).to.have.property('dates');
-        expect(res.body.result[0].dates).to.be.an('array').with.length(3);
-      })
-  );
+  it('GET request to participants with several where filters', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200}'
+    );
+    expect(response.result).to.be.an('array').with.length(1);
+    expect(response.result[0]).to.have.property('firstName','Tero');
+  });
 
-  it('GET request to participants skips correct amount of participants', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":2,"limit":1,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(1);
-        expect(res.body.result[0]).to.have.property('participantId',3);
-        expect(res.body.result[0]).to.have.property('firstName','Jussi');
-      })
-  );
+  it('GET request to participants returns dates', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":0,"limit":200}'
+    );
+    expect(response.result[0]).to.have.property('dates');
+    expect(response.result[0].dates).to.be.an('array').with.length(3);
+  });
 
-  it('GET request to participants limits correct amount participants', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(2);
-        expect(res.body.result[0]).to.have.property('participantId',1);
-        expect(res.body.result[0]).to.have.property('firstName','Teemu');
-      })
-  );
+  it('GET request to participants skips correct amount of participants', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":2,"limit":1}'
+    );
+    expect(response.result).to.be.an('array').with.length(1);
+    expect(response.result[0]).to.have.property('participantId',3);
+    expect(response.result[0]).to.have.property('firstName','Jussi');
+  });
 
-  it('GET request to participants sorts participants correctly', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true,"order":"lastName DESC"}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.result).to.be.an('array').with.length(3);
-        expect(res.body.result[0]).to.have.property('lastName','Testihenkilö');
-        expect(res.body.result[1]).to.have.property('lastName','Jukola');
-        expect(res.body.result[2]).to.have.property('lastName','Esimerkki');
-      })
-  );
+  it('GET request to participants limits correct amount participants', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":0,"limit":2}'
+    );
+    expect(response.result).to.be.an('array').with.length(2);
+    expect(response.result[0]).to.have.property('participantId',1);
+    expect(response.result[0]).to.have.property('firstName','Teemu');
+  });
 
-  it('GET request to participants returns count', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":0,"limit":200,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.count).to.equal(3);
-      })
-  );
+  it('GET request to participants sorts participants correctly', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":0,"limit":200,"order":"lastName DESC"}'
+    );
+    expect(response.result).to.be.an('array').with.length(3);
+    expect(response.result[0]).to.have.property('lastName','Testihenkilö');
+    expect(response.result[1]).to.have.property('lastName','Jukola');
+    expect(response.result[2]).to.have.property('lastName','Esimerkki');
+  });
 
-  //count should retrun the number of all maches regardless of the paging
-  it('count is calculated correctly when skip and limit are present', async () =>
-    request(app)
-      .get(`/api/participants/?filter={"where":{},"skip":1,"limit":2,"include":["dates"],"count":true}&access_token=${accessToken}`)
-      .expect(200)
-      .expect(res => {
-        expect(res.body.count).to.equal(3);
-      })
-  );
+  it('GET request to participants returns count', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":0,"limit":200}'
+    );
+    expect(response.count).to.equal(3);
+  });
+
+  //count should return the number of all maches regardless of the paging
+  it('count is calculated correctly when skip and limit are present', async () => {
+    const response = await getParticipantsWithFilter(
+      '{"where":{},"skip":1,"limit":2}'
+    );
+    expect(response.count).to.equal(3);
+  });
+
+  // TODO add test for no filters at all
+  // TODO add test for invalid filters
 
 });
