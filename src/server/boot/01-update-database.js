@@ -5,9 +5,9 @@ import config from '../conf';
 
 // TODO refactor this to a script file and add tests to check models and roles are
 // created correctly
-export default function(app, cb) {
+export default async function(app) {
   if (!app.get('standalone')) {
-    return cb();
+    return;
   }
 
   const db = app.datasources.db;
@@ -16,26 +16,29 @@ export default function(app, cb) {
   const modelsToUpdate = getModelCreationList();
 
   db.setMaxListeners(40);
-  isActual(modelsToUpdate)
-    .then(actual => actual
-      ? console.log('Database models are up to date.')
-      : db.autoupdate(modelsToUpdate).then(() => console.log(`Models: ${modelsToUpdate} updated.`)))
-    .catch(err => { console.error(`Error: ${err} when autoupdating models: ${modelsToUpdate}`); return Promise.reject(err); })
-    .then(() => sequelize.sync({ alter: true }))
-    .then(async () => {
+  try {
+    const actual = await isActual(modelsToUpdate);
+    if (actual) {
+      console.log('Database models are up to date.');
+    } else {
+      await db.autoupdate(modelsToUpdate);
+      console.log(`Models: ${modelsToUpdate} updated.`);
+    }
+  } catch (err) {
+    console.error(`Error: ${err} when autoupdating models: ${modelsToUpdate}`);
+    throw err;
+  }
+  await sequelize.sync({ alter: true });
 
-      // Create roles unless they already exist
-      const rolesInConfig = config.getRoles().map(roleName => ({ name: roleName }));
-      for (const role of rolesInConfig) {
-        await app.models.Role.findOrCreate(role);
-      }
+  // Create roles unless they already exist
+  const rolesInConfig = config.getRoles().map(roleName => ({ name: roleName }));
+  for (const role of rolesInConfig) {
+    await app.models.Role.findOrCreate(role);
+  }
 
-      // Destroy roles that are not in the config
-      await app.models.Role.destroyAll({
-        // nin = not in
-        name: { nin: config.getRoles() },
-      });
-
-    })
-    .asCallback(cb);
+  // Destroy roles that are not in the config
+  await app.models.Role.destroyAll({
+    // nin = not in
+    name: { nin: config.getRoles() },
+  });
 }
