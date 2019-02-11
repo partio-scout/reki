@@ -24,6 +24,27 @@ services:
       - KUKSA_API_EVENTID
       - KUKSA_API_ENDPOINT
 
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile-heroku
+    image: reki-heroku
+    command: 'bash -c ''npm run test-functional'''
+    working_dir: /data
+    volumes:
+      - '.:/data'
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=test
+      - TEST_DATABASE_URL=postgres://reki:password@postgres/rekitestdb
+      - PORT=3000
+      - KUKSA_API_PROXY_URL
+      - KUKSA_API_USERNAME
+      - KUKSA_API_PASSWORD
+      - KUKSA_API_EVENTID
+      - KUKSA_API_ENDPOINT
+
   postgres:
     build:
       context: .

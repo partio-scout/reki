@@ -4,8 +4,6 @@ import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
-import { models } from '../../src/server/models';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -63,19 +61,21 @@ describe('Presence history', () => {
     },
   ];
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-  );
+  beforeEach(async () => {
+    const { pool } = app.locals;
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+  });
 
-  function expectPresenceHistoryValues(expectedPresences, participantId, response) {
-    return models.PresenceHistory.findAll({
-      where: { participantParticipantId: participantId },
-      order: [[ 'id', 'ASC' ]],
-    }).then(rows => {
-      const presenceHistory = _.map(rows, row => row.presence);
-      expect(presenceHistory).to.eql(expectedPresences);
-    });
+  async function expectPresenceHistoryValues(expectedPresences, participantId, response) {
+    const { rows } = await app.locals.pool.query(`SELECT presence
+    FROM participant_presence
+    WHERE participant = $1
+    ORDER BY timestamp ASC`,
+      [participantId]);
+
+    const presenceHistory = _.map(rows, row => row.presence);
+    expect(presenceHistory).to.eql(expectedPresences);
   }
 
   function postOverRest(modelInPlural, changes) {

@@ -3,7 +3,6 @@ import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -64,15 +63,11 @@ const testParticipantDates = [
 
 describe('particpant list', () => {
 
-  beforeEach(async () => {
-    await resetDatabase();
-    await testUtils.createFixtureSequelize('Participant', testParticipants);
-    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-  });
-
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExistSequelize('Participant');
-    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
+  before(async () => {
+    const { pool } = app.locals;
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+    await testUtils.createParticipantDateFixtures(pool, testParticipantDates);
   });
 
   it('GET request to participants returs all participants', async () =>

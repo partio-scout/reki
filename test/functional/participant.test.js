@@ -3,7 +3,6 @@ import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -12,28 +11,29 @@ const testParticipants = [{
   'participantId': 1,
   'firstName': 'Teemu',
   'lastName': 'Testihenkilö',
-  'nonScout': false,
-  'internationalGuest': false,
   'localGroup': 'Testilippukunta',
   'campGroup': 'Leirilippukunta',
   'village': 'Kylä',
   'subCamp': 'Alaleiri',
-  'ageGroup': 'sudenpentu',
-  'memberNumber': 123,
-  'dateOfBirth': new Date(2018,5,10),
+  'memberNumber': '123',
+  'kuksaData': {
+    'dateOfBirth': new Date(2018,5,10),
+    'nonScout': false,
+    'internationalGuest': false,
+    'ageGroup': 'sudenpentu',
+  },
 }];
 
 const testParticipantDates = [
-  { id: 1, participantId: 1, date: new Date(2016,6,20) },
-  { id: 2, participantId: 1, date: new Date(2016,6,21) },
-  { id: 3, participantId: 1, date: new Date(2016,6,23) },
+  { id: 1, participantId: 1, date: '2016-06-20' },
+  { id: 2, participantId: 1, date: '2016-06-21' },
+  { id: 3, participantId: 1, date: '2016-06-23' },
 ];
 
 const testParticipantPrecenceHistory = [ {
-  'participantParticipantId':1,
+  'participantId':1,
   'presence': 1,
   'timestamp': new Date(2016,6,20),
-  'authorId': 3,
 } ];
 
 const testAllergies = [{
@@ -43,7 +43,7 @@ const testAllergies = [{
 
 const testParticipantsSelections = [{
   'selectionId': 0,
-  'participantParticipantId': 1,
+  'participantId': 1,
   'kuksaGroupId': 0,
   'kuksaSelectionId': 0,
   'groupName': 'herneenpalvojat',
@@ -51,28 +51,21 @@ const testParticipantsSelections = [{
 }];
 
 const testParticipantAllergies = [{
-  'allergyAllergyId': 1,
-  'participantParticipantId': 1,
+  'allergyId': 1,
+  'participantId': 1,
 }];
 
 describe('particpant', () => {
 
   beforeEach(async () => {
-    await resetDatabase();
-    await testUtils.createFixtureSequelize('Participant', testParticipants);
-    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    await testUtils.createFixtureSequelize('PresenceHistory', testParticipantPrecenceHistory);
-    await testUtils.createFixtureSequelize('Allergy', testAllergies);
-    await testUtils.createFixtureSequelize('Selection', testParticipantsSelections);
-    await testUtils.createFixtureSequelize('ParticipantAllergy', testParticipantAllergies);
-  });
-
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExistSequelize('Participant');
-    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExistSequelize('PresenceHistory');
-    await testUtils.deleteFixturesIfExistSequelize('Allergy');
-    await testUtils.deleteFixturesIfExistSequelize('Selection');
+    const { pool } = app.locals;
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+    await testUtils.createParticipantDateFixtures(pool, testParticipantDates);
+    await testUtils.createPresenceHistoryFixtures(pool, testParticipantPrecenceHistory);
+    await testUtils.createAllergyFixtures(pool, testAllergies);
+    await testUtils.createSelectionFixtures(pool, testParticipantsSelections);
+    await testUtils.createParticipantAllergyFixtures(pool, testParticipantAllergies);
   });
 
   it('request for single participant returns correct info', async () =>

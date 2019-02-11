@@ -4,7 +4,6 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import _ from 'lodash';
-import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -63,10 +62,12 @@ describe('Text search', () => {
     },
   ];
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-  );
+  beforeEach(async () => {
+    const { pool } = app.locals;
+    console.log(app.locals);
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+  });
 
   function expectParticipants(expectedResult, response) {
     const firstNames = _.map(response.result, 'firstName');

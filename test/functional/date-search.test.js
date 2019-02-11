@@ -1,15 +1,15 @@
-import app from '../../src/server/server';
+import configureApp from '../../src/server/server';
 import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
 import _ from 'lodash';
-import { resetDatabase } from '../../scripts/seed-database';
+import { createConnection } from '../../src/server/database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-describe('Date search', () => {
+describe.only('Date search', () => {
   const testParticipants = [
     {
       'participantId': 1,
@@ -56,22 +56,35 @@ describe('Date search', () => {
   ];
 
   const testParticipantDates = [
-    { participantId: 1, date: new Date(2016,6,20) },
-    { participantId: 1, date: new Date(2016,6,21) },
-    { participantId: 1, date: new Date(2016,6,22) },
-    { participantId: 1, date: new Date(2016,6,23) },
-    { participantId: 2, date: new Date(2016,6,22) },
-    { participantId: 2, date: new Date(2016,6,23) },
-    { participantId: 2, date: new Date(2016,6,27) },
+    { participant: 1, date: '2016-06-20' },
+    { participant: 1, date: '2016-06-21' },
+    { participant: 1, date: '2016-06-22' },
+    { participant: 1, date: '2016-06-23' },
+    { participant: 2, date: '2016-06-22' },
+    { participant: 2, date: '2016-06-23' },
+    { participant: 2, date: '2016-06-27' },
   ];
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-      .then(() => testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates))
-  );
+  let app;
+  let pool;
+
+  before(async () => {
+    pool = await createConnection();
+    app = configureApp(pool);
+  });
+
+  after(() => {
+    pool.end();
+  });
+
+  beforeEach(async () => {
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+    await testUtils.createParticipantDateFixtures(pool, testParticipantDates);
+  });
 
   function expectParticipants(expectedResult, response) {
+    console.log(response, expectedResult);
     const firstNames = _.map(response.result, 'firstName');
     return expect(firstNames).to.have.members(expectedResult);
   }
@@ -104,7 +117,7 @@ describe('Date search', () => {
   );
 
   it('Query with one date', () =>
-    queryParticipants({ 'dates': ['2016-07-22T00:00:00.000Z'] })
+    queryParticipants({ 'dates': ['2016-07-22'] })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })

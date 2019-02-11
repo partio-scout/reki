@@ -1,13 +1,25 @@
-import app from '../../src/server/server';
+import configureApp from '../../src/server/server';
 import request from 'supertest';
 import chai from 'chai';
-import { resetDatabase } from '../../scripts/seed-database';
+import { createConnection } from '../../src/server/database';
+import { resetDatabase } from '../utils/test-utils';
 
 const expect = chai.expect;
 
 describe('Config api endpoint', () => {
+  let app;
+  let pool;
 
-  before(resetDatabase);
+  before(async () => {
+    pool = await createConnection();
+    await resetDatabase(pool);
+
+    app = configureApp(pool);
+  });
+
+  after(() => {
+    pool.end();
+  });
 
   it('has participant fields', async () =>
     await request(app)
@@ -23,12 +35,7 @@ describe('Config api endpoint', () => {
     await request(app)
     .get('/api/config')
     .expect(res => {
-      expect(res.body.fields).to.deep.include({
-        name: 'presence',
-        type: 'mandatory_field',
-        dataType: 'integer',
-        nullable: true,
-      });
+      expect(res.body.fields).to.deep.include('presence');
     })
   );
 
@@ -36,12 +43,7 @@ describe('Config api endpoint', () => {
     await request(app)
     .get('/api/config')
     .expect(res => {
-      expect(res.body.fields).to.deep.include({
-        name: 'nickname',
-        type: 'participant_field',
-        dataType: 'string',
-        nullable: true,
-      });
+      expect(res.body.fields).to.deep.include('nickname');
     })
   );
 

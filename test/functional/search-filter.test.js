@@ -2,8 +2,7 @@ import app from '../../src/server/server';
 import request from 'supertest';
 import chai from 'chai';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
-import { models } from '../../src/server/models';
+import { getAllSearchFilters } from '../../src/server/database/searchFilter';
 
 const expect = chai.expect;
 
@@ -14,10 +13,9 @@ describe('SearchFilter', () => {
       filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
     }];
 
-  beforeEach( async () => {
-    await resetDatabase();
+  beforeEach(async () => {
+    await testUtils.resetDatabase(app.locals.pool);
   });
-  afterEach(() => testUtils.deleteFixturesIfExistSequelize('SearchFilter'));
 
   it('GET SearchFilter returns a filter when not empty', async () => {
     await testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture);
@@ -51,7 +49,7 @@ describe('SearchFilter', () => {
       expect(res.body).to.have.property('name', 'ok');
       expect(res.body).to.have.property('filter', '?filter=%7B%22textSearch%22%3A%22asd%22%7D');
     });
-    const filters = await models.SearchFilter.findAll();
+    const filters = await getAllSearchFilters(app.locals.pool);
     expect(filters).to.be.an('array').with.length(1);
   });
 
@@ -59,7 +57,7 @@ describe('SearchFilter', () => {
     await testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture);
     await request(app).delete('/api/searchfilters/1')
       .expect(200);
-    const filters = await models.SearchFilter.findAll();
+    const filters = await getAllSearchFilters(app.locals.pool);
     expect(filters).to.be.an('array').with.length(0);
   });
 
@@ -67,7 +65,7 @@ describe('SearchFilter', () => {
     await testUtils.createFixtureSequelize('SearchFilter', searchFilterFixture);
     await request(app).delete('/api/searchfilters/3')
       .expect(404);
-    const filters = await models.SearchFilter.findAll();
+    const filters = await getAllSearchFilters(app.locals.pool);
     expect(filters).to.be.an('array').with.length(1);
   });
 

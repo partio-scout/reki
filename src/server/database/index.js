@@ -32,14 +32,12 @@ export async function createConnection() {
     connectionString: dbUrl,
   });
 
-  await migrateDb(pool);
+  await waitForDbConnection(pool);
 
   return pool;
 }
 
 export async function migrateDb(pool) {
-  await waitForDbConnection(pool);
-
   if (await isMigrated(pool)) {
     return;
   }

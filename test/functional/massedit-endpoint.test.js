@@ -4,7 +4,6 @@ import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -62,10 +61,11 @@ describe('Participant mass edit endpoint test', () => {
     },
   ];
 
-  beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createFixtureSequelize('Participant', testParticipants))
-  );
+  beforeEach(async () => {
+    const { pool } = app.locals;
+    await testUtils.resetDatabase(pool);
+    await testUtils.createParticipantFixtures(pool, testParticipants);
+  });
 
   function expectParticipantInCampValues(expectedResult, response) {
     const inCampValues = _.map(response.result, row => row.presence);

@@ -3,7 +3,6 @@ import request from 'supertest';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import * as testUtils from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -24,14 +23,10 @@ const testOptions = [
 ];
 
 describe('Options', () => {
-
-  beforeEach( async () => {
-    await resetDatabase();
-    await testUtils.createFixtureSequelize('Option', testOptions);
-  });
-
-  afterEach( async () => {
-    await testUtils.deleteFixturesIfExistSequelize('Option');
+  before(async () => {
+    const { pool } = app.locals;
+    await testUtils.resetDatabase(pool);
+    await testUtils.createOptionFixtures(pool, testOptions);
   });
 
   it('GET request to options', async () =>
