@@ -44,7 +44,7 @@ export function getSessionTimeoutNotification(accessToken) {
           </Modal.Body>
           <Modal.Footer>
             <div className="text-center">
-              <Button href="/saml/login" bsStyle="primary">Kirjaudu sisään</Button>
+              <Button href="/login/partioid" bsStyle="primary">Kirjaudu sisään</Button>
               <Button href="/">Peruuta</Button>
             </div>
           </Modal.Footer>

@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { getMainNavigationContainer } from './containers/MainNavigationContainer';
 import { getErrorNotification } from './ErrorNotification';
 
-export function getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification) {
+export function getApp(registryUserStore, registryUserActions, errorStore, errorActions) {
   class App extends React.Component {
     render() {
       const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
@@ -31,7 +31,6 @@ export function getApp(registryUserStore, registryUserActions, errorStore, error
             </Row>
           </Grid>
           <ErrorNotification />
-          <SessionTimeoutNotification />
         </div>
       );
     }

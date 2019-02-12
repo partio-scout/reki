@@ -8,7 +8,7 @@ export function getLoginPromptPage() {
         <h1>Tämä sivu vaatii kirjautumisen.</h1>
         <p>
           <Button
-            href="/saml/login"
+            href="/login/partioid"
             bsStyle="primary"
             bsSize="large">
             Kirjaudu sisään Partio ID:llä

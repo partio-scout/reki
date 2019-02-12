@@ -5,6 +5,14 @@ export default function(app){
     res.json(users);
   });
 
+  app.get('/api/registryusers/currentUser', (req, res) => {
+    if (req.user) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ message: 'Unauthorized: You do not have permission to perform this action' });
+    }
+  });
+
   app.get('/api/registryusers/:id', app.requirePermission('view own user information'), app.wrap(async (req, res) => {
     if (req.user.id === +req.params.id) {
       const user = await app.models.RegistryUser.findById(req.params.id, { include: 'rekiRoles' });
@@ -27,9 +35,9 @@ export default function(app){
     app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
   }));
 
-  app.post('/api/registryusers/logout', app.wrap( async (req, res) => {
-    await app.models.RegistryUser.logout(req.query.access_token || req.get('Authorization'));
+  app.post('/api/registryusers/logout', (req, res) => {
+    req.logout();
     res.status(204).send('');
-  }));
+  });
 
 }

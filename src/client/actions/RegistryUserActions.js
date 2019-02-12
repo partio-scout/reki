@@ -1,9 +1,5 @@
 import Cookie from 'js-cookie';
 
-function deleteAccessTokenCookie() {
-  Cookie.remove('accessToken');
-}
-
 export function getRegistryUserActions(alt, registryUserResource, errorActions) {
   class RegistryUserActions {
     resetAllData() {
@@ -27,16 +23,15 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
       return loggedIn;
     }
 
-    loadCurrentUser(id) {
+    loadCurrentUser() {
       return dispatch => {
         dispatch();
-        if (!id) {
-          this.currentUserUpdated(null);
-        } else {
-          registryUserResource.findById(id, 'filter[include]=rekiRoles')
-            .then(newCurrentUser => this.currentUserUpdated(newCurrentUser),
-                  err => errorActions.error(err, 'Käyttäjätietoja ei voitu ladata'));
-        }
+        registryUserResource.raw('get', 'currentUser')
+          .catch(() => null)
+          .then(newCurrentUser => {
+            this.currentUserUpdated(newCurrentUser);
+            this.updateLoginStatus(!!newCurrentUser);
+          });
       };
     }
 
@@ -71,7 +66,6 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
         dispatch();
         registryUserResource.raw('POST', 'logout')
           .then(() => {
-            deleteAccessTokenCookie();
             this.resetAllData();
           });
       };

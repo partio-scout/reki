@@ -6,7 +6,6 @@ import Alt from 'alt';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import request from 'superagent';
-import Cookie from 'js-cookie';
 import moment from 'moment';
 
 import * as components from './components';
@@ -18,14 +17,12 @@ moment.locale('fi');
 
 // Get REST API access token
 
-const accessToken = Cookie.getJSON('accessToken');
-
 const RestfulResource = getRestfulResource(request);
-const participantResource = new RestfulResource('/api/participants', accessToken);
-const participantDateResource = new RestfulResource('/api/participantDates', accessToken);
-const registryUserResource = new RestfulResource('/api/registryusers', accessToken);
-const searchFilterResource = new RestfulResource('/api/searchfilters', accessToken);
-const optionResource = new RestfulResource('/api/options', accessToken);
+const participantResource = new RestfulResource('/api/participants');
+const participantDateResource = new RestfulResource('/api/participantDates');
+const registryUserResource = new RestfulResource('/api/registryusers');
+const searchFilterResource = new RestfulResource('/api/searchfilters');
+const optionResource = new RestfulResource('/api/options');
 
 const alt = new Alt();
 
@@ -39,8 +36,7 @@ const participantStore = stores.getParticipantStore(alt, participantActions, reg
 const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
-const SessionTimeoutNotification = components.getSessionTimeoutNotification(accessToken);
-const app = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions, SessionTimeoutNotification);
+const app = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions);
 const login = components.getLogin(registryUserActions, registryUserStore);
 const homepage = components.getHomepage();
 const LoginPromptPage = components.getLoginPromptPage();
@@ -65,16 +61,7 @@ const participantSidebar = restrictComponent(
 );
 const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
 
-const accessTokenValid = accessToken && accessToken.userId && accessToken.ttl > ((Date.now() - new Date(accessToken.created)) / 1000);
-
-if (accessTokenValid) {
-  registryUserActions.loadCurrentUser(accessToken.userId);
-  registryUserActions.updateLoginStatus(true);
-} else {
-  Cookie.remove('accessToken');
-  registryUserActions.loadCurrentUser();
-  registryUserActions.updateLoginStatus(false);
-}
+registryUserActions.loadCurrentUser();
 
 const routes = (
   <Router history={ browserHistory }>
