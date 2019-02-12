@@ -1,94 +1,56 @@
-import Promise from 'bluebird';
 import fs from 'fs';
-import { SAML } from 'passport-saml';
+import passport from 'passport';
+import { Strategy as SamlStrategy } from 'passport-saml';
 import path from 'path';
-
-const useProductionPartioID = process.env.PARTIOID_USE_PRODUCTION === 'true';
-const partioIDRemoteName = useProductionPartioID ? 'id' : 'partioid-test';
-const conf = {
-  path: '/auth/partioid',
-  issuer: process.env.PARTIOID_SP_ISSUER || 'http://localhost:3000',
-  entryPoint: `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SSOService.php`,
-  cert: fs.readFileSync(path.join(__dirname,'..', '..', '..', 'certs', 'partioid', `${partioIDRemoteName}.crt`)).toString(),
-};
-const partioid = new SAML(conf);
+import { fromCallback } from '../util/promises';
 
 export default function(app) {
-  const isProduction = !app.get('isDev');
-  const cookieOptions = isProduction ? { secure: true } : undefined;
+  const useProductionPartioID = process.env.PARTIOID_USE_PRODUCTION === 'true';
+  const partioIDRemoteName = useProductionPartioID ? 'id' : 'partioid-test';
+  const partioIdIssuer = process.env.PARTIOID_SP_ISSUER || 'http://localhost:3000';
+  const partioIdEntryPoint = `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SSOService.php`;
+  const partioIdCertificate = fs.readFileSync(path.join(__dirname,'..', '..', '..', 'certs', 'partioid', `${partioIDRemoteName}.crt`), 'utf-8');
 
-  const getAuthorizeUrl = Promise.promisify(partioid.getAuthorizeUrl, { context: partioid });
-  const validatePostResponse = Promise.promisify(partioid.validatePostResponse, { context: partioid });
-  const findOneUser = Promise.promisify(app.models.RegistryUser.findOne, { context: app.models.RegistryUser });
-  const destroyAccessTokens = Promise.promisify(app.models.AccessToken.destroyAll, { context: app.models.AccessToken });
-
-  app.get('/saml/login', (req, res) =>
-    getAuthorizeUrl(req)
-      .then(url => res.redirect(url))
-      .catch(err => processError(req, res, err))
-  );
-
-  app.post('/saml/consume', (req, res) =>
-    validatePostResponse(req.body)
-      .then(getWhereFilter)
-      .then(findOneUser)
-      .then(user => loginUser(user, app))
-      .tap(([accessToken]) => destroyAccessTokens({ and: [{ id: { neq: accessToken.id } }, { userId: accessToken.userId }] }))
-      .spread((accessToken, user) => setCookieAndFinishRequest(accessToken, user, cookieOptions, res))
-      .catch(err => processError(req, res, err))
-  );
-
-  app.get('/saml/metadata.php', (req, res) =>{
-    res.status(200)
-      .type('text/plain')
-      .send(`$metadata[${conf.issuer}] = array(
-    'AssertionConsumerService' => '${conf.issuer}saml/consume',
-    'SingleLogoutService' => '${conf.issuer}saml/logout'
-);`);
-  });
-}
-
-function processError(req, res, err) {
-  res.status(500).send('Oho! Nyt tapahtui virhe. Jos tällaista tapahtuu uudelleen, ole yhteydessä ylläpitoon. Sori! :(');
-  console.error(err);
-}
-
-function getWhereFilter(samlResult) {
-  if (samlResult && samlResult.membernumber) {
-    return {
-      where: {
-        memberNumber: samlResult.membernumber,
+  passport.use('partioid',
+    new SamlStrategy(
+      {
+        path: '/saml/consume',
+        issuer: partioIdIssuer,
+        entryPoint: partioIdEntryPoint,
+        cert: partioIdCertificate,
       },
-    };
-  } else {
-    throw new Error('Jäsennumero puuttuu PartioID-vastauksesta.');
-  }
-}
+      async (profile, done) => {
+        try {
+          if (!profile || !profile.membernumber) {
+            done(null, false, { message: 'Jäsennumero puuttuu PartioID-vastauksesta.' });
+            return;
+          }
 
-function loginUser(user, app) {
-  if (user === null) {
-    throw new Error('PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.');
-  }
+          const user = await fromCallback(cb => app.models.RegistryUser.findOne({
+            where: {
+              memberNumber: String(profile.memberNumber),
+            },
+            include: 'rekiRoles',
+          }, cb));
 
-  if (app.models.RegistryUser.isBlocked(user)) {
-    throw new Error('Käyttäjän sisäänkirjautuminen on estetty');
-  }
+          if (!user) {
+            done(null, false, { message: 'PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.' });
+            return;
+          } else if (app.models.RegistryUser.isBlocked(user)) {
+            done(null, false, { message: 'Käyttäjän sisäänkirjautuminen on estetty' });
+            return;
+          } else {
+            done(null, user.toJSON());
+            return;
+          }
+        } catch (e) {
+          done(e);
+          return;
+        }
+      })
+  );
 
-  return new Promise((resolve, reject) => {
-    user.createAccessToken(4*3600, (err, accessToken) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve([accessToken, user]);
-      }
-    });
-  });
-}
+  app.get('/login/partioid', passport.authenticate('partioid', { successRedirect: '/', failureRedirect: '/', failureFlash: true }));
 
-function setCookieAndFinishRequest(accessToken, user, cookieOptions, res) {
-  accessToken.email = user.email;
-
-  res.cookie('accessToken', JSON.stringify(accessToken), cookieOptions);
-
-  res.redirect('/');
+  app.post('/saml/consume', passport.authenticate('partioid', { successRedirect: '/', failureRedirect: '/', failureFlash: true }));
 }

@@ -1,9 +1,12 @@
 import loopback from 'loopback';
 import path from 'path';
+import crypto from 'crypto';
 import expressEnforcesSsl from 'express-enforces-ssl';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import passport from 'passport';
+import session from 'express-session';
 
 import updateDatabase from './boot/01-update-database';
 import errorHandling from './boot/02-error-handling';
@@ -20,6 +23,8 @@ import devLogin from './boot/05-dev-login';
 import frontend from './boot/06-frontend';
 import monitoring from './boot/07-monitoring';
 import restOfApi404 from './boot/99-rest-of-api-404';
+
+import { fromCallback } from './util/promises';
 
 const app = loopback();
 
@@ -44,8 +49,42 @@ async function boot(app) {
     app.use(expressEnforcesSsl());
   }
 
+  const cookieSecret = process.env.COOKIE_SECRET || getSecureRandomString();
+
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(session({
+    secret: cookieSecret,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 4*60*60*1000,
+      secure: !app.get('isDev'),
+    },
+    resave: false,
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  passport.serializeUser((user, done) => { done(null, user.memberNumber); });
+  passport.deserializeUser(async (memberNumber, done) => {
+    try {
+      const user = await fromCallback(cb => app.models.RegistryUser.findOne({
+        where: {
+          memberNumber: String(memberNumber),
+        },
+        include: 'rekiRoles',
+      }, cb));
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      done(null, user.toJSON());
+    } catch (e) {
+      done(e);
+    }
+  });
 
   app.use(helmet());
   app.use(helmet.noCache()); // noCache disabled by default
@@ -94,4 +133,10 @@ async function boot(app) {
       console.log('Web server listening at: %s', app.get('url'));
     });
   }
+}
+
+function getSecureRandomString() {
+  const buf = Buffer.alloc(32);
+  crypto.randomFillSync(buf);
+  return buf.toString('base64');
 }

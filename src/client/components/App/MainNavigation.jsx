@@ -64,7 +64,7 @@ export function getMainNavigation() {
     getLoggedOutNavItems() {
       return [
         {
-          to: '/saml/login',
+          to: '/login/partioid',
           isIndexLink: true,
           label: 'Kirjaudu sisään',
           isExternalLink: true,
