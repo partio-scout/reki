@@ -2,6 +2,7 @@ import loopback from 'loopback';
 import path from 'path';
 import expressEnforcesSsl from 'express-enforces-ssl';
 import helmet from 'helmet';
+import bodyParser from 'body-parser';
 
 import updateDatabase from './boot/01-update-database';
 import errorHandling from './boot/02-error-handling';
@@ -35,11 +36,14 @@ if ( !app.get('isDev') ) {
   app.use(expressEnforcesSsl());
 }
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(helmet());
 app.use(helmet.noCache()); // noCache disabled by default
 
 if (app.get('standalone')) {
-  app.middleware('routes:before', morgan('combined'));
+  app.use(morgan('combined'));
 }
 
 const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'"];
@@ -64,6 +68,10 @@ app.use((err, req, res, next) => {
 boot(app);
 
 async function boot(app) {
+  app.set('env', process.env.NODE_ENV || 'development');
+  app.set('port', process.env.PORT || 3000);
+  app.set('logoutSessionsOnSensitiveChanges', true);
+
   await updateDatabase(app);
   errorHandling(app);
   accessControl(app);
