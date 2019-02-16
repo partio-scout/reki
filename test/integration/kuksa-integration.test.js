@@ -11,7 +11,7 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 chai.use(chaiDateTime);
 
-describe('Kuksa integration', () => {
+describe('Kuksa integration (yes, this is very slow)', () => {
 
   before(function(done) {
     this.timeout(800000);

@@ -1,82 +1,36 @@
 import { models } from '../../src/server/models';
 import _ from 'lodash';
-import chai from 'chai';
-import * as testUtils from '../utils/test-utils';
+import { expect } from 'chai';
+import {
+  createUserWithRoles,
+  withFixtures,
+  deleteUsers,
+  postWithUser,
+  expectStatus,
+} from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
-const expect = chai.expect;
-
-describe('Participant mass edit endpoint test', () => {
+describe('Participant mass edit API endpoint', () => {
   const inCamp = 3;
   const tmpLeftCamp = 2;
   const leftCamp = 1;
 
-  const testParticipants = [
-    {
-      'participantId': 1,
-      'firstName': 'Teemu',
-      'lastName': 'Testihenkilö',
-      'nonScout': false,
-      'internationalGuest': false,
-      'localGroup': 'Testilippukunta',
-      'campGroup': 'Leirilippukunta',
-      'village': 'Testikylä',
-      'subCamp': 'Alaleiri',
-      'ageGroup': 'sudenpentu',
-      'memberNumber': 123,
-      'presence': leftCamp,
-      'dateOfBirth': new Date(),
-    },
-    {
-      'participantId': 2,
-      'firstName': 'Tero',
-      'lastName': 'Esimerkki',
-      'nonScout': false,
-      'internationalGuest': false,
-      'localGroup': 'Testilippukunta',
-      'campGroup': 'Leirilippukunta',
-      'village': 'Testikylä',
-      'subCamp': 'Alaleiri',
-      'ageGroup': 'sudenpentu',
-      'memberNumber': 345,
-      'presence': leftCamp,
-      'dateOfBirth': new Date(),
-    },
-    {
-      'participantId': 3,
-      'firstName': 'Jussi',
-      'lastName': 'Jukola',
-      'nonScout': false,
-      'internationalGuest': false,
-      'localGroup': 'Testilippukunta',
-      'campGroup': 'Leirilippukunta',
-      'village': 'Testikylä',
-      'subCamp': 'Alaleiri',
-      'ageGroup': 'seikkailija',
-      'memberNumber': 859,
-      'presence': tmpLeftCamp,
-      'dateOfBirth': new Date(),
-    },
-  ];
-
   let user;
 
-  beforeEach(async() => {
-    await resetDatabase();
-    await testUtils.createFixtureSequelize('Participant', testParticipants);
-    user = await testUtils.createUserWithRoles(['registryUser']);
-  });
+  before(resetDatabase);
+  withFixtures(getFixtures());
 
-  after(resetDatabase);
+  beforeEach(async () => user = await createUserWithRoles(['registryUser'])),
+  afterEach(deleteUsers);
 
-  it('Should update whitelisted fields', async () => {
-    const res = await testUtils.postWithUser('/api/participants/massAssign', user, {
+  it('updates whitelisted fields', async () => {
+    const res = await postWithUser('/api/participants/massAssign', user, {
       ids: [ 1,2 ],
       newValue: inCamp,
       fieldName: 'presence',
     });
 
-    testUtils.expectStatus(res.status, 200);
+    expectStatus(res.status, 200);
     expect(res.body).to.be.an('array').with.length(2);
     expect(res.body[0]).to.have.property('firstName', 'Teemu');
 
@@ -84,17 +38,69 @@ describe('Participant mass edit endpoint test', () => {
     expect(_.map(participants, 'presence')).to.eql([ inCamp, inCamp, tmpLeftCamp ]);
   });
 
-  it('Should not update fields that are not whitelisted', async () => {
-    const res = await testUtils.postWithUser('/api/participants/massAssign', user, {
+  it('doesn\'t update fields that are not whitelisted', async () => {
+    const res = await postWithUser('/api/participants/massAssign', user, {
       ids: [ 1,2 ],
       newValue: 'alaleiri2',
       fieldName: 'subCamp',
     });
 
-    testUtils.expectStatus(res.status, 400);
+    expectStatus(res.status, 400);
 
     const participants = await models.Participant.findAll({ order: ['participantId'] });
     expect(_.map(participants, 'subCamp')).to.eql([ 'Alaleiri', 'Alaleiri', 'Alaleiri' ]);
   });
+
+  function getFixtures() {
+    return {
+      'Participant': [
+        {
+          'participantId': 1,
+          'firstName': 'Teemu',
+          'lastName': 'Testihenkilö',
+          'nonScout': false,
+          'internationalGuest': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Testikylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'sudenpentu',
+          'memberNumber': 123,
+          'presence': leftCamp,
+          'dateOfBirth': new Date(),
+        },
+        {
+          'participantId': 2,
+          'firstName': 'Tero',
+          'lastName': 'Esimerkki',
+          'nonScout': false,
+          'internationalGuest': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Testikylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'sudenpentu',
+          'memberNumber': 345,
+          'presence': leftCamp,
+          'dateOfBirth': new Date(),
+        },
+        {
+          'participantId': 3,
+          'firstName': 'Jussi',
+          'lastName': 'Jukola',
+          'nonScout': false,
+          'internationalGuest': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Testikylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'seikkailija',
+          'memberNumber': 859,
+          'presence': tmpLeftCamp,
+          'dateOfBirth': new Date(),
+        },
+      ],
+    };
+  }
 
 });
