@@ -23,6 +23,7 @@ services:
       - KUKSA_API_PASSWORD
       - KUKSA_API_EVENTID
       - KUKSA_API_ENDPOINT
+      - ENABLE_OFFLINE_LOGIN=true
 
   postgres:
     build:

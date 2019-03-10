@@ -16,6 +16,7 @@ import options from './boot/03-options';
 import participantDate from './boot/03-participant-date';
 import participant from './boot/03-participant';
 import partioidLogin from './boot/03-partioid-login';
+import offlineLogin from './boot/03-offline-login';
 import registryUser from './boot/03-registry-user';
 import searchFilter from './boot/03-search-filter';
 import restApi from './boot/04-rest-api';
@@ -118,6 +119,7 @@ async function boot(app) {
   participantDate(app);
   participant(app);
   partioidLogin(app);
+  offlineLogin(app);
   registryUser(app);
   searchFilter(app);
   restApi(app);
