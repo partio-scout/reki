@@ -1,5 +1,3 @@
-import Cookie from 'js-cookie';
-
 export function getRegistryUserActions(alt, registryUserResource, errorActions) {
   class RegistryUserActions {
     resetAllData() {
@@ -42,17 +40,27 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
     loginOffline(email, pass) {
       return dispatch => {
         dispatch();
-        return registryUserResource.raw('POST', 'login', { 'body': { 'email': email, 'password': pass } })
-          .then(data => Cookie.set('accessToken', data, { secure: (window.location.protocol === 'https:') }))
-          .then(() => location.reload())
-          .catch(err => {
-            if (err.status === 404) {
+        return fetch('/login/password', {
+          method: 'POST',
+          mode: 'same-origin',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Basic ${btoa([email, pass].join(':'))}`,
+          },
+        })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else if (response.status === 404) {
               this.offlineLoginNotEnabled(true);
-            } else if (err.status === 400) {
-              errorActions.error(err, 'Väärä käyttäjätunnus tai salasana');
             } else {
-              errorActions.error(err, 'Kirjautuminen epäonnistui');
+              throw new Error('Kirjautuminen epäonnistui');
             }
+          })
+          .catch(err => {
+            errorActions.error(err);
           });
       };
     }
