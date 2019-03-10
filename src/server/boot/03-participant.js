@@ -2,10 +2,11 @@ import { models } from '../models';
 import { Op } from 'sequelize';
 import _ from 'lodash';
 import config from '../conf';
+import optionalBasicAuth from '../middleware/optional-basic-auth';
 
 export default function(app){
 
-  app.get('/api/participants/:id', app.requirePermission('view participants'), app.wrap(async (req, res) => {
+  app.get('/api/participants/:id', optionalBasicAuth(), app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const id = +req.params.id || 0;
     const participant = await models.Participant.findById(id , {
       include: [{ all: true, nested: true }],
@@ -19,7 +20,7 @@ export default function(app){
     }
   }));
 
-  app.get('/api/participants', app.requirePermission('view participants'), app.wrap(async (req, res) => {
+  app.get('/api/participants', optionalBasicAuth(), app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const filter = JSON.parse(req.query.filter || '{}');
     const limit = +filter.limit || undefined;
     const offset = +filter.skip || undefined;
@@ -86,7 +87,7 @@ export default function(app){
     res.json( { result: result.rows, count: result.count });
   }));
 
-  app.post('/api/participants/massAssign', app.requirePermission('edit participants'), app.wrap(async (req, res) => {
+  app.post('/api/participants/massAssign', optionalBasicAuth(), app.requirePermission('edit participants'), app.wrap(async (req, res) => {
     const updates = await models.Participant.massAssignField(
       req.body.ids,
       req.body.fieldName,
