@@ -1,5 +1,6 @@
 import setupAccessControl from '../middleware/access-control.js';
 import config from '../conf';
+import optionalBasicAuth from '../middleware/optional-basic-auth';
 
 export default function(app) {
 
@@ -9,11 +10,11 @@ export default function(app) {
 
   // Endpoints for testing
 
-  app.get('/api/test/rbac-test-success', app.requirePermission('perform allowed test action'), (req, res) => {
+  app.get('/api/test/rbac-test-success', optionalBasicAuth(), app.requirePermission('perform allowed test action'), (req, res) => {
     res.send('You should see this!');
   });
 
-  app.get('/api/test/rbac-test-fail', app.requirePermission('perform disallowed test action'), (req, res) => {
+  app.get('/api/test/rbac-test-fail', optionalBasicAuth(), app.requirePermission('perform disallowed test action'), (req, res) => {
     res.send('You should not see this!');
   });
 }
