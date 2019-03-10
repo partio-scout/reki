@@ -69,7 +69,7 @@ describe('Registryuser blocking', () => {
       .then(results => expect(app.models.RegistryUser.isBlocked(results[0])).to.equal(false))
   );
 
-  it('Should not have status after blocking', () =>
+  it('Should not have status after unblocking', () =>
     unblockUser(2)
       .then(() => testUtils.find('RegistryUser', { id: 2 }))
       .then(results => expect(results[0].status).to.be.null)

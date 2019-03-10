@@ -1,5 +1,4 @@
 import app from '../../src/server/server';
-import request from 'supertest';
 import chai from 'chai';
 import * as testUtils from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
@@ -94,21 +93,4 @@ describe('RegistryUser', () => {
     const affectedUser = await app.models.RegistryUser.findById(1);
     expect(app.models.RegistryUser.isBlocked(affectedUser)).is.false;
   });
-
-  it('logout should destroy accestoken in query param', async () => {
-    const token = await user.createAccessToken(1000);
-    await request(app)
-      .post(`/api/registryusers/logout?access_token=${token.id}`)
-      .expect(204);
-    expect(await app.models.AccessToken.findById(token.id)).to.be.null;
-  });
-
-  it('logout should destroy accestoken in Authorization header', async () => {
-    const token = await user.createAccessToken(1000);
-    await request(app).post('/api/registryusers/logout')
-      .set('Authorization', token.id)
-      .expect(204);
-    expect(await app.models.AccessToken.findById(token.id)).to.be.null;
-  });
-
 });

@@ -8,15 +8,6 @@ import request from 'supertest';
 // Counter for generating e.g. unique users automatically
 let uniqueIdCounter = 1;
 
-export function loginUser(username, userpass) {
-  userpass = userpass || 'salasana';
-  const promiseUserLogin = Promise.promisify(app.models.RegistryUser.login, { context: app.models.RegistryUser });
-  return promiseUserLogin({
-    username: username,
-    password: userpass,
-  });
-}
-
 export function createFixture(modelName, fixture) {
   const create = Promise.promisify(app.models[modelName].create, { context: app.models[modelName] });
   return create(fixture);
@@ -30,9 +21,9 @@ export function createFixtureSequelize(modelName, fixture) {
   }
 }
 
-export function createUserWithRoles(rolesToAdd, overrides) {
+export async function createUserWithRoles(rolesToAdd, overrides) {
   uniqueIdCounter++;
-  const userData = {
+  const userData = Object.assign({
     'username': `testuser${uniqueIdCounter}`,
     'memberNumber': String(100000 + uniqueIdCounter),
     'email': `test${uniqueIdCounter}@example.org`,
@@ -40,12 +31,16 @@ export function createUserWithRoles(rolesToAdd, overrides) {
     'firstName': 'Testi',
     'lastName': 'Testailija',
     'phoneNumber': 'n/a',
-  };
-  Object.assign(userData, overrides);
-  return Promise.join(
-    getRolesByName(rolesToAdd),
-    createFixture('RegistryUser', userData),
-    addRolesToUser);
+  }, overrides);
+
+  const [roles, user] = await Promise.all([getRolesByName(rolesToAdd), createFixture('RegistryUser', userData)]);
+
+  await addRolesToUser(roles, user);
+
+  // The password on the returned user object is hashed, to be able to access the actual
+  // password later on, we set it here
+  user.clear_password = userData.password;
+  return user;
 }
 
 function getRolesByName(roleNames) {
@@ -59,7 +54,7 @@ function addRolesToUser(roles, user) {
     'roleId': role.id,
   }));
 
-  return createFixture('RoleMapping', roleMappings).then(() => user);
+  return createFixture('RoleMapping', roleMappings);
 }
 
 export function createUserAndGetAccessToken(roles, overrides) {
@@ -98,18 +93,15 @@ export function find(modelName, whereClause, includeClause) {
 }
 
 export async function getWithUser(path, user) {
-  const token = await user.createAccessToken(1000);
-  return request(app).get(path).set('Authorization', token.id);
+  return request(app).get(path).auth(user.email, user.clear_password);
 }
 
 export async function postWithUser(path, user, data) {
-  const token = await user.createAccessToken(1000);
-  return request(app).post(path).set('Authorization', token.id).send(data);
+  return request(app).post(path).auth(user.email, user.clear_password).send(data);
 }
 
 export async function deleteWithUser(path, user) {
-  const token = await user.createAccessToken(1000);
-  return request(app).delete(path).set('Authorization', token.id);
+  return request(app).delete(path).auth(user.email, user.clear_password);
 }
 
 export function expectStatus(status, expectedStatus) {
