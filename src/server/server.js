@@ -91,7 +91,7 @@ async function boot(app) {
   app.use(helmet.noCache()); // noCache disabled by default
 
   if (app.get('standalone')) {
-    app.use(morgan('combined'));
+    app.use(morgan('dev'));
   }
 
   const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'"];
