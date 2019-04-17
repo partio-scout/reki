@@ -61,23 +61,19 @@ Go to https://your-heroku-app.herokuapp.com/monitoring. If you see the text "OK"
 
 Set the NODE_ENV environment variable to "production" in your Heroku app, if it's not already set. This is necessary from performance and security reasons. **Never** run REKI in development mode in production.
 
+Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url with https, and must not contain a trailing slash. Example: `https://reki.tempus18.fi`.
+
 You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://your-heroku-app.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
 
 ### Setting up PartioID login
 
-Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). For this you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi. Ask them to add the following config in the identity provider settings (replace https://my-heroku-app.herokuapp.com with your real URL):
+Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). For this you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi.
 
-  $metadata['https://my-heroku-app.herokuapp.com'] = array(
-    'AssertionConsumerService' => 'https://my-heroku-app.herokuapp.com/saml/consume',
-    'SingleLogoutService' => 'https://my-heroku-app.herokuapp.com/saml/logout'
-  );
+First off verify your environment variables:
+- Set `PARTIOID_USE_PRODUCTION` to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will try use the PartioID test environment, partioid-test.partio.fi.
+- Verify that your `REKI_BASE_URL` environment variable is correctly set as desribed in the previous section.
 
-In the configuration, the string between [ and ] is the **entityId** of your service. It can be any string, but we recommend you use the root URL of your REKI installation, e.g. https://your-heroku-app.herokuapp.com.
-
-When the configuration in the PartioID end has been done, set the following environment variables in your Heroku app:
-
-- Set PARTIOID_USE_PRODUCTION to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will use the PartioID test environment, qaid.partio.fi.
-- Set PARTIOID_SP_ISSUER to the entityId that's set in the PartioID configuration (see above). Make sure you set them **exactly the same way**, for example https://example.org and https://example.org/ (with a trailing slash) are interpreted as different strings. Capitalization also matters, so be careful.
+Ask the ICT team to add a new service provider (SP) entry for Reki in the identity provider settings, given the metadata available on your reki instance, at the url `<REKI_BASE_URL>/saml/metadata`.
 
 #### Creating your fist user
 
