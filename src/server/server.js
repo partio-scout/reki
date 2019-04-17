@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import passport from 'passport';
 import session from 'express-session';
+import flash from 'connect-flash';
 
 import updateDatabase from './boot/01-update-database';
 import errorHandling from './boot/02-error-handling';
@@ -66,6 +67,7 @@ async function boot(app) {
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(flash());
 
   passport.serializeUser((user, done) => { done(null, user.memberNumber); });
   passport.deserializeUser(async (memberNumber, done) => {
@@ -127,6 +129,8 @@ async function boot(app) {
   frontend(app);
   monitoring(app);
   restOfApi404(app);
+
+  app.get('/flashes', (req, res) => res.json(req.flash()));
 
   // start the server if `$ node server.js`
   if (app.get('standalone')) {

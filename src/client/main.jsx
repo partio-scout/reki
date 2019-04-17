@@ -62,6 +62,7 @@ const participantSidebar = restrictComponent(
 const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
 
 registryUserActions.loadCurrentUser();
+errorActions.loadFlashes();
 
 const routes = (
   <Router history={ browserHistory }>
