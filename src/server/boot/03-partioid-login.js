@@ -4,7 +4,7 @@ import { SAML } from 'passport-saml';
 import path from 'path';
 
 const useProductionPartioID = process.env.PARTIOID_USE_PRODUCTION === 'true';
-const partioIDRemoteName = useProductionPartioID ? 'id' : 'qaid';
+const partioIDRemoteName = useProductionPartioID ? 'id' : 'partioid-test';
 const conf = {
   path: '/auth/partioid',
   issuer: process.env.PARTIOID_SP_ISSUER || 'http://localhost:3000',
