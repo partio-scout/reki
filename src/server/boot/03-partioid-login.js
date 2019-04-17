@@ -34,7 +34,7 @@ export default function(app) {
 
         const user = await fromCallback(cb => app.models.RegistryUser.findOne({
           where: {
-            memberNumber: String(profile.memberNumber),
+            memberNumber: String(profile.membernumber),
           },
           include: 'rekiRoles',
         }, cb));

@@ -1,3 +1,5 @@
+import { withDefaultOpts } from '../fetch';
+
 export function getRegistryUserActions(alt, registryUserResource, errorActions) {
   class RegistryUserActions {
     resetAllData() {
@@ -40,16 +42,12 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
     loginOffline(email, pass) {
       return dispatch => {
         dispatch();
-        return fetch('/login/password', {
+        return fetch('/login/password', withDefaultOpts({
           method: 'POST',
-          mode: 'same-origin',
-          credentials: 'same-origin',
-          cache: 'no-store',
           headers: {
-            'Accept': 'application/json',
             'Authorization': `Basic ${btoa([email, pass].join(':'))}`,
           },
-        })
+        }))
           .then(response => {
             if (response.ok) {
               location.reload();
