@@ -61,26 +61,19 @@ Go to https://your-heroku-app.herokuapp.com/monitoring. If you see the text "OK"
 
 Set the NODE_ENV environment variable to "production" in your Heroku app, if it's not already set. This is necessary from performance and security reasons. **Never** run REKI in development mode in production.
 
+Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url with https, and must not contain a trailing slash. Example: `https://reki.tempus18.fi`.
+
 You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://your-heroku-app.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
 
 ### Setting up PartioID login
 
-Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). 
+Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). For this you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi.
 
-As the first step, configure the following environment variables in Heroku:
-- Set PARTIOID_USE_PRODUCTION to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will use the PartioID test environment, qaid.partio.fi.
-- Set PARTIOID_SP_ISSUER to the base url of your reki installation, with a trailing slash. For example if you access reki at `https://reki.mycamp.com`, this would be `https://reki.mycamp.com/`.
+First off verify your environment variables:
+- Set `PARTIOID_USE_PRODUCTION` to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will try use the PartioID test environment, partioid-test.partio.fi.
+- Verify that your `REKI_BASE_URL` environment variable is correctly set as desribed in the previous section.
 
-Then go to `<my-reki-url>/saml/metadata.php`. This page should look something like this:
-
-```
-$metadata['<my-reki-url>'] = array(
-  'AssertionConsumerService' => '<my-reki-url>/saml/consume',
-  'SingleLogoutService' => '<my-reki-url>/saml/logout'
-);
-```
-
-Then you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi. Copy-paste the configuration from the `metadata.php` page and ask them to add it in the identity provider settings.
+Ask the ICT team to add a new service provider (SP) entry for Reki in the identity provider settings, given the metadata available on your reki instance, at the url `<REKI_BASE_URL>/saml/metadata` or `<REKI_BASE_URL>/saml/metadata.php`.
 
 #### Creating your fist user
 
