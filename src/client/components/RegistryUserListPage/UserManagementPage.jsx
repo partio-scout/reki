@@ -1,47 +1,34 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { RegistryUserTable } from './RegistryUserTable';
+import * as actions from '../../actions';
+import { createStateMapper } from '../../redux-helpers';
 
-export function getUserManagementPage(registryUserStore, registryUserActions) {
+export function getUserManagementPage() {
   class UserManagementPage extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = registryUserStore.getState();
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-    }
-
-    componentWillMount() {
-      registryUserActions.loadRegistryUserList();
-    }
-
     componentDidMount() {
-      registryUserStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      registryUserStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged(state) {
-      this.setState(state);
-    }
-
-    blockUser(userId) {
-      registryUserActions.blockUser(userId);
-    }
-
-    unblockUser(userId) {
-      registryUserActions.unblockUser(userId);
+      this.props.loadRegistryUserList();
     }
 
     render() {
+      const { registryUsers, blockUser, unblockUser } = this.props;
       return (
         <div>
           <h1>Käyttäjät</h1>
-          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } />
+          <RegistryUserTable registryUsers={ registryUsers } onBlock={ userId => blockUser({ userId }) } onUnblock={ userId => unblockUser({ userId }) } />
         </div>
       );
     }
   }
 
-  return UserManagementPage;
+  const mapStateToProps = createStateMapper({
+    registryUsers: state => state.registryUsers.registryUsers,
+  });
+  const mapDispatchToProps = {
+    blockUser: actions.blockUser,
+    unblockUser: actions.unblockUser,
+    loadRegistryUserList: actions.loadRegistryUserList,
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(UserManagementPage);
 }

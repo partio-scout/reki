@@ -1,36 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { getDateFilter } from '../../index';
+import { createStateMapper } from '../../../redux-helpers';
+import * as actions from '../../../actions';
 
-export function getDateFilterContainer(searchFilterStore, searchFilterActions) {
+export function getDateFilterContainer() {
   const DateFilter = getDateFilter();
 
   class DateFilterContainer extends React.Component {
     constructor(props) {
       super(props);
-
-      this.state = this.extractState();
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-      this.extractState = this.extractState.bind(this);
     }
 
     componentWillMount() {
-      searchFilterActions.loadDateOptions.defer(this.props.property);
-    }
-
-    componentDidMount() {
-      searchFilterStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      searchFilterStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged() {
-      this.setState(this.extractState());
-    }
-
-    extractState() {
-      return { options: searchFilterStore.getState().dates || [] };
+      this.props.loadDateOptions(this.props.property);
     }
 
     render() {
@@ -40,7 +23,7 @@ export function getDateFilterContainer(searchFilterStore, searchFilterActions) {
           property={ this.props.property }
           value={ this.props.currentSelection[this.props.property] }
           onChange={ this.props.onChange }
-          options={ this.state.options }
+          options={ this.props.options }
         />
       );
     }
@@ -53,5 +36,13 @@ export function getDateFilterContainer(searchFilterStore, searchFilterActions) {
     onChange: React.PropTypes.func.isRequired,
   };
 
-  return DateFilterContainer;
+  const mapStateToProps = createStateMapper({
+    options: state => state.searchFilters.dates,
+  });
+
+  const mapDispatchToProps = {
+    loadDateOptions: actions.loadDateOptions,
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(DateFilterContainer);
 }

@@ -1,6 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { connect } from 'react-redux';
+import Link from 'redux-first-router-link';
 import { Button, Glyphicon } from 'react-bootstrap';
+import * as actions from '../../actions';
+import * as navigationActions from '../../navigation/actions';
+import { createStateMapper } from '../../redux-helpers';
 
 class SearchFilterListItem extends React.Component {
   constructor() {
@@ -18,9 +22,15 @@ class SearchFilterListItem extends React.Component {
       filter,
     } = this.props.searchFilter;
 
+    const unwrappedFilter = {};
+    const params = new URLSearchParams(filter);
+    for (const x of params) {
+      unwrappedFilter[x[0]] = x[1];
+    }
+
     return (
       <li>
-        <Link to={ `/participants/${filter}` }>{ name }</Link>
+        <Link to={ navigationActions.navigateToParticipantsList({ query: unwrappedFilter }) }>{ name }</Link>
         <Button bsStyle="link" onClick={ this.remove } >
           <Glyphicon glyph="remove" />
         </Button>
@@ -34,32 +44,18 @@ SearchFilterListItem.propTypes = {
   remove: React.PropTypes.func,
 };
 
-export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
-  function removeSearchFilter(id) {
-    searchFilterActions.deleteSearchFilter(id);
-  }
-
+export function getParticipantSidebar() {
   class ParticipantSidebar extends React.Component {
     constructor(props) {
       super(props);
-      this.state = searchFilterStore.getState();
-      this.onChange = this.onChange.bind(this);
     }
 
     componentWillMount() {
-      searchFilterActions.loadSearchFilterList();
+      this.props.loadSearchFilterList();
     }
 
-    componentDidMount() {
-      searchFilterStore.listen(this.onChange);
-    }
-
-    componentWillUnmount() {
-      searchFilterStore.unlisten(this.onChange);
-    }
-
-    onChange(state) {
-      this.setState(state);
+    removeSearchFilter(id) {
+      this.props.deleteSearchFilter(id);
     }
 
     render() {
@@ -67,7 +63,7 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
         <SearchFilterListItem
           key={ element.id }
           searchFilter={ element }
-          remove={ removeSearchFilter }
+          remove={ id => this.removeSearchFilter(id) }
         />
       );
 
@@ -76,7 +72,7 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
           <strong>Tallennetut haut</strong>
           <ul className="sidebar-list">
             {
-              this.state.searchFilters.map(createListItem)
+              this.props.searchFilters.map(createListItem)
             }
           </ul>
         </div>
@@ -84,5 +80,14 @@ export function getParticipantSidebar(searchFilterStore, searchFilterActions) {
     }
   }
 
-  return ParticipantSidebar;
+  const mapStateToProps = createStateMapper({
+    searchFilters: state => state.searchFilters.searchFilters,
+  });
+
+  const mapDispatchToProps = {
+    loadSearchFilterList: actions.loadSearchFilterList,
+    deleteSearchFilter: actions.deleteSearchFilter,
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(ParticipantSidebar);
 }

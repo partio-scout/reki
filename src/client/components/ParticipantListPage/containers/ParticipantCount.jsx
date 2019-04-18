@@ -1,5 +1,7 @@
 import React from 'react';
 import Spinner from 'react-spinner';
+import { connect } from 'react-redux';
+import { createStateMapper } from '../../../redux-helpers';
 
 function Count(props) {
   return (
@@ -23,43 +25,17 @@ function CountSpinner() {
 }
 
 export function getParticipantCount(participantStore) {
-  class ParticipantCount extends React.Component {
-    constructor(props) {
-      super(props);
+  const ParticipantCount = ({ count }) => count === undefined
+    ? (
+      <CountSpinner />
+    )
+    : (
+      <Count count={ count }/>
+    );
 
-      this.state = this.extractState();
+  const mapStateToProps = createStateMapper({
+    count: state => state.participants.participantCount,
+  });
 
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged() {
-      this.setState(this.extractState());
-    }
-
-    extractState() {
-      return { count: participantStore.getState().participantCount };
-    }
-
-    render() {
-      if (this.state.count === undefined) {
-        return (
-          <CountSpinner />
-        );
-      } else {
-        return (
-          <Count count={ this.state.count }/>
-        );
-      }
-    }
-  }
-
-  return ParticipantCount;
+  return connect(mapStateToProps)(ParticipantCount);
 }

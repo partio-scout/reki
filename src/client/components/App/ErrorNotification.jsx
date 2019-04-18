@@ -1,50 +1,37 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { ErrorDialog } from '../../components';
+import * as actions from '../../actions';
+import { createStateMapper } from '../../redux-helpers';
 
-export function getErrorNotification(errorStore, errorActions) {
-  class ErrorNotification extends React.Component {
-    constructor(props) {
-      super(props);
-      this.onError = this.onError.bind(this);
-      this.state = errorStore.getState();
+export function getErrorNotification() {
+  const ErrorNotification = ({ errors, confirmError }) => {
+    if (errors.length === 0) {
+      return null;
     }
 
-    componentDidMount() {
-      errorStore.listen(this.onError);
+    const newestError = errors[errors.length - 1];
+    let message = newestError.message;
+    if (newestError.rootCause) {
+      message = `${newestError.message} (${newestError.rootCause})`;
     }
 
-    componentWillUnount() {
-      errorStore.unlisten(this.onError);
-    }
+    return (
+      <ErrorDialog
+        title="Ups! Nyt tapahtui virhe..."
+        message={ message }
+        onHide={ confirmError }
+      />
+    );
+  };
 
-    onError(state) {
-      this.setState(state);
-    }
+  const mapStateToProps = createStateMapper({
+    errors: state => state.errors.errors,
+  });
 
-    confirmError() {
-      errorActions.confirmError();
-    }
+  const mapDispatchToProps = {
+    confirmError: actions.confirmError,
+  };
 
-    render() {
-      if (this.state.errors.length === 0) {
-        return null;
-      }
-
-      const newestError = this.state.errors[this.state.errors.length - 1];
-      let message = newestError.message;
-      if (newestError.rootCause) {
-        message = `${newestError.message} (${newestError.rootCause})`;
-      }
-
-      return (
-        <ErrorDialog
-          title="Ups! Nyt tapahtui virhe..."
-          message={ message }
-          onHide={ this.confirmError }
-        />
-      );
-    }
-  }
-
-  return ErrorNotification;
+  return connect(mapStateToProps, mapDispatchToProps)(ErrorNotification);
 }

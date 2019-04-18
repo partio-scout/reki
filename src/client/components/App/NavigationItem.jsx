@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavItem, Glyphicon } from 'react-bootstrap';
-import { NavLinkItem } from '../../components';
+import { Navbar, NavItem, Glyphicon } from 'react-bootstrap';
+import { NavLink } from 'redux-first-router-link';
 
 export function getNavigationItem() {
   class NavigationItem extends React.Component {
@@ -11,12 +11,12 @@ export function getNavigationItem() {
 
       const label = (values.icon ? <span><Glyphicon glyph={ values.icon }/> { values.label }</span> : values.label);
 
-      if (values.isExternalLink) {
+      if (values.isExternalLink || values.onClick) {
         return (<NavItem href={ values.to } onClick={ values.onClick }>{ label }</NavItem>);
-      } else if (values.onClick || values.to) {
-        return (<NavLinkItem to={ values.to } isIndexLink={ values.isIndexLink }>{ label }</NavLinkItem>);
+      } else if (values.to) {
+        return (<li><NavLink to={ values.to } isIndexLink={ values.isIndexLink }>{ label }</NavLink></li>);
       } else {
-        return (<NavItem disabled={ true }>{ label }</NavItem>);
+        return (<Navbar.Text>{ label }</Navbar.Text>);
       }
     }
   }

@@ -4,7 +4,7 @@ import { Modal, Button } from 'react-bootstrap';
 export class ErrorDialog extends React.Component {
   render() {
     return (
-      <Modal show="true" onHide={ this.props.onHide }>
+      <Modal show={ true } onHide={ this.props.onHide }>
         <Modal.Header closeButton>
           <Modal.Title>{ this.props.title }</Modal.Title>
         </Modal.Header>

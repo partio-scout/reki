@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Spinner from 'react-spinner';
 import { ParticipantRow } from '../../../components';
+import { createStateMapper } from '../../../redux-helpers';
 
 function Tbody(props) {
   const elements = props.elements || [];
@@ -16,64 +18,47 @@ Tbody.propTypes = {
   rowCreator: React.PropTypes.func,
 };
 
-export function getParticipantRowsContainer(participantStore) {
-  class ParticipantRowsContainer extends React.Component {
-    constructor(props) {
-      super(props);
+export function getParticipantRowsContainer() {
+  const mapStateToProps = createStateMapper({
+    participants: state => state.participants.participants,
+    loading: state => state.participants.loading,
+  });
 
-      this.onStoreChange = this.onStoreChange.bind(this);
+  function isChecked(checked, participantId) {
+    return checked.indexOf(participantId) >= 0;
+  }
 
-      this.state = this.extractState();
-    }
+  function ParticipantRowsContainer(props) {
+    const {
+      checked,
+      checkboxCallback,
+      columnCount,
+      availableDates,
+    } = props;
 
-    componentDidMount() {
-      participantStore.listen(this.onStoreChange);
-    }
+    const rowCreator = (element, index) => <ParticipantRow key={ element.participantId } isChecked={ isChecked(checked, element.participantId) } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } index={ index } offset={ props.offset }/>;
 
-    componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChange);
-    }
-
-    onStoreChange() {
-      this.setState(this.extractState());
-    }
-
-    extractState() {
-      return { participants: participantStore.getState().participants };
-    }
-
-    render() {
-      const {
-        isChecked,
-        checkboxCallback,
-        columnCount,
-        availableDates,
-      } = this.props;
-
-      const rowCreator = (element, index) => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } index={ index } offset={ this.props.offset }/>;
-
-      return this.state.loading
-        ? (
-          <tbody>
-            <tr>
-              <td colSpan={ columnCount }>
-                <Spinner />
-              </td>
-            </tr>
-          </tbody>
-        ) : (
-          <Tbody rowCreator={ rowCreator } elements={ this.state.participants } />
-        );
-    }
+    return props.loading
+      ? (
+        <tbody>
+          <tr>
+            <td colSpan={ columnCount }>
+              <Spinner />
+            </td>
+          </tr>
+        </tbody>
+      ) : (
+        <Tbody rowCreator={ rowCreator } elements={ props.participants } />
+      );
   }
 
   ParticipantRowsContainer.propTypes = {
-    isChecked: React.PropTypes.func,
+    checked: React.PropTypes.array,
     checkboxCallback: React.PropTypes.func,
     availableDates: React.PropTypes.array.isRequired,
     columnCount: React.PropTypes.number,
     offset: React.PropTypes.number,
   };
 
-  return ParticipantRowsContainer;
+  return connect(mapStateToProps)(ParticipantRowsContainer);
 }

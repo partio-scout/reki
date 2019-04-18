@@ -10,7 +10,6 @@ export { getParticipantDetailsPage } from './ParticipantDetailsPage/ParticipantD
 export { ParticipantRow } from './ParticipantListPage/ParticipantRow';
 export { ListOffsetSelector } from './Util/ListOffsetSelector';
 export { getUserManagementPage } from './RegistryUserListPage/UserManagementPage';
-export { NavLinkItem } from './App/NavLinkItem';
 export { getListSortingSelector } from './Util/ListSortingSelector';
 export { getSortableHeaderCell } from './Util/SortableHeaderCell';
 export { getPropertySelect } from './Util/PropertySelect';

@@ -1,29 +1,17 @@
-import React from 'react';
-import AltContainer from 'alt-container';
-import { pureShouldComponentUpdate } from '../../../utils';
+import { connect } from 'react-redux';
+import { createStateMapper } from '../../../redux-helpers';
+import * as actions from '../../../actions';
 import { getMainNavigation } from '../../../components';
 
 export function getMainNavigationContainer(registryUserStore, registryUserActions) {
   const MainNavigation = getMainNavigation();
 
-  function MainNavigationContainer(props) {
-    return (
-      <AltContainer
-        stores={ {
-          currentUser: () => ({ store: registryUserStore, value: registryUserStore.getState().currentUser }),
-        } }
-        actions={
-          function() {
-            return {
-              onLogout: () => registryUserActions.logoutCurrentUser(),
-            };
-          }
-        }
-        shouldComponentUpdate={ pureShouldComponentUpdate }
-        component={ MainNavigation }
-      />
-    );
-  }
+  const mapStateToProps = createStateMapper({
+    currentUser: state => state.registryUsers.currentUser,
+  });
+  const mapDispatchToProps = {
+    onLogout: actions.logoutCurrentUser,
+  };
 
-  return MainNavigationContainer;
+  return connect(mapStateToProps, mapDispatchToProps)(MainNavigation);
 }

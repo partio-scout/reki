@@ -2,16 +2,16 @@
 require('./styles.scss');
 
 import React from 'react';
-import Alt from 'alt';
 import { render } from 'react-dom';
-import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import request from 'superagent';
 import moment from 'moment';
+import { Provider } from 'react-redux';
+import { createStore } from './store';
 
 import * as components from './components';
-import * as stores from './stores';
 import * as actions from './actions';
-import { getRestfulResource, restrictComponent } from './utils';
+import { getRestfulResource } from './utils';
+import { Router } from './navigation/router';
 
 moment.locale('fi');
 
@@ -24,58 +24,19 @@ const registryUserResource = new RestfulResource('/api/registryusers');
 const searchFilterResource = new RestfulResource('/api/searchfilters');
 const optionResource = new RestfulResource('/api/options');
 
-const alt = new Alt();
+const store = createStore({ registryUserResource, searchFilterResource, participantResource, participantDateResource, optionResource });
 
-const errorActions = actions.getErrorActions(alt);
-const participantActions = actions.getParticipantActions(alt, participantResource, errorActions);
-const searchFilterActions = actions.getSearchFilterActions(alt, searchFilterResource, participantResource, participantDateResource, optionResource, errorActions);
-const registryUserActions = actions.getRegistryUserActions(alt, registryUserResource, errorActions);
+const App = components.getApp();
 
-const errorStore = stores.getErrorStore(alt, errorActions);
-const participantStore = stores.getParticipantStore(alt, participantActions, registryUserActions);
-const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
-const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
+store.dispatch(actions.loadCurrentUser());
+store.dispatch(actions.loadFlashes());
 
-const app = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions);
-const login = components.getLogin(registryUserActions, registryUserStore);
-const homepage = components.getHomepage();
-const LoginPromptPage = components.getLoginPromptPage();
-const ParticipantDetailsPage = restrictComponent(
-  registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions),
-  LoginPromptPage
-);
-const ParticipantListPage = restrictComponent(
-  registryUserStore,
-  components.getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore),
-  LoginPromptPage
-);
-const UserManagementPage = restrictComponent(
-  registryUserStore,
-  components.getUserManagementPage(registryUserStore, registryUserActions),
-  LoginPromptPage
-);
-const participantSidebar = restrictComponent(
-  registryUserStore,
-  components.getParticipantSidebar(searchFilterStore, searchFilterActions)
-);
-const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
-
-registryUserActions.loadCurrentUser();
-errorActions.loadFlashes();
-
-const routes = (
-  <Router history={ browserHistory }>
-    <Route path="/" component={ app }>
-      <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
-      <Route path="participants">
-        <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
-        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
-      </Route>
-      <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
-      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
-    </Route>
-  </Router>
+const appRoot = (
+  <Provider store={ store }>
+    <App>
+      <Router />
+    </App>
+  </Provider>
 );
 
-render(routes, document.getElementById('app'));
+render(appRoot, document.getElementById('app'));

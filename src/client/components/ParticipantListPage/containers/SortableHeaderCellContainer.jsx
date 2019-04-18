@@ -1,15 +1,15 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../../../actions';
 import { getSortableHeaderCell } from '../../../components';
-import { changeQueryParameter } from '../../../utils';
 
 export function getSortableHeaderCellContainer() {
   const SortableHeaderCell = getSortableHeaderCell();
 
   function SortableHeaderCellContainer(props, context) {
     function handleOrderChanged(newOrder) {
-      const stringified = newOrder && Object.keys(newOrder).length > 0 && JSON.stringify(newOrder);
-      const newLocation = changeQueryParameter(props.location, 'order', stringified);
-      context.router.push(newLocation);
+      // const stringified = newOrder && Object.keys(newOrder).length > newOrder;
+      props.setParticipantListFilter({ order: newOrder });
     }
 
     return (
@@ -21,15 +21,10 @@ export function getSortableHeaderCellContainer() {
   }
 
   SortableHeaderCellContainer.propTypes = {
-    location: React.PropTypes.object.isRequired,
     order: React.PropTypes.object.isRequired,
     property: React.PropTypes.string.isRequired,
-    label: React.PropTypes.string.isRequired,
+    label: React.PropTypes.node.isRequired,
   };
 
-  SortableHeaderCellContainer.contextTypes = {
-    router: React.PropTypes.object.isRequired,
-  };
-
-  return SortableHeaderCellContainer;
+  return connect(null, { setParticipantListFilter: actions.setParticipantListFilter })(SortableHeaderCellContainer);
 }

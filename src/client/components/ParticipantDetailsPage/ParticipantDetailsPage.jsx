@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
 import Spinner from 'react-spinner';
@@ -9,20 +10,13 @@ import { PresenceHistory } from '../../components';
 import { PropertyTextArea } from '../../components';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
+import { createStateMapper } from '../../redux-helpers';
+import * as actions from '../../actions';
 
-export function getParticipantDetailsPage(participantStore, participantActions) {
-
+export function getParticipantDetailsPage() {
   class ParticipantDetailsPage extends React.Component {
     constructor(props) {
       super(props);
-      const state = participantStore.getState();
-      state.campOfficeNotesSaving = false;
-      state.editableInfoSaving = false;
-      state.presenceSaving = false;
-      state.selectedPresence = null;
-      this.state = state;
-
-      this.onStoreChanged = this.onStoreChanged.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.onPresenceChange = this.onPresenceChange.bind(this);
       this.saveCampOfficeNotes = this.saveCampOfficeNotes.bind(this);
@@ -31,67 +25,43 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
       this.save = this.save.bind(this);
     }
 
-    componentWillMount() {
-      participantActions.fetchParticipantById(this.props.params.id);
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged(state) {
-      const newState = state;
-      state.campOfficeNotesSaving = false;
-      state.editableInfoSaving = false;
-      state.presenceSaving = false;
-      this.setState(newState);
-    }
-
     onPresenceChange(event) {
-      const newState = this.state;
-      newState.selectedPresence = event.target.value;
-      this.setState(newState);
+      this.props.setSelectedPresence(event.target.value);
     }
 
     handleChange(property, event) {
-      const participantDetails = this.state.participantDetails;
-      participantDetails[property] = event.target.value;
-      this.setState({ participantDetails: participantDetails, campOfficeNotesSaving: false, editableInfoSaving: false });
-    }
-
-    saveCampOfficeNotes() {
-      const newState = this.state;
-      newState.campOfficeNotesSaving = true;
-      this.setState(newState);
-      this.save('campOfficeNotes');
-    }
-
-    saveEditableInfo() {
-      const newState = this.state;
-      newState.editableInfoSaving = true;
-      this.setState(newState);
-      this.save('editableInfo');
-    }
-
-    savePresence() {
-      if (this.state.selectedPresence) {
-        participantActions.updateProperty(this.state.participantDetails.participantId, 'presence', this.state.selectedPresence);
+      if (property == 'campOfficeNotes') {
+        this.props.setCurrentCampOfficeNotes(event.target.value);
+      }
+      if (property == 'editableInfo') {
+        this.props.setCurrentEditableInfo(event.target.value);
       }
     }
 
-    save(property) {
-      participantActions.updateProperty(
-        this.state.participantDetails.participantId,
+    saveCampOfficeNotes() {
+      this.save('campOfficeNotes', this.props.currentCampOfficeNotes);
+    }
+
+    saveEditableInfo() {
+      this.save('editableInfo', this.props.currentEditableInfo);
+    }
+
+    savePresence() {
+      if (this.props.selectedPresence) {
+        this.save('presence', this.props.selectedPresence);
+      }
+    }
+
+    save(property, newValue) {
+      this.props.updateProperty({
+        participantId: this.props.participantDetails.participantId,
         property,
-        this.state.participantDetails[property]);
+        newValue,
+      });
     }
 
     render() {
-      if (this.state.participantDetails) {
+      if (this.props.participantDetails) {
         const {
           firstName,
           lastName,
@@ -124,7 +94,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
           dates,
           allergies,
           selections,
-        } = this.state.participantDetails;
+        } = this.props.participantDetails;
 
         const participantName = `${firstName} ${lastName}`;
         const participantStatus = internationalGuest ? 'KV-osallistuja' : ( nonScout ? 'EVP' : `Partiolainen (jäsennumero: ${memberNumber})` );
@@ -132,8 +102,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
         const formattedBilledDate = billedDate ? moment(billedDate).format('D.M.YYYY') : '–';
         const formattedPaidDate = paidDate ? moment(paidDate).format('D.M.YYYY') : '–';
 
-        const presence = this.state.participantDetails.presence;
-        const presenceHistory = this.state.participantDetails.presenceHistory || [];
+        const presence = this.props.participantDetails.presence;
+        const presenceHistory = this.props.participantDetails.presenceHistory || [];
 
         const allergyNames = _.map(allergies, row => row.name);
 
@@ -224,8 +194,8 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 <Panel header="Läsnäolo">
                  <Presence value={ presence } />
                  <form className="form-inline">
-                   <PresenceSelector onChange={ this.onPresenceChange } label="Muuta tilaa" />
-                   <LoadingButton loading={ this.state.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                   <PresenceSelector onChange={ this.onPresenceChange } value={ this.props.selectedPresence } label="Muuta tilaa" />
+                   <LoadingButton loading={ this.props.presenceSaving } onClick={ this.savePresence } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                  </form>
                  <PresenceHistory value={ presenceHistory } />
                 </Panel>
@@ -240,20 +210,20 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
                 <Panel header="Leiritoimiston merkinnät">
                   <PropertyTextArea
                     property= "campOfficeNotes"
-                    value={ this.state.participantDetails.campOfficeNotes }
+                    value={ this.props.currentCampOfficeNotes }
                     onChange= { this.handleChange }
                     rows={ 8 }
                   />
-                  <LoadingButton loading={ this.state.campOfficeNotesSaving } onClick={ this.saveCampOfficeNotes } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                  <LoadingButton loading={ this.props.campOfficeNotesSaving } onClick={ this.saveCampOfficeNotes } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                 </Panel>
                 <Panel header="Lisätiedot">
                   <PropertyTextArea
                     property= "editableInfo"
-                    value={ this.state.participantDetails.editableInfo }
+                    value={ this.props.currentEditableInfo }
                     onChange= { this.handleChange }
                     rows={ 6 }
                   />
-                  <LoadingButton loading={ this.state.editableInfoSaving } onClick={ this.saveEditableInfo } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+                  <LoadingButton loading={ this.props.editableInfoSaving } onClick={ this.saveEditableInfo } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
                 </Panel>
               </Col>
             </Row>
@@ -267,11 +237,23 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
   }
 
-  ParticipantDetailsPage.propTypes = {
-    params: React.PropTypes.shape({
-      id: React.PropTypes.string.isRequired,
-    }).isRequired,
+  const mapStateToProps = createStateMapper({
+    participantDetails: state => state.participants.participantDetails,
+    presenceSaving: state => state.participants.saving && state.participants.saving.presence,
+    campOfficeNotesSaving: state => state.participants.saving && state.participants.saving.campOfficeNotes,
+    editableInfoSaving: state => state.participants.saving && state.participants.saving.editableInfo,
+    currentCampOfficeNotes: state => state.participants.participantDetailsCurrentCampOfficeNotes,
+    currentEditableInfo: state => state.participants.participantDetailsCurrentEditableInfo,
+    selectedPresence: state => state.participants.participantDetailsSelectedPresence,
+  });
+
+  const mapDispatchToProps = {
+    fetchParticipantById: actions.fetchParticipantById,
+    setSelectedPresence: actions.setParticipantDetailsSelectedPresence,
+    setCurrentCampOfficeNotes: actions.setCurrentCampOfficeNotes,
+    setCurrentEditableInfo: actions.setCurrentEditableInfo,
+    updateProperty: actions.updateProperty,
   };
 
-  return ParticipantDetailsPage;
+  return connect(mapStateToProps, mapDispatchToProps)(ParticipantDetailsPage);
 }

@@ -1,113 +1,83 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Table, Grid, Row, Col, Input, Glyphicon, Tooltip, OverlayTrigger  } from 'react-bootstrap';
-import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
 import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
 import { LoadingButton } from '../../components';
-import { PresenceSelector } from '../../components';
+import { PresenceSelector, getParticipantSidebar } from '../../components';
+import { createStateMapper } from '../../redux-helpers';
+import * as actions from '../../actions';
 
-function getOrder(query) {
+function getOrder(order) {
   try {
-    const order = query.order && JSON.parse(query.order) || {};
-    return order;
+    return order || {};
   } catch (err) {
     return {};
   }
 }
 
-function getFilter(query) {
+function getFilter(filter) {
   try {
-    const filter = query.filter && JSON.parse(query.filter) || {};
-    return filter;
+    return filter || {};
   } catch (err) {
     return {};
   }
 }
 
-function getOffset(query) {
-  return query.offset && Number(query.offset) || 0;
+function getOffset(offset) {
+  return offset && Number(offset) || 0;
 }
 
-function getLimit(query) {
-  return query.limit && Number(query.limit) || 200;
+function getLimit(limit) {
+  return limit && Number(limit) || 200;
+}
+
+function preventingDefault(handler) {
+  return function(event) {
+    event.preventDefault();
+    return handler(event);
+  };
 }
 
 export function getMassEdit(participantStore) {
-  class MassEdit extends React.Component {
-    constructor(props){
-      super(props);
-      this.state = { loading: false };
-      this.onSubmit = this.onSubmit.bind(this);
-      this.onChange = this.onChange.bind(this);
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-    }
-
-    onSubmit(event) {
-      event.preventDefault();
-      if (this.state.value !== null && this.state.value !== 'null') {
-        this.setState({ value: this.state.value, loading: true });
-        this.props.onSubmit(this.state.value);
-      }
-    }
-
-    componentDidMount() {
-      participantStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged() {
-      this.setState({ loading: false });
-    }
-
-    onChange(event){
-      event.persist();
-      this.setState({ value: event.target.value });
-    }
-
-    render() {
-      return (
-        <form className="form-inline" onSubmit={ this.onSubmit }>
-          <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
-          <PresenceSelector label="Tila" onChange={ this.onChange }/>
-          <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
-        </form>
-      );
-    }
+  function MassEdit({ selectedPresence, count, loading, onSubmit, setSelectedPresence }) {
+    return (
+      <form className="form-inline" onSubmit={ preventingDefault(() => onSubmit(selectedPresence)) }>
+        <p>{ count } { (count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
+        <PresenceSelector value={ selectedPresence } label="Tila" onChange={ event => setSelectedPresence(event.target.value) }/>
+        <LoadingButton type="submit" loading={ loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+      </form>
+    );
   }
 
   MassEdit.propTypes = {
     onSubmit: React.PropTypes.func,
+    setSelectedPresence: React.PropTypes.func,
+    loading: React.PropTypes.bool.isRequired,
     count: React.PropTypes.number,
+    selectedPresence: React.PropTypes.string,
   };
 
-  return MassEdit;
+  const mapStateToProps = createStateMapper({
+    selectedPresence: state => state.participants.participantListSelectedPresence,
+  });
+
+  const mapDispatchToProps = {
+    setSelectedPresence: actions.setParticipantListSelectedPresence,
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(MassEdit);
 }
 
 export function getSelectAll() {
-  class SelectAll extends React.Component {
-    constructor(props){
-      super(props);
-      this.state = {};
-      this.onChange = this.onChange.bind(this);
-    }
-
-    onChange(event){
-      event.persist();
-      this.props.onChange(event.target.checked);
-    }
-
-    render() {
-      return (
-        <Input type="checkbox" title="Valitse kaikki" checked={ this.props.checked } onChange={ this.onChange } />
-      );
-    }
+  function SelectAll({ checked, onChange }) {
+    return (
+      <Input type="checkbox" title="Valitse kaikki" checked={ checked } onChange={ event => onChange(event.target.checked) } />
+    );
   }
 
   SelectAll.propTypes = {
@@ -118,37 +88,31 @@ export function getSelectAll() {
   return SelectAll;
 }
 
-export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore) {
-  const ParticipantListUpdater = getParticipantListUpdater(participantActions);
+export function getParticipantListPage() {
   const SortableHeaderCellContainer = getSortableHeaderCellContainer();
-  const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
-  const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
-  const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore);
-  const ParticipantCount = getParticipantCount(participantStore);
-  const MassEdit = getMassEdit(participantStore);
+  const ListOffsetSelectorContainer = getListOffsetSelectorContainer();
+  const ParticipantRowsContainer = getParticipantRowsContainer();
+  const QuickFilterContainer = getQuickFilterContainer();
+  const ParticipantCount = getParticipantCount();
+  const MassEdit = getMassEdit();
   const SelectAll = getSelectAll();
+  const ParticipantSidebar = getParticipantSidebar();
 
   class ParticipantListPage extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        checked: new Array(),
+        checked: [],
         allChecked: false,
-        participants: [ ],
-        availableDates: [ ],
       };
 
-      this.onSearchFilterStoreChanged = this.onSearchFilterStoreChanged.bind(this);
-      this.extractDatesFromSearchFilters = this.extractDatesFromSearchFilters.bind(this);
       this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-      this.isChecked = this.isChecked.bind(this);
       this.handleMassEdit = this.handleMassEdit.bind(this);
       this.checkAll = this.checkAll.bind(this);
-      this.checkNoneOnParticipantsChanged = this.checkNoneOnParticipantsChanged.bind(this);
     }
 
     handleCheckboxChange(isChecked, participantId) {
-      const stateChange = { checked: new Array(), allChecked: false };
+      const stateChange = { checked: [], allChecked: false };
 
       if (isChecked) {
         stateChange.checked = this.state.checked.concat([ participantId ]);
@@ -159,68 +123,34 @@ export function getParticipantListPage(participantStore, participantActions, sea
       this.setState(stateChange);
     }
 
-    isChecked(participantId) {
-      return this.state.checked.indexOf(participantId) >= 0;
-    }
-
     checkAll(isChecked) {
-      const stateChange = { checked: new Array(), allChecked: isChecked, availableDates: this.state.availableDates };
-
-      if (isChecked) {
-        stateChange.checked = _.map(participantStore.state.participants, 'participantId');
-      }
-
-      this.setState(stateChange);
+      this.setState({ checked: isChecked ? _.map(this.props.participants, 'participantId') : [], allChecked: isChecked });
     }
 
     handleMassEdit(newValue) {
-      participantActions.updateParticipantPresences(
-        this.state.checked,
+      const { order, offset, limit, filter } = this.props;
+      this.props.updateParticipantPresences({
+        ids: this.state.checked,
         newValue,
-        getOffset(this.props.location.query),
-        getLimit(this.props.location.query),
-        getOrder(this.props.location.query),
-        getFilter(this.props.location.query)
-      );
+        offset,
+        limit,
+        order,
+        filter,
+      });
     }
 
     componentWillMount() {
-      searchFilterActions.loadOptions.defer();
+      this.props.loadOptions();
     }
 
-    componentDidMount() {
-      participantStore.listen(this.checkNoneOnParticipantsChanged);
-      searchFilterStore.listen(this.onSearchFilterStoreChanged);
-    }
-
-    componentWillUnmount() {
-      participantStore.unlisten(this.checkNoneOnParticipantsChanged);
-      searchFilterStore.unlisten(this.onSearchFilterStoreChanged);
-    }
-
-    checkNoneOnParticipantsChanged() {
-      const newParticipants = _.map(participantStore.state.participants, 'participantId');
-      if (!_.isEqual(this.state.participants, newParticipants)) {
-        this.setState({ participants: newParticipants });
+    componentWillReceiveProps(nextProps) {
+      if (!_.isEqual(this.props.participants, nextProps.participants)) {
         this.checkAll(false);
       }
     }
 
-    onSearchFilterStoreChanged() {
-      this.setState(this.extractDatesFromSearchFilters());
-    }
-
-    extractDatesFromSearchFilters() {
-      const state = this.state;
-      state.availableDates = searchFilterStore.getState().dates || [];
-      return state;
-    }
-
     render() {
-      const order = getOrder(this.props.location.query);
-      const offset = getOffset(this.props.location.query);
-      const limit = getLimit(this.props.location.query);
-      const filter = getFilter(this.props.location.query);
+      const { order, offset, limit, filter } = this.props;
 
       const tooltipForNotes = (
         <Tooltip>{ 'Leiritoimiston merkinnät' }</Tooltip>
@@ -267,61 +197,69 @@ export function getParticipantListPage(participantStore, participantActions, sea
       const columnCount = Object.keys(columnPropertyToLabelMapping).length;
 
       return (
-        <Grid fluid>
-          <ParticipantListUpdater order={ order } offset={ offset } limit={ limit } filter={ filter } />
+        <Grid fluid className="page-content">
           <Row>
-            <Col md={ 12 }>
-              <h1>Leiriläiset</h1>
+            <Col sm={ 2 } className="sidebar">
+              <ParticipantSidebar />
             </Col>
-          </Row>
-          <Row>
-            <Col md={ 12 }>
-              <QuickFilterContainer location={ this.props.location } filter={ filter } />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={ 2 }>
-              <ParticipantCount />
-            </Col>
-            <Col md={ 10 }>
-              <p>&nbsp;</p>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={ 12 }>
-              <Table striped responsive condensed>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
-                    {
-                      Object.keys(columnPropertyToLabelMapping).map(property => (
-                        <SortableHeaderCellContainer
-                          key={ property }
-                          property={ property }
-                          label={ columnPropertyToLabelMapping[property] }
-                          location={ this.props.location }
-                          order={ order }
-                        />
-                      ))
-                    }
-                    <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
-                  </tr>
-                </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } offset={ offset }/>
-                <tbody className="tfooter">
-                  <tr>
-                    <td></td>
-                    <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
-                    <td colSpan={ columnCount + this.state.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={ 12 }>
-              <ListOffsetSelectorContainer location={ this.props.location } offset={ offset } limit={ limit } />
+            <Col sm={ 10 } smOffset={ 2 } className="main">
+              <Grid fluid>
+                <Row>
+                  <Col md={ 12 }>
+                    <h1>Leiriläiset</h1>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={ 12 }>
+                    <QuickFilterContainer location={ this.props.location } filter={ filter } />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={ 2 }>
+                    <ParticipantCount />
+                  </Col>
+                  <Col md={ 10 }>
+                    <p>&nbsp;</p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={ 12 }>
+                    <Table striped responsive condensed>
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
+                          {
+                            Object.keys(columnPropertyToLabelMapping).map(property => (
+                              <SortableHeaderCellContainer
+                                key={ property }
+                                property={ property }
+                                label={ columnPropertyToLabelMapping[property] }
+                                location={ this.props.location }
+                                order={ order }
+                              />
+                            ))
+                          }
+                          <th colSpan={ this.props.availableDates.length }>Ilmoittautumispäivät</th>
+                        </tr>
+                      </thead>
+                      <ParticipantRowsContainer checked={ this.state.checked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.props.availableDates } offset={ offset }/>
+                      <tbody className="tfooter">
+                        <tr>
+                          <td></td>
+                          <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
+                          <td colSpan={ columnCount + this.props.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } loading={ this.props.loading }/></td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={ 12 }>
+                    <ListOffsetSelectorContainer location={ this.props.location } offset={ offset } limit={ limit } />
+                  </Col>
+                </Row>
+              </Grid>
             </Col>
           </Row>
         </Grid>
@@ -329,11 +267,20 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
   }
 
-  ParticipantListPage.propTypes = {
-    location: React.PropTypes.shape({
-      query: React.PropTypes.object.isRequired,
-    }).isRequired,
+  const mapStateToProps = createStateMapper({
+    participants: state => state.participants.participants,
+    availableDates: state => state.searchFilters.dates || [],
+    order: state => getOrder(state.participants.participantListOrder),
+    filter: state => getFilter(state.participants.participantListFilter),
+    offset: state => getOffset(state.participants.participantListOffset),
+    limit: state => getLimit(state.participants.participantListLimit),
+    loading: state => state.participants.loading,
+  });
+
+  const mapDispatchToProps = {
+    updateParticipantPresences: actions.updateParticipantPresences,
+    loadOptions: actions.loadOptions,
   };
 
-  return ParticipantListPage;
+  return connect(mapStateToProps, mapDispatchToProps)(ParticipantListPage);
 }

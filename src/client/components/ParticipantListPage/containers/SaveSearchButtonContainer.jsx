@@ -1,7 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Button, Modal, Input } from 'react-bootstrap';
+import * as actions from '../../../actions';
 
-export function getSaveSearchButtonContainer(searchFilterActions) {
+export function getSaveSearchButtonContainer() {
   class SaveSearchButtonContainer extends React.Component {
     constructor(props) {
       super(props);
@@ -25,7 +27,7 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
 
     saveAndClose() {
-      searchFilterActions.saveSearchFilter(this.state.searchFilterName, this.props.location.search);
+      this.props.saveSearchFilter(this.state.searchFilterName);
       this.close();
     }
 
@@ -68,9 +70,9 @@ export function getSaveSearchButtonContainer(searchFilterActions) {
     }
   }
 
-  SaveSearchButtonContainer.propTypes = {
-    location: React.PropTypes.object.isRequired,
+  const mapDispatchToProps = {
+    saveSearchFilter: actions.saveSearchFilter,
   };
 
-  return SaveSearchButtonContainer;
+  return connect(null, mapDispatchToProps)(SaveSearchButtonContainer);
 }

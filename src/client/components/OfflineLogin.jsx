@@ -1,55 +1,52 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../actions';
+import { createStateMapper } from '../redux-helpers';
 
-export function getLogin(userActions, userStore) {
+export function getLogin() {
   class Login extends React.Component {
     constructor(props) {
       super(props);
-      this.state = userStore.getState();
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-      this.submit = this.submit.bind(this);
+
+      this.state = { email: '', password: '' };
     }
 
-    componentDidMount() {
-      userStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      userStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged(state) {
-      this.setState(state);
-    }
-
-    submit() {
-      const email = this.refs['email'].value;
-      const password = this.refs['password'].value;
-      userActions.loginOffline(email, password);
+    submit(e) {
+      e.preventDefault();
+      const email = this.state.email;
+      const password = this.state.password;
+      this.props.loginOffline({ email, password });
     }
 
     render() {
-      let loginComponent = '';
-      if (this.state.offlineLoginTriedWhileDisabled) {
-        loginComponent = (
+      if (this.props.offlineLoginTriedWhileDisabled) {
+        return (
           <div> Offline-kirjautuminen ei ole käytössä. </div>
         );
       } else {
-        loginComponent = (
+        return (
           <div>
-            <form horizontal>
+            <form horizontal onSubmit={ e => this.submit(e) }>
               <label htmlFor="email">Sähköposti</label><br/>
-              <input ref="email" type="email" name="email" placeholder="Sähköposti"/><br/>
+              <input value={ this.state.email } onChange={ e => this.setState({ email: e.target.value }) } type="email" name="email" placeholder="Sähköposti"/><br/>
               <label htmlFor="password">Salasana</label><br/>
-              <input ref="password" type="password" name="password" placeholder="Salasana"/><br/>
+              <input value={ this.state.password } onChange={ e => this.setState({ password: e.target.value }) } type="password" name="password" placeholder="Salasana"/><br/>
+              <button type="submit">
+                Kirjaudu sisään
+              </button>
             </form>
-            <button onClick={ this.submit }>
-              Kirjaudu sisään
-            </button>
           </div>
         );
       }
-      return loginComponent;
     }
   }
-  return Login;
+
+  const mapStateToProps = createStateMapper({
+    offlineLoginTriedWhileDisabled: state => state.registryUsers.offlineLoginTriedWhileDisabled,
+  });
+  const mapDispatchToProps = {
+    loginOffline: actions.loginOffline,
+  };
+
+  return connect(mapStateToProps, mapDispatchToProps)(Login);
 }

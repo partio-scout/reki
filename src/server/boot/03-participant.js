@@ -22,6 +22,7 @@ export default function(app){
 
   app.get('/api/participants', optionalBasicAuth(), app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const filter = JSON.parse(req.query.filter || '{}');
+    console.log(filter);
     const limit = +filter.limit || undefined;
     const offset = +filter.skip || undefined;
     // TODO refactor so this comes in right format already

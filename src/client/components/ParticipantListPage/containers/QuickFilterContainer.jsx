@@ -1,21 +1,22 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import { Button } from 'react-bootstrap';
-import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getDateFilterContainer } from './DateFilterContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
+import * as actions from '../../../actions';
 
-export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
+export function getQuickFilterContainer() {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
-  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
-  const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
-  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
+  const DateFilterContainer = getDateFilterContainer();
+  const SaveSearchButtonContainer = getSaveSearchButtonContainer();
+  const PropertyFilterContainer = getPropertyFilterContainer();
   const PresenceFilterContainer = getPresenceFilterContainer();
-  const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
+  const GenericPropertyFilterContainer = getGenericPropertyFilterContainer();
 
   function getCurrentSelection(properties, currentFilter) {
     const andSelection = currentFilter.and && _.reduce(currentFilter.and, _.merge, {}) || {};
@@ -28,7 +29,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
     return currentSelection;
   }
 
-  function QuickFilterContainer(props, context) {
+  function QuickFilterContainer(props) {
     const propertiesForGenericFilter = GenericPropertyFilterContainer.availableProperties();
     const properties = ['textSearch', 'ageGroup', 'subCamp', 'localGroup', 'campGroup', 'presence', 'village', 'dates'].concat(propertiesForGenericFilter);
 
@@ -36,7 +37,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
 
     function resetFilters(event) {
       event.preventDefault();
-      context.router.push(changeQueryParameters(props.location, { filter: '', offset: 0 }));
+      props.setParticipantListFilter({ filter: null, order: null, offset: null, limit: null });
     }
 
     function handleChange(parameterName, newValue) {
@@ -48,9 +49,9 @@ export function getQuickFilterContainer(participantStore, participantActions, se
       const newSelection = _.pickBy(_.merge(currentSelection, changedSelection), (value, key) => value);
       const numberOfFilters = Object.keys(newSelection).length;
       const loopbackFilter = numberOfFilters > 1 ? { and: _.transform(newSelection, (result, value, key) => result.push({ [key]: value }), []) } : newSelection;
-      const stringified = numberOfFilters > 0 && JSON.stringify(loopbackFilter);
+      const stringified = numberOfFilters > 0 && loopbackFilter || null;
 
-      context.router.push(changeQueryParameters(props.location, { filter: stringified, offset: 0 }));
+      props.setParticipantListFilter({ filter: stringified, offset: null });
     }
 
     return (
@@ -110,7 +111,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             currentSelection={ currentSelection }
           />
           <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
-          <SaveSearchButtonContainer location={ props.location } />
+          <SaveSearchButtonContainer />
         </form>
       </div>
     );
@@ -118,12 +119,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
 
   QuickFilterContainer.propTypes = {
     filter: React.PropTypes.object.isRequired,
-    location: React.PropTypes.object.isRequired,
   };
 
-  QuickFilterContainer.contextTypes = {
-    router: React.PropTypes.object,
-  };
-
-  return QuickFilterContainer;
+  return connect(null, { setParticipantListFilter: actions.setParticipantListFilter })(QuickFilterContainer);
 }

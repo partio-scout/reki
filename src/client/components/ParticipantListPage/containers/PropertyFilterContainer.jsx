@@ -1,47 +1,22 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import * as _ from 'lodash';
 import { getPropertySelect } from '../../../components';
 
-export function getPropertyFilterContainer(searchFilterStore, searchFilterActions) {
+export function getPropertyFilterContainer() {
   const PropertySelect = getPropertySelect();
 
-  class PropertyFilterContainer extends React.Component {
-    constructor(props) {
-      super(props);
-
-      this.state = this.extractState();
-      this.onStoreChanged = this.onStoreChanged.bind(this);
-      this.extractState = this.extractState.bind(this);
-    }
-
-    componentDidMount() {
-      searchFilterStore.listen(this.onStoreChanged);
-    }
-
-    componentWillUnmount() {
-      searchFilterStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged() {
-      this.setState(this.extractState());
-    }
-
-    extractState() {
-      return { options: _.sortBy(searchFilterStore.getState().options[this.props.property] || [ ]) };
-    }
-
-    render() {
-      return (
-        <PropertySelect
-          label={ this.props.label }
-          property={ this.props.property }
-          value={ this.props.currentSelection[this.props.property] }
-          onChange={ this.props.onChange }
-          options={ this.state.options }
-          className={ this.props.className }
-        />
-      );
-    }
+  function PropertyFilterContainer(props) {
+    return (
+      <PropertySelect
+        label={ props.label }
+        property={ props.property }
+        value={ props.currentSelection[props.property] }
+        onChange={ props.onChange }
+        options={ props.options }
+        className={ props.className }
+      />
+    );
   }
 
   PropertyFilterContainer.propTypes = {
@@ -52,5 +27,9 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
     className: React.PropTypes.string,
   };
 
-  return PropertyFilterContainer;
+  const mapStateToProps = (state, ownProps) => ({
+    options: _.sortBy(state.searchFilters.options[ownProps.property] || []),
+  });
+
+  return connect(mapStateToProps)(PropertyFilterContainer);
 }

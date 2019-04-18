@@ -1,10 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Input } from 'react-bootstrap';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import _ from 'lodash';
+import * as actions from '../../../actions';
 
-export function getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions) {
-  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
+export function getGenericPropertyFilterContainer() {
+  const PropertyFilterContainer = getPropertyFilterContainer();
 
   const properties = [
     { childNaps: 'Lapsi nukkuu päiväunet' },
@@ -31,7 +33,7 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     onPropertyChange(e) {
       this.props.onChange(this.state.property, null);
       this.setState({ property: e.target.value });
-      searchFilterActions.loadOptions.defer(e.target.value);
+      this.props.loadOptions();
     }
 
     render() {
@@ -57,5 +59,9 @@ export function getGenericPropertyFilterContainer(searchFilterStore, searchFilte
     currentSelection: React.PropTypes.object.isRequired,
   };
 
-  return GenericPropertyFilterContainer;
+  const mapDispatchToProps = {
+    loadOptions: actions.loadOptions,
+  };
+
+  return connect(null, mapDispatchToProps)(GenericPropertyFilterContainer);
 }

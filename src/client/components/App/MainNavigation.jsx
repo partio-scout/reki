@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { Nav } from 'react-bootstrap';
 import { getNavigationItem } from '../../components';
+import * as navigationActions from '../../navigation/actions';
 
 export function getMainNavigation() {
   const NavigationItem = getNavigationItem();
@@ -26,7 +27,7 @@ export function getMainNavigation() {
       if (_.includes(rekiRoles, 'registryAdmin')) {
         navItems.push(
           {
-            to: '/admin',
+            to: navigationActions.navigateToAdmin(),
             isIndexLink: true,
             label: 'Käyttäjät',
           }
@@ -36,7 +37,7 @@ export function getMainNavigation() {
       if (_.includes(rekiRoles, 'registryUser')) {
         navItems.push(
           {
-            to: '/participants',
+            to: navigationActions.navigateToParticipantsList(),
             isIndexLink: true,
             label: 'Leiriläiset',
           }

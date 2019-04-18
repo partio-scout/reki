@@ -38,7 +38,7 @@ export function getDebouncedTextField() {
             value={ this.state.textSearch }
             onChange={ event => this.handleValueChanged(event) }
             onBlur={ event => this.delayedOnChange.flush() }
-            onKeyPress={ event => this.handleEnter(event) }
+            onKeyPress={ event => this.disableEnter(event) }
           />
         </div>
       );

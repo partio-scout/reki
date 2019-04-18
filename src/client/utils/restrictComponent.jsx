@@ -1,5 +1,6 @@
 import React from 'react';
-import { pureShouldComponentUpdate } from './pureShouldComponentUpdate';
+import { connect } from 'react-redux';
+import { createStateMapper } from '../redux-helpers';
 
 class EmptyComponent extends React.Component {
   render() {
@@ -7,48 +8,14 @@ class EmptyComponent extends React.Component {
   }
 }
 
-export function restrictComponent(UserStore, Component, AlternativeComponent) {
+export function restrictComponent(Component, AlternativeComponent) {
   AlternativeComponent = AlternativeComponent || EmptyComponent;
 
-  class RestrictedComponent extends React.Component {
-    constructor(props) {
-      super(props);
+  const RestrictedComponent = props => props.loggedIn ? <Component { ...props } /> : <AlternativeComponent />;
 
-      this.selectState = this.selectState.bind(this);
-      this.onChange = this.onChange.bind(this);
+  const mapStateToProps = createStateMapper({
+    loggedIn: state => state.registryUsers.loggedIn,
+  });
 
-      this.state = this.selectState(UserStore.getState());
-
-      this.shouldComponentUpdate = pureShouldComponentUpdate.bind(this);
-    }
-
-    componentDidMount() {
-      UserStore.listen(this.onChange);
-    }
-
-    componentWillUnmount() {
-      UserStore.unlisten(this.onChange);
-    }
-
-    onChange(state) {
-      this.setState(this.selectState(state));
-    }
-
-    selectState(state) {
-      return {
-        currentUser: state.currentUser,
-        loggedIn: state.loggedIn,
-      };
-    }
-
-    render() {
-      if (this.state.loggedIn) {
-        return (<Component { ...this.props }/>);
-      } else {
-        return (<AlternativeComponent />);
-      }
-    }
-  }
-
-  return RestrictedComponent;
+  return connect(mapStateToProps)(RestrictedComponent);
 }

@@ -1,19 +1,20 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Link } from 'react-router';
+import Link from 'redux-first-router-link';
 import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Presence } from '../index';
 import { TdWithTitle } from '../../components';
+import * as navigationActions from '../../navigation/actions';
 
 class LinkCell extends React.Component {
   render() {
-    return <td><Link to={ this.props.href } title={ this.props.title }>{ this.props.children }</Link></td>;
+    return <td><Link to={ this.props.to } title={ this.props.title }>{ this.props.children }</Link></td>;
   }
 }
 
 LinkCell.propTypes = {
-  href: React.PropTypes.string,
+  to: React.PropTypes.object,
   children: React.PropTypes.node,
   title: React.PropTypes.string,
 };
@@ -67,19 +68,14 @@ export class ParticipantRow extends React.Component {
       editableInfo,
     } = this.props.participant;
 
-    const href = `participants/${participantId}`;
-
     const checkboxCallback = this.props.checkboxCallback;
     const isChecked = this.props.isChecked;
 
     const onChange = function(event) {
-      event.persist();
       checkboxCallback(event.target.checked, participantId);
     };
 
-    const checked = isChecked(participantId);
-
-    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
+    const DateCell = ({ date, active }) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
 
     const tooltipForNotes = (
       <Tooltip>{ campOfficeNotes }</Tooltip>
@@ -99,13 +95,15 @@ export class ParticipantRow extends React.Component {
       </OverlayTrigger>
     ) : '';
 
+    const to = navigationActions.navigateToParticipantDetails({ participantId });
+
     return (
       <tr>
         <td><small style={ { color: 'grey' } }>{ 1 + this.props.index + this.props.offset }</small></td>
-        <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
+        <td><Input type="checkbox" onChange={ onChange } checked={ isChecked }  /></td>
         <td><Presence value={ presence } /></td>
-        <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
-        <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
+        <LinkCell to={ to } title={ firstName }>{ firstName }</LinkCell>
+        <LinkCell to={ to } title={ lastName }>{ lastName }</LinkCell>
         <TdWithTitle value={ formatDate(dateOfBirth) } />
         <TdWithTitle value={ formatNullableString(staffPosition) } />
         <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
@@ -125,7 +123,7 @@ export class ParticipantRow extends React.Component {
         <TdWithTitle value={ subCamp } />
         <TdWithTitle value={ campGroup } />
         {
-          this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
+          this.props.availableDates.map(row => <DateCell key={ row.date } date={ row.date } active={ _.find(dates, { date: row.date }) } />)
         }
       </tr>
     );
@@ -136,7 +134,7 @@ ParticipantRow.propTypes = {
   participant: React.PropTypes.object.isRequired,
   index: React.PropTypes.number,
   offset: React.PropTypes.number,
-  isChecked: React.PropTypes.func,
+  isChecked: React.PropTypes.bool,
   checkboxCallback: React.PropTypes.func,
   availableDates: React.PropTypes.array.isRequired,
 };
