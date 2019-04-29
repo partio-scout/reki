@@ -31,8 +31,6 @@
     "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js"
   },
   "dependencies": {
-    "alt": "^0.18.2",
-    "alt-container": "^1.0.2",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
