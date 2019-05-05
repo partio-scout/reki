@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node .",
     "start-silent": "node . > /dev/null 2>&1",
-    "watch": "nodemon --watch src",
+    "watch": "nodemon --watch src/server --watch src/common",
     "set-password": "babel-node scripts/set-password.js",
     "create-user": "babel-node scripts/create-user.js",
     "delete-user": "babel-node scripts/delete-user.js",
