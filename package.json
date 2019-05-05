@@ -26,6 +26,7 @@
     "fetch-data": "babel-node src/kuksa-integration/fetch-data.js",
     "rebuild-tables": "babel-node src/kuksa-integration/rebuild-tables.js",
     "fetch-from-kuksa": "npm run clear-temporary-tables && npm run fetch-data && npm run rebuild-tables",
+    "fetch-from-mock-kuksa": "KUKSA_API_PROXY_URL=\"\" KUKSA_API_USERNAME=username KUKSA_API_PASSWORD=password KUKSA_API_EVENTID=c3ef7c48-1df4-4bf8-b1d0-d523d601a3e1 KUKSA_API_ENDPOINT=http://localhost:4001 npm run fetch-from-kuksa",
     "build": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
     "bundle": "echo -e \"\\033[0;31mThe bundle command is deprecated! Use npm run build instead!\\033[0m\"; npm run build",
     "build-watch": "NODE_ENV=production webpack -p -w --config webpack.production.config.babel.js",
