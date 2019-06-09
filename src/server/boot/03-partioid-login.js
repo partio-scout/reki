@@ -37,6 +37,15 @@ export default function(app) {
       .spread((accessToken, user) => setCookieAndFinishRequest(accessToken, user, cookieOptions, res))
       .catch(err => processError(req, res, err))
   );
+
+  app.get('/saml/metadata.php', (req, res) =>{
+    res.status(200)
+      .type('text/plain')
+      .send(`$metadata[${conf.issuer}] = array(
+    'AssertionConsumerService' => '${conf.issuer}saml/consume',
+    'SingleLogoutService' => '${conf.issuer}saml/logout'
+);`);
+  });
 }
 
 function processError(req, res, err) {
