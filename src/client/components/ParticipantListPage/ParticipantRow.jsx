@@ -29,7 +29,6 @@ function getNullableFormatter(finalFormatter) {
 }
 
 const formatNonScout = getNullableFormatter(nonScout => nonScout ? 'EVP' : 'partiolainen');
-const formatNullableBoolean = getNullableFormatter(b => b ? 'kyllä' : 'ei');
 const formatNullableString = getNullableFormatter();
 const formatDate = dateString => {
   if (!dateString) {
@@ -47,20 +46,12 @@ export class ParticipantRow extends React.Component {
       lastName,
       dateOfBirth,
       nonScout,
-      billedDate,
       paidDate,
       memberNumber,
-      homeCity,
-      staffPosition,
-      interestedInHomeHospitality,
       email,
       phoneNumber,
       ageGroup,
       localGroup,
-      subCamp,
-      campGroup,
-      village,
-      accommodation,
       presence,
       dates,
       campOfficeNotes,
@@ -107,23 +98,15 @@ export class ParticipantRow extends React.Component {
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
         <TdWithTitle value={ formatDate(dateOfBirth) } />
-        <TdWithTitle value={ formatNullableString(staffPosition) } />
-        <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
         <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
         <TdWithTitle value={ memberNumber } />
         <td>{ notes }</td>
         <td>{ info }</td>
         <TdWithTitle value={ formatNonScout(nonScout) } />
-        <TdWithTitle value={ formatNullableString(homeCity) } />
-        <TdWithTitle value={ formatNullableBoolean(interestedInHomeHospitality) } />
         <TdWithTitle value={ formatNullableString(email) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
         <TdWithTitle value={ ageGroup } />
-        <TdWithTitle value={ formatNullableString(accommodation) } />
         <TdWithTitle value={ localGroup } />
-        <TdWithTitle value={ village } />
-        <TdWithTitle value={ subCamp } />
-        <TdWithTitle value={ campGroup } />
         {
           this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
         }
