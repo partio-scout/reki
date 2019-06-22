@@ -48,9 +48,7 @@ export class ParticipantRow extends React.Component {
       nonScout,
       paidDate,
       memberNumber,
-      email,
       phoneNumber,
-      ageGroup,
       localGroup,
       presence,
       dates,
@@ -103,9 +101,7 @@ export class ParticipantRow extends React.Component {
         <td>{ notes }</td>
         <td>{ info }</td>
         <TdWithTitle value={ formatNonScout(nonScout) } />
-        <TdWithTitle value={ formatNullableString(email) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
-        <TdWithTitle value={ ageGroup } />
         <TdWithTitle value={ localGroup } />
         {
           this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))

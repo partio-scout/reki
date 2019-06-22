@@ -245,23 +245,13 @@ export function getParticipantListPage(participantStore, participantActions, sea
         firstName: 'Etunimi',
         lastName: 'Sukunimi',
         dateOfBirth: 'Syntymäpäivä',
-        staffPosition: 'Pesti',
-        billedDate: 'Laskutettu',
         paidDate: 'Maksettu',
         memberNumber: 'Jäsennumero',
         campOfficeNotes: campOfficeNotes,
         editableInfo: editableInfo,
         nonScout: 'Onko partiolainen?',
-        homeCity: 'Kotikaupunki',
-        interestedInHomeHospitality: 'Home hospitality',
-        email: 'Sähköposti',
         phoneNumber: 'Puhelinnumero',
-        ageGroup: 'Ikäkausi',
-        accommodation: 'Majoittuminen',
         localGroup: 'Lippukunta',
-        village: 'Kylä',
-        subCamp: 'Alaleiri',
-        campGroup: 'Leirilippukunta',
       };
 
       const columnCount = Object.keys(columnPropertyToLabelMapping).length;
