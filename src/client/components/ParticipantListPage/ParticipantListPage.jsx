@@ -295,7 +295,6 @@ export function getParticipantListPage(participantStore, participantActions, sea
                         />
                       ))
                     }
-                    <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
                 <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } offset={ offset }/>

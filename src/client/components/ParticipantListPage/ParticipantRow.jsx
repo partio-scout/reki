@@ -1,6 +1,4 @@
 import React from 'react';
-import moment from 'moment';
-import _ from 'lodash';
 import { Link } from 'react-router';
 import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Presence } from '../index';
@@ -51,7 +49,6 @@ export class ParticipantRow extends React.Component {
       phoneNumber,
       localGroup,
       presence,
-      dates,
       campOfficeNotes,
       editableInfo,
     } = this.props.participant;
@@ -67,8 +64,6 @@ export class ParticipantRow extends React.Component {
     };
 
     const checked = isChecked(participantId);
-
-    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
 
     const tooltipForNotes = (
       <Tooltip>{ campOfficeNotes }</Tooltip>
@@ -103,9 +98,6 @@ export class ParticipantRow extends React.Component {
         <TdWithTitle value={ formatNonScout(nonScout) } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
         <TdWithTitle value={ localGroup } />
-        {
-          this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
-        }
       </tr>
     );
   }

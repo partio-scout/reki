@@ -4,14 +4,12 @@ import { Button } from 'react-bootstrap';
 import { changeQueryParameters } from '../../../utils';
 import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
-import { getDateFilterContainer } from './DateFilterContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
 import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
-  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
   const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
   const PresenceFilterContainer = getPresenceFilterContainer();
@@ -63,49 +61,11 @@ export function getQuickFilterContainer(participantStore, participantActions, se
           <PropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
-            label="Ikäkausi"
-            property="ageGroup"
-            className="agegroup-filter"
-          />
-          <PropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
-            label="Alaleiri"
-            property="subCamp"
-            className="subcamp-filter"
-          />
-          <PropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
-            label="Kylä"
-            property="village"
-            className="village-filter"
-          />
-          <PropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
             label="Lippukunta"
             property="localGroup"
             className="local-group-filter"
           />
-          <PropertyFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
-            label="Leirilippukunta"
-            property="campGroup"
-            className="camp-group-filter"
-          />
           <PresenceFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
-          />
-          <DateFilterContainer
-            onChange={ handleChange }
-            currentSelection={ currentSelection }
-            label="Ilmoittautumispäivät"
-            property="dates"
-          />
-          <GenericPropertyFilterContainer
             onChange={ handleChange }
             currentSelection={ currentSelection }
           />
