@@ -81,4 +81,13 @@ export default function(app) {
     res.type('application/xml');
     res.status(200).send(strategy.generateServiceProviderMetadata());
   });
+
+  app.get('/saml/metadata.php', (req, res) =>{
+    res.status(200)
+      .type('text/plain')
+      .send(`$metadata[${partioIdIssuer}] = array(
+    'AssertionConsumerService' => '${partioIdIssuer}saml/consume',
+    'SingleLogoutService' => '${partioIdIssuer}saml/logout'
+);`);
+  });
 }
