@@ -1,11 +1,9 @@
 import app from '../../src/server/server';
 import request from 'supertest';
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import {
-  createFixture,
-  createFixtureSequelize,
-  deleteFixturesIfExistSequelize,
+  withFixtures,
+  deleteUsers,
   createUserWithRoles as createUser,
   getWithUser,
   postWithUser,
@@ -15,122 +13,16 @@ import {
 import { resetDatabase } from '../../scripts/seed-database';
 import _ from 'lodash';
 
-const expect = chai.expect;
-chai.use(chaiAsPromised);
-
-function get(endpoint, roles) {
-  return {
-    expect: async code => {
-      if (roles) {
-        const res = await getWithUser(endpoint, await createUser(roles));
-        expectStatus(res.status, code);
-      } else {
-        await request(app).get(endpoint).expect(code);
-      }
-    },
-  };
-}
-
-function post(endpoint, data, roles) {
-  return {
-    expect: async code => {
-      if (roles) {
-        const res = await postWithUser(endpoint, await createUser(roles), data);
-        expectStatus(res.status, code);
-      } else {
-        await request(app).post(endpoint).send(data).expect(code);
-      }
-    },
-  };
-}
-
-function del(endpoint, roles) {
-  return {
-    expect: async code => {
-      if (roles) {
-        const res = await deleteWithUser(endpoint, await createUser(roles));
-        expectStatus(res.status, code);
-      } else {
-        await request(app).del(endpoint).expect(code);
-      }
-    },
-  };
-}
-
 const OK = 200;
 const NO_CONTENT = 204;
 const UNAUTHORIZED = 401;
 
-describe('http api access control', () => {
-  let otherUserId;
-
-  // Create fixtures for use in all tests - do not modify these in your tests!
-  // These fixtures are created only once for performance reasons.
+describe('HTTP API access control', () => {
+  const otherUserId = 123;
 
   before(resetDatabase);
-
-  const participantFixture = [{
-    participantId: 1,
-    firstName: 'derp',
-    lastName: 'durp',
-    nonScout: false,
-    internationalGuest: false,
-    memberNumber: '1234',
-    dateOfBirth: new Date(),
-    email: 'derp@example.com',
-    localGroup: 'localgroup',
-    campGroup: 'campGroup',
-    village: 'village',
-    subCamp: 'subCamp',
-    ageGroup: 'vaeltaja',
-  }];
-  before(() => createFixtureSequelize('Participant', participantFixture));
-
-  const presenceHistoryFixture = [{
-    participantId: 1,
-    presence: 3,
-    timestamp: new Date(),
-    authorId: 1,
-  }];
-  before(() =>
-    createFixtureSequelize('PresenceHistory', presenceHistoryFixture)
-  );
-
-  const allergyFixture = [{
-    allergyId: 1,
-    name: 'allergia',
-  }];
-
-  const participantAllergyFixture = [{
-    'allergyAllergyId': 1,
-    'participantParticipantId': 1,
-  }];
-
-  before( async () => {
-    await createFixtureSequelize('Allergy', allergyFixture);
-    await createFixtureSequelize('ParticipantAllergy', participantAllergyFixture);
-  });
-
-  const selectionFixture = [{
-    participantId: 1,
-    kuksaGroupId: 1,
-    kuksaSelectionId: 1,
-    groupName: 'Ryhmänimi',
-    selectionName: 'Valintanimi',
-  }];
-  before(() =>
-    createFixtureSequelize('Selection', selectionFixture)
-  );
-
-  const userFixture = {
-    firstName: 'derp',
-    lastName: 'durp',
-    password: 'password',
-    memberNumber: '1234',
-    email: 'derp@example.com',
-    phoneNumber: '123456',
-  };
-  before(() => createFixture('RegistryUser', userFixture).tap(user => otherUserId = user.id));
+  withFixtures(getFixtures());
+  afterEach(deleteUsers);
 
   describe('Access control tests', () => {
     it('exist for all endpoints under /api', () => {
@@ -243,50 +135,31 @@ describe('http api access control', () => {
   });
 
   describe('SearchFilter', () => {
-    const searchFilterFixture = [{
-      id: 111,
-      name: 'derp',
-      filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
-    }];
-
-    beforeEach( () =>
-      createFixtureSequelize('SearchFilter', searchFilterFixture)
-    );
-    const searchFilterFixtureToCreate = {
-      id: 2,
+    const searchFilterToCreate = {
       name: 'durp',
       filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
     };
-    afterEach(() => deleteFixturesIfExistSequelize('SearchFilter'));
 
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterToCreate).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111').expect(UNAUTHORIZED));
     });
 
     describe('registryUser', () => {
       it('find: ok', () => get('/api/searchfilters', ['registryUser']).expect(OK));
-      it('create: ok', () => post('/api/searchfilters', searchFilterFixtureToCreate, ['registryUser']).expect(OK));
+      it('create: ok', () => post('/api/searchfilters', searchFilterToCreate, ['registryUser']).expect(OK));
       it('deleteById: ok', () => del('/api/searchfilters/111', ['registryUser']).expect(OK));
     });
 
     describe('registryAdmin', () => {
       it('find: UNAUTHORIZED', () => get('/api/searchfilters', ['registryAdmin']).expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterFixtureToCreate, ['registryAdmin']).expect(UNAUTHORIZED));
+      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterToCreate, ['registryAdmin']).expect(UNAUTHORIZED));
       it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', ['registryAdmin']).expect(UNAUTHORIZED));
     });
   });
 
   describe('Option', () => {
-    const optionFixture = [{
-      property: 'subCamp',
-      value: 'Kolina',
-    }];
-
-    beforeEach( () => createFixtureSequelize('Option', optionFixture));
-    afterEach(() => deleteFixturesIfExistSequelize('Option'));
-
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED))
     );
@@ -301,14 +174,6 @@ describe('http api access control', () => {
   });
 
   describe('ParticipantDate', () => {
-    const dateFixture = [{
-      participantId: 1,
-      date: new Date(),
-    }];
-
-    beforeEach( () => createFixtureSequelize('ParticipantDate', dateFixture));
-    afterEach(() => deleteFixturesIfExistSequelize('ParticipantDate'));
-
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED))
     );
@@ -323,7 +188,6 @@ describe('http api access control', () => {
   });
 
   describe('Config', () => {
-
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () => get('/api/config').expect(UNAUTHORIZED))
     );
@@ -337,4 +201,123 @@ describe('http api access control', () => {
     );
   });
 
+  function getFixtures() {
+    return {
+      'Participant': [
+        {
+          participantId: 1,
+          firstName: 'derp',
+          lastName: 'durp',
+          nonScout: false,
+          internationalGuest: false,
+          memberNumber: '1234',
+          dateOfBirth: new Date(),
+          email: 'derp@example.com',
+          localGroup: 'localgroup',
+          campGroup: 'campGroup',
+          village: 'village',
+          subCamp: 'subCamp',
+          ageGroup: 'vaeltaja',
+        },
+      ],
+      'ParticipantDate': [
+        {
+          participantId: 1,
+          date: new Date(),
+        },
+      ],
+      'Option': [
+        {
+          property: 'subCamp',
+          value: 'Kolina',
+        },
+      ],
+      'PresenceHistory': [
+        {
+          participantId: 1,
+          presence: 3,
+          timestamp: new Date(),
+          authorId: 1,
+        },
+      ],
+      'Allergy': [
+        {
+          allergyId: 1,
+          name: 'allergia',
+        },
+      ],
+      'ParticipantAllergy': [
+        {
+          'allergyAllergyId': 1,
+          'participantParticipantId': 1,
+        },
+      ],
+      'Selection': [
+        {
+          participantId: 1,
+          kuksaGroupId: 1,
+          kuksaSelectionId: 1,
+          groupName: 'Ryhmänimi',
+          selectionName: 'Valintanimi',
+        },
+      ],
+      'SearchFilter': [
+        {
+          id: 111,
+          name: 'derp',
+          filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
+        },
+      ],
+      'RegistryUser': [
+        {
+          id: otherUserId,
+          firstName: 'derp',
+          lastName: 'durp',
+          password: 'password',
+          memberNumber: '1234',
+          email: 'derp@example.com',
+          phoneNumber: '123456',
+        },
+      ],
+    };
+  }
 });
+
+function get(endpoint, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await getWithUser(endpoint, await createUser(roles));
+        expectStatus(res.status, code);
+      } else {
+        await request(app).get(endpoint).expect(code);
+      }
+    },
+  };
+}
+
+function post(endpoint, data, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await postWithUser(endpoint, await createUser(roles), data);
+        expectStatus(res.status, code);
+      } else {
+        await request(app).post(endpoint).send(data).expect(code);
+      }
+    },
+  };
+}
+
+function del(endpoint, roles) {
+  return {
+    expect: async code => {
+      if (roles) {
+        const res = await deleteWithUser(endpoint, await createUser(roles));
+        expectStatus(res.status, code);
+      } else {
+        await request(app).del(endpoint).expect(code);
+      }
+    },
+  };
+}

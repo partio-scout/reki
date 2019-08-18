@@ -1,85 +1,25 @@
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-import * as testUtils from '../utils/test-utils';
+import { expect } from 'chai';
+import {
+  getWithUser,
+  expectStatus,
+  createUserWithRoles as createUser,
+  deleteUsers,
+  withFixtures,
+} from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
-const expect = chai.expect;
-chai.use(chaiAsPromised);
-
-const testParticipants = [{
-  'participantId': 1,
-  'firstName': 'Teemu',
-  'lastName': 'Testihenkilö',
-  'nonScout': false,
-  'internationalGuest': false,
-  'localGroup': 'Testilippukunta',
-  'campGroup': 'Leirilippukunta',
-  'village': 'Kylä',
-  'subCamp': 'Alaleiri',
-  'ageGroup': 'sudenpentu',
-  'memberNumber': 123,
-  'dateOfBirth': new Date(2018,5,10),
-}];
-
-const testParticipantDates = [
-  { id: 1, participantId: 1, date: new Date(2016,6,20) },
-  { id: 2, participantId: 1, date: new Date(2016,6,21) },
-  { id: 3, participantId: 1, date: new Date(2016,6,23) },
-];
-
-const testParticipantPrecenceHistory = [ {
-  'participantParticipantId':1,
-  'presence': 1,
-  'timestamp': new Date(2016,6,20),
-  'authorId': 3,
-} ];
-
-const testAllergies = [{
-  'allergyId': 1,
-  'name': 'hernekeitto',
-}];
-
-const testParticipantsSelections = [{
-  'selectionId': 0,
-  'participantParticipantId': 1,
-  'kuksaGroupId': 0,
-  'kuksaSelectionId': 0,
-  'groupName': 'herneenpalvojat',
-  'selectionName': 'ok',
-}];
-
-const testParticipantAllergies = [{
-  'allergyAllergyId': 1,
-  'participantParticipantId': 1,
-}];
-
-describe('particpant', () => {
+describe('Single participant API endpoint', () => {
   let user;
 
   before(resetDatabase);
+  beforeEach(async () => user = await createUser(['registryUser']));
+  withFixtures(getFixtures());
+  afterEach(deleteUsers);
 
-  beforeEach(async () => {
-    await testUtils.createFixtureSequelize('Participant', testParticipants);
-    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    await testUtils.createFixtureSequelize('PresenceHistory', testParticipantPrecenceHistory);
-    await testUtils.createFixtureSequelize('Allergy', testAllergies);
-    await testUtils.createFixtureSequelize('Selection', testParticipantsSelections);
-    await testUtils.createFixtureSequelize('ParticipantAllergy', testParticipantAllergies);
-    user = await testUtils.createUserWithRoles(['registryUser']);
-  });
-
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExistSequelize('Participant');
-    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExistSequelize('PresenceHistory');
-    await testUtils.deleteFixturesIfExistSequelize('Allergy');
-    await testUtils.deleteFixturesIfExistSequelize('Selection');
-    await testUtils.deleteFixturesIfExistSequelize('ParticipantAllergy');
-  });
-
-  it('request for single participant returns correct info', async () => {
-    const res = await testUtils.getWithUser('/api/participants/1', user);
-    testUtils.expectStatus(res.status, 200);
+  //TODO split this into several test cases for clarity
+  it('returns correct info', async () => {
+    const res = await getWithUser('/api/participants/1', user);
+    expectStatus(res.status, 200);
 
     expect(res.body).to.have.property('firstName','Teemu');
     expect(res.body).to.have.property('dates');
@@ -95,14 +35,70 @@ describe('particpant', () => {
     expect(res.body.selections[0]).to.have.property('selectionName', 'ok');
   });
 
-  it('request for unknown participant id returns 404', async () => {
-    const res = await testUtils.getWithUser('/api/participants/404', user);
-    testUtils.expectStatus(res.status, 404);
+  it('returns 404 when incorrect id is given', async () => {
+    const res = await getWithUser('/api/participants/404', user);
+    expectStatus(res.status, 404);
   });
 
-  it('request for participant with string id returns 404', async () => {
-    const res = await testUtils.getWithUser('/api/participants/hello', user);
-    testUtils.expectStatus(res.status, 404);
+  it('returns 404 when a string id is given', async () => {
+    const res = await getWithUser('/api/participants/hello', user);
+    expectStatus(res.status, 404);
   });
+
+  function getFixtures() {
+    return {
+      'Participant': [
+        {
+          'participantId': 1,
+          'firstName': 'Teemu',
+          'lastName': 'Testihenkilö',
+          'nonScout': false,
+          'internationalGuest': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Kylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'sudenpentu',
+          'memberNumber': 123,
+          'dateOfBirth': new Date(2018,5,10),
+        },
+      ],
+      'ParticipantDate': [
+        { id: 1, participantId: 1, date: new Date(2016,6,20) },
+        { id: 2, participantId: 1, date: new Date(2016,6,21) },
+        { id: 3, participantId: 1, date: new Date(2016,6,23) },
+      ],
+      'PresenceHistory': [
+        {
+          'participantParticipantId':1,
+          'presence': 1,
+          'timestamp': new Date(2016,6,20),
+          'authorId': 3,
+        },
+      ],
+      'Allergy': [
+        {
+          'allergyId': 1,
+          'name': 'hernekeitto',
+        },
+      ],
+      'Selection': [
+        {
+          'selectionId': 0,
+          'participantParticipantId': 1,
+          'kuksaGroupId': 0,
+          'kuksaSelectionId': 0,
+          'groupName': 'herneenpalvojat',
+          'selectionName': 'ok',
+        },
+      ],
+      'ParticipantAllergy': [
+        {
+          'allergyAllergyId': 1,
+          'participantParticipantId': 1,
+        },
+      ],
+    };
+  }
 
 });

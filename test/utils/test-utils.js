@@ -8,18 +8,7 @@ import request from 'supertest';
 // Counter for generating e.g. unique users automatically
 let uniqueIdCounter = 1;
 
-export function createFixture(modelName, fixture) {
-  const create = Promise.promisify(app.models[modelName].create, { context: app.models[modelName] });
-  return create(fixture);
-}
-
-export function createFixtureSequelize(modelName, fixture) {
-  if (Array.isArray(fixture)) {
-    return models[modelName].bulkCreate(fixture);
-  } else {
-    return models[modelName].create(fixture);
-  }
-}
+// Functions for managing users in tests
 
 export async function createUserWithRoles(rolesToAdd, overrides) {
   uniqueIdCounter++;
@@ -57,40 +46,62 @@ function addRolesToUser(roles, user) {
   return createFixture('RoleMapping', roleMappings);
 }
 
+export async function deleteUsers() {
+  return deleteFixturesIfExist('RegistryUser');
+}
+
 export function createUserAndGetAccessToken(roles, overrides) {
   return createUserWithRoles(roles, overrides).then(user => user.createAccessToken(1000));
 }
 
+// Functions for creating and deleting fixtures
+
+export function createFixture(modelName, fixture) {
+  if (app.models[modelName]) {
+    const create = Promise.promisify(app.models[modelName].create, { context: app.models[modelName] });
+    return create(fixture);
+  } else {
+    if (Array.isArray(fixture)) {
+      return models[modelName].bulkCreate(fixture);
+    } else {
+      return models[modelName].create(fixture);
+    }
+  }
+}
+
 export function deleteFixtureIfExists(modelName, id) {
-  const del = Promise.promisify(app.models[modelName].destroyById, { context: app.models[modelName] });
-  return del(id);
+  if (app.models[modelName]) {
+    const del = Promise.promisify(app.models[modelName].destroyById, { context: app.models[modelName] });
+    return del(id);
+  } else {
+    return models[modelName].destroyById(id);
+  }
 }
 
-export function deleteFixtureIfExistsSequelize(modelName, id) {
-  return models[modelName].destroyById(id);
+export async function deleteFixturesIfExist(modelName, whereClause) {
+  if (app.models[modelName]) {
+    const del = Promise.promisify(app.models[modelName].destroyAll, { context: app.models[modelName] });
+    return del(whereClause);
+  } else {
+    return models[modelName].destroy({ where: whereClause || {} });
+  }
 }
 
-export function deleteFixturesIfExist(modelName, whereClause) {
-  const del = Promise.promisify(app.models[modelName].destroyAll, { context: app.models[modelName] });
-  return del(whereClause);
+export async function withFixtures(fixtures) {
+  beforeEach(async () => {
+    for (const model in fixtures) {
+      await createFixture(model, fixtures[model]);
+    }
+  });
+
+  afterEach(async () => {
+    for (const model in fixtures) {
+      await deleteFixturesIfExist(model);
+    }
+  });
 }
 
-export function deleteFixturesIfExistSequelize(modelName, whereClause = { where: {} }) {
-  return models[modelName].destroy(whereClause);
-}
-
-export function expectModelToBeDeleted(modelName, id, cb) {
-  const find = Promise.promisify(app.models[modelName].findById, { context: app.models[modelName] });
-  return find(id).then(res => {
-    expect(res).to.be.null;
-  }).asCallback(cb);
-}
-
-export function find(modelName, whereClause, includeClause) {
-  const what = { where: whereClause, include: includeClause };
-  const find = Promise.promisify(app.models[modelName].find, { context: app.models[modelName] });
-  return find(what);
-}
+// Functions for API requests
 
 export async function getWithUser(path, user) {
   return request(app).get(path).auth(user.email, user.clear_password);
@@ -106,4 +117,12 @@ export async function deleteWithUser(path, user) {
 
 export function expectStatus(status, expectedStatus) {
   expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
+}
+
+// Other functions
+
+export function find(modelName, whereClause, includeClause) {
+  const what = { where: whereClause, include: includeClause };
+  const find = Promise.promisify(app.models[modelName].find, { context: app.models[modelName] });
+  return find(what);
 }

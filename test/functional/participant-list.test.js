@@ -1,87 +1,19 @@
-import chai from 'chai';
-import * as testUtils from '../utils/test-utils';
+import { expect } from 'chai';
+import {
+  getWithUser,
+  expectStatus,
+  createUserWithRoles as createUser,
+  deleteUsers,
+  withFixtures,
+} from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
 
-const expect = chai.expect;
-
-const testParticipants = [
-  {
-    'participantId': 1,
-    'firstName': 'Teemu',
-    'lastName': 'Testihenkilö',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'village': 'Kattivaara',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'sudenpentu',
-    'memberNumber': 123,
-    'presence': 0,
-    'internationalGuest': false,
-    'dateOfBirth': new Date(),
-  },
-  {
-    'participantId': 2,
-    'firstName': 'Tero',
-    'lastName': 'Esimerkki',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'village': 'Testikylä',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'sudenpentu',
-    'memberNumber': 345,
-    'presence': 0,
-    'internationalGuest': false,
-    'dateOfBirth': new Date(),
-  },
-  {
-    'participantId': 3,
-    'firstName': 'Jussi',
-    'lastName': 'Jukola',
-    'nonScout': false,
-    'localGroup': 'Testilippukunta',
-    'campGroup': 'Leirilippukunta',
-    'village': 'Testikylä',
-    'subCamp': 'Alaleiri',
-    'ageGroup': 'seikkailija',
-    'memberNumber': 859,
-    'presence': 0,
-    'internationalGuest': false,
-    'dateOfBirth': new Date(),
-  },
-];
-
-const testParticipantDates = [
-  { participantId: 1, date: new Date(2016,6,20) },
-  { participantId: 1, date: new Date(2016,6,21) },
-  { participantId: 1, date: new Date(2016,6,23) },
-];
-
-describe('particpant list', () => {
-  let user;
-
+describe('Particpant list API endpoint', () => {
   before(resetDatabase);
+  afterEach(deleteUsers);
+  withFixtures(getFixtures());
 
-  beforeEach(async () => {
-    await testUtils.createFixtureSequelize('Participant', testParticipants);
-    await testUtils.createFixtureSequelize('ParticipantDate', testParticipantDates);
-    user = await testUtils.createUserWithRoles(['registryUser']);
-  });
-
-  afterEach(async () => {
-    await testUtils.deleteFixturesIfExistSequelize('Participant');
-    await testUtils.deleteFixturesIfExistSequelize('ParticipantDate');
-    await testUtils.deleteFixturesIfExist('RegistryUser');
-  });
-
-  async function getParticipantsWithFilter(filter) {
-    const res = await testUtils.getWithUser(`/api/participants/?filter=${filter}`, user);
-    testUtils.expectStatus(res.status, 200);
-    return res.body;
-  }
-
-  it('GET request to participants returs all participants', async () => {
+  it('returns all participants when no where filter is given', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":0,"limit":200}'
     );
@@ -89,7 +21,7 @@ describe('particpant list', () => {
     expect(response.result[0]).to.have.property('firstName','Teemu');
   });
 
-  it('GET request to participants with one where filter', async () => {
+  it('returns correct participants with one where filter', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{"village":"Kattivaara"},"skip":0,"limit":200}'
     );
@@ -97,7 +29,7 @@ describe('particpant list', () => {
     expect(response.result[0]).to.have.property('firstName','Teemu');
   });
 
-  it('GET request to participants with several where filters', async () => {
+  it('returns correct participants with a combination of where filters', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200}'
     );
@@ -105,7 +37,7 @@ describe('particpant list', () => {
     expect(response.result[0]).to.have.property('firstName','Tero');
   });
 
-  it('GET request to participants returns dates', async () => {
+  it('returns the dates the participant is present', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":0,"limit":200}'
     );
@@ -113,7 +45,7 @@ describe('particpant list', () => {
     expect(response.result[0].dates).to.be.an('array').with.length(3);
   });
 
-  it('GET request to participants skips correct amount of participants', async () => {
+  it('skips correct amount of participants from the start when skip parameter is set', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":2,"limit":1}'
     );
@@ -122,7 +54,7 @@ describe('particpant list', () => {
     expect(response.result[0]).to.have.property('firstName','Jussi');
   });
 
-  it('GET request to participants limits correct amount participants', async () => {
+  it('returns correct amount of participants when limit parameter is set', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":0,"limit":2}'
     );
@@ -131,7 +63,7 @@ describe('particpant list', () => {
     expect(response.result[0]).to.have.property('firstName','Teemu');
   });
 
-  it('GET request to participants sorts participants correctly', async () => {
+  it('sorts participants correctly when order parameter is set', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":0,"limit":200,"order":"lastName DESC"}'
     );
@@ -141,7 +73,7 @@ describe('particpant list', () => {
     expect(response.result[2]).to.have.property('lastName','Esimerkki');
   });
 
-  it('GET request to participants returns count', async () => {
+  it('returns the count of matching participants along with the result', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":0,"limit":200}'
     );
@@ -149,7 +81,7 @@ describe('particpant list', () => {
   });
 
   //count should return the number of all maches regardless of the paging
-  it('count is calculated correctly when skip and limit are present', async () => {
+  it('counts matching participants correctly also when skip and limit are set', async () => {
     const response = await getParticipantsWithFilter(
       '{"where":{},"skip":1,"limit":2}'
     );
@@ -158,5 +90,72 @@ describe('particpant list', () => {
 
   // TODO add test for no filters at all
   // TODO add test for invalid filters
+  // TODO add test for count when where filter is set
+
+  async function getParticipantsWithFilter(filter) {
+    const res = await getWithUser(
+      `/api/participants/?filter=${filter}`,
+      await createUser(['registryUser'])
+    );
+    expectStatus(res.status, 200);
+    return res.body;
+  }
+
+  function getFixtures() {
+    return {
+      'Participant': [
+        {
+          'participantId': 1,
+          'firstName': 'Teemu',
+          'lastName': 'Testihenkilö',
+          'nonScout': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Kattivaara',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'sudenpentu',
+          'memberNumber': 123,
+          'presence': 0,
+          'internationalGuest': false,
+          'dateOfBirth': new Date(),
+        },
+        {
+          'participantId': 2,
+          'firstName': 'Tero',
+          'lastName': 'Esimerkki',
+          'nonScout': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Testikylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'sudenpentu',
+          'memberNumber': 345,
+          'presence': 0,
+          'internationalGuest': false,
+          'dateOfBirth': new Date(),
+        },
+        {
+          'participantId': 3,
+          'firstName': 'Jussi',
+          'lastName': 'Jukola',
+          'nonScout': false,
+          'localGroup': 'Testilippukunta',
+          'campGroup': 'Leirilippukunta',
+          'village': 'Testikylä',
+          'subCamp': 'Alaleiri',
+          'ageGroup': 'seikkailija',
+          'memberNumber': 859,
+          'presence': 0,
+          'internationalGuest': false,
+          'dateOfBirth': new Date(),
+        },
+      ],
+      'ParticipantDate': [
+        { participantId: 1, date: new Date(2016,6,20) },
+        { participantId: 1, date: new Date(2016,6,21) },
+        { participantId: 1, date: new Date(2016,6,23) },
+      ],
+    };
+  }
 
 });
