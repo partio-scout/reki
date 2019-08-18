@@ -8,7 +8,7 @@ export default function(app){
 
   app.get('/api/participants/:id', optionalBasicAuth(), app.requirePermission('view participants'), app.wrap(async (req, res) => {
     const id = +req.params.id || 0;
-    const participant = await models.Participant.findById(id , {
+    const participant = await models.Participant.findByPk(id , {
       include: [{ all: true, nested: true }],
     });
 
@@ -64,7 +64,7 @@ export default function(app){
     }
     delete where.dates;
 
-    const result = await models.Participant.findAndCount( {
+    const result = await models.Participant.findAndCountAll( {
       where: where,
       include: [
         // Filter results using datesearch

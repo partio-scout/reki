@@ -27,47 +27,47 @@ describe('Kuksa integration', () => {
   );
 
   it('correctly transfers participant extra info (free-text fields)',
-    () => expect(models.Participant.findById(541)).to.eventually.have.property('staffPosition', 'Perunankuorija')
+    () => expect(models.Participant.findByPk(541)).to.eventually.have.property('staffPosition', 'Perunankuorija')
   );
 
   it('correctly transfers participant extra selection (multiple choice fields)',
-    () => expect(models.Participant.findById(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
+    () => expect(models.Participant.findByPk(515)).to.eventually.have.property('ageGroup', 'vaeltajat (18-22v.)')
   );
 
   it('correctly transfers participant local group',
-    () => expect(models.Participant.findById(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
+    () => expect(models.Participant.findByPk(10)).to.eventually.have.property('localGroup', 'Liitukauden Liitäjät ry')
   );
 
   it('correctly transfers participant camp group',
-    () => expect(models.Participant.findById(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
+    () => expect(models.Participant.findByPk(494)).to.eventually.have.property('campGroup', 'Leirilippukunta Savu')
   );
 
   it('correctly transfers participant village',
-    () => expect(models.Participant.findById(508)).to.eventually.have.property('village', 'Testikylä')
+    () => expect(models.Participant.findByPk(508)).to.eventually.have.property('village', 'Testikylä')
   );
 
   it('correctly transfers participant subcamp',
-    () => expect(models.Participant.findById(38)).to.eventually.have.property('subCamp', 'Unity')
+    () => expect(models.Participant.findByPk(38)).to.eventually.have.property('subCamp', 'Unity')
   );
 
   it('sets nonScout status as true for participants with no memberNumber and no localGroup',
-    () => expect(models.Participant.findById(515)).to.eventually.have.property('nonScout', true)
+    () => expect(models.Participant.findByPk(515)).to.eventually.have.property('nonScout', true)
   );
 
   it('sets nonScout status as false if memberNumber is set',
-    () => expect(models.Participant.findById(541)).to.eventually.have.property('nonScout', false)
+    () => expect(models.Participant.findByPk(541)).to.eventually.have.property('nonScout', false)
   );
 
   it('sets nonScout status as false if localGroup is set',
-    () => expect(models.Participant.findById(42)).to.eventually.have.property('nonScout', false)
+    () => expect(models.Participant.findByPk(42)).to.eventually.have.property('nonScout', false)
   );
 
   it('sets internationalGuest status as true if localGroup is set',
-    () => expect(models.Participant.findById(42)).to.eventually.have.property('internationalGuest', true)
+    () => expect(models.Participant.findByPk(42)).to.eventually.have.property('internationalGuest', true)
   );
 
   it('sets internationalGuest status as false if no localGroup is set',
-    () => expect(models.Participant.findById(542)).to.eventually.have.property('internationalGuest', false)
+    () => expect(models.Participant.findByPk(542)).to.eventually.have.property('internationalGuest', false)
   );
 
   it('produces the expected amount of allergies in the database',
@@ -75,53 +75,53 @@ describe('Kuksa integration', () => {
   );
 
   it('correctly transfers allergies',
-    () => expect(models.Allergy.findById(415)).to.eventually.have.property('name', 'Herne, kypsä')
+    () => expect(models.Allergy.findByPk(415)).to.eventually.have.property('name', 'Herne, kypsä')
   );
 
   it('correctly transfers diets',
-    () => expect(models.Allergy.findById(406)).to.eventually.have.property('name', 'Gluteeniton')
+    () => expect(models.Allergy.findByPk(406)).to.eventually.have.property('name', 'Gluteeniton')
   );
 
   it('correctly transfers participants allergies',
-    () => expect(models.Participant.findById(448, { include: models.Allergy })).to.eventually.have.deep.property('allergies[0].name', 'Porkkana, kypsä')
+    () => expect(models.Participant.findByPk(448, { include: models.Allergy })).to.eventually.have.deep.property('allergies[0].name', 'Porkkana, kypsä')
   );
 
   it('sets the billed date as null if participant has not been billed',
-    () => expect(models.Participant.findById(1)).to.eventually.have.property('billedDate', null)
+    () => expect(models.Participant.findByPk(1)).to.eventually.have.property('billedDate', null)
   );
 
   it('sets the paid date as null if participant has not paid the bill',
-    () => expect(models.Participant.findById(6)).to.eventually.have.property('paidDate', null)
+    () => expect(models.Participant.findByPk(6)).to.eventually.have.property('paidDate', null)
   );
 
   it('sets the billed date if participant has been billed',
-    () => expect(models.Participant.findById(6)).to.eventually.have.property('billedDate').that.is.a('date')
+    () => expect(models.Participant.findByPk(6)).to.eventually.have.property('billedDate').that.is.a('date')
   );
 
   it('sets the paid date if participant has paid',
-    () => expect(models.Participant.findById(497)).to.eventually.have.property('paidDate').that.is.a('date')
+    () => expect(models.Participant.findByPk(497)).to.eventually.have.property('paidDate').that.is.a('date')
   );
 
   it('sets the billed date as null if payment status is missing',
-    () => expect(models.Participant.findById(38)).to.eventually.have.property('billedDate', null)
+    () => expect(models.Participant.findByPk(38)).to.eventually.have.property('billedDate', null)
   );
 
   it('sets the paid date as null if payment status is missing',
-    () => expect(models.Participant.findById(38)).to.eventually.have.property('paidDate', null)
+    () => expect(models.Participant.findByPk(38)).to.eventually.have.property('paidDate', null)
   );
 
   it('sets the correct amount of dates for participants with individual dates',
-    () => expect(models.Participant.findById(448, { include: [ 'dates' ] }))
+    () => expect(models.Participant.findByPk(448, { include: [ 'dates' ] }))
       .to.eventually.have.property('dates').that.has.length(2)
   );
 
   it('sets the correct amount of dates for participants with full camp',
-    () => expect(models.Participant.findById(497, { include: [ 'dates' ] } ))
+    () => expect(models.Participant.findByPk(497, { include: [ 'dates' ] } ))
       .to.eventually.have.property('dates').that.has.length(8)
   );
 
   it('sets the correct date for participants',
-    () => models.Participant.findById(448, { include: { all: true } })
+    () => models.Participant.findByPk(448, { include: { all: true } })
       .then(participant => {
         expect(participant).to.have.deep.property('dates[1].date');
         expect(participant.dates[0].date).to.equalDate(moment('2016-07-23').toDate());
@@ -130,7 +130,7 @@ describe('Kuksa integration', () => {
   );
 
   it('sets the correct amount of dates even when the dates overlap',
-    () => expect(models.Participant.findById(1, { include: [ 'dates' ] }))
+    () => expect(models.Participant.findByPk(1, { include: [ 'dates' ] }))
       .to.eventually.have.property('dates').that.has.length(2)
   );
 
