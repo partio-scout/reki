@@ -15,16 +15,6 @@ export default function(app){
     }
   });
 
-  app.get('/api/registryusers/:id', optionalBasicAuth(), app.requirePermission('view own user information'), app.wrap(async (req, res) => {
-    if (req.user.id === +req.params.id) {
-      const user = await app.models.RegistryUser.findById(req.params.id, { include: 'rekiRoles' });
-      res.json(user);
-      app.models.AuditEvent.createEvent.Registryuser(req.user.id, user.id, 'find');
-    } else {
-      return res.status(401).send('Unauthorized');
-    }
-  }));
-
   app.post('/api/registryusers/:id/block', optionalBasicAuth(), app.requirePermission('block and unblock users'), app.wrap(async (req, res) => {
     await app.models.RegistryUser.block(req.params.id);
     res.status(204).send('');
