@@ -9,7 +9,7 @@ export default function(app){
 
   app.delete('/api/searchfilters/:id', optionalBasicAuth(), app.requirePermission('modify searchfilters'), app.wrap(async (req, res) => {
     const id = +req.params.id || 0;
-    const filter = await models.SearchFilter.findById(id);
+    const filter = await models.SearchFilter.findByPk(id);
     if (filter === null) {
       return res.status(404).send('Not found');
     }
