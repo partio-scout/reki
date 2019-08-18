@@ -152,7 +152,6 @@ describe('http api access control', () => {
         'POST /api/participants/massAssign',
         'GET /api/registryusers',
         'GET /api/registryusers/currentUser',
-        'GET /api/registryusers/:id',
         'POST /api/registryusers/:id/block',
         'POST /api/registryusers/:id/unblock',
         'POST /api/registryusers/logout',
@@ -206,7 +205,6 @@ describe('http api access control', () => {
   describe('RegistryUser', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers').expect(UNAUTHORIZED));
-      it('findById: UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`).expect(UNAUTHORIZED));
       it('findSelf: UNAUTHORIZED', () => get('/api/registryusers/currentUser').expect(UNAUTHORIZED));
       it('logout: OK', () => post('/api/registryusers/logout').expect(NO_CONTENT));
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED));
@@ -215,12 +213,6 @@ describe('http api access control', () => {
 
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', []).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, []).expect(UNAUTHORIZED));
-      it('findById (own): UNAUTHORIZED', async () => {
-        const user = await createUser([]);
-        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
-        expectStatus(res.status, UNAUTHORIZED);
-      });
       it('findSelf: OK', () => get('/api/registryusers/currentUser', []).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, []).expect(NO_CONTENT));
@@ -231,12 +223,6 @@ describe('http api access control', () => {
 
     describe('registryUser', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryUser']).expect(UNAUTHORIZED));
-      it('findById (own): ok', async () => {
-        const user = await createUser(['registryUser']);
-        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
-        expectStatus(res.status, OK);
-      });
       it('findSelf: OK', () => get('/api/registryusers/currentUser', ['registryUser']).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryUser']).expect(NO_CONTENT));
@@ -247,12 +233,6 @@ describe('http api access control', () => {
 
     describe('registryAdmin', () => {
       it('find: ok', () => get('/api/registryusers', ['registryAdmin']).expect(OK));
-      it('findById (other user): UNAUTHORIZED', () => get(`/api/registryusers/${otherUserId}`, ['registryAdmin']).expect(UNAUTHORIZED));
-      it('findById (own): ok', async () => {
-        const user = await createUser(['registryAdmin']);
-        const res = await getWithUser(`/api/registryusers/${user.id}`, user);
-        expectStatus(res.status, OK);
-      });
       it('findSelf: OK', () => get('/api/registryusers/currentUser', ['registryAdmin']).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryAdmin']).expect(NO_CONTENT));

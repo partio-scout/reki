@@ -59,25 +59,6 @@ describe('RegistryUser', () => {
     expect(res.body[0]).to.have.property('id').to.be.above(0);
   });
 
-  it('GET request to registryUsers returns one user when id is users own id', async () => {
-    const res = await testUtils.getWithUser('/api/registryusers/3', user);
-    testUtils.expectStatus(res.status, 200);
-
-    expect(res.body).to.have.property('id', 3);
-    expect(res.body).to.have.property('username','testLooser');
-    expect(res.body).to.have.property('memberNumber','00000002');
-    expect(res.body).to.have.property('email','jukka.pekka@example.com');
-    expect(res.body).to.not.have.property('password');
-    expect(res.body).to.have.property('firstName','Jukka');
-    expect(res.body).to.have.property('lastName','Pekka');
-    expect(res.body).to.have.property('phoneNumber','0000000003');
-  });
-
-  it('GET request to registryUsers returns 401 when id is not users own id', async () => {
-    const res = await testUtils.getWithUser('/api/registryusers/1', user);
-    testUtils.expectStatus(res.status, 401);
-  });
-
   it('if user is blocked status changes in database', async () => {
     const res = await testUtils.postWithUser('/api/registryusers/2/block', user, null);
     testUtils.expectStatus(res.status, 204);
