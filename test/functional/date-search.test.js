@@ -52,13 +52,13 @@ describe('Date search', () => {
   ];
 
   const testParticipantDates = [
-    { participantId: 1, date: new Date(2016,6,20) },
-    { participantId: 1, date: new Date(2016,6,21) },
-    { participantId: 1, date: new Date(2016,6,22) },
-    { participantId: 1, date: new Date(2016,6,23) },
-    { participantId: 2, date: new Date(2016,6,22) },
-    { participantId: 2, date: new Date(2016,6,23) },
-    { participantId: 2, date: new Date(2016,6,27) },
+    { participantId: 1, date: new Date(Date.UTC(2016,6,20)) },
+    { participantId: 1, date: new Date(Date.UTC(2016,6,21)) },
+    { participantId: 1, date: new Date(Date.UTC(2016,6,22)) },
+    { participantId: 1, date: new Date(Date.UTC(2016,6,23)) },
+    { participantId: 2, date: new Date(Date.UTC(2016,6,22)) },
+    { participantId: 2, date: new Date(Date.UTC(2016,6,23)) },
+    { participantId: 2, date: new Date(Date.UTC(2016,6,27)) },
   ];
 
   // Since we're only querying, not changing state, we only add the fixtures once
