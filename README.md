@@ -1,6 +1,8 @@
 # REKI
 Camp registry system that integrates with Kuksa. Originally developed for Roihu.
 
+Builds in circleci: https://circleci.com/gh/partio-scout/workflows/reki
+
 ## Developing with Docker
 
 ### Prerequisites
