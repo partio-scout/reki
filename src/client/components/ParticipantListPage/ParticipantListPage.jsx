@@ -240,21 +240,21 @@ export function getParticipantListPage(participantStore, participantActions, sea
         </OverlayTrigger>
       );
 
-      const columnPropertyToLabelMapping = {
-        presence: 'Tila',
-        firstName: 'Etunimi',
-        lastName: 'Sukunimi',
-        dateOfBirth: 'Syntymäpäivä',
-        paidDate: 'Maksettu',
-        memberNumber: 'Jäsennumero',
-        campOfficeNotes: campOfficeNotes,
-        editableInfo: editableInfo,
-        nonScout: 'Onko partiolainen?',
-        phoneNumber: 'Puhelinnumero',
-        localGroup: 'Lippukunta',
-      };
+      const columnPropertyToLabelMapping = [
+        ['presence', 'Tila'],
+        ['firstName', 'Etunimi'],
+        ['lastName', 'Sukunimi'],
+        ['nonScout', 'Onko partiolainen?'],
+        ['paidDate', 'Maksettu'],
+        ['localGroup', 'Lippukunta'],
+        ['campOfficeNotes', campOfficeNotes],
+        ['editableInfo', editableInfo],
+        ['dateOfBirth', 'Syntymäpäivä'],
+        ['memberNumber', 'Jäsennumero'],
+        ['phoneNumber', 'Puhelinnumero'],
+      ];
 
-      const columnCount = Object.keys(columnPropertyToLabelMapping).length;
+      const columnCount = columnPropertyToLabelMapping.length;
 
       return (
         <Grid fluid>
@@ -285,11 +285,11 @@ export function getParticipantListPage(participantStore, participantActions, sea
                     <th></th>
                     <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
                     {
-                      Object.keys(columnPropertyToLabelMapping).map(property => (
+                      columnPropertyToLabelMapping.map(([property, label]) => (
                         <SortableHeaderCellContainer
                           key={ property }
                           property={ property }
-                          label={ columnPropertyToLabelMapping[property] }
+                          label={ label }
                           location={ this.props.location }
                           order={ order }
                         />

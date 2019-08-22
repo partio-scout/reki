@@ -90,14 +90,14 @@ export class ParticipantRow extends React.Component {
         <td><Presence value={ presence } /></td>
         <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
         <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
-        <TdWithTitle value={ formatDate(dateOfBirth) } />
+        <TdWithTitle value={ formatNonScout(nonScout) } />
         <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
-        <TdWithTitle value={ memberNumber } />
+        <TdWithTitle value={ localGroup } />
         <td>{ notes }</td>
         <td>{ info }</td>
-        <TdWithTitle value={ formatNonScout(nonScout) } />
+        <TdWithTitle value={ formatDate(dateOfBirth) } />
+        <TdWithTitle value={ memberNumber } />
         <TdWithTitle value={ formatNullableString(phoneNumber) } />
-        <TdWithTitle value={ localGroup } />
       </tr>
     );
   }
