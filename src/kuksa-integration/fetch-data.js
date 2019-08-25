@@ -39,7 +39,7 @@ function getOptionsFromEnvironment() {
     username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
     password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
     eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id'),
-    proxy: process.env.KUKSA_API_PROXY_URL, // optional
+    proxy: process.env.PROXIMO_URL || process.env.KUKSA_API_PROXY_URL, // optional
   }));
 }
 
