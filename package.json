@@ -11,7 +11,6 @@
     "create-user": "babel-node scripts/create-user.js",
     "delete-user": "babel-node scripts/delete-user.js",
     "dev-login": "babel-node scripts/dev-login.js",
-    "postinstall": "scripts/deploy-bundle.sh",
     "test": "npm run linter && npm run test-functional && npm run test-integration && npm run test-e2e",
     "linter": "eslint --ext js --ext jsx src test scripts webpack.development.config.babel.js webpack.production.config.babel.js",
     "test-functional": "NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require babel-core/register --require babel-polyfill test/functional --exit",
@@ -27,8 +26,10 @@
     "fetch-data": "babel-node src/kuksa-integration/fetch-data.js",
     "rebuild-tables": "babel-node src/kuksa-integration/rebuild-tables.js",
     "fetch-from-kuksa": "npm run clear-temporary-tables && npm run fetch-data && npm run rebuild-tables",
-    "bundle": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
-    "bundle-watch": "NODE_ENV=production webpack -p -w --config webpack.production.config.babel.js",
+    "build": "NODE_ENV=production webpack -p --config webpack.production.config.babel.js",
+    "bundle": "echo -e \"\\033[0;31mThe bundle command is deprecated! Use npm run build instead!\\033[0m\"; npm run build",
+    "build-watch": "NODE_ENV=production webpack -p -w --config webpack.production.config.babel.js",
+    "bundle-watch": "echo -e \"\\033[0;31mThe bundle-watch command is deprecated! Use npm run build-watch instead!\\033[0m\"; npm run build-watch",
     "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js"
   },
   "dependencies": {
