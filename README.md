@@ -55,17 +55,15 @@ The easiest way to set up a production environment is to use [Heroku](https://he
 
 Create a Heroku account and get familiar with the basics in the [Heroku documentation](https://devcenter.heroku.com/).
 
-Create a new Heroku application and deploy REKI there as described in [Getting Started on Heroku with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs). These instructions assume your application is called your-heroku-app, but you should of course give it a descriptive name.
+Open this link: [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy). It will set up most of the required things for you.
 
-Provision a Heroku Postgres database. This should automatically set the DATABASE_URL environment variable for the application and it should be able to connect to the database automatically.
+Select a name for your app. A url to access the app will be created based on the name: `https://<app-name>.herokuapp.com`.
 
-Go to https://your-heroku-app.herokuapp.com/monitoring. If you see the text "OK", congratulations! The application is up and running. If you see "ERROR", the database connection does not work or the automatic database setup has failed. Wait for a couple of minutes to see if it's just slow, then check Heroku logs to investigate further. Also make sure the DATABASE_URL environment variable has been set.
+Select the EU region for your app.
 
-Set the NODE_ENV environment variable to "production" in your Heroku app, if it's not already set. This is necessary from performance and security reasons. **Never** run REKI in development mode in production.
+You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://<app-name>.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
 
-Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url with https, and must not contain a trailing slash. Example: `https://reki.tempus18.fi`.
-
-You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://your-heroku-app.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
+Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url with https, and must not contain a trailing slash.
 
 ### Setting up PartioID login
 
@@ -100,14 +98,13 @@ Using the Kuksa integration requires that:
 - the fields you want to appear in REKI have been set to be visible over the API in the Kuksa event settings
 - the source IP address you will use to access the API has been whitelisted in Kuksa
 
-You will need to contact the member registry coordinator at the main office of Suomen Partiolaiset to make the configurations at the Kuksa end. You'll most likely want to set up the Kuksa integration together. Reserve several hours for this.
+You will need to contact the member registry coordinator at the main office of Suomen Partiolaiset to make the configurations at the Kuksa end. You will likely need to wait some time for the configuration. Simply tell them what your event name in kuksa is and what your static IP address is, and they will get back to you with the required values for the configuration.
 
-Due to the IP whitelisting in Kuksa, the integration won't work on Heroku directly. The IP addresses of Heroku dynos change often and Kuksa expects a certain IP every time. For this reason you will need to use a proxy with a static IP. There are several Heroku addons that provide this as a service. Notice that most of these services expose the proxy url in their own environment variable such as PROXIMO_URL - you will need to copy this value to KUKSA_API_PROXY_URL. We recommend using an HTTP proxy.
+Due to the IP whitelisting in Kuksa, the integration won't work on Heroku directly. The IP addresses of Heroku dynos change often and Kuksa expects a certain IP every time. For this reason you will need to use a proxy with a static IP. If you deployed your application with the deployment button, you will have proximo configured for you. To find out the IP address, open the proximo link on the resources tab in Heroku. With proximo no other configuration is necessary.
 
 You will need to set the following environment variables for the Kuksa integration to work:
 
-- KUKSA_API_ENDPOINT: set this to the full address of the Kuksa REST API
 - KUKSA_API_USERNAME: the username for the Kuksa integration
 - KUKSA_API_PASSWORD: the password for the Kuksa integration
 - KUKSA_API_EVENTID: the id (a GUID) of the event
-- KUKSA_API_PROXY_URL: the URL of the proxy you use to access Kuksa (optional)
+- KUKSA_API_PROXY_URL: If using a proxy provider other than Proximo, use this to specify the proxy url.
