@@ -40,6 +40,7 @@ const participantCustomFields = [
     name: 'dateOfBirth',
     type: 'participant_field',
     dataType: 'date',
+    nullable: true,
   },
   {
     name: 'phoneNumber',
