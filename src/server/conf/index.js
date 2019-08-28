@@ -92,14 +92,14 @@ const alwaysIncludedFields = [
   {
     name: 'campOfficeNotes',
     type: 'mandatory_field',
-    dataType: 'string',
+    dataType: 'text',
     searchable: true,
     nullable: true,
   },
   {
     name: 'editableInfo',
     type: 'mandatory_field',
-    dataType: 'string',
+    dataType: 'text',
     searchable: true,
     nullable: true,
   },
