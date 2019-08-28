@@ -100,7 +100,7 @@ const alwaysIncludedFields = [
     name: 'editableInfo',
     type: 'mandatory_field',
     dataType: 'text',
-    searchable: true,
+    searchable: false,
     nullable: true,
   },
 ];
