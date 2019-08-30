@@ -76,7 +76,7 @@ export function getMassEdit(participantStore) {
         <form className="form-inline" onSubmit={ this.onSubmit }>
           <p>{ this.props.count } { (this.props.count == 1 ? 'henkilö' : 'henkilöä') } valittu</p>
           <PresenceSelector label="Tila" onChange={ this.onChange }/>
-          <LoadingButton loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
+          <LoadingButton disabled={ !this.state.value || this.state.value === 'null'  } loading={ this.state.loading } bsStyle="primary" label="Tallenna" labelWhileLoading="Tallennetaan…"/>
         </form>
       );
     }

@@ -7,7 +7,7 @@ export class LoadingButton extends React.Component {
       <Button
         type={ this.props.onClick ? 'button' : 'onClick' }
         onClick={ this.props.onClick ? this.props.onClick : null }
-        disabled={ this.props.loading }
+        disabled={ this.props.disabled === true || this.props.loading }
         bsStyle={ this.props.bsStyle }>
         { this.props.loading ? this.props.labelWhileLoading : this.props.label }
       </Button>
