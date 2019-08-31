@@ -45,8 +45,8 @@ async function boot(app) {
 
   const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
   app.set('standalone', require.main.filename === bootstrapFileName);
-  app.set('isDev', process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' );
-  app.set('useDevServer', process.env.NODE_ENV === 'dev' && app.get('standalone'));
+  app.set('isDev', process.env.NODE_ENV !== 'production');
+  app.set('useDevServer', app.get('isDev') && app.get('standalone'));
 
   let sessionStore = undefined;
 
