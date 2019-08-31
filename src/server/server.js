@@ -8,6 +8,8 @@ import morgan from 'morgan';
 import passport from 'passport';
 import session from 'express-session';
 import flash from 'connect-flash';
+import redis from 'redis';
+import RedisStoreConstructor from 'connect-redis';
 
 import updateDatabase from './boot/01-update-database';
 import errorHandling from './boot/02-error-handling';
@@ -46,9 +48,13 @@ async function boot(app) {
   app.set('isDev', process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' );
   app.set('useDevServer', process.env.NODE_ENV === 'dev' && app.get('standalone'));
 
+  let sessionStore = undefined;
+
   if ( !app.get('isDev') ) {
     app.enable('trust proxy');
     app.use(expressEnforcesSsl());
+    const RedisStore = RedisStoreConstructor(session);
+    sessionStore = new RedisStore({ client: redis.createClient(process.env.REDIS_URL) });
   }
 
   const cookieSecret = process.env.COOKIE_SECRET || getSecureRandomString();
@@ -64,6 +70,7 @@ async function boot(app) {
       secure: !app.get('isDev'),
     },
     resave: false,
+    store: sessionStore,
   }));
   app.use(passport.initialize());
   app.use(passport.session());
