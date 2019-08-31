@@ -15,8 +15,6 @@ import { getRestfulResource, restrictComponent } from './utils';
 
 moment.locale('fi');
 
-// Get REST API access token
-
 const RestfulResource = getRestfulResource(request);
 const participantResource = new RestfulResource('/api/participants');
 const participantDateResource = new RestfulResource('/api/participantDates');
