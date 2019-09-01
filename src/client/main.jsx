@@ -5,7 +5,6 @@ import React from 'react';
 import Alt from 'alt';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
-import request from 'superagent';
 import moment from 'moment';
 
 import * as components from './components';
@@ -15,12 +14,12 @@ import { getRestfulResource, restrictComponent } from './utils';
 
 moment.locale('fi');
 
-const RestfulResource = getRestfulResource(request);
-const participantResource = new RestfulResource('/api/participants');
-const participantDateResource = new RestfulResource('/api/participantDates');
-const registryUserResource = new RestfulResource('/api/registryusers');
-const searchFilterResource = new RestfulResource('/api/searchfilters');
-const optionResource = new RestfulResource('/api/options');
+const RestfulResource = getRestfulResource();
+const participantResource = RestfulResource('/api/participants');
+const participantDateResource = RestfulResource('/api/participantDates');
+const registryUserResource = RestfulResource('/api/registryusers');
+const searchFilterResource = RestfulResource('/api/searchfilters');
+const optionResource = RestfulResource('/api/options');
 
 const alt = new Alt();
 

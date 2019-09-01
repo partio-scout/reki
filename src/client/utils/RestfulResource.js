@@ -1,72 +1,67 @@
-export function getRestfulResource(request) {
-  class RestfulResource {
-    constructor(endpoint) {
-      this.endpoint = endpoint;
-    }
+import { defaultOpts, withDefaultOpts } from '../fetch';
 
-    path(basePath, filters) {
+export function getRestfulResource() {
+  function RestfulResource(endpoint) {
+    function getPath(basePath, filters) {
       basePath = (basePath !== undefined) ? `/${basePath}` : '';
       filters = (filters !== undefined) ? `?${filters}` : '';
-      return `${this.endpoint}${basePath}${filters}`;
+      return `${endpoint}${basePath}${filters}`;
     }
 
-    handleResponse(res) {
-      if (res.status >= 400) {
+    function handleResponse(res) {
+      if (!res.ok) {
         return Promise.reject({
-          message: `REST Error: ${res.req.url} returned HTTP ${res.status}`,
+          message: `REST Error: ${res.url} returned HTTP ${res.status} (${res.statusText})`,
           status: res.status,
         });
       }
 
-      return res && res.hasOwnProperty('body') ? res.body : res;
+      return res.json();
     }
 
-    findAll(filters) {
-      return request.get(this.path('', filters))
-        .accept('application/json')
-        .then(this.handleResponse);
+    function findAll(filters) {
+      return fetch(getPath('', filters), defaultOpts)
+      .then(handleResponse);
     }
 
-    findById(id, filters) {
-      return request.get(this.path(id, filters))
-        .accept('application/json')
-        .then(this.handleResponse);
+    function findById(id, filters) {
+      return fetch(getPath('', filters), defaultOpts)
+      .then(handleResponse);
     }
 
-    create(obj) {
-      return request.post(this.path(''))
-        .accept('application/json')
-        .send(obj)
-        .then(this.handleResponse);
+    function create(obj) {
+      return fetch(getPath(''), withDefaultOpts({ method: 'POST', body: obj, headers: { 'Content-Type': 'application/json' } }))
+      .then(handleResponse);
     }
 
-    update(id, obj) {
-      return request.put(this.path(id))
-        .accept('application/json')
-        .send(obj)
-        .then(this.handleResponse);
+    function update(id, obj) {
+      return fetch(getPath(id), withDefaultOpts({ method: 'PUT', body: obj, headers: { 'Content-Type': 'application/json' } }))
+      .then(handleResponse);
     }
 
-    del(id) {
-      return request.del(this.path(id))
-        .accept('application/json')
-        .then(this.handleResponse);
+    function del(id) {
+      return fetch(getPath(id), withDefaultOpts({ method: 'DELETE' }))
+      .then(handleResponse);
     }
 
-    raw(method, path, options) {
+    function raw(method, path, options) {
       const {
         body,
         filters,
       } = options || {};
-      let req = request(method, this.path(path, filters))
-        .accept('application/json');
 
-      if (body) {
-        req = req.send(body);
-      }
-
-      return req.then(this.handleResponse);
+      return fetch(getPath(path, filters), withDefaultOpts({ method, body, headers: body !== undefined ? { 'Content-Type': 'application/json' } : {} }))
+      .then(handleResponse);
     }
+
+    return {
+      findAll,
+      findById,
+      create,
+      update,
+      del,
+      raw,
+    };
   }
 
   return RestfulResource;
