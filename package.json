@@ -30,7 +30,8 @@
     "bundle": "echo -e \"\\033[0;31mThe bundle command is deprecated! Use npm run build instead!\\033[0m\"; npm run build",
     "build-watch": "NODE_ENV=production webpack -p -w --config webpack.production.config.babel.js",
     "bundle-watch": "echo -e \"\\033[0;31mThe bundle-watch command is deprecated! Use npm run build-watch instead!\\033[0m\"; npm run build-watch",
-    "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js"
+    "mock-kuksa": "babel-node test/utils/kuksa-integration/mock/mock-kuksa.js",
+    "dump-kuksa": "scripts/dump-kuksa-api.sh"
   },
   "dependencies": {
     "alt": "^0.18.2",
