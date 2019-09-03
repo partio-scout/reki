@@ -1,5 +1,5 @@
 # Custom build of a Herokulike node environment with a more recent node version
-FROM heroku/heroku:16
+FROM heroku/heroku:18
 
 COPY .nvmrc ./
 
