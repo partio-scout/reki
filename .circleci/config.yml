@@ -2,7 +2,7 @@ version: 2
 jobs:
   install:
     docker:
-      - image: circleci/node:8.9.0-browsers
+      - image: circleci/node:10.16.3-browsers
     steps:
       - checkout
       - run:
@@ -21,7 +21,7 @@ jobs:
             - selenium-server-standalone.jar
   test:
     docker:
-      - image: circleci/node:8.9.0-browsers
+      - image: circleci/node:10.16.3-browsers
         environment:
           TEST_DATABASE_URL: postgres://reki@localhost/reki
       - image: circleci/postgres:9.4.12-alpine
