@@ -8,7 +8,7 @@ export default function(app, permissions) {
   }
 
   function hasPermission(user, permission) {
-    const roleNames = user.rekiRoles.map(role => role.name);
+    const roleNames = user.roles;
     return _.some(roleNames, name => roleHasPermission(name, permission));
   }
 

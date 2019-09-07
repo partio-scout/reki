@@ -1,10 +1,11 @@
 import optionalBasicAuth from '../middleware/optional-basic-auth';
+import { models } from '../models';
 
 export default function(app){
   app.get('/api/registryusers', optionalBasicAuth(), app.requirePermission('view registry users'), async (req, res) => {
     await app.models.AuditEvent.createEvent.Registryuser(req.user.id, 0, 'find');
-    const users = await app.models.RegistryUser.find();
-    res.json(users);
+    const users = await models.User.findAll();
+    res.json(users.map(models.User.toClientFormat));
   });
 
   app.get('/api/registryusers/currentUser', optionalBasicAuth(), (req, res) => {
@@ -16,13 +17,13 @@ export default function(app){
   });
 
   app.post('/api/registryusers/:id/block', optionalBasicAuth(), app.requirePermission('block and unblock users'), app.wrap(async (req, res) => {
-    await app.models.RegistryUser.block(req.params.id);
+    await models.User.update({ blocked: true }, { where: { id: req.params.id } });
     res.status(204).send('');
     app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'block');
   }));
 
   app.post('/api/registryusers/:id/unblock', optionalBasicAuth(), app.requirePermission('block and unblock users'), app.wrap(async (req, res) => {
-    await app.models.RegistryUser.unblock(req.params.id);
+    await models.User.update({ blocked: false }, { where: { id: req.params.id } });
     res.status(204).send('');
     app.models.AuditEvent.createEvent.Registryuser(req.user.id, req.params.id, 'unblock');
   }));

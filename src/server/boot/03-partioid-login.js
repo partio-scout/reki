@@ -1,8 +1,8 @@
 import fs from 'fs';
+import { models } from '../models';
 import passport from 'passport';
 import { Strategy as SamlStrategy } from 'passport-saml';
 import path from 'path';
-import { fromCallback } from '../util/promises';
 import { URL } from 'url';
 
 export default function(app) {
@@ -32,21 +32,26 @@ export default function(app) {
           return;
         }
 
-        const user = await fromCallback(cb => app.models.RegistryUser.findOne({
+        const user = await models.User.findOne({
           where: {
             memberNumber: String(profile.membernumber),
           },
-          include: 'rekiRoles',
-        }, cb));
+          include: [
+            {
+              model: models.UserRole,
+              as: 'roles',
+            },
+          ],
+        });
 
         if (!user) {
           done(null, false, { message: 'PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.' });
           return;
-        } else if (app.models.RegistryUser.isBlocked(user)) {
+        } else if (user.blocked) {
           done(null, false, { message: 'Käyttäjän sisäänkirjautuminen on estetty' });
           return;
         } else {
-          done(null, user.toJSON());
+          done(null, models.User.toClientFormat(user));
           return;
         }
       } catch (e) {

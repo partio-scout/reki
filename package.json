@@ -37,6 +37,7 @@
   "dependencies": {
     "alt": "^0.18.2",
     "alt-container": "^1.0.2",
+    "argon2": "^0.24.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

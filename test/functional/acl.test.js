@@ -3,7 +3,6 @@ import request from 'supertest';
 import { expect } from 'chai';
 import {
   withFixtures,
-  deleteUsers,
   createUserWithRoles as createUser,
   getWithUser,
   postWithUser,
@@ -22,7 +21,6 @@ describe('HTTP API access control', () => {
 
   before(resetDatabase);
   withFixtures(getFixtures());
-  afterEach(deleteUsers);
 
   describe('Access control tests', () => {
     it('exist for all endpoints under /api', () => {
@@ -268,7 +266,7 @@ describe('HTTP API access control', () => {
           filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
         },
       ],
-      'RegistryUser': [
+      'User': [
         {
           id: otherUserId,
           firstName: 'derp',

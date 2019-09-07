@@ -7,6 +7,67 @@ const Op = Sequelize.Op;
 
 export default function(db) {
 
+  const User = db.define('user', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    firstName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    memberNumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    phoneNumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    blocked: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    passwordHash: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+  });
+
+  User.toClientFormat = function(user) {
+    const userJson = user.toJSON();
+    delete userJson.passwordHash;
+    delete userJson.createdAt;
+    delete userJson.updatedAt;
+    userJson.roles = userJson.roles ? userJson.roles.map(role => role.name) : [];
+    return userJson;
+  };
+
+  const UserRole = db.define('user_role', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  });
+
+  const UserRoleMapping = db.define('user_role_mapping');
+
   const Participant = db.define('participant', _.reduce(conf.getParticipantFields(), (acc, field) => {
     acc[field.name] = {
       type: Sequelize[field.dataType.toUpperCase()],
@@ -113,6 +174,9 @@ export default function(db) {
 
   const ParticipantAllergy = db.define('participant_allergy');
 
+  User.belongsToMany(UserRole, { as: 'roles', through: UserRoleMapping });
+  UserRole.belongsToMany(User, { as: 'users', through: UserRoleMapping });
+
   Participant.hasMany(PresenceHistory, { as: 'presenceHistory' });
   Participant.belongsToMany(Allergy, { through: ParticipantAllergy });
   Participant.hasMany(ParticipantDate, { as: 'dates', foreignKey: 'participantId', sourceKey: 'participantId' });
@@ -168,6 +232,8 @@ export default function(db) {
   };
 
   return {
+    User: User,
+    UserRole: UserRole,
     Option: Option,
     SearchFilter: SearchFilter,
     Participant: Participant,

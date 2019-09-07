@@ -1,6 +1,7 @@
 import Promise from 'bluebird';
+import Sequelize from 'sequelize';
 import { getModelCreationList } from '../../common/models-list';
-import { sequelize } from '../models';
+import { sequelize, models } from '../models';
 import config from '../conf';
 
 // TODO refactor this to a script file and add tests to check models and roles are
@@ -17,17 +18,9 @@ export default async function(app) {
     dataSource: 'db',
     public: false,
   };
-  const configureRegistryUser = require('../../common/models/registryuser.js').default;
   const configureAuditEvent = require('../../common/models/audit-event.js').default;
-  const registryUserModel = registry.createModel(require('../../common/models/registryuser.json'));
   const auditEventModel = registry.createModel(require('../../common/models/audit-event.json'));
-  configureRegistryUser(registryUserModel);
   configureAuditEvent(auditEventModel);
-  app.model(registry.getModel('AccessToken'), modelConfig);
-  app.model(registry.getModel('ACL'), modelConfig);
-  app.model(registry.getModel('Role'), modelConfig);
-  app.model(registry.getModel('RoleMapping'), modelConfig);
-  app.model(registryUserModel, modelConfig);
   app.model(auditEventModel, modelConfig);
 
   if (!app.get('standalone')) {
@@ -57,12 +50,13 @@ export default async function(app) {
   // Create roles unless they already exist
   const rolesInConfig = config.getRoles().map(roleName => ({ name: roleName }));
   for (const role of rolesInConfig) {
-    await app.models.Role.findOrCreate(role);
+    await models.UserRole.findOrCreate({ where: role });
   }
 
   // Destroy roles that are not in the config
-  await app.models.Role.destroyAll({
-    // nin = not in
-    name: { nin: config.getRoles() },
+  await models.UserRole.destroy({
+    where: {
+      name: { [Sequelize.Op.notIn]: config.getRoles() },
+    },
   });
 }

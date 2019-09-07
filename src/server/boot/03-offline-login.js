@@ -1,6 +1,7 @@
 import passport from 'passport';
+import argon2 from 'argon2';
 import { BasicStrategy } from 'passport-http';
-import { fromCallback } from '../util/promises';
+import { models } from '../models';
 
 export default function(app) {
   const enableOfflineLogin = process.env.ENABLE_OFFLINE_LOGIN === 'true';
@@ -11,24 +12,24 @@ export default function(app) {
 
   passport.use(new BasicStrategy(async (userId, password, done) => {
     try {
-      const user = await fromCallback(cb => app.models.RegistryUser.findOne({
+      const user = await models.User.findOne({
         where: {
           email: userId,
         },
-        include: 'rekiRoles',
-      }, cb));
+        include: [{ model: models.UserRole, as: 'roles' }],
+      });
 
-      if (!user || app.models.RegistryUser.isBlocked(user)) {
+      if (!user || user.blocked) {
         return done(null, false);
       }
 
-      const isMatch = await fromCallback(cb => user.hasPassword(password, cb));
+      const isMatch = await argon2.verify(user.passwordHash, password);
 
       if (!isMatch) {
         return done(null, false);
       }
 
-      done(null, user.toJSON());
+      done(null, models.User.toClientFormat(user));
     } catch (e) {
       done(e);
     }

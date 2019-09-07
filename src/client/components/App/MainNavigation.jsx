@@ -21,9 +21,9 @@ export function getMainNavigation() {
 
     getLoggedInNavItems() {
       const navItems = [ ];
-      const rekiRoles = _.map(this.props.currentUser.rekiRoles, obj => obj.name);
+      const roles = this.props.currentUser.roles;
 
-      if (_.includes(rekiRoles, 'registryAdmin')) {
+      if (_.includes(roles, 'registryAdmin')) {
         navItems.push(
           {
             to: '/admin',
@@ -33,7 +33,7 @@ export function getMainNavigation() {
         );
       }
 
-      if (_.includes(rekiRoles, 'registryUser')) {
+      if (_.includes(roles, 'registryUser')) {
         navItems.push(
           {
             to: '/participants',

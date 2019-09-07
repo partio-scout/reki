@@ -1,9 +1,10 @@
+import Sequelize from 'sequelize';
 import app from '../../src/server/server';
 import Promise from 'bluebird';
-import _ from 'lodash';
 import { expect } from 'chai';
 import { models } from '../../src/server/models';
 import request from 'supertest';
+import argon2 from 'argon2';
 
 // Counter for generating e.g. unique users automatically
 let uniqueIdCounter = 1;
@@ -11,47 +12,48 @@ let uniqueIdCounter = 1;
 // Functions for managing users in tests
 
 export async function createUserWithRoles(rolesToAdd, overrides) {
+  const password = 'salasana';
+  const passwordHash = await argon2.hash(password);
   uniqueIdCounter++;
   const userData = Object.assign({
     'username': `testuser${uniqueIdCounter}`,
     'memberNumber': String(100000 + uniqueIdCounter),
     'email': `test${uniqueIdCounter}@example.org`,
-    'password': 'salasana',
+    'passwordHash': passwordHash,
     'firstName': 'Testi',
     'lastName': 'Testailija',
     'phoneNumber': 'n/a',
   }, overrides);
 
-  const [roles, user] = await Promise.all([getRolesByName(rolesToAdd), createFixture('RegistryUser', userData)]);
+  const [roles, user] = await Promise.all([
+    getRolesByName(rolesToAdd),
+    createFixture('User', userData),
+  ]);
 
   await addRolesToUser(roles, user);
 
+  const userModel = models.User.toClientFormat(user);
+
   // The password on the returned user object is hashed, to be able to access the actual
   // password later on, we set it here
-  user.clear_password = userData.password;
-  return user;
+  userModel.clear_password = password;
+  return userModel;
 }
 
 function getRolesByName(roleNames) {
-  return find('Role', { name: { inq: roleNames } });
+  if (roleNames.length) {
+    return models.UserRole.findAll({ where: { name: { [Sequelize.Op.in]: roleNames } } });
+  } else {
+    return [];
+  }
 }
 
 function addRolesToUser(roles, user) {
-  const roleMappings = _.map(roles, role => ({
-    'principalType': 'USER',
-    'principalId': user.id,
-    'roleId': role.id,
-  }));
-
-  return createFixture('RoleMapping', roleMappings);
+  return user.setRoles(roles);
 }
 
 export async function deleteUsers() {
-  return deleteFixturesIfExist('RegistryUser');
-}
-
-export function createUserAndGetAccessToken(roles, overrides) {
-  return createUserWithRoles(roles, overrides).then(user => user.createAccessToken(1000));
+  return deleteFixturesIfExist('User');
 }
 
 // Functions for creating and deleting fixtures

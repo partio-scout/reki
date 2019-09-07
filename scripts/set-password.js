@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
-import app from '../src/server/server.js';
-const findUser = Promise.promisify(app.models.RegistryUser.findOne, { context: app.models.RegistryUser });
+import argon2 from 'argon2';
+import { models } from '../src/server/models';
 
 const opts = require('commander')
   .usage('<email of the user to set password> <password>')
@@ -14,11 +14,10 @@ if (opts.args.length < 1) {
   opts.help();
 }
 
-findUser({ where: { email: opts.args[0] } })
-  .then(user => {
+Promise.all([models.User.findOne({ where: { email: opts.args[0] } }), argon2.hash(opts.args[1])])
+  .then(([user, passwordHash]) => {
     if (user) {
-      const updateUser = Promise.promisify(user.updateAttribute, { context: user });
-      return updateUser('password', opts.args[1]);
+      return user.update({ passwordHash });
     } else {
       throw new Error(`Couldn't find user with email ${opts.args[0]}!`);
     }

@@ -1,19 +1,7 @@
-import Promise from 'bluebird';
-import app from '../src/server/server.js';
 import config from '../src/server/conf';
+import { models } from '../src/server/models';
 import crypto from 'crypto';
 import inquirer from 'inquirer';
-import _ from 'lodash';
-
-const {
-  RegistryUser,
-  Role,
-  RoleMapping,
-} = app.models;
-
-const createUser = Promise.promisify(RegistryUser.create, { context: RegistryUser });
-const findRoles = Promise.promisify(Role.find, { context: Role });
-const createRoleMapping = Promise.promisify(RoleMapping.create, { context: RoleMapping });
 
 const password = crypto.randomBytes(24).toString('hex');
 const questions = [
@@ -58,33 +46,19 @@ function printErrorMessage(err) {
     ${err.stack}`);
 }
 
-function addRolesToUser(userId, roleNames) {
-  return findRoles({ where: { name: { inq: roleNames } } })
-    .then(roles => {
-      const roleMappings = _.map(roles, role => ({
-        'principalType': 'USER',
-        'principalId': userId,
-        'roleId': role.id,
-      }));
-
-      return createRoleMapping(roleMappings);
-    });
-}
-
 inquirer.prompt(questions)
-  .then(answers => {
-    const roles = answers.roles;
+  .then(async answers => {
+    const roleNames = answers.roles;
     delete answers.roles;
 
-    createUser(Object.assign({ password: password }, answers))
-      .then(createdUserInfo => addRolesToUser(createdUserInfo.id, roles)
-        .then(() => {
-          console.log(`Created user with id ${createdUserInfo.id} with roles ${roles}`);
-          process.exit(0);
-        })
-      )
-      .catch(err => {
-        printErrorMessage(err);
-        process.exit(1);
-      });
+    const user = await models.User.create(Object.assign({ password: password }, answers));
+    const roles = (await Promise.all(roleNames.map(roleName => models.UserRole.findOrCreate({ where: { name: roleName } })))).map(tuple => tuple[0]);
+
+    await user.setRoles(roles);
+    console.log(`Created user with id ${user.id} with roles ${roleNames.join(', ')}`);
+    process.exit(0);
+  })
+  .catch(err => {
+    printErrorMessage(err);
+    process.exit(1);
   });

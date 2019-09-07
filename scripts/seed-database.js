@@ -4,6 +4,7 @@ import app from '../src/server/server';
 import config from '../src/server/conf';
 import { sequelize } from '../src/server/models';
 import { getModelCreationList } from '../src/common/models-list';
+import { models } from '../src/server/models';
 
 EventEmitter.prototype._maxListeners = 20;
 
@@ -20,8 +21,7 @@ export async function resetDatabase() {
 
   // Create roles
   const roles = config.getRoles().map(roleName => ({ name: roleName }));
-  const createRoles = Promise.promisify(app.models.Role.create, { context: app.models.Role });
-  await createRoles(roles);
+  await Promise.all(roles.map(role => models.UserRole.create(role)));
 }
 
 // Run resetDatabase if this file is run as a script, but not when it has been imported.

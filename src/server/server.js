@@ -23,12 +23,10 @@ import offlineLogin from './boot/03-offline-login';
 import registryUser from './boot/03-registry-user';
 import searchFilter from './boot/03-search-filter';
 import restApi from './boot/04-rest-api';
-import devLogin from './boot/05-dev-login';
 import frontend from './boot/06-frontend';
 import monitoring from './boot/07-monitoring';
 import restOfApi404 from './boot/99-rest-of-api-404';
-
-import { fromCallback } from './util/promises';
+import { models } from './models';
 
 const app = loopback();
 
@@ -79,18 +77,20 @@ async function boot(app) {
   passport.serializeUser((user, done) => { done(null, user.memberNumber); });
   passport.deserializeUser(async (memberNumber, done) => {
     try {
-      const user = await fromCallback(cb => app.models.RegistryUser.findOne({
+      const user = await models.User.findOne({
         where: {
           memberNumber: String(memberNumber),
         },
-        include: 'rekiRoles',
-      }, cb));
+        include: [
+          { model: models.UserRole, as: 'roles' },
+        ],
+      });
 
       if (!user) {
         throw new Error('User not found');
       }
 
-      done(null, user.toJSON());
+      done(null, models.User.toClientFormat(user));
     } catch (e) {
       done(e);
     }
@@ -132,7 +132,6 @@ async function boot(app) {
   registryUser(app);
   searchFilter(app);
   restApi(app);
-  devLogin(app);
   frontend(app);
   monitoring(app);
   restOfApi404(app);

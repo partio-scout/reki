@@ -18,8 +18,7 @@ describe.skip('Search', () => {
   });
 
   beforeEach(() =>
-    testUtils.createUserAndGetAccessToken(['registryUser'], { username: 'testuser' })
-      .then(token => { accessToken = token; })
+    testUtils.createUserWithRoles(['registryUser'])
   );
 
   it('should initally display all results', () =>
@@ -32,7 +31,7 @@ describe.skip('Search', () => {
       //TODO also test how many rows are in the table
   );
 
-  afterEach(() => testUtils.deleteFixturesIfExist('RegistryUser', { username: 'testuser' }));
+  afterEach(() => testUtils.deleteFixturesIfExist('User'));
 
   after(() => {
     mockKuksa.stop();
