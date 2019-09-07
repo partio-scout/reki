@@ -17,7 +17,7 @@
     "test-one": "NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require babel-core/register --require babel-polyfill --exit",
     "test-watch": "NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --watch --timeout 4000 --require babel-core/register --require babel-polyfill --exit",
     "test-integration": "NODE_ENV=test mocha --timeout 4000 --require babel-core/register --require babel-polyfill test/integration --exit",
-    "pretest-e2e": "NODE_ENV=test npm run seed-database && npm run bundle",
+    "pretest-e2e": "NODE_ENV=test npm run seed-database && npm run build",
     "test-e2e-wdio": "NODE_ENV=test wdio wdio.conf.js",
     "test-e2e": "NODE_ENV=test PORT=3005 start-test start-silent 3005 test-e2e-wdio",
     "seed-database": "babel-node scripts/seed-database.js",

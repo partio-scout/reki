@@ -15,7 +15,7 @@ exports.config = {
   logLevel: 'silent',
   coloredLogs: true,
   screenshotPath: './errorShots/',
-  baseUrl: 'http://localhost:' + (process.env.PORT),
+  baseUrl: 'http://localhost:3005',
   waitforTimeout: 10000,
   framework: 'mocha',
   reporter: 'spec',
