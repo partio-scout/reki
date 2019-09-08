@@ -10,7 +10,7 @@ jobs:
           command: wget --no-verbose -O "selenium-server-standalone.jar" "http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar"
       - run:
           name: npm install
-          command: npm install
+          command: npm ci --production=false
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
           paths:
