@@ -6,19 +6,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Download Selenium
-          command: wget --no-verbose -O "selenium-server-standalone.jar" "http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar"
-      - run:
           name: npm install
           command: npm ci --production=false
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
           paths:
             - node_modules
-      - save_cache:
-          key: selenium-cache-2.53.1
-          paths:
-            - selenium-server-standalone.jar
   test:
     docker:
       - image: circleci/node:10.16.3-browsers
@@ -32,13 +25,15 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
-      - restore_cache:
-          key: selenium-cache-2.53.1
       - run:
-          name: Start Selenium
-          command: java -jar selenium-server-standalone.jar
-          background: true
-      - run: npm test
+          name: Linter
+          command: npm run linter
+      - run:
+          name: Functional tests
+          command: npm run test-functional
+      - run:
+          name: Integration tests
+          command: npm run test-integration
 workflows:
   version: 2
   install_and_test:
