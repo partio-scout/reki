@@ -5,9 +5,15 @@ jobs:
       - image: circleci/node:10.16.3-browsers
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
       - run:
           name: npm install
-          command: npm ci --production=false
+          command: |
+            if [ ! -d node_modules ]; then
+              npm ci --production=false
+            fi
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
           paths:
