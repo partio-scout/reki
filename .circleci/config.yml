@@ -1,23 +1,5 @@
 version: 2
 jobs:
-  install:
-    docker:
-      - image: circleci/node:10.16.3-browsers
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
-      - run:
-          name: npm install
-          command: |
-            if [ ! -d node_modules ]; then
-              npm ci --production=false
-            fi
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
-          paths:
-            - node_modules
   test:
     docker:
       - image: circleci/node:10.16.3-browsers
@@ -32,6 +14,18 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
       - run:
+          name: npm install
+          command: |
+            if [ ! -d node_modules ]; then
+              npm ci --production=false
+            else
+              echo "Using cached dependencies"
+            fi
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
+          paths:
+            - node_modules
+      - run:
           name: Linter
           command: npm run linter
       - run:
@@ -44,7 +38,4 @@ workflows:
   version: 2
   install_and_test:
     jobs:
-      - install
-      - test:
-          requires:
-            - install
+      - test
