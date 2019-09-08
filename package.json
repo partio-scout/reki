@@ -68,6 +68,7 @@
     "loopback": "^2.39.2",
     "loopback-connector-postgresql": "^2.4.0",
     "loopback-datasource-juggler": "2.57.0",
+    "mocha-junit-reporter": "^1.23.1",
     "moment": "^2.22.2",
     "morgan": "^1.7.0",
     "node-sass": "^4.9.0",
