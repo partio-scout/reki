@@ -87,7 +87,7 @@
     "uglify-js": "^2.6.1",
     "url-loader": "^1.0.1",
     "webpack": "^4.12.2",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.11"
   },
   "devDependencies": {
     "chai": "^3.4.1",
