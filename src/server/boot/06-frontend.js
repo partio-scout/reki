@@ -1,4 +1,4 @@
-import loopback from 'loopback';
+import express from 'express';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -49,13 +49,11 @@ function redirectBuildPathToDevServer(server) {
 }
 
 export default function(server) {
-  server.on('started', () => {
-    if (server.get('useDevServer')) {
-      startDevServer();
-      redirectBuildPathToDevServer(server);
-    }
+  if (server.get('useDevServer')) {
+    startDevServer();
+    redirectBuildPathToDevServer(server);
+  }
 
-    server.use(loopback.static(publicPath));
-    server.get('*', (req, res) => res.sendFile(indexFilePath));
-  });
+  server.use(express.static(publicPath));
+  server.get('*', (req, res) => res.sendFile(indexFilePath));
 }

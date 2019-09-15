@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize';
-import app from '../../src/server/server';
+import app from '../../src/server/server.js';
 import Promise from 'bluebird';
 import { expect } from 'chai';
 import { models } from '../../src/server/models';
@@ -59,34 +59,19 @@ export async function deleteUsers() {
 // Functions for creating and deleting fixtures
 
 export function createFixture(modelName, fixture) {
-  if (app.models[modelName]) {
-    const create = Promise.promisify(app.models[modelName].create, { context: app.models[modelName] });
-    return create(fixture);
+  if (Array.isArray(fixture)) {
+    return models[modelName].bulkCreate(fixture);
   } else {
-    if (Array.isArray(fixture)) {
-      return models[modelName].bulkCreate(fixture);
-    } else {
-      return models[modelName].create(fixture);
-    }
+    return models[modelName].create(fixture);
   }
 }
 
 export function deleteFixtureIfExists(modelName, id) {
-  if (app.models[modelName]) {
-    const del = Promise.promisify(app.models[modelName].destroyById, { context: app.models[modelName] });
-    return del(id);
-  } else {
-    return models[modelName].destroyById(id);
-  }
+  return models[modelName].destroyById(id);
 }
 
 export async function deleteFixturesIfExist(modelName, whereClause) {
-  if (app.models[modelName]) {
-    const del = Promise.promisify(app.models[modelName].destroyAll, { context: app.models[modelName] });
-    return del(whereClause);
-  } else {
-    return models[modelName].destroy({ where: whereClause || {} });
-  }
+  return models[modelName].destroy({ where: whereClause || {} });
 }
 
 export async function withFixtures(fixtures) {

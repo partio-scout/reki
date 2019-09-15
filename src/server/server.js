@@ -1,4 +1,4 @@
-import loopback from 'loopback';
+import express from 'express';
 import path from 'path';
 import crypto from 'crypto';
 import expressEnforcesSsl from 'express-enforces-ssl';
@@ -28,27 +28,28 @@ import monitoring from './boot/07-monitoring';
 import restOfApi404 from './boot/99-rest-of-api-404';
 import { models } from './models';
 
-const app = loopback();
+const app = express();
 
 export default app;
+
+const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
+const standalone = require.main.filename === bootstrapFileName;
+const isDev = process.env.NODE_ENV !== 'production';
+export const appConfig = {
+  port: process.env.PORT || 3000,
+  standalone,
+  isDev,
+  useDevServer: isDev && standalone,
+};
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app);
 
 async function boot(app) {
-  app.set('env', process.env.NODE_ENV || 'development');
-  app.set('port', process.env.PORT || 3000);
-  app.set('logoutSessionsOnSensitiveChanges', true);
-
-  const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
-  app.set('standalone', require.main.filename === bootstrapFileName);
-  app.set('isDev', process.env.NODE_ENV !== 'production');
-  app.set('useDevServer', app.get('isDev') && app.get('standalone'));
-
   let sessionStore = undefined;
 
-  if ( !app.get('isDev') ) {
+  if ( !appConfig.isDev ) {
     app.enable('trust proxy');
     app.use(expressEnforcesSsl());
     const RedisStore = RedisStoreConstructor(session);
@@ -65,7 +66,7 @@ async function boot(app) {
     cookie: {
       httpOnly: true,
       maxAge: 4*60*60*1000,
-      secure: !app.get('isDev'),
+      secure: !appConfig.isDev,
     },
     resave: false,
     store: sessionStore,
@@ -99,11 +100,11 @@ async function boot(app) {
   app.use(helmet());
   app.use(helmet.noCache()); // noCache disabled by default
 
-  if (app.get('standalone')) {
+  if (appConfig.standalone) {
     app.use(morgan('dev'));
   }
 
-  const validConnectSrc = app.get('isDev') ? ['*'] : ["'self'"];
+  const validConnectSrc = appConfig.isDev ? ['*'] : ["'self'"];
 
   app.use(helmet.contentSecurityPolicy({
     directives: {
@@ -132,17 +133,16 @@ async function boot(app) {
   registryUser(app);
   searchFilter(app);
   restApi(app);
-  frontend(app);
   monitoring(app);
   restOfApi404(app);
+  frontend(app);
 
   app.get('/flashes', (req, res) => res.json(req.flash()));
 
   // start the server if `$ node server.js`
-  if (app.get('standalone')) {
-    return app.listen(() => {
-      app.emit('started');
-      console.log('Web server listening at: %s', app.get('url'));
+  if (appConfig.standalone) {
+    return app.listen(appConfig.port, () => {
+      console.log('Web server listening at: %s', appConfig.port);
     });
   }
 }

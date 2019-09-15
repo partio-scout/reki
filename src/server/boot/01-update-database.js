@@ -1,11 +1,12 @@
 import Sequelize from 'sequelize';
 import { sequelize, models } from '../models';
 import config from '../conf';
+import { appConfig } from '../server';
 
 // TODO refactor this to a script file and add tests to check models and roles are
 // created correctly
 export default async function(app) {
-  if (!app.get('standalone')) {
+  if (!appConfig.standalone) {
     return;
   }
 
