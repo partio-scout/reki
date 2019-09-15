@@ -13,7 +13,7 @@ export default function(app){
     });
 
     if (participant) {
-      await app.models.AuditEvent.createEvent.Participant(req.user.id, participant.participantId, 'find');
+      await models.AuditEvent.createEvent.Participant(req.user.id, participant.participantId, 'find');
       res.json(participant);
     } else {
       res.status(404).send('Not found');

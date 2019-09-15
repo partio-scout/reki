@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import _ from 'lodash';
-import app from '../server';
 import conf from '../conf';
 
 const Op = Sequelize.Op;
@@ -174,6 +173,53 @@ export default function(db) {
 
   const ParticipantAllergy = db.define('participant_allergy');
 
+  const AuditEvent = db.define('audit_event', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    eventType: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    model: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    modelId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    timestamp: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW,
+    },
+    userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+  });
+  AuditEvent.createEvent = {
+    Participant: function(userId, instanceId, description) {
+      return AuditEvent.create({
+        eventType: description,
+        model: 'Participant',
+        modelId: instanceId,
+        userId,
+      });
+    },
+    User: function(userId, instanceId, description) {
+      return AuditEvent.create({
+        eventType: description,
+        model: 'User',
+        modelId: instanceId,
+        userId,
+      });
+    },
+  };
+
   User.belongsToMany(UserRole, { as: 'roles', through: UserRoleMapping });
   UserRole.belongsToMany(User, { as: 'users', through: UserRoleMapping });
 
@@ -218,7 +264,7 @@ export default function(db) {
           row[fieldName] = newValue;
 
           // TODO Test this audit event
-          await app.models.AuditEvent.createEvent.Participant(authorId, row.participantId, 'update');
+          await AuditEvent.createEvent.Participant(authorId, row.participantId, 'update');
 
           return row.save();
         });
@@ -242,5 +288,6 @@ export default function(db) {
     ParticipantDate: ParticipantDate,
     Allergy: Allergy,
     ParticipantAllergy: ParticipantAllergy,
+    AuditEvent,
   };
 }

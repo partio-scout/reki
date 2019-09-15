@@ -285,7 +285,8 @@ function get(endpoint, roles) {
   return {
     expect: async code => {
       if (roles) {
-        const res = await getWithUser(endpoint, await createUser(roles));
+        const user = await createUser(roles);
+        const res = await getWithUser(endpoint, user);
         expectStatus(res.status, code);
       } else {
         await request(app).get(endpoint).expect(code);

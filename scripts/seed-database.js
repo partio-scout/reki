@@ -3,20 +3,11 @@ import EventEmitter from 'events';
 import app from '../src/server/server';
 import config from '../src/server/conf';
 import { sequelize } from '../src/server/models';
-import { getModelCreationList } from '../src/common/models-list';
 import { models } from '../src/server/models';
 
 EventEmitter.prototype._maxListeners = 20;
 
 export async function resetDatabase() {
-  function automigrateLoobBackModels() {
-    const db = app.datasources.db;
-    const modelsToCreate = getModelCreationList();
-    return new Promise((resolve, reject) => db.automigrate(modelsToCreate).then(resolve, reject));
-  }
-
-  // Sync schema
-  await automigrateLoobBackModels();
   await sequelize.sync({ force: true });
 
   // Create roles

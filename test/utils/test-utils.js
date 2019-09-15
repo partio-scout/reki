@@ -120,11 +120,3 @@ export async function deleteWithUser(path, user) {
 export function expectStatus(status, expectedStatus) {
   expect(status).to.equal(expectedStatus, `Expected HTTP status of ${expectedStatus}, got ${status}`);
 }
-
-// Other functions
-
-export function find(modelName, whereClause, includeClause) {
-  const what = { where: whereClause, include: includeClause };
-  const find = Promise.promisify(app.models[modelName].find, { context: app.models[modelName] });
-  return find(what);
-}

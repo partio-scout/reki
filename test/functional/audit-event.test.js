@@ -5,9 +5,9 @@ import {
   createUserWithRoles as createUser,
   getWithUser,
   expectStatus,
-  find,
 } from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
+import { models } from '../../src/server/models';
 
 describe('Audit Event', () => {
 
@@ -37,7 +37,7 @@ describe('Audit Event', () => {
     expectStatus(response.status, 200);
     await expectAuditEventToEventuallyExist({
       'eventType': 'find',
-      'model': 'RegistryUser',
+      'model': 'User',
     });
   });
 
@@ -53,7 +53,7 @@ describe('Audit Event', () => {
   });
 
   async function expectAuditEventToEventuallyExist(expectedEvent) {
-    const res = await find('AuditEvent', expectedEvent);
+    const res = await models.AuditEvent.findAll({ where: expectedEvent });
     expect(res).to.have.length(1);
     expect(res[0]).to.have.property('timestamp').that.is.not.null;
   }
