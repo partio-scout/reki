@@ -67,7 +67,7 @@
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
-    "morgan": "^1.7.0",
+    "morgan": "^1.9.1",
     "node-sass": "^4.9.0",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
