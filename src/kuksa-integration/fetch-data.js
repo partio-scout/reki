@@ -1,5 +1,4 @@
 import { models } from '../server/models';
-import Promise from 'bluebird';
 import moment from 'moment';
 import transfer from './transfer';
 import { getEventApi } from 'kuksa-event-api-client';
@@ -13,16 +12,17 @@ if (require.main === module) {
   );
 }
 
-function main() {
+async function main() {
   const stopSpinner = startSpinner();
-  return getOptionsFromEnvironment()
-    .then(getEventApi)
-    .then(eventApi => transferTablesOnlyOnce(eventApi)
-      .then(() => transferParticipants(eventApi))
-      .then(() => transferPayments(eventApi)))
-    .then(() => {
-      stopSpinner();
-    });
+  try {
+    const options = getOptionsFromEnvironment();
+    const eventApi = getEventApi(options);
+    await transferTablesOnlyOnce(eventApi);
+    await transferParticipants(eventApi);
+    await transferPayments(eventApi);
+  } finally {
+    stopSpinner();
+  }
 }
 
 function getOptionsFromEnvironment() {
@@ -34,13 +34,13 @@ function getOptionsFromEnvironment() {
     return value;
   }
 
-  return Promise.try(() => ({
+  return {
     endpoint: extractEnvVar('KUKSA_API_ENDPOINT', 'the endpoint url of the kuksa api'),
     username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
     password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
     eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id'),
     proxy: process.env.PROXIMO_URL || process.env.KUKSA_API_PROXY_URL, // optional
-  }));
+  };
 }
 
 function transferTablesOnlyOnce(eventApi) {
@@ -121,7 +121,7 @@ function transferTablesOnlyOnce(eventApi) {
   ]);
 }
 
-function transferParticipants(eventApi) {
+async function transferParticipants(eventApi) {
   function transferDaterange(daterange) {
     console.log(`\t daterange ${daterange.startDate} - ${daterange.endDate}`);
     return transfer([
@@ -187,7 +187,9 @@ function transferParticipants(eventApi) {
   participantDateRanges[lastIndex].endDate = moment().toISOString();
 
   console.log('Transferring participants, their extra infos, selections and payments');
-  return Promise.each(participantDateRanges, daterange => transferDaterange(daterange));
+  for (const daterange of participantDateRanges) {
+    await transferDaterange(daterange);
+  }
 }
 
 function transferPayments(eventApi) {

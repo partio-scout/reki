@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import argon2 from 'argon2';
 import { models } from '../src/server/models';
 

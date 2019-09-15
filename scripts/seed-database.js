@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import EventEmitter from 'events';
 import config from '../src/server/conf';
 import { sequelize } from '../src/server/models';

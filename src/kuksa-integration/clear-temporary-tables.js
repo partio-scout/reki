@@ -1,5 +1,4 @@
 import { models } from '../server/models';
-import Promise from 'bluebird';
 import EventEmitter from 'events';
 import { startSpinner } from './util';
 
@@ -21,16 +20,21 @@ const modelsToClear = [
   'KuksaParticipantPayment',
 ];
 
-function clearTemporaryTables() {
-  return Promise.each(modelsToClear, model => models[model].destroy({ where: {} }));
+async function clearTemporaryTables() {
+  const stopSpinner = startSpinner();
+  try {
+    for (const model of modelsToClear) {
+      await models[model].destroy({ where: {} });
+    }
+  } finally {
+    stopSpinner();
+  }
 }
 
 if (require.main === module) {
-  const stopSpinner = startSpinner();
   clearTemporaryTables()
     .then(() => console.log(`Tables ${modelsToClear} cleared.`))
     .then(() => {
-      stopSpinner();
       process.exit(0);
     })
     .catch(err => {

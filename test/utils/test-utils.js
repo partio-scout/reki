@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import app from '../../src/server/server.js';
-import Promise from 'bluebird';
 import { expect } from 'chai';
 import { models } from '../../src/server/models';
 import request from 'supertest';
