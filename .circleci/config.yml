@@ -27,17 +27,13 @@ jobs:
             - node_modules
       - run:
           name: Linter
-          command: npm run linter -- --format junit -o ~/reporters/tslint.xml
+          command: npm run linter
       - run:
           name: Functional tests
-          command: npm run test-functional -- --reporter mocha-junit-reporter
-          environment:
-            MOCHA_FILE: ~/reports/functional-tests.xml
+          command: npm run test-functional
       - run:
           name: Integration tests
-          command: npm run test-integration -- --reporter mocha-junit-reporter
-          environment:
-            MOCHA_FILE: ~/reports/integration-tests.xml
+          command: npm run test-integration
       - store_test_results:
           path: ~/reports
 workflows:
