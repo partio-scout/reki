@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-{{ checksum ".nvmrc" }}
       - run:
           name: npm install
           command: |
@@ -22,7 +22,7 @@ jobs:
               echo "Using cached dependencies"
             fi
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-node10.16.3
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}-{{ checksum ".nvmrc" }}
           paths:
             - node_modules
       - run:
