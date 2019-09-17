@@ -1,28 +1,33 @@
 import argon2 from 'argon2';
 import { models } from '../src/server/models';
 
-const opts = require('commander')
-  .usage('<email of the user to set password> <password>')
-  .parse(process.argv);
-
-if (opts.args.length < 1) {
-  console.error('Please specify the user to set password.');
-  opts.help();
-} else if (opts.args.length < 2) {
-  console.error('Please specify password.');
-  opts.help();
+function printHelp() {
+  console.log('set-password.js <email of the user to set password> <password>');
 }
 
-Promise.all([models.User.findOne({ where: { email: opts.args[0] } }), argon2.hash(opts.args[1])])
+const args = process.argv;
+
+if (args.length < 3) {
+  console.error('Please specify the user to set password.');
+  printHelp();
+} else if (args.length < 4) {
+  console.error('Please specify password.');
+  printHelp();
+}
+
+const email = args[2];
+const password = args[3];
+
+Promise.all([models.User.findOne({ where: { email } }), argon2.hash(password)])
   .then(([user, passwordHash]) => {
     if (user) {
       return user.update({ passwordHash });
     } else {
-      throw new Error(`Couldn't find user with email ${opts.args[0]}!`);
+      throw new Error(`Couldn't find user with email ${email}!`);
     }
   })
   .then(() => {
-    console.log(`Password set for user ${opts.args[0]}.`);
+    console.log(`Password set for user ${email}.`);
     process.exit(0);
   })
   .catch(err => {
