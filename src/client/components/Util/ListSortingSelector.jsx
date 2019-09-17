@@ -3,7 +3,7 @@ import { Button, Glyphicon } from 'react-bootstrap';
 
 export function getListSortingSelector() {
   function ListSortingSelector({ property, order, orderChanged }) {
-    const hasProperty = order.hasOwnProperty(property);
+    const hasProperty = Object.prototype.hasOwnProperty.call(order, property);
     const currentSort = hasProperty && order[property] || '';
     const sortGlyphName = (currentSort === 'ASC' && 'sort-by-attributes') || (currentSort === 'DESC' && 'sort-by-attributes-alt') || 'sort';
 

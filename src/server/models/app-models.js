@@ -248,25 +248,25 @@ export default function(db) {
       editableInfo: value => _.isString(value),
     };
 
-    const fieldIsValid = (field, value) => allowedFields.hasOwnProperty(field) && allowedFields[field](value);
+    const fieldIsValid = (field, value) => Object.prototype.hasOwnProperty.call(allowedFields, field) && allowedFields[field](value);
 
     if (fieldIsValid(fieldName, newValue)) {
       return Participant.findAll({ where: { 'participantId': { [Op.in]: ids } } }).then(rows => {
         const updates = _.map(rows, async row => {
-          if (fieldName === 'presence' && row[fieldName] != newValue) {
-            await PresenceHistory.create({
+          const createPresenceHistory = fieldName === 'presence' && row[fieldName] != newValue;
+          row[fieldName] = newValue;
+
+          await Promise.all([
+            AuditEvent.createEvent.Participant(authorId, row.participantId, 'update'),
+            createPresenceHistory ? PresenceHistory.create({
               participantParticipantId: row.participantId,
               presence: newValue,
               timestamp: new Date(),
               authorId: authorId,
-            });
-          }
-          row[fieldName] = newValue;
+            }) : Promise.resolve(),
+          ]);
 
-          // TODO Test this audit event
-          await AuditEvent.createEvent.Participant(authorId, row.participantId, 'update');
-
-          return row.save();
+          return await row.save();
         });
         return Promise.all(updates);
       });
