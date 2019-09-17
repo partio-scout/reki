@@ -45,7 +45,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.26.0",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "bootstrap-sass": "^3.4.1",
     "connect-flash": "^0.1.1",
     "connect-redis": "^4.0.2",
