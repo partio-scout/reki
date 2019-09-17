@@ -48,7 +48,7 @@
     "body-parser": "^1.18.3",
     "bootstrap-sass": "^3.4.1",
     "connect-flash": "^0.1.1",
-    "connect-redis": "^4.0.0",
+    "connect-redis": "^4.0.2",
     "cors": "^2.8.5",
     "css-loader": "^0.28.11",
     "express-enforces-ssl": "^1.1.0",
