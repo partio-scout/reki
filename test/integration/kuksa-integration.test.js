@@ -83,7 +83,7 @@ describe('Kuksa integration (yes, this is very slow)', () => {
   );
 
   it('correctly transfers participants allergies',
-    () => expect(models.Participant.findByPk(448, { include: models.Allergy })).to.eventually.have.deep.property('allergies[0].name', 'Porkkana, kypsä')
+    () => expect(models.Participant.findByPk(448, { include: models.Allergy })).to.eventually.have.nested.property('allergies[0].name', 'Porkkana, kypsä')
   );
 
   it('sets the billed date as null if participant has not been billed',
@@ -123,7 +123,7 @@ describe('Kuksa integration (yes, this is very slow)', () => {
   it('sets the correct date for participants',
     () => models.Participant.findByPk(448, { include: { all: true } })
       .then(participant => {
-        expect(participant).to.have.deep.property('dates[1].date');
+        expect(participant).to.have.nested.property('dates[1].date');
         expect(participant.dates[0].date).to.equalDate(moment('2016-07-23').toDate());
         expect(participant.dates[1].date).to.equalDate(moment('2016-07-24').toDate());
       })
