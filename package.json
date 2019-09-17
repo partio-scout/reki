@@ -92,7 +92,7 @@
     "eslint-plugin-react": "^7.10.0",
     "express": "^4.16.3",
     "mocha": "^5.2.0",
-    "nodemon": "^1.17.5",
+    "nodemon": "^1.19.2",
     "react-hot-loader": "^4.3.3",
     "supertest": "^3.1.0",
     "webdriverio": "^3.2.6",
