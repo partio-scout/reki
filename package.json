@@ -100,7 +100,6 @@
     "react-hot-loader": "^4.3.3",
     "sinon": "^4.5.0",
     "sinon-express-mock": "^2.0.4",
-    "start-server-and-test": "^1.7.11",
     "supertest": "^3.1.0",
     "webdriverio": "^3.2.6",
     "webpack-cli": "^3.0.8"
