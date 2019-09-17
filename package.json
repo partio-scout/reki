@@ -51,7 +51,6 @@
     "connect-redis": "^4.0.0",
     "cors": "^2.7.1",
     "css-loader": "^0.28.11",
-    "errorhandler": "^1.4.2",
     "express-enforces-ssl": "^1.1.0",
     "express-session": "^1.15.6",
     "faker": "^3.0.1",
