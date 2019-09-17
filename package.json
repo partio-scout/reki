@@ -60,7 +60,7 @@
     "http-proxy": "^1.17.0",
     "inquirer": "^1.0.0",
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.15",
     "moment": "^2.22.2",
     "morgan": "^1.9.1",
     "node-sass": "^4.12.0",
