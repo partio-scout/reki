@@ -5,10 +5,11 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 2017,
+    "ecmaVersion": 2018,
     "sourceType": "module",
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": false,
+      "implicitStrict": true
     }
   },
   "settings": {
@@ -21,33 +22,33 @@
     "react"
   ],
   "rules": {
-    "strict": 0,
-    "no-console": 0,
-    "arrow-body-style": [ 2, "as-needed" ],
-    "arrow-parens": [ 2, "as-needed" ],
-    "brace-style": [ 2, "1tbs", { "allowSingleLine": true } ],
-    "comma-dangle": [ 2, "always-multiline" ],
-    "consistent-this": [ 1, "that" ],
-    "curly": [ 2, "all" ],
-    "eol-last": 2,
-    "handle-callback-err": [ 2, "^(err|.+Err(or)?)$" ],
+    "strict": "off",
+    "no-console": "off",
+    "arrow-body-style": [ "error", "as-needed" ],
+    "arrow-parens": [ "error", "as-needed" ],
+    "brace-style": [ "error", "1tbs", { "allowSingleLine": true } ],
+    "comma-dangle": [ "error", "always-multiline" ],
+    "consistent-this": [ "error", "that" ],
+    "curly": [ "error", "all" ],
+    "eol-last": "error",
+    "handle-callback-err": [ "error", "^(err|.+Err(or)?)$" ],
     "indent": "off",
-    "indent-legacy": [ 2, 2, { "SwitchCase": 1 } ],
-    "no-multiple-empty-lines": [ 2, { "max": 1 } ],
-    "no-path-concat": 2,
-    "no-shadow-restricted-names": 2,
-    "no-throw-literal": 2,
-    "no-trailing-spaces": [ 2, { "skipBlankLines": false } ],
-    "no-underscore-dangle": 0,
-    "no-unused-vars": [ 2, { "vars": "all", "args": "none" } ],
-    "no-use-before-define": [ 2, "nofunc" ],
-    "no-var": 2,
-    "object-curly-spacing": [ 2, "always" ],
-    "prefer-arrow-callback": 2,
-    "prefer-const": 2,
-    "prefer-template": 2,
-    "quotes": [ 2, "single", "avoid-escape" ],
-    "semi": 2,
-    "keyword-spacing": 2
+    "indent-legacy": [ "error", 2, { "SwitchCase": 1 } ],
+    "no-multiple-empty-lines": [ "error", { "max": 1 } ],
+    "no-path-concat": "error",
+    "no-shadow-restricted-names": "error",
+    "no-throw-literal": "error",
+    "no-trailing-spaces": [ "error", { "skipBlankLines": false } ],
+    "no-underscore-dangle": "off",
+    "no-unused-vars": [ "error", { "vars": "all", "args": "none" } ],
+    "no-use-before-define": [ "error", "nofunc" ],
+    "no-var": "error",
+    "object-curly-spacing": [ "error", "always" ],
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "quotes": [ "error", "single", "avoid-escape" ],
+    "semi": "error",
+    "keyword-spacing": "error"
   }
 }
