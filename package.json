@@ -52,7 +52,7 @@
     "cors": "^2.7.1",
     "css-loader": "^0.28.11",
     "express-enforces-ssl": "^1.1.0",
-    "express-session": "^1.15.6",
+    "express-session": "^1.16.2",
     "faker": "^3.0.1",
     "file-loader": "^1.1.11",
     "helmet": "^3.12.1",
