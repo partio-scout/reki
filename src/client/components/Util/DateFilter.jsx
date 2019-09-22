@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 export function getDateFilter() {
-  function dateFilter({ value, label, property, options, onChange }) {
+  function dateFilter({ value = [], label, property, options, onChange }) {
 
     function handleValueChanged(event) {
       const checked = event.target.checked;

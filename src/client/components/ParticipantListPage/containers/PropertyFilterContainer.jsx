@@ -35,7 +35,7 @@ export function getPropertyFilterContainer(searchFilterStore, searchFilterAction
         <PropertySelect
           label={ this.props.label }
           property={ this.props.property }
-          value={ this.props.currentSelection[this.props.property] }
+          value={ this.props.currentSelection[this.props.property] || '' }
           onChange={ this.props.onChange }
           options={ this.state.options }
           className={ this.props.className }

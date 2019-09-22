@@ -2,45 +2,53 @@ import React from 'react';
 import _ from 'lodash';
 import { Table, Grid, Row, Col, Input, Glyphicon, Tooltip, OverlayTrigger  } from 'react-bootstrap';
 import { getParticipantListUpdater } from './containers/ParticipantListUpdater';
-import { getSortableHeaderCellContainer } from './containers/SortableHeaderCellContainer';
+import { getSortableHeaderCell } from '../Util/SortableHeaderCell';
 import { getListOffsetSelectorContainer } from './containers/ListOffsetSelectorContainer';
 import { getParticipantRowsContainer } from './containers/ParticipantRowsContainer';
 import { getQuickFilterContainer } from './containers/QuickFilterContainer';
 import { getParticipantCount } from './containers/ParticipantCount';
 import { LoadingButton } from '../../components';
 import { PresenceSelector } from '../../components';
+import { createBrowserHistory } from 'history';
 
-function getOrder(query) {
+function getOrder(params) {
   try {
-    const order = query.order && JSON.parse(query.order) || {};
-    return order;
+    const paramsOrder = params.get('order');
+    return paramsOrder ? JSON.parse(paramsOrder) : {};
   } catch (err) {
     return {};
   }
 }
 
-function getFilter(query) {
+function getFilter(params) {
   try {
-    const filter = query.filter && JSON.parse(query.filter) || {};
-    return filter;
+    const paramsFilter = params.get('filter');
+    return paramsFilter ? JSON.parse(paramsFilter) : {};
   } catch (err) {
     return {};
   }
 }
 
-function getOffset(query) {
-  return query.offset && Number(query.offset) || 0;
+function getOffset(params) {
+  const offset = Number(params.get('offset'));
+  return Number.isNaN(offset) ? 0 : offset;
 }
 
-function getLimit(query) {
-  return query.limit && Number(query.limit) || 200;
+function getLimit(params) {
+  if (!params.has('limit')) {
+    return 200;
+  }
+  const limit = Number(params.get('limit'));
+  return Number.isNaN(limit) ? 200 : limit;
 }
 
 export function getMassEdit(participantStore) {
   class MassEdit extends React.Component {
     constructor(props){
       super(props);
-      this.state = { loading: false };
+      this.state = {
+        loading: false,
+      };
       this.onSubmit = this.onSubmit.bind(this);
       this.onChange = this.onChange.bind(this);
       this.onStoreChanged = this.onStoreChanged.bind(this);
@@ -120,7 +128,7 @@ export function getSelectAll() {
 
 export function getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const ParticipantListUpdater = getParticipantListUpdater(participantActions);
-  const SortableHeaderCellContainer = getSortableHeaderCellContainer();
+  const SortableHeaderCell = getSortableHeaderCell();
   const ListOffsetSelectorContainer = getListOffsetSelectorContainer(participantStore);
   const ParticipantRowsContainer = getParticipantRowsContainer(participantStore);
   const QuickFilterContainer = getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore);
@@ -136,6 +144,10 @@ export function getParticipantListPage(participantStore, participantActions, sea
         allChecked: false,
         participants: [ ],
         availableDates: [ ],
+        offset: 0,
+        limit: 200,
+        filter: {},
+        order: {},
       };
 
       this.onSearchFilterStoreChanged = this.onSearchFilterStoreChanged.bind(this);
@@ -145,6 +157,79 @@ export function getParticipantListPage(participantStore, participantActions, sea
       this.handleMassEdit = this.handleMassEdit.bind(this);
       this.checkAll = this.checkAll.bind(this);
       this.checkNoneOnParticipantsChanged = this.checkNoneOnParticipantsChanged.bind(this);
+
+      this.updateHistory = params => {
+        const updatedState = {
+          filter: this.state.filter,
+          order: this.state.order,
+          offset: this.state.offset,
+          limit: this.state.limit,
+          ...params,
+        };
+
+        const newQueryParams = { ...updatedState };
+        if (Object.keys(newQueryParams.filter).length === 0) {
+          delete newQueryParams.filter;
+        }
+        if (Object.keys(newQueryParams.order).length === 0) {
+          delete newQueryParams.order;
+        }
+        if (newQueryParams.offset === 0) {
+          delete newQueryParams.offset;
+        }
+        if (newQueryParams.limit === 200) {
+          delete newQueryParams.limit;
+        }
+
+        if (newQueryParams.filter) {
+          newQueryParams.filter = JSON.stringify(newQueryParams.filter);
+        }
+        if (newQueryParams.order) {
+          newQueryParams.order = JSON.stringify(newQueryParams.order);
+        }
+
+        const search = new URLSearchParams(newQueryParams).toString();
+        const { pathname, hash } = this.history.location;
+
+        this.history.push({
+          pathname,
+          search,
+          hash,
+        });
+        this.setState(updatedState);
+      };
+
+      this.setFilter = (parameterName, newValue) => {
+        this.updateHistory({ filter: _.pickBy({ ...this.state.filter, [parameterName]: newValue }, value => value), offset: 0 });
+      };
+
+      this.resetFilter = () => {
+        this.updateHistory({ filter: '', offset: 0 });
+      };
+
+      this.setOrder = order => {
+        this.updateHistory({ order });
+      };
+
+      this.setOffset = offset => {
+        this.updateHistory({ offset });
+      };
+
+      this.queryToState = search => {
+        const params = new URLSearchParams(search);
+        const offset = getOffset(params);
+        const limit = getLimit(params);
+        const order = getOrder(params);
+        const filter = getFilter(params);
+
+        // eslint-disable-next-line react/no-did-mount-set-state
+        this.setState({
+          offset,
+          limit,
+          order,
+          filter,
+        });
+      };
     }
 
     handleCheckboxChange(isChecked, participantId) {
@@ -177,10 +262,10 @@ export function getParticipantListPage(participantStore, participantActions, sea
       participantActions.updateParticipantPresences(
         this.state.checked,
         newValue,
-        getOffset(this.props.location.query),
-        getLimit(this.props.location.query),
-        getOrder(this.props.location.query),
-        getFilter(this.props.location.query)
+        this.state.offset,
+        this.state.limit,
+        this.state.order,
+        this.state.filter,
       );
     }
 
@@ -191,11 +276,22 @@ export function getParticipantListPage(participantStore, participantActions, sea
     componentDidMount() {
       participantStore.listen(this.checkNoneOnParticipantsChanged);
       searchFilterStore.listen(this.onSearchFilterStoreChanged);
+
+      this.history = createBrowserHistory();
+
+      this.queryToState(this.history.location.search);
+
+      this.unlistenHistory = this.history.listen((newLocation, action) => {
+        if (action === 'POP') {
+          this.queryToState(newLocation.search);
+        }
+      });
     }
 
     componentWillUnmount() {
       participantStore.unlisten(this.checkNoneOnParticipantsChanged);
       searchFilterStore.unlisten(this.onSearchFilterStoreChanged);
+      this.unlistenHistory();
     }
 
     checkNoneOnParticipantsChanged() {
@@ -217,10 +313,12 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     render() {
-      const order = getOrder(this.props.location.query);
-      const offset = getOffset(this.props.location.query);
-      const limit = getLimit(this.props.location.query);
-      const filter = getFilter(this.props.location.query);
+      const {
+        order,
+        offset,
+        limit,
+        filter,
+      } = this.state;
 
       const tooltipForNotes = (
         <Tooltip>{ 'Leiritoimiston merkinnät' }</Tooltip>
@@ -276,7 +374,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
           </Row>
           <Row>
             <Col md={ 12 }>
-              <QuickFilterContainer location={ this.props.location } filter={ filter } />
+              <QuickFilterContainer updateFilter={ this.setFilter } resetFilter={ this.resetFilter } filter={ filter } />
             </Col>
           </Row>
           <Row>
@@ -296,12 +394,12 @@ export function getParticipantListPage(participantStore, participantActions, sea
                     <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
                     {
                       Object.keys(columnPropertyToLabelMapping).map(property => (
-                        <SortableHeaderCellContainer
+                        <SortableHeaderCell
                           key={ property }
                           property={ property }
                           label={ columnPropertyToLabelMapping[property] }
-                          location={ this.props.location }
                           order={ order }
+                          orderChanged={ this.setOrder }
                         />
                       ))
                     }
@@ -321,7 +419,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
           </Row>
           <Row>
             <Col md={ 12 }>
-              <ListOffsetSelectorContainer location={ this.props.location } offset={ offset } limit={ limit } />
+              <ListOffsetSelectorContainer onOffsetChanged={ this.setOffset } offset={ offset } limit={ limit } />
             </Col>
           </Row>
         </Grid>

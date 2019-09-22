@@ -17,7 +17,7 @@ export function getPresenceFilterContainer() {
 
     render() {
       return (
-        <PresenceSelector label="Tila" onChange={ this.onChange } value={ this.props.currentSelection[property] }/>
+        <PresenceSelector label="Tila" onChange={ this.onChange } value={ this.props.currentSelection[property] || '' }/>
       );
     }
   }

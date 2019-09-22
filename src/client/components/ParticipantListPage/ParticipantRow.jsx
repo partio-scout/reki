@@ -1,14 +1,13 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Link } from 'react-router';
 import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Presence } from '../index';
 import { TdWithTitle } from '../../components';
 
 class LinkCell extends React.Component {
   render() {
-    return <td><Link to={ this.props.href } title={ this.props.title }>{ this.props.children }</Link></td>;
+    return <td><a href={ this.props.href } title={ this.props.title }>{ this.props.children }</a></td>;
   }
 }
 

@@ -27,13 +27,7 @@ export default function(app){
     // TODO refactor so this comes in right format already
     const order = filter.order ? filter.order.split(' ') : ['participantId', 'ASC'];
 
-    let where = filter.where || {};
-
-    // TODO refactor this out: it's silly to have an and-array coming from frontend :)
-    // More than one condition is represented as array for leagacy reasons -> move back to object
-    if (where.and) {
-      where = _.reduce(where.and, (cond, acc) => Object.assign(acc, cond), {});
-    }
+    const where = filter.where || {};
 
     // For free-text searching we need to add ILIKE filter for all searchable text fields
     if (where.textSearch) {

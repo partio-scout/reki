@@ -1,7 +1,7 @@
 import React from 'react';
 import AltContainer from 'alt-container';
 import { ListOffsetSelector } from '../../../components';
-import { pureShouldComponentUpdate, changeQueryParameter } from '../../../utils';
+import { pureShouldComponentUpdate } from '../../../utils';
 
 export function getListOffsetSelectorContainer(participantStore) {
   function ListOffsetSelectorContainer(props, context) {
@@ -13,9 +13,11 @@ export function getListOffsetSelectorContainer(participantStore) {
           },
         } }
         inject={ {
-          onOffsetChanged: () => newOffset => context.router.push(changeQueryParameter(props.location, 'offset', newOffset)),
           chunkSize: props.limit,
           offset: props.offset,
+        } }
+        actions={ {
+          onOffsetChanged: props.onOffsetChanged,
         } }
         shouldComponentUpdate={ pureShouldComponentUpdate }
         component={ ListOffsetSelector }

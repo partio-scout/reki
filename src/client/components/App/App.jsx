@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navbar, Grid, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router';
 import { getMainNavigationContainer } from './containers/MainNavigationContainer';
 import { getErrorNotification } from './ErrorNotification';
 
@@ -15,7 +14,7 @@ export function getApp(registryUserStore, registryUserActions, errorStore, error
           <Navbar fluid>
             <Navbar.Header>
               <Navbar.Brand>
-                <Link to="/">REKI</Link>
+                <a href="/">REKI</a>
               </Navbar.Brand>
             </Navbar.Header>
             <MainNavigationContainer />

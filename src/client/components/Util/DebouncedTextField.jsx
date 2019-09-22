@@ -8,11 +8,11 @@ export function getDebouncedTextField() {
       super(props);
       const callOnChange = value => this.props.onChange(this.props.property, value);
       this.delayedOnChange = _.debounce(callOnChange, 1500);
-      this.state = { textSearch: props.value };
+      this.state = { textSearch: props.value || '' };
     }
 
     componentWillReceiveProps(nextProps) {
-      this.setState({ textSearch: nextProps.value });
+      this.setState({ textSearch: nextProps.value || '' });
     }
 
     handleValueChanged(event) {
