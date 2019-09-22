@@ -54,7 +54,7 @@
     "file-loader": "^4.2.0",
     "helmet": "^3.21.1",
     "history": "^2.0.1",
-    "http-proxy": "^1.17.0",
+    "http-proxy": "^1.18.0",
     "inquirer": "^7.0.0",
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.15",
