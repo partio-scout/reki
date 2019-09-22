@@ -25,7 +25,7 @@ export function getRestfulResource() {
     }
 
     function findById(id, filters) {
-      return fetch(getPath('', filters), defaultOpts)
+      return fetch(getPath(id, filters), defaultOpts)
       .then(handleResponse);
     }
 
