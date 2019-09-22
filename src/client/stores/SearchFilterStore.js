@@ -1,18 +1,13 @@
 export function getSearchFilterStore(alt, SearchFilterActions) {
   class SearchFilterStore  {
     constructor() {
-      this.searchFilters = [ ];
       this.options = { };
+      this.dates = [];
 
       this.bindListeners({
-        handleSearchFilterListUpdated: SearchFilterActions.SEARCH_FILTER_LIST_UPDATED,
         handleOptionsLoaded: SearchFilterActions.OPTIONS_LOADED,
         handleDateOptionsLoaded: SearchFilterActions.DATE_OPTIONS_LOADED,
       });
-    }
-
-    handleSearchFilterListUpdated(searchFilters) {
-      this.searchFilters = searchFilters;
     }
 
     handleOptionsLoaded(options) {

@@ -6,13 +6,11 @@ import { getPropertyFilterContainer } from './PropertyFilterContainer';
 import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
 import { getDateFilterContainer } from './DateFilterContainer';
 import { getPresenceFilterContainer } from './PresenceFilterContainer';
-import { getSaveSearchButtonContainer } from './SaveSearchButtonContainer';
 import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
 export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
   const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
   const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
-  const SaveSearchButtonContainer = getSaveSearchButtonContainer(searchFilterActions);
   const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
   const PresenceFilterContainer = getPresenceFilterContainer();
   const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
@@ -110,7 +108,6 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             currentSelection={ currentSelection }
           />
           <Button type="submit" bsStyle="link" className="top-right" onClick={ resetFilters }>Tyhjennä haku</Button>
-          <SaveSearchButtonContainer location={ props.location } />
         </form>
       </div>
     );

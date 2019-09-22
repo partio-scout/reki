@@ -21,7 +21,6 @@ import participant from './boot/03-participant';
 import partioidLogin from './boot/03-partioid-login';
 import offlineLogin from './boot/03-offline-login';
 import registryUser from './boot/03-registry-user';
-import searchFilter from './boot/03-search-filter';
 import restApi from './boot/04-rest-api';
 import frontend from './boot/06-frontend';
 import monitoring from './boot/07-monitoring';
@@ -131,7 +130,6 @@ async function boot(app) {
   partioidLogin(app);
   offlineLogin(app);
   registryUser(app);
-  searchFilter(app);
   restApi(app);
   monitoring(app);
   restOfApi404(app);

@@ -4,8 +4,6 @@ export { getSessionTimeoutNotification } from './Util/SessionTimeoutNotification
 export { getApp } from './App/App';
 export { getHomepage } from './Homepage';
 export { getParticipantListPage } from './ParticipantListPage/ParticipantListPage';
-export { getParticipantSidebar } from './ParticipantListPage/ParticipantSidebar';
-export { defaultSidebar } from './App/DefaultSidebar';
 export { getParticipantDetailsPage } from './ParticipantDetailsPage/ParticipantDetailsPage';
 export { ParticipantRow } from './ParticipantListPage/ParticipantRow';
 export { ListOffsetSelector } from './Util/ListOffsetSelector';

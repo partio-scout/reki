@@ -6,7 +6,6 @@ import {
   createUserWithRoles as createUser,
   getWithUser,
   postWithUser,
-  deleteWithUser,
   expectStatus,
 } from '../utils/test-utils';
 import { resetDatabase } from '../../scripts/seed-database';
@@ -45,9 +44,6 @@ describe('HTTP API access control', () => {
         'POST /api/registryusers/:id/block',
         'POST /api/registryusers/:id/unblock',
         'POST /api/registryusers/logout',
-        'GET /api/searchfilters',
-        'DELETE /api/searchfilters/:id',
-        'POST /api/searchfilters',
         'GET /api/config',
       ];
 
@@ -129,31 +125,6 @@ describe('HTTP API access control', () => {
 
       it('block user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/block`, null, ['registryAdmin']).expect(NO_CONTENT));
       it('unblock user: NO_CONTENT', () => post(`/api/registryusers/${otherUserId}/unblock`, null, ['registryAdmin']).expect(NO_CONTENT));
-    });
-  });
-
-  describe('SearchFilter', () => {
-    const searchFilterToCreate = {
-      name: 'durp',
-      filter: '?filter=%7B"textSearch"%3A"durpdurp"%7D',
-    };
-
-    describe('Unauthenticated user', () => {
-      it('find: UNAUTHORIZED', () => get('/api/searchfilters').expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterToCreate).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111').expect(UNAUTHORIZED));
-    });
-
-    describe('registryUser', () => {
-      it('find: ok', () => get('/api/searchfilters', ['registryUser']).expect(OK));
-      it('create: ok', () => post('/api/searchfilters', searchFilterToCreate, ['registryUser']).expect(OK));
-      it('deleteById: ok', () => del('/api/searchfilters/111', ['registryUser']).expect(OK));
-    });
-
-    describe('registryAdmin', () => {
-      it('find: UNAUTHORIZED', () => get('/api/searchfilters', ['registryAdmin']).expect(UNAUTHORIZED));
-      it('create: UNAUTHORIZED', () => post('/api/searchfilters', searchFilterToCreate, ['registryAdmin']).expect(UNAUTHORIZED));
-      it('deleteById: UNAUTHORIZED', () => del('/api/searchfilters/111', ['registryAdmin']).expect(UNAUTHORIZED));
     });
   });
 
@@ -303,19 +274,6 @@ function post(endpoint, data, roles) {
         expectStatus(res.status, code);
       } else {
         await request(app).post(endpoint).send(data).expect(code);
-      }
-    },
-  };
-}
-
-function del(endpoint, roles) {
-  return {
-    expect: async code => {
-      if (roles) {
-        const res = await deleteWithUser(endpoint, await createUser(roles));
-        expectStatus(res.status, code);
-      } else {
-        await request(app).del(endpoint).expect(code);
       }
     },
   };

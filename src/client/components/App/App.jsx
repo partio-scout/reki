@@ -5,11 +5,11 @@ import { getMainNavigationContainer } from './containers/MainNavigationContainer
 import { getErrorNotification } from './ErrorNotification';
 
 export function getApp(registryUserStore, registryUserActions, errorStore, errorActions) {
+  const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
+  const ErrorNotification = getErrorNotification(errorStore, errorActions);
+
   class App extends React.Component {
     render() {
-      const MainNavigationContainer = getMainNavigationContainer(registryUserStore, registryUserActions);
-      const ErrorNotification = getErrorNotification(errorStore, errorActions);
-
       return (
         <div>
           <Navbar fluid>
@@ -22,11 +22,8 @@ export function getApp(registryUserStore, registryUserActions, errorStore, error
           </Navbar>
           <Grid fluid className="page-content">
             <Row>
-              <Col sm={ 2 } className="sidebar">
-                { this.props.sidebar }
-              </Col>
-              <Col sm={ 10 } smOffset={ 2 } className="main">
-                { this.props.main }
+              <Col sm={ 12 } className="main">
+                { this.props.children }
               </Col>
             </Row>
           </Grid>

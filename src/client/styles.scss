@@ -139,7 +139,7 @@ table {
       position: absolute !important;
       top: -34px;
     }
-    
+
     button {
       position: relative;
       top: -8px;
@@ -213,29 +213,6 @@ table {
   padding-top: 50px;
 }
 
-.sidebar {
-  background-color: $light-grey;
-  min-height: 100%;
-  padding-top: 70px;
-  padding-bottom: 20px;
-  position: absolute;
-}
-
-.sidebar-list {
-  list-style-type: none;
-  margin-top: 10px;
-  padding-left: 0px;
-  li {
-    overflow: auto;
-    line-height: 30px;
-  }
-  button {
-    color: $red;
-    float: right;
-    outline: none !important;
-  }
-}
-
 /**
  * Wells
  */
@@ -263,11 +240,11 @@ table {
   .control-label {
     margin-right: 0.5em;
   }
-  
+
   button.top-right {
     position: absolute;
     top: 15px;
-    right: 150px;
+    right: 15px;
     outline: none !important;
   }
 }
@@ -379,7 +356,7 @@ table .presence {
     span {
       opacity: 0.5;
     }
-    
+
     &.active {
       color: $green;
       background: lighten($green, 50%) !important;
@@ -388,7 +365,7 @@ table .presence {
         opacity: 1;
       };
     }
-    
+
     .glyphicon {
       display: block;
     }
@@ -433,7 +410,7 @@ textarea.form-control {
 
 dl {
   margin: -1em 0 0;
-  
+
   &.margin-top-0 {
     margin-top: 0;
   }

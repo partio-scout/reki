@@ -52,11 +52,6 @@ const UserManagementPage = restrictComponent(
   components.getUserManagementPage(registryUserStore, registryUserActions),
   LoginPromptPage
 );
-const participantSidebar = restrictComponent(
-  registryUserStore,
-  components.getParticipantSidebar(searchFilterStore, searchFilterActions)
-);
-const defaultSidebar = restrictComponent(registryUserStore, components.defaultSidebar);
 
 registryUserActions.loadCurrentUser();
 errorActions.loadFlashes();
@@ -64,13 +59,13 @@ errorActions.loadFlashes();
 const routes = (
   <Router history={ browserHistory }>
     <Route path="/" component={ app }>
-      <IndexRoute components={ { main:homepage, sidebar: defaultSidebar } } />
+      <IndexRoute component={ homepage } />
       <Route path="participants">
-        <IndexRoute components={ { main: ParticipantListPage, sidebar: participantSidebar } } />
-        <Route path=":id" components={ { main: ParticipantDetailsPage, sidebar: defaultSidebar } } />
+        <IndexRoute components={ ParticipantListPage } />
+        <Route path=":id" components={ ParticipantDetailsPage } />
       </Route>
-      <Route path="login" components={ { main: login, sidebar: defaultSidebar } } />
-      <Route path="admin" components={ { main: UserManagementPage, sidebar: defaultSidebar } } />
+      <Route path="login" components={ login } />
+      <Route path="admin" components={ UserManagementPage } />
     </Route>
   </Router>
 );

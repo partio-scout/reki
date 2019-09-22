@@ -211,9 +211,9 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     extractDatesFromSearchFilters() {
-      const state = this.state;
-      state.availableDates = searchFilterStore.getState().dates || [];
-      return state;
+      return {
+        availableDates: searchFilterStore.getState().dates || [],
+      };
     }
 
     render() {
