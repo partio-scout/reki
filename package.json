@@ -52,7 +52,7 @@
     "express-enforces-ssl": "^1.1.0",
     "express-session": "^1.16.2",
     "file-loader": "^4.2.0",
-    "helmet": "^3.21.0",
+    "helmet": "^3.21.1",
     "history": "^2.0.1",
     "http-proxy": "^1.17.0",
     "inquirer": "^7.0.0",
