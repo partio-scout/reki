@@ -32,7 +32,7 @@ const app = express();
 
 export default app;
 
-const bootstrapFileName = path.resolve(__dirname, 'bootstrap.js');
+const bootstrapFileName = path.resolve(__dirname, 'server.js');
 const standalone = require.main.filename === bootstrapFileName;
 const isDev = process.env.NODE_ENV !== 'production';
 export const appConfig = {

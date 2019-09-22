@@ -35,7 +35,7 @@ export async function createUserWithRoles(rolesToAdd, overrides) {
 
   // The password on the returned user object is hashed, to be able to access the actual
   // password later on, we set it here
-  userModel.clear_password = password;
+  userModel.clearPassword = password;
   return userModel;
 }
 
@@ -90,15 +90,15 @@ export async function withFixtures(fixtures) {
 // Functions for API requests
 
 export async function getWithUser(path, user) {
-  return request(app).get(path).auth(user.email, user.clear_password);
+  return request(app).get(path).auth(user.email, user.clearPassword);
 }
 
 export async function postWithUser(path, user, data) {
-  return request(app).post(path).auth(user.email, user.clear_password).send(data);
+  return request(app).post(path).auth(user.email, user.clearPassword).send(data);
 }
 
 export async function deleteWithUser(path, user) {
-  return request(app).delete(path).auth(user.email, user.clear_password);
+  return request(app).delete(path).auth(user.email, user.clearPassword);
 }
 
 export function expectStatus(status, expectedStatus) {

@@ -4,3 +4,4 @@ node_modules/
 src/public/build/
 .vagrant/
 kuksa-dump/
+dist/

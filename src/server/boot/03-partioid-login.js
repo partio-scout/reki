@@ -13,7 +13,7 @@ export default function(app) {
   const partioIdIssuer = rekiBaseUrl.href;
   const partioIdEntryPoint = `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SSOService.php`;
   const partioIdLogoutUrl = `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SingleLogoutService.php`;
-  const partioIdCertificate = fs.readFileSync(path.join(__dirname,'..', '..', '..', 'certs', 'partioid', `${partioIDRemoteName}.crt`), 'utf-8');
+  const partioIdCertificate = fs.readFileSync(path.resolve(`./certs/partioid/${partioIDRemoteName}.crt`), 'utf-8');
 
   const strategy =  new SamlStrategy(
     {

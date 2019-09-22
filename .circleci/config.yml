@@ -26,8 +26,8 @@ jobs:
           paths:
             - node_modules
       - run:
-          name: Linter
-          command: npm run linter
+          name: lint
+          command: npm run lint
       - run:
           name: Functional tests
           command: npm run test-functional

@@ -132,7 +132,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     constructor(props) {
       super(props);
       this.state = {
-        checked: new Array(),
+        checked: [],
         allChecked: false,
         participants: [ ],
         availableDates: [ ],
@@ -148,7 +148,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     handleCheckboxChange(isChecked, participantId) {
-      const stateChange = { checked: new Array(), allChecked: false };
+      const stateChange = { checked: [], allChecked: false };
 
       if (isChecked) {
         stateChange.checked = this.state.checked.concat([ participantId ]);
@@ -164,7 +164,7 @@ export function getParticipantListPage(participantStore, participantActions, sea
     }
 
     checkAll(isChecked) {
-      const stateChange = { checked: new Array(), allChecked: isChecked, availableDates: this.state.availableDates };
+      const stateChange = { checked: [], allChecked: isChecked, availableDates: this.state.availableDates };
 
       if (isChecked) {
         stateChange.checked = _.map(participantStore.state.participants, 'participantId');
