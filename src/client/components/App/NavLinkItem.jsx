@@ -1,34 +1,18 @@
 import React from 'react';
 import { NavItem } from 'react-bootstrap';
-import { LinkContainer, IndexLinkContainer } from 'react-router-bootstrap';
 
 export class NavLinkItem extends React.Component {
   render() {
     const {
       to,
       children,
-      isIndexLink,
     } = this.props;
 
-    const navItem = (
-      <NavItem>
+    return (
+      <NavItem href={ to }>
         { children }
       </NavItem>
     );
-
-    if (isIndexLink) {
-      return (
-        <IndexLinkContainer to={ to }>
-          { navItem }
-        </IndexLinkContainer>
-      );
-    } else {
-      return (
-        <LinkContainer to={ to }>
-          { navItem }
-        </LinkContainer>
-      );
-    }
   }
 }
 
