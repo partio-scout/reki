@@ -21,34 +21,33 @@ export function getLogin(userActions, userStore) {
       this.setState(state);
     }
 
-    submit() {
+    submit(event) {
+      event.preventDefault();
       const email = this.refs['email'].value;
       const password = this.refs['password'].value;
       userActions.loginOffline(email, password);
     }
 
     render() {
-      let loginComponent = '';
       if (this.state.offlineLoginTriedWhileDisabled) {
-        loginComponent = (
+        return (
           <div> Offline-kirjautuminen ei ole käytössä. </div>
         );
       } else {
-        loginComponent = (
+        return (
           <div>
-            <form horizontal>
+            <form method="POST" horizontal onSubmit={ this.submit }>
               <label htmlFor="email">Sähköposti</label><br/>
               <input ref="email" type="email" name="email" placeholder="Sähköposti"/><br/>
               <label htmlFor="password">Salasana</label><br/>
               <input ref="password" type="password" name="password" placeholder="Salasana"/><br/>
+              <button type="submit">
+                Kirjaudu sisään
+              </button>
             </form>
-            <button onClick={ this.submit }>
-              Kirjaudu sisään
-            </button>
           </div>
         );
       }
-      return loginComponent;
     }
   }
   return Login;
