@@ -95,7 +95,6 @@
     "express": "^4.17.1",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.2",
-    "react-hot-loader": "^4.3.3",
     "supertest": "^4.0.2",
     "ts-loader": "^6.1.2",
     "webpack-cli": "^3.3.9"
