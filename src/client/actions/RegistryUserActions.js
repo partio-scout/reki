@@ -19,10 +19,6 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
       return registryUsers;
     }
 
-    updateLoginStatus(loggedIn) {
-      return loggedIn;
-    }
-
     loadCurrentUser() {
       return dispatch => {
         dispatch();
@@ -30,7 +26,6 @@ export function getRegistryUserActions(alt, registryUserResource, errorActions) 
           .catch(() => null)
           .then(newCurrentUser => {
             this.currentUserUpdated(newCurrentUser);
-            this.updateLoginStatus(!!newCurrentUser);
           });
       };
     }
