@@ -45,6 +45,6 @@ export default function(app) {
       } else {
         res.redirect(303, '/');
       }
-    }
+    },
   );
 }

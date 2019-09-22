@@ -26,7 +26,7 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     await expectPresenceHistoryValues([ inCamp ], 1 );
@@ -36,13 +36,13 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     const res2 = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: tmpLeftCamp, fieldName: 'presence' },
     );
     expectStatus(res2.status, 200);
     await expectPresenceAuthorValue([ user.id, user.id ], 1 );
@@ -52,13 +52,13 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     const res2 = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: leftCamp, fieldName: 'presence' },
     );
     expectStatus(res2.status, 200);
     await expectPresenceHistoryValues([ inCamp, leftCamp ], 1 );
@@ -68,13 +68,13 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 2, 3 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     const res2 = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' }
+      { ids: [ 2, 3 ], newValue: tmpLeftCamp, fieldName: 'presence' },
     );
     expectStatus(res2.status, 200);
     await expectPresenceHistoryValues([ inCamp, tmpLeftCamp ], 2 );
@@ -85,13 +85,13 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     const res2 = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 2 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res2.status, 200);
     await expectPresenceHistoryValues([ inCamp ], 2 );
@@ -101,7 +101,7 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' }
+      { ids: [ 1 ], newValue: inCamp, fieldName: 'presence' },
     );
     expectStatus(res.status, 200);
     await expectPresenceHistoryValues([ ], 2 );
@@ -111,7 +111,7 @@ describe('Participant presence history', () => {
     const res = await postWithUser(
       '/api/participants/massAssign',
       user,
-      { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' }
+      { ids: [ 1 ], newValue: 'some string value', fieldName: 'presence' },
     );
     expectStatus(res.status, 400);
     await expectPresenceHistoryValues([ ], 1 );
@@ -132,7 +132,7 @@ describe('Participant presence history', () => {
       .then( rows => {
         const AuthorHistory = _.map(rows, row => row.authorId);
         expect(AuthorHistory).to.eql(expectedAuthors);
-      }
+      },
     );
   }
 

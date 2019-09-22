@@ -1,47 +1,30 @@
-import React from 'react';
-import { Input } from 'react-bootstrap';
-import { getPropertyFilterContainer } from './PropertyFilterContainer';
+import React, { useState } from 'react';
+import { PropertySelect } from '../..';
+import { Label } from '../../Util/Label';
 
-export function getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions) {
-  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
+export function GenericPropertyFilterContainer({ label, onChange, properties, currentSelection, optionsByProperty }) {
+  const [property, setProperty] = useState('');
 
-  class GenericPropertyFilterContainer extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        property: '',
-      };
-      this.onPropertyChange = this.onPropertyChange.bind(this);
-    }
-
-    onPropertyChange(e) {
-      this.props.onChange(this.state.property, null);
-      this.setState({ property: e.target.value });
-      searchFilterActions.loadOptions.defer(e.target.value);
-    }
-
-    render() {
-      return (
-        <div>
-          <Input type="select" className="property-selector" label="Kenttä" value={ this.state.property } onChange={ this.onPropertyChange }>
-            <option value=""></option>
-            { this.props.properties.map(({ property, label }, index) => <option value={ property } key={ index }>{ label }</option>) }
-          </Input>
-          <PropertyFilterContainer
-            onChange={ this.props.onChange }
-            currentSelection={ this.props.currentSelection }
-            label=""
-            property={ this.state.property }
-          />
-        </div>
-      );
-    }
-  }
-
-  GenericPropertyFilterContainer.propTypes = {
-    onChange: React.PropTypes.func.isRequired,
-    currentSelection: React.PropTypes.object.isRequired,
+  const handlePropertyChanged = event => {
+    onChange(property, '');
+    setProperty(event.target.value);
   };
 
-  return GenericPropertyFilterContainer;
+  return (
+    <div className="generic-property-filter__row">
+      <Label label={ label }>
+        <select value={ property } onChange={ handlePropertyChanged }>
+          <option value=""></option>
+          { properties.map(({ property, label }, index) => <option value={ property } key={ index }>{ label }</option>) }
+        </select>
+      </Label>
+        <PropertySelect
+          onChange={ onChange }
+          currentSelection={ currentSelection }
+          label=""
+          property={ property }
+          optionsByProperty={ optionsByProperty }
+        />
+    </div>
+  );
 }

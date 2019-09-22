@@ -14,40 +14,40 @@ describe('Date search in participant list API endpoint', () => {
   withFixtures(getFixtures());
 
   it('doesn\'t filter results when no filters are given', () =>
-    expectParticipantsForQuery({}, [ 'Tero', 'Teemu', 'Jussi' ])
+    expectParticipantsForQuery({}, [ 'Tero', 'Teemu', 'Jussi' ]),
   );
 
   it('doesn\'t affect results when only a non-date filter is given', () =>
-    expectParticipantsForQuery({ 'ageGroup':'sudenpentu' }, [ 'Teemu' ])
+    expectParticipantsForQuery({ 'ageGroup':'sudenpentu' }, [ 'Teemu' ]),
   );
 
   it('doesn\'t filter results when an empty date filter is given', () =>
-    expectParticipantsForQuery({ 'dates': [] }, [ 'Tero', 'Teemu', 'Jussi' ])
+    expectParticipantsForQuery({ 'dates': [] }, [ 'Tero', 'Teemu', 'Jussi' ]),
   );
 
   it('filters correctly when one date is given', () =>
-    expectParticipantsForQuery({ 'dates': ['2016-07-22T00:00:00.000Z'] }, [ 'Tero', 'Teemu' ])
+    expectParticipantsForQuery({ 'dates': ['2016-07-22T00:00:00.000Z'] }, [ 'Tero', 'Teemu' ]),
   );
 
   it('filters correctly when one date and another filter are given', () =>
     expectParticipantsForQuery(
       { 'dates': ['2016-07-23T00:00:00.000Z'], 'ageGroup': 'seikkailija' },
-      [ 'Tero' ]
-    )
+      [ 'Tero' ],
+    ),
   );
 
   it('filters correctly with two dates', () =>
     expectParticipantsForQuery(
       { 'dates': ['2016-07-23T00:00:00.000Z','2016-07-21T00:00:00.000Z'] },
-      [ 'Teemu', 'Tero' ]
-    )
+      [ 'Teemu', 'Tero' ],
+    ),
   );
 
   it('filters correctly with and empty date filter and another filter', () =>
     expectParticipantsForQuery(
       { 'dates': [], 'subCamp': 'Alaleiri' },
-      [ 'Teemu', 'Jussi' ]
-    )
+      [ 'Teemu', 'Jussi' ],
+    ),
   );
 
   it('search returns all dates the participant is present, not just the matched dates', async () => {

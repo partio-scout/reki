@@ -40,7 +40,6 @@ describe('HTTP API access control', () => {
         'GET /api/participants/:id',
         'POST /api/participants/massAssign',
         'GET /api/registryusers',
-        'GET /api/registryusers/currentUser',
         'POST /api/registryusers/:id/block',
         'POST /api/registryusers/:id/unblock',
         'POST /api/registryusers/logout',
@@ -91,7 +90,6 @@ describe('HTTP API access control', () => {
   describe('RegistryUser', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers').expect(UNAUTHORIZED));
-      it('findSelf: UNAUTHORIZED', () => get('/api/registryusers/currentUser').expect(UNAUTHORIZED));
       it('logout: OK', () => post('/api/registryusers/logout').expect(NO_CONTENT));
       it('block user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED));
       it('unblock user: UNAUTHORIZED', () => post(`/api/registryusers/${otherUserId}/unblock`).expect(UNAUTHORIZED));
@@ -99,7 +97,6 @@ describe('HTTP API access control', () => {
 
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', []).expect(UNAUTHORIZED));
-      it('findSelf: OK', () => get('/api/registryusers/currentUser', []).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, []).expect(NO_CONTENT));
 
@@ -109,7 +106,6 @@ describe('HTTP API access control', () => {
 
     describe('registryUser', () => {
       it('find: UNAUTHORIZED', () => get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED));
-      it('findSelf: OK', () => get('/api/registryusers/currentUser', ['registryUser']).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryUser']).expect(NO_CONTENT));
 
@@ -119,7 +115,6 @@ describe('HTTP API access control', () => {
 
     describe('registryAdmin', () => {
       it('find: ok', () => get('/api/registryusers', ['registryAdmin']).expect(OK));
-      it('findSelf: OK', () => get('/api/registryusers/currentUser', ['registryAdmin']).expect(OK));
 
       it('logout: OK', () => post('/api/registryusers/logout', null, ['registryAdmin']).expect(NO_CONTENT));
 
@@ -130,43 +125,43 @@ describe('HTTP API access control', () => {
 
   describe('Option', () => {
     describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED)),
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/options', ['registryUser']).expect(OK))
+      it('find: OK', () => get('/api/options', ['registryUser']).expect(OK)),
     );
 
     describe('registryAdmin', () =>
-      it('find: UNAUTHORIZED', () => get('/api/options', ['registryAdmin']).expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/options', ['registryAdmin']).expect(UNAUTHORIZED)),
     );
   });
 
   describe('ParticipantDate', () => {
     describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/participantdates').expect(UNAUTHORIZED)),
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/participantdates', ['registryUser']).expect(OK))
+      it('find: OK', () => get('/api/participantdates', ['registryUser']).expect(OK)),
     );
 
     describe('registryAdmin', () =>
-      it('find: UNAUTHORIZED', () => get('/api/participantdates', ['registryAdmin']).expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/participantdates', ['registryAdmin']).expect(UNAUTHORIZED)),
     );
   });
 
   describe('Config', () => {
     describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/config').expect(UNAUTHORIZED))
+      it('find: UNAUTHORIZED', () => get('/api/config').expect(UNAUTHORIZED)),
     );
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/config', ['registryUser']).expect(OK))
+      it('find: OK', () => get('/api/config', ['registryUser']).expect(OK)),
     );
 
     describe('registryAdmin', () =>
-      it('find: OK', () => get('/api/config', ['registryAdmin']).expect(OK))
+      it('find: OK', () => get('/api/config', ['registryAdmin']).expect(OK)),
     );
   });
 

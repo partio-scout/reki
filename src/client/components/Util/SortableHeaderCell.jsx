@@ -1,16 +1,10 @@
 import React from 'react';
-import { getListSortingSelector } from '../../components';
+import { ListSortingSelector } from '../../components';
 
-export function getSortableHeaderCell() {
-  const ListSortingSelector = getListSortingSelector();
-
-  function SortableHeaderCell({ label, property, order, orderChanged }) {
-    return (
-      <th className="sortable">{ label }
-        <ListSortingSelector property={ property } order={ order } orderChanged={ orderChanged } />
-      </th>
-    );
-  }
-
-  return SortableHeaderCell;
+export function SortableHeaderCell({ label, property, order, orderChanged }) {
+  return (
+    <th>
+      <div className="sortable-header-cell">{ label } <ListSortingSelector property={ property } order={ order } orderChanged={ orderChanged } /></div>
+    </th>
+  );
 }

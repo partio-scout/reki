@@ -1,47 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { RegistryUserTable } from './RegistryUserTable';
+import { defaultOpts, withDefaultOpts } from '../../fetch';
+import { useErrorContext } from '../../errors';
 
-export function getUserManagementPage(registryUserStore, registryUserActions) {
-  class UserManagementPage extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = registryUserStore.getState();
-      this.onStoreChanged = this.onStoreChanged.bind(this);
+export function UserManagementPage() {
+  const errorContext = useErrorContext();
+  const { showError } = errorContext;
+  const [registryUsers, setRegistryUsers] = useState([]);
+  const loadUsers = useCallback(async () => {
+    try {
+      const response = await fetch('/api/registryusers', defaultOpts);
+      if (!response.ok) {
+        showError(null, 'Couldn\'t fetch users');
+      } else {
+        setRegistryUsers(await response.json());
+      }
+    } catch (error) {
+      showError(error);
     }
+  }, [showError]);
 
-    componentWillMount() {
-      registryUserActions.loadRegistryUserList();
-    }
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
-    componentDidMount() {
-      registryUserStore.listen(this.onStoreChanged);
+  async function blockUser(userId) {
+    try {
+      await fetch(`/api/registryusers/${userId}/block`, withDefaultOpts({ method: 'POST' }));
+    } catch (e) {
+      showError(e);
     }
-
-    componentWillUnmount() {
-      registryUserStore.unlisten(this.onStoreChanged);
-    }
-
-    onStoreChanged(state) {
-      this.setState(state);
-    }
-
-    blockUser(userId) {
-      registryUserActions.blockUser(userId);
-    }
-
-    unblockUser(userId) {
-      registryUserActions.unblockUser(userId);
-    }
-
-    render() {
-      return (
-        <div>
-          <h1>Käyttäjät</h1>
-          <RegistryUserTable registryUsers={ this.state.registryUsers } onBlock={ this.blockUser } onUnblock={ this.unblockUser } />
-        </div>
-      );
-    }
+    loadUsers();
   }
 
-  return UserManagementPage;
+  async function unblockUser(userId) {
+    try {
+      await fetch(`/api/registryusers/${userId}/unblock`, withDefaultOpts({ method: 'POST' }));
+    } catch (e) {
+      showError(e);
+    }
+    loadUsers();
+  }
+
+  return (
+    <main className="content-box">
+      <h1>Käyttäjät</h1>
+      <RegistryUserTable registryUsers={ registryUsers } onBlock={ blockUser } onUnblock={ unblockUser } />
+    </main>
+  );
 }

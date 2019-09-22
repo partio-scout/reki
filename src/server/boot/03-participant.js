@@ -86,7 +86,7 @@ export default function(app){
       req.body.ids,
       req.body.fieldName,
       req.body.newValue,
-      req.user.id
+      req.user.id,
     );
     res.json(updates);
   }));

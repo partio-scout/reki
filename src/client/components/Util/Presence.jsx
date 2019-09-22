@@ -13,31 +13,20 @@ export function getPresenceLabel(value) {
 
 export function getPresenceColor(value) {
   if (value == 1) {
-    return 'red';
+    return '#ec404b';
   } else if (value == 2) {
-    return 'orange';
+    return '#f7c810';
   } else if (value == 3) {
-    return 'green';
+    return '#1bbc81';
   }
-  return 'gray';
+  return '#777';
 }
 
-export class Presence extends React.Component {
+export function Presence({ value }) {
+  const label = getPresenceLabel(value);
+  const color = getPresenceColor(value);
 
-  render() {
-
-    const label = getPresenceLabel(this.props.value);
-    const color = `${getPresenceColor(this.props.value)} presence`;
-
-    return (
-      <p className={ color } title={ label }>
-        <span className="ball"></span>
-        <span className="text">{ label }</span>
-      </p>
-    );
-  }
+  return (
+    <div style={ { backgroundColor: color, borderRadius: '50%', height: '15px', width: '15px' } } title={ label } />
+  );
 }
-
-Presence.propTypes = {
-  value: React.PropTypes.number,
-};

@@ -1,13 +1,9 @@
 import React from 'react';
 
-export function getHomepage() {
-  class HomePage extends React.Component {
-    render() {
-      return (
-        <h1>REKI</h1>
-      );
-    }
-  }
-
-  return HomePage;
+export function Homepage() {
+  return (
+    <main className="home-page">
+      <h1>REKI</h1>
+    </main>
+  );
 }

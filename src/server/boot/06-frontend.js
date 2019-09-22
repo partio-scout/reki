@@ -3,12 +3,14 @@ import path from 'path';
 
 const publicPath = path.resolve('./dist/public');
 
-const index = `
+const index = user => `
 <!DOCTYPE html>
 <html lang="fi">
   <head>
     <title>REKI</title>
     <meta charset="UTF-8" />
+    <script id="user-info" type="application/json">${JSON.stringify(user)}</script>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Source+Sans+Pro:wght@900&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app"></div>
@@ -86,7 +88,7 @@ export default function(server) {
   });
   server.get('*', (req, res) => {
     if (req.user) {
-      res.type('html').send(index);
+      res.type('html').send(index(req.user));
     } else {
       res.redirect(303, '/login');
     }

@@ -12,5 +12,5 @@ describe('REKI', () =>
     await waitForText('Kirjaudu', page);
 
     await browser.close();
-  })
+  }),
 );

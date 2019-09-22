@@ -5,7 +5,3 @@ export function TdWithTitle({ value }) {
     <td title={ value }>{ value }</td>
   );
 }
-
-TdWithTitle.propTypes = {
-  value: React.PropTypes.node,
-};

@@ -1,104 +1,83 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
-import { getPropertyFilterContainer } from './PropertyFilterContainer';
-import { getDebouncedTextFieldContainer } from './DebouncedTextFieldContainer';
-import { getDateFilterContainer } from './DateFilterContainer';
-import { getPresenceFilterContainer } from './PresenceFilterContainer';
-import { getGenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
+import { PropertySelect, PresenceSelector, DebouncedTextField, DateFilter } from '../..';
+import { GenericPropertyFilterContainer } from './GenericPropertyFilterContainer';
 
-export function getQuickFilterContainer(participantStore, participantActions, searchFilterActions, searchFilterStore) {
-  const DebouncedTextFieldContainer = getDebouncedTextFieldContainer();
-  const DateFilterContainer = getDateFilterContainer(searchFilterStore, searchFilterActions);
-  const PropertyFilterContainer = getPropertyFilterContainer(searchFilterStore, searchFilterActions);
-  const PresenceFilterContainer = getPresenceFilterContainer();
-  const GenericPropertyFilterContainer = getGenericPropertyFilterContainer(searchFilterStore, searchFilterActions);
+const QuickFilterControl = ({ filter, updateFilter, currentSelection, availableDates, optionsByProperty }) => {
+  switch (filter.type) {
+    case 'debouncedTextField':
+      return (
+        <DebouncedTextField
+          key={ filter.label }
+          onChange={ updateFilter }
+          currentSelection={ currentSelection }
+          label={ filter.label }
+          property="textSearch"
+        />
+      );
+    case 'options':
+      return (
+        <PropertySelect
+          key={ filter.label }
+          onChange={ updateFilter }
+          currentSelection={ currentSelection }
+          label={ filter.label }
+          property={ filter.property }
+          optionsByProperty={ optionsByProperty }
+        />
+      );
+    case 'presence':
+      return (
+        <PresenceSelector
+          key={ filter.label }
+          onChange={ updateFilter }
+          currentSelection={ currentSelection }
+          label={ filter.label }
+          property="presence"
+        />
+      );
+    case 'availableDates':
+      return (
+        <DateFilter
+          key={ filter.label }
+          onChange={ updateFilter }
+          currentSelection={ currentSelection }
+          label={ filter.label }
+          property="dates"
+          availableDates={ availableDates }
+        />
+      );
+    case 'generic':
+      return (
+        <GenericPropertyFilterContainer
+          key={ filter.label }
+          onChange={ updateFilter }
+          currentSelection={ currentSelection }
+          label={ filter.label }
+          properties={ filter.properties }
+          optionsByProperty={ optionsByProperty }
+        />
+      );
+    default:
+      return null;
+  }
+};
 
-  const configuration = {
-    filters: [
-      { type: 'debouncedTextField', property: 'textSearch', label: 'Tekstihaku' },
-      { type: 'options', property: 'ageGroup', label: 'Ikäkausi' },
-      { type: 'options', property: 'subCamp', label: 'Alaleiri' },
-      { type: 'options', property: 'village', label: 'Kylä' },
-      { type: 'options', property: 'localGroup', label: 'Lippukunta' },
-      { type: 'options', property: 'campGroup', label: 'Leirilippukunta' },
-      { type: 'presence', label: 'Tila' },
-      { type: 'availableDates', label: 'Ilmoittautumispäivät' },
-      { type: 'generic', label: 'Kenttä', properties: [
-          { property: 'childNaps', label: 'Lapsi nukkuu päiväunet' },
-          { property: 'accommodation', label: 'Majoittautuminen' },
-          { property: 'country', label: 'Maa' },
-          { property: 'willOfTheWisp', label: 'Virvatuli' },
-          { property: 'willOfTheWispWave', label: 'Virvatulen aalto' },
-          { property: 'internationalGuest', label: 'KV-osallistuja' },
-      ] },
-    ],
-  };
+const QuickFilterGroup = ({ children }) => <div className="quick-filter-container__group">{ children }</div>;
 
-  function QuickFilterContainer(props) {
-    const currentSelection = props.filter;
+export function QuickFilterContainer(props) {
+  const currentSelection = props.filter;
 
-    return (
-      <div className="well clearfix">
-        <form className="form-inline">
-          { configuration.filters.map(filter => {
-            switch (filter.type) {
-              case 'debouncedTextField':
-                return (
-                  <DebouncedTextFieldContainer
-                    onChange={ props.updateFilter }
-                    currentSelection={ currentSelection }
-                    label={ filter.label }
-                    property="textSearch"
-                  />
-                );
-              case 'options':
-                return (
-                  <PropertyFilterContainer
-                    onChange={ props.updateFilter }
-                    currentSelection={ currentSelection }
-                    label={ filter.label }
-                    property={ filter.property }
-                  />
-                );
-              case 'presence':
-                return (
-                  <PresenceFilterContainer
-                    onChange={ props.updateFilter }
-                    currentSelection={ currentSelection }
-                    label={ filter.label }
-                  />
-                );
-              case 'availableDates':
-                return (
-                  <DateFilterContainer
-                    onChange={ props.updateFilter }
-                    currentSelection={ currentSelection }
-                    label={ filter.label }
-                    property="dates"
-                  />
-                );
-              case 'generic':
-                return (
-                  <GenericPropertyFilterContainer
-                    onChange={ props.updateFilter }
-                    currentSelection={ currentSelection }
-                    label={ filter.label }
-                    properties={ filter.properties }
-                  />
-                );
-              default:
-                return null;
-            }
-          }) }
-          <Button bsStyle="link" className="top-right" onClick={ props.resetFilter }>Tyhjennä haku</Button>
-        </form>
-      </div>
-    );
+  function handleResetFilter(event) {
+    event.preventDefault();
+    props.resetFilter();
   }
 
-  QuickFilterContainer.propTypes = {
-    filter: React.PropTypes.object.isRequired,
-  };
-
-  return QuickFilterContainer;
+  return (
+    <form className="quick-filter-container">
+      { props.configuration.filters.map((group, i) => <QuickFilterGroup key={ i }>{group.map(filter => <QuickFilterControl key={ filter.label } filter={ filter } currentSelection={ currentSelection } updateFilter={ props.updateFilter } availableDates={ props.availableDates } optionsByProperty={ props.optionsByProperty } />) }</QuickFilterGroup>) }
+      <div className="quick-filter-container__button-container">
+        <button onClick={ handleResetFilter }>Tyhjennä haku</button>
+      </div>
+    </form>
+  );
 }

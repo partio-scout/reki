@@ -6,7 +6,6 @@
       "ESNext"
     ],
     "allowJs": true,
-    "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,

@@ -15,16 +15,8 @@ export class PropertyTextArea extends React.Component {
       <textarea
         value={ this.props.value || '' }
         onChange={ this.onChange }
-        className="form-control"
         rows={ this.props.rows }
       />
     );
   }
 }
-
-PropertyTextArea.propTypes = {
-  property: React.PropTypes.string,
-  value: React.PropTypes.string,
-  onChange: React.PropTypes.func,
-  rows: React.PropTypes.number,
-};

@@ -1,29 +1,13 @@
 import React from 'react';
-import { NavItem, Glyphicon } from 'react-bootstrap';
-import { NavLinkItem } from '../../components';
+import { Icon } from '../../components';
+import { classNames } from '../../classNames';
 
-export function getNavigationItem() {
-  class NavigationItem extends React.Component {
-    render() {
-      const {
-        values,
-      } = this.props;
+export const NavigationItem = ({ values, className }) => {
+  const labelText = (values.icon ? <span><Icon type={ values.icon }/> { values.label }</span> : values.label);
+  const label = <h4 className="navigation-item">{labelText}</h4>;
 
-      const label = (values.icon ? <span><Glyphicon glyph={ values.icon }/> { values.label }</span> : values.label);
-
-      if (values.isExternalLink) {
-        return (<NavItem href={ values.to } onClick={ values.onClick }>{ label }</NavItem>);
-      } else if (values.onClick || values.to) {
-        return (<NavLinkItem to={ values.to } isIndexLink={ values.isIndexLink }>{ label }</NavLinkItem>);
-      } else {
-        return (<NavItem disabled={ true }>{ label }</NavItem>);
-      }
-    }
-  }
-
-  NavigationItem.propTypes = {
-    values: React.PropTypes.object,
-  };
-
-  return NavigationItem;
-}
+  return (values.to
+    ? <a className={ classNames('navigation-item__link', ['navigation-item__link--active', values.isActive]) } href={ values.to }>{ label }</a>
+    : label
+  );
+};

@@ -13,7 +13,7 @@ describe('Participant dates endpoint', () => {
   it('returns unique dates when participants may be present', async () => {
     const res = await getWithUser(
       '/api/participantdates',
-      await createUser(['registryUser'])
+      await createUser(['registryUser']),
     );
 
     expectStatus(res.status, 200);

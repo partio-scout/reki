@@ -1,26 +1,19 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { Presence } from '../index';
-import { TdWithTitle } from '../../components';
+import { Presence, Icon } from '..';
 
-class LinkCell extends React.Component {
-  render() {
-    return <td><a href={ this.props.href } title={ this.props.title }>{ this.props.children }</a></td>;
-  }
-}
-
-LinkCell.propTypes = {
-  href: React.PropTypes.string,
-  children: React.PropTypes.node,
-  title: React.PropTypes.string,
-};
+const LinkCell = ({ href, title, children }) => (
+  <td>
+    <a href={ href } title={ title }>
+      { children }
+    </a>
+  </td>
+);
 
 const NoInfo = () => <small style={ { color: 'grey' } }>ei tietoa</small>;
 
-function getNullableFormatter(finalFormatter) {
-  finalFormatter = finalFormatter || (x => x);
+function getNullableFormatter(finalFormatter = (x => x)) {
   return value => {
     if (value === null || value === undefined) {
       return <NoInfo />;
@@ -49,70 +42,57 @@ const mapCell = ({ participant, column, availableDates }) => {
   switch (column.type) {
     case 'availableDates': {
       if (availableDates.length === 0) {
-        return <td />;
+        return <td key={ column.type + column.property } />;
       }
 
       return availableDates.map(row => (
-        <td>{
+        <td key={ column.type + column.property + row.date }>{
           _.find(participant.dates, { date: row.date })
             ? moment(row.date).format('D.M.')
-            : <Glyphicon glyph="remove" className="muted" />
+            : <Icon type="remove" />
         }</td>
       ));
     }
     case 'presence':
-      return <td><Presence value={ participant[column.property] } /></td>;
+      return <td key={ column.type + column.property }><Presence value={ participant[column.property] } /></td>;
     case 'profileLink':
-      return <LinkCell href={ `participants/${participant.participantId}` } title={ participant[column.property] }>{ participant[column.property] }</LinkCell>;
+      return <LinkCell key={ column.type + column.property } href={ `participants/${participant.participantId}` } title={ participant[column.property] }>{ participant[column.property] }</LinkCell>;
     case 'date':
-      return <TdWithTitle value={ formatDate(participant[column.property]) } />;
+      return <td key={ column.type + column.property }>{ formatDate(participant[column.property]) }</td>;
     case 'iconWithTooltip':
       return participant[column.property]
         ? (
-          <td>
-            <OverlayTrigger placement="top" overlay={ <Tooltip>{ participant[column.property] }</Tooltip> }>
-              <Glyphicon glyph={ column.icon } />
-            </OverlayTrigger>
+          <td key={ column.type + column.property } title={ participant[column.property] }>
+            <Icon type={ column.icon } />
           </td>
         )
-        : <td />
+        : <td key={ column.type + column.property } />
       ;
     case 'boolean':
-      return <TdWithTitle value={ <NullableBoolean value={ participant[column.property] } true={ column.true || 'kyllä' } false={ column.false || 'ei' } /> } />;
+      return <td key={ column.type + column.property }><NullableBoolean value={ participant[column.property] } true={ column.true || 'kyllä' } false={ column.false || 'ei' } /></td>;
     case 'text':
     default:
-      return <TdWithTitle value={ formatNullableString(participant[column.property]) } />;
+      return <td key={ column.type + column.property }>{ formatNullableString(participant[column.property]) }</td>;
   }
 };
 
-export class ParticipantRow extends React.Component {
-  render() {
-    const checkboxCallback = this.props.checkboxCallback;
-    const isChecked = this.props.isChecked;
+export function ParticipantRow(props) {
+  const checkboxCallback = props.checkboxCallback;
+  const isChecked = props.isChecked;
 
-    const onChange = event => {
-      checkboxCallback(event.target.checked, this.props.participant.participantId);
-    };
+  const onChange = event => {
+    checkboxCallback(event.target.checked, props.participant.participantId);
+  };
 
-    const checked = isChecked(this.props.participant.participantId);
+  const checked = isChecked(props.participant.participantId);
 
-    return (
-      <tr>
-        <td><small style={ { color: 'grey' } }>{ 1 + this.props.index + this.props.offset }</small></td>
-        <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
-          {
-            this.props.columns.flatMap(column => mapCell({ participant: this.props.participant, column, availableDates: this.props.availableDates }))
-          }
-      </tr>
-    );
-  }
+  return (
+    <tr>
+      <td><small style={ { color: 'grey' } }>{ 1 + props.index + props.offset }</small></td>
+      <td><input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
+        {
+          props.columns.flatMap(column => mapCell({ participant: props.participant, column, availableDates: props.availableDates }))
+        }
+    </tr>
+  );
 }
-
-ParticipantRow.propTypes = {
-  participant: React.PropTypes.object.isRequired,
-  index: React.PropTypes.number,
-  offset: React.PropTypes.number,
-  isChecked: React.PropTypes.func,
-  checkboxCallback: React.PropTypes.func,
-  availableDates: React.PropTypes.array.isRequired,
-};

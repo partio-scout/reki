@@ -9,7 +9,7 @@ describe('Role-Based Access Control', () => {
   beforeEach(() =>
     resetDatabase()
       .then(() => testUtils.createUserWithRoles(['registryUser']))
-      .then(user => { testUser = user; })
+      .then(user => { testUser = user; }),
     );
   afterEach(testUtils.deleteUsers);
 

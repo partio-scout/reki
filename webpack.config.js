@@ -26,6 +26,7 @@ const babelLoader = argv => ({
         },
       ],
     ],
+    plugins: ['react-hot-loader/babel'],
   },
 });
 
@@ -36,6 +37,17 @@ const tsLoader = {
   },
 };
 
+const devServer = argv => isDev(argv) ? {
+  contentBase: buildPath,
+  hot: true,
+  index: '',
+  serveIndex: false,
+  proxy: {
+    context: () => true,
+    target: 'http://localhost:3000/',
+  },
+} : undefined;
+
 module.exports = (env, argv) => ({
   entry: mainPath,
   output: {
@@ -44,6 +56,7 @@ module.exports = (env, argv) => ({
     publicPath: 'assets/',
   },
   devtool: isDev(argv) ? 'eval-source-map' : undefined,
+  devServer: devServer(argv),
   resolve: {
     extensions: [
       '.js',
@@ -51,6 +64,9 @@ module.exports = (env, argv) => ({
       '.ts',
       '.tsx',
     ],
+    alias: {
+      'react-dom': '@hot-loader/react-dom',
+    },
   },
   module: {
     rules: [
@@ -68,15 +84,6 @@ module.exports = (env, argv) => ({
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
-      {
-        test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   loader: 'url-loader?limit=10000&minetype=application/font-woff' },
-      { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  loader: 'url-loader?limit=10000&minetype=application/font-woff' },
-      { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url-loader?limit=10000&minetype=application/octet-stream' },
-      { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    loader: 'file-loader' },
-      { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    loader: 'url-loader?limit=10000&minetype=image/svg+xml' },
     ],
   },
 });
