@@ -9,7 +9,7 @@ export function PresenceSelector({ onChange, label, value }) {
 
   return (
     <Input type="select" label={ label } defaultValue="null" onChange={ onChange } value={ value }>
-      <option value="null"></option>
+      <option value=""></option>
       <option value="1">{ presenceLabel }</option>
       <option value="2">{ tmpOutCampLabel }</option>
       <option value="3">{ outCampLabel }</option>
