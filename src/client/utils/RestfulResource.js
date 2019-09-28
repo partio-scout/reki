@@ -1,4 +1,4 @@
-import { defaultOpts, withDefaultOpts } from '../fetch';
+import { withDefaultOpts } from '../fetch';
 
 export function getRestfulResource() {
   function RestfulResource(endpoint) {
@@ -20,37 +20,27 @@ export function getRestfulResource() {
     }
 
     function findAll(filters) {
-      return fetch(getPath('', filters), defaultOpts)
-      .then(handleResponse);
+      return raw('GET', '', { filters });
     }
 
     function findById(id, filters) {
-      return fetch(getPath(id, filters), defaultOpts)
-      .then(handleResponse);
+      return raw('GET', id, { filters });
     }
 
     function create(obj) {
-      return fetch(getPath(''), withDefaultOpts({ method: 'POST', body: obj, headers: { 'Content-Type': 'application/json' } }))
-      .then(handleResponse);
+      return raw('POST', '', { body: obj });
     }
 
     function update(id, obj) {
-      return fetch(getPath(id), withDefaultOpts({ method: 'PUT', body: obj, headers: { 'Content-Type': 'application/json' } }))
-      .then(handleResponse);
+      return raw('PUT', id, { body: obj });
     }
 
     function del(id) {
-      return fetch(getPath(id), withDefaultOpts({ method: 'DELETE' }))
-      .then(handleResponse);
+      return raw('DELETE', id);
     }
 
-    function raw(method, path, options) {
-      const {
-        body,
-        filters,
-      } = options || {};
-
-      return fetch(getPath(path, filters), withDefaultOpts({ method, body, headers: body !== undefined ? { 'Content-Type': 'application/json' } : {} }))
+    function raw(method, path, { body, filters } = {}) {
+      return fetch(getPath(path, filters), withDefaultOpts({ method, body: JSON.stringify(body), headers: body !== undefined ? { 'Content-Type': 'application/json' } : {} }))
       .then(handleResponse);
     }
 
