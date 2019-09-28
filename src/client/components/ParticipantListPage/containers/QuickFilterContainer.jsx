@@ -72,7 +72,7 @@ export function getQuickFilterContainer(participantStore, participantActions, se
             onChange={ props.updateFilter }
             currentSelection={ currentSelection }
           />
-          <Button type="submit" bsStyle="link" className="top-right" onClick={ props.resetFilter }>Tyhjennä haku</Button>
+          <Button bsStyle="link" className="top-right" onClick={ props.resetFilter }>Tyhjennä haku</Button>
         </form>
       </div>
     );
