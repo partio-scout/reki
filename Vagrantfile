@@ -14,6 +14,10 @@ $install_packages = <<SCRIPT
 curl --silent --location https://deb.nodesource.com/setup_10.x | sudo bash -
 apt-get install -y --no-install-recommends build-essential git nodejs wget
 
+# Puppeteer comes with its version of Chromium, but this gets us all of
+# its Apt dependencies in one go
+sudo apt install -y chromium-browser
+
 # PostgreSQL 11 needs to be installed from their Apt repository
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
