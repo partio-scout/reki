@@ -11,48 +11,27 @@ SCRIPT
 
 # Installs absolute minimun for building/running
 $install_packages = <<SCRIPT
-curl --silent --location https://deb.nodesource.com/setup_8.x | sudo bash -
-apt-get install -y --no-install-recommends build-essential git postgresql nodejs xvfb firefox=28.0+build2-0ubuntu2 openjdk-7-jre-headless
+curl --silent --location https://deb.nodesource.com/setup_10.x | sudo bash -
+apt-get install -y --no-install-recommends build-essential git nodejs wget
+
+# Puppeteer comes with its version of Chromium, but this gets us all of
+# its Apt dependencies in one go
+sudo apt install -y chromium-browser
+
+# PostgreSQL 11 needs to be installed from their Apt repository
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+sudo apt update
+sudo apt -y install postgresql-11
+
 npm install -g npm
 SCRIPT
 
 # Some configuration changes need to be made to postgres to allow local
 # logins with passwords.
 $configure_postgres = <<SCRIPT
-cp /vagrant/vagrant/pg_hba.conf /etc/postgresql/9.3/main/
+cp /vagrant/vagrant/pg_hba.conf /etc/postgresql/11/main/
 service postgresql reload
-SCRIPT
-
-# Configure Xvfb to start at boot
-$configure_xvfb = <<SCRIPT
-echo "Copying xvfb service script"
-cp /vagrant/vagrant/xvfb /etc/init.d/
-chmod a+x /etc/init.d/xvfb
-echo "Setting xvfb to startup"
-update-rc.d xvfb defaults
-echo "Starting xvfb"
-service xvfb start
-SCRIPT
-
-# Download Selenium and configure it to start at boot
-$configure_selenium = <<SCRIPT
-selenium_dir=/selenium
-selenium_version_minor="2.53"
-selenium_version_patch="0"
-echo "Removing old selenium directory and creating new"
-rm -rf "$selenium_dir"
-mkdir "$selenium_dir"
-cd "$selenium_dir"
-echo "Downloading selenium server"
-wget --no-verbose -O "selenium-server-standalone.jar" "http://selenium-release.storage.googleapis.com/$selenium_version_minor/selenium-server-standalone-$selenium_version_minor.$selenium_version_patch.jar"
-echo "Download complete"
-echo "Copying selenium service script"
-cp /vagrant/vagrant/selenium /etc/init.d/
-chmod a+x /etc/init.d/selenium
-echo "Set selenium to startup"
-update-rc.d selenium defaults
-echo "Starting selenium"
-service selenium start
 SCRIPT
 
 # To enable global installations with npm without using sudo, change
@@ -103,7 +82,6 @@ SCRIPT
 # This script will be run as the unprivileged development user.
 $install_project = <<SCRIPT
 cd /vagrant
-npm install -g strongloop || exit 1
 
 rm -rf node_modules
 npm install || exit 1
@@ -117,8 +95,8 @@ exit 0
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  # The development virtual machine will run Ubuntu 14.04 Trusty Tahr
-  config.vm.box = "ubuntu/trusty64"
+  # The development virtual machine will run Ubuntu 18.04 Bionic Beaver
+  config.vm.box = "ubuntu/bionic64"
   # Forward port 3000 into the virtual machine to be able to access
   # the software from the host
   config.vm.network "forwarded_port", guest: 3000, host: 3000
@@ -132,8 +110,6 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: $generate_locales
   config.vm.provision "shell", inline: $install_packages
   config.vm.provision "shell", inline: $configure_postgres
-  config.vm.provision "shell", inline: $configure_xvfb
-  config.vm.provision "shell", inline: $configure_selenium
   config.vm.provision "shell", inline: $ensure_permissions
   # environment setup, npm installations and project setup need to be run
   # as the development user

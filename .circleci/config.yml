@@ -34,8 +34,13 @@ jobs:
       - run:
           name: Integration tests
           command: npm run test-integration
+      - run:
+          name: End-to-end tests
+          command: npm run test-e2e
       - store_test_results:
           path: ~/reports
+      - store_artifacts:
+          path: ./logs
 workflows:
   version: 2
   install_and_test:
