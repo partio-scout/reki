@@ -16,7 +16,7 @@
     "create-user": "ts-node --project src/server/tsconfig.json scripts/create-user.js",
     "delete-user": "ts-node --project src/server/tsconfig.json scripts/delete-user.js",
     "dev-login": "ts-node --project src/server/tsconfig.json scripts/dev-login.js",
-    "test": "npm run lint && npm run test-functional && npm run test-integration",
+    "test": "npm run lint && npm run test-functional && npm run test-integration && npm run test-e2e",
     "lint": "eslint --ext js --ext jsx --ext ts --ext tsx src test scripts webpack.config.js",
     "test-functional": "TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require ts-node/register test/functional --exit",
     "test-one": "TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require ts-node/register --exit",
