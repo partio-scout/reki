@@ -51,7 +51,7 @@ export default function(app) {
           done(null, false, { message: 'Käyttäjän sisäänkirjautuminen on estetty' });
           return;
         } else {
-          done(null, models.User.toClientFormat(user));
+          done(null, models.User.toClientFormat(user, 'partioid'));
           return;
         }
       } catch (e) {
@@ -65,14 +65,19 @@ export default function(app) {
 
   app.get('/login/partioid', passport.authenticate('partioid', { successRedirect: '/', failureRedirect: '/', failureFlash: true }));
 
-  app.post('/logout', (req, res, next) => {
-    strategy.logout(req, (err, request) => {
-      if (err) {
-        next(err);
-      } else {
-        res.redirect(request);
-      }
-    });
+  app.get('/logout', (req, res, next) => {
+    if (req.user && req.user.sessionType === 'partioid') {
+      strategy.logout(req, (err, request) => {
+        if (err) {
+          next(err);
+        } else {
+          res.redirect(request);
+        }
+      });
+    } else {
+      req.logout();
+      res.redirect(303, '/login');
+    }
   });
 
   app.post('/saml/consume', passport.authenticate('partioid', { successRedirect: '/', failureRedirect: '/', failureFlash: true }));

@@ -74,8 +74,8 @@ async function boot(app) {
   app.use(passport.session());
   app.use(flash());
 
-  passport.serializeUser((user, done) => { done(null, user.memberNumber); });
-  passport.deserializeUser(async (memberNumber, done) => {
+  passport.serializeUser((user, done) => { done(null, { memberNumber: user.memberNumber, sessionType: user.sessionType }); });
+  passport.deserializeUser(async ({ memberNumber, sessionType }, done) => {
     try {
       const user = await models.User.findOne({
         where: {
@@ -90,7 +90,7 @@ async function boot(app) {
         throw new Error('User not found');
       }
 
-      done(null, models.User.toClientFormat(user));
+      done(null, models.User.toClientFormat(user, sessionType));
     } catch (e) {
       done(e);
     }

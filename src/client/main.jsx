@@ -9,7 +9,7 @@ import moment from 'moment';
 import * as components from './components';
 import * as stores from './stores';
 import * as actions from './actions';
-import { getRestfulResource, restrictComponent } from './utils';
+import { getRestfulResource } from './utils';
 import createMatcher from 'feather-route-matcher';
 
 moment.locale('fi');
@@ -34,33 +34,17 @@ const searchFilterStore = stores.getSearchFilterStore(alt, searchFilterActions);
 const registryUserStore = stores.getRegistryUserStore(alt, registryUserActions);
 
 const App = components.getApp(registryUserStore, registryUserActions, errorStore, errorActions);
-const Login = components.getLogin(registryUserActions, registryUserStore);
 const Homepage = components.getHomepage();
-const LoginPromptPage = components.getLoginPromptPage();
-const ParticipantDetailsPage = restrictComponent(
-  registryUserStore,
-  components.getParticipantDetailsPage(participantStore, participantActions),
-  LoginPromptPage
-);
-const ParticipantListPage = // restrictComponent(
-  // registryUserStore,
-  components.getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore); //,
-// LoginPromptPage
-// );
-const UserManagementPage = restrictComponent(
-  registryUserStore,
-  components.getUserManagementPage(registryUserStore, registryUserActions),
-  LoginPromptPage
-);
+const ParticipantDetailsPage = components.getParticipantDetailsPage(participantStore, participantActions);
+const ParticipantListPage = components.getParticipantListPage(participantStore, participantActions, searchFilterActions, searchFilterStore);
+const UserManagementPage = components.getUserManagementPage(registryUserStore, registryUserActions);
 
 registryUserActions.loadCurrentUser();
 errorActions.loadFlashes();
 
 const routes = createMatcher({
-  '/': Homepage,
   '/participants': ParticipantListPage,
   '/participants/:id': ParticipantDetailsPage,
-  '/login': Login,
   '/admin': UserManagementPage,
   '*': Homepage,
 });

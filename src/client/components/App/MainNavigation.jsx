@@ -52,7 +52,7 @@ export function getMainNavigation() {
 
       navItems.push(
         {
-          onClick: this.props.onLogout,
+          to: '/logout',
           isExternalLink: true,
           label: 'Kirjaudu ulos',
         }

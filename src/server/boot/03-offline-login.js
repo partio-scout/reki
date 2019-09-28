@@ -29,7 +29,7 @@ export default function(app) {
         return done(null, false);
       }
 
-      done(null, models.User.toClientFormat(user));
+      done(null, models.User.toClientFormat(user, 'password'));
     } catch (e) {
       done(e);
     }

@@ -10,6 +10,10 @@ export function getRestfulResource() {
 
     function handleResponse(res) {
       if (!res.ok) {
+        if (res.status === 401) {
+          location.href = '/login';
+        }
+
         return Promise.reject({
           message: `REST Error: ${res.url} returned HTTP ${res.status} (${res.statusText})`,
           status: res.status,

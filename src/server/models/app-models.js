@@ -44,12 +44,13 @@ export default function(db) {
     },
   });
 
-  User.toClientFormat = function(user) {
+  User.toClientFormat = function(user, sessionType) {
     const userJson = user.toJSON();
     delete userJson.passwordHash;
     delete userJson.createdAt;
     delete userJson.updatedAt;
     userJson.roles = userJson.roles ? userJson.roles.map(role => role.name) : [];
+    userJson.sessionType = sessionType;
     return userJson;
   };
 
