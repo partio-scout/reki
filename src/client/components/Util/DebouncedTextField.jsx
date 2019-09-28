@@ -11,8 +11,13 @@ export function getDebouncedTextField() {
       this.state = { textSearch: props.value || '' };
     }
 
+    resetValue(newValue = '') {
+      this.delayedOnChange.cancel();
+      this.setState({ textSearch: newValue });
+    }
+
     componentWillReceiveProps(nextProps) {
-      this.setState({ textSearch: nextProps.value || '' });
+      this.resetValue(nextProps.value);
     }
 
     handleValueChanged(event) {
@@ -21,10 +26,14 @@ export function getDebouncedTextField() {
       this.delayedOnChange(value);
     }
 
-    disableEnter(event) {
+    handleSpecialKeys(event) {
       if (event.key === 'Enter') {
         event.preventDefault();
         this.delayedOnChange.flush();
+        return false;
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        this.resetValue(this.props.value);
         return false;
       }
     }
@@ -38,7 +47,7 @@ export function getDebouncedTextField() {
             value={ this.state.textSearch }
             onChange={ event => this.handleValueChanged(event) }
             onBlur={ event => this.delayedOnChange.flush() }
-            onKeyPress={ event => this.disableEnter(event) }
+            onKeyDown={ event => this.handleSpecialKeys(event) }
           />
         </div>
       );
