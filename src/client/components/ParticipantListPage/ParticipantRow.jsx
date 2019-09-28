@@ -17,18 +17,25 @@ LinkCell.propTypes = {
   title: React.PropTypes.string,
 };
 
+const NoInfo = () => <small style={ { color: 'grey' } }>ei tietoa</small>;
+
 function getNullableFormatter(finalFormatter) {
   finalFormatter = finalFormatter || (x => x);
   return value => {
     if (value === null || value === undefined) {
-      return <small style={ { color: 'grey' } }>ei tietoa</small>;
+      return <NoInfo />;
     }
     return finalFormatter(value);
   };
 }
 
-const formatNonScout = getNullableFormatter(nonScout => nonScout ? 'EVP' : 'partiolainen');
-const formatNullableBoolean = getNullableFormatter(b => b ? 'kyllä' : 'ei');
+const NullableBoolean = props => {
+  if (props.value === null || props.value === undefined) {
+    return <NoInfo />;
+  }
+  return <span>{ props.value ? props.true : props.false }</span>;
+};
+
 const formatNullableString = getNullableFormatter();
 const formatDate = dateString => {
   if (!dateString) {
@@ -38,94 +45,64 @@ const formatDate = dateString => {
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
 };
 
+const mapCell = ({ participant, column, availableDates }) => {
+  switch (column.type) {
+    case 'availableDates': {
+      if (availableDates.length === 0) {
+        return <td />;
+      }
+
+      return availableDates.map(row => (
+        <td>{
+          _.find(participant.dates, { date: row.date })
+            ? moment(row.date).format('D.M.')
+            : <Glyphicon glyph="remove" className="muted" />
+        }</td>
+      ));
+    }
+    case 'presence':
+      return <td><Presence value={ participant[column.property] } /></td>;
+    case 'profileLink':
+      return <LinkCell href={ `participants/${participant.participantId}` } title={ participant[column.property] }>{ participant[column.property] }</LinkCell>;
+    case 'date':
+      return <TdWithTitle value={ formatDate(participant[column.property]) } />;
+    case 'iconWithTooltip':
+      return participant[column.property]
+        ? (
+          <td>
+            <OverlayTrigger placement="top" overlay={ <Tooltip>{ participant[column.property] }</Tooltip> }>
+              <Glyphicon glyph={ column.icon } />
+            </OverlayTrigger>
+          </td>
+        )
+        : <td />
+      ;
+    case 'boolean':
+      return <TdWithTitle value={ <NullableBoolean value={ participant[column.property] } true={ column.true || 'kyllä' } false={ column.false || 'ei' } /> } />;
+    case 'text':
+    default:
+      return <TdWithTitle value={ formatNullableString(participant[column.property]) } />;
+  }
+};
+
 export class ParticipantRow extends React.Component {
   render() {
-    const {
-      participantId,
-      firstName,
-      lastName,
-      dateOfBirth,
-      nonScout,
-      billedDate,
-      paidDate,
-      memberNumber,
-      homeCity,
-      staffPosition,
-      interestedInHomeHospitality,
-      email,
-      phoneNumber,
-      ageGroup,
-      localGroup,
-      subCamp,
-      campGroup,
-      village,
-      accommodation,
-      presence,
-      dates,
-      campOfficeNotes,
-      editableInfo,
-    } = this.props.participant;
-
-    const href = `participants/${participantId}`;
-
     const checkboxCallback = this.props.checkboxCallback;
     const isChecked = this.props.isChecked;
 
-    const onChange = function(event) {
-      event.persist();
-      checkboxCallback(event.target.checked, participantId);
+    const onChange = event => {
+      checkboxCallback(event.target.checked, this.props.participant.participantId);
     };
 
-    const checked = isChecked(participantId);
-
-    const dateCell = (date, active) => <td>{ active ? moment(date).format('D.M.') : <Glyphicon glyph="remove" className="muted" /> }</td>;
-
-    const tooltipForNotes = (
-      <Tooltip>{ campOfficeNotes }</Tooltip>
-    );
-    const notes = campOfficeNotes ? (
-      <OverlayTrigger placement="top" overlay={ tooltipForNotes }>
-        <Glyphicon glyph="info-sign" />
-      </OverlayTrigger>
-    ) : '';
-
-    const tooltipForInfo = (
-      <Tooltip>{ editableInfo }</Tooltip>
-    );
-    const info = editableInfo ? (
-      <OverlayTrigger placement="top" overlay={ tooltipForInfo }>
-        <Glyphicon glyph="comment" />
-      </OverlayTrigger>
-    ) : '';
+    const checked = isChecked(this.props.participant.participantId);
 
     return (
       <tr>
         <td><small style={ { color: 'grey' } }>{ 1 + this.props.index + this.props.offset }</small></td>
         <td><Input type="checkbox" onChange={ onChange } checked={ checked }  /></td>
-        <td><Presence value={ presence } /></td>
-        <LinkCell href={ href } title={ firstName }>{ firstName }</LinkCell>
-        <LinkCell href={ href } title={ lastName }>{ lastName }</LinkCell>
-        <TdWithTitle value={ formatDate(dateOfBirth) } />
-        <TdWithTitle value={ formatNullableString(staffPosition) } />
-        <TdWithTitle value={ formatDate(billedDate) || 'Ei' } />
-        <TdWithTitle value={ formatDate(paidDate) || 'Ei' } />
-        <TdWithTitle value={ memberNumber } />
-        <td>{ notes }</td>
-        <td>{ info }</td>
-        <TdWithTitle value={ formatNonScout(nonScout) } />
-        <TdWithTitle value={ formatNullableString(homeCity) } />
-        <TdWithTitle value={ formatNullableBoolean(interestedInHomeHospitality) } />
-        <TdWithTitle value={ formatNullableString(email) } />
-        <TdWithTitle value={ formatNullableString(phoneNumber) } />
-        <TdWithTitle value={ ageGroup } />
-        <TdWithTitle value={ formatNullableString(accommodation) } />
-        <TdWithTitle value={ localGroup } />
-        <TdWithTitle value={ village } />
-        <TdWithTitle value={ subCamp } />
-        <TdWithTitle value={ campGroup } />
-        {
-          this.props.availableDates.map(row => dateCell(row.date, _.find(dates, { date: row.date })))
-        }
+          {
+            this.props.columns.flatMap(column => mapCell({ participant: this.props.participant, column, availableDates: this.props.availableDates }))
+          }
       </tr>
     );
   }

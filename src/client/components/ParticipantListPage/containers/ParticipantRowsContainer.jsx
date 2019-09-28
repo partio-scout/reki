@@ -39,24 +39,27 @@ export function getParticipantRowsContainer(participantStore) {
     }
 
     extractState() {
-      return { participants: participantStore.getState().participants };
+      return {
+        participants: participantStore.getState().participants,
+        loading: participantStore.getState().loading,
+      };
     }
 
     render() {
       const {
         isChecked,
         checkboxCallback,
-        columnCount,
+        columns,
         availableDates,
       } = this.props;
 
-      const rowCreator = (element, index) => <ParticipantRow key={ element.participantId } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } index={ index } offset={ this.props.offset }/>;
+      const rowCreator = (element, index) => <ParticipantRow key={ element.participantId } columns={ columns } isChecked={ isChecked } checkboxCallback={ checkboxCallback } availableDates={ availableDates } participant={ element } index={ index } offset={ this.props.offset }/>;
 
       return this.state.loading
         ? (
           <tbody>
             <tr>
-              <td colSpan={ columnCount }>
+              <td colSpan={ columns.reduce((acc, elem) => acc + (elem.type === 'availableDates' ? this.props.availableDates.length || 1 : 1), 2) }>
                 <Spinner />
               </td>
             </tr>

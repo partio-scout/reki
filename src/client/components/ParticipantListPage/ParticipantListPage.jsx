@@ -338,31 +338,30 @@ export function getParticipantListPage(participantStore, participantActions, sea
         </OverlayTrigger>
       );
 
-      const columnPropertyToLabelMapping = {
-        presence: 'Tila',
-        firstName: 'Etunimi',
-        lastName: 'Sukunimi',
-        dateOfBirth: 'Syntymäpäivä',
-        staffPosition: 'Pesti',
-        billedDate: 'Laskutettu',
-        paidDate: 'Maksettu',
-        memberNumber: 'Jäsennumero',
-        campOfficeNotes: campOfficeNotes,
-        editableInfo: editableInfo,
-        nonScout: 'Onko partiolainen?',
-        homeCity: 'Kotikaupunki',
-        interestedInHomeHospitality: 'Home hospitality',
-        email: 'Sähköposti',
-        phoneNumber: 'Puhelinnumero',
-        ageGroup: 'Ikäkausi',
-        accommodation: 'Majoittuminen',
-        localGroup: 'Lippukunta',
-        village: 'Kylä',
-        subCamp: 'Alaleiri',
-        campGroup: 'Leirilippukunta',
-      };
-
-      const columnCount = Object.keys(columnPropertyToLabelMapping).length;
+      const participantListColumns = [
+        { type: 'presence', property: 'presence', label: 'Tila' },
+        { type: 'profileLink', property: 'firstName', label: 'Etunimi' },
+        { type: 'profileLink', property: 'lastName', label: 'Sukunimi' },
+        { type: 'date', property: 'dateOfBirth', label: 'Syntymäpäivä' },
+        { type: 'text', property: 'staffPosition', label: 'Pesti' },
+        { type: 'date', property: 'billedDate', label: 'Laskutettu' },
+        { type: 'date', property: 'paidDate', label: 'Maksettu' },
+        { type: 'text', property: 'memberNumber', label: 'Jäsennumero' },
+        { type: 'iconWithTooltip', icon: 'info-sign', property: 'campOfficeNotes', label: campOfficeNotes },
+        { type: 'iconWithTooltip', icon: 'comment', property: 'editableInfo', label: editableInfo },
+        { type: 'boolean', true: 'EVP', false: 'partiolainen', property: 'nonScout', label: 'Onko partiolainen?' },
+        { type: 'text', property: 'homeCity', label: 'Kotikaupunki' },
+        { type: 'boolean', property: 'interestedInHomeHospitality', label: 'Home hospitality' },
+        { type: 'text', property: 'email', label: 'Sähköposti' },
+        { type: 'text', property: 'phoneNumber', label: 'Puhelinnumero' },
+        { type: 'text', property: 'ageGroup', label: 'Ikäkausi' },
+        { type: 'text', property: 'accommodation', label: 'Majoittuminen' },
+        { type: 'text', property: 'localGroup', label: 'Lippukunta' },
+        { type: 'text', property: 'village', label: 'Kylä' },
+        { type: 'text', property: 'subCamp', label: 'Alaleiri' },
+        { type: 'text', property: 'campGroup', label: 'Leirilippukunta' },
+        { type: 'availableDates', label: 'Ilmoittautumispäivät' },
+      ];
 
       return (
         <Grid fluid>
@@ -393,25 +392,26 @@ export function getParticipantListPage(participantStore, participantActions, sea
                     <th></th>
                     <th><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></th>
                     {
-                      Object.keys(columnPropertyToLabelMapping).map(property => (
+                      participantListColumns.map(column => column.type === 'availableDates' ? (
+                        <th colSpan={ this.state.availableDates.length }>{ column.label }</th>
+                      ) : (
                         <SortableHeaderCell
-                          key={ property }
-                          property={ property }
-                          label={ columnPropertyToLabelMapping[property] }
+                          key={ column.property }
+                          property={ column.property }
+                          label={ column.label }
                           order={ order }
                           orderChanged={ this.setOrder }
                         />
                       ))
                     }
-                    <th colSpan={ this.state.availableDates.length }>Ilmoittautumispäivät</th>
                   </tr>
                 </thead>
-                <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columnCount={ Object.keys(columnPropertyToLabelMapping).length } availableDates={ this.state.availableDates } offset={ offset }/>
+                  <ParticipantRowsContainer isChecked={ this.isChecked } checkboxCallback={ this.handleCheckboxChange } columns={ participantListColumns }availableDates={ this.state.availableDates } offset={ offset }/>
                 <tbody className="tfooter">
                   <tr>
                     <td></td>
                     <td><SelectAll checked={ this.state.allChecked } onChange={ this.checkAll } /></td>
-                    <td colSpan={ columnCount + this.state.availableDates.length }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
+                      <td colSpan={ participantListColumns.reduce((acc, elem) => acc + (elem.type === 'availableDates' ? this.state.availableDates.length || 1 : 1), 0) }><MassEdit count={ this.state.checked.length } onSubmit={ this.handleMassEdit } /></td>
                   </tr>
                 </tbody>
               </Table>
