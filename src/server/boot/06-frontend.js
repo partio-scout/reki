@@ -17,7 +17,7 @@ const index = `
 </html>`;
 
 const offlineLoginForm = process.env.ENABLE_OFFLINE_LOGIN === 'true'
-  ? '<div><a href="/login/password">Kirjaudu sähköpostilla ja salasanalla</a></div>'
+  ? '<a class="btn" href="/login/password">Kirjaudu sähköpostilla ja salasanalla</a>'
   : '';
 
 const loginPage = `
@@ -26,12 +26,52 @@ const loginPage = `
   <head>
     <title>REKI</title>
     <meta charset="UTF-8" />
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        background-color: #f7f7f5;
+        margin: 0;
+        min-height: 100%;
+        padding: 0;
+        position: absolute;
+        width: 100%;
+      }
+      .centered {
+        margin: 0 auto;
+      }
+      .mainContent {
+        width: 20em;
+      }
+      .mainContent > * + * {
+        margin-top: 2em;
+      }
+      .btn {
+        background-color: #253764;
+        border-radius: 0.25em;
+        border: none;
+        box-sizing: border-box;
+        color: white;
+        display: block;
+        font-family: sans-serif;
+        font-weight: bold;
+        padding: 1em 1.5em;
+        text-align: center;
+        text-decoration: none;
+        transition: 100ms all linear;
+      }
+      .btn:hover {
+        background-color: #39549a;
+      }
+    </style>
   </head>
   <body>
-    <div>
-      <a href="/login/partioid">Kirjaudu partioidllä</a>
+    <div class="centered mainContent">
+      <h1>REKI</h1>
+      <a class="btn" href="/login/partioid">Kirjaudu partioidllä</a>
+      ${offlineLoginForm}
     </div>
-    ${offlineLoginForm}
   </body>
 </html>`;
 
