@@ -66,6 +66,7 @@ async function boot(app) {
       httpOnly: true,
       maxAge: 4*60*60*1000,
       secure: !appConfig.isDev,
+      sameSite: 'lax',
     },
     resave: false,
     store: sessionStore,
