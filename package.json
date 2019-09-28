@@ -24,7 +24,7 @@
     "test-integration": "TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test mocha --timeout 4000 --require ts-node/register test/integration --exit",
     "pretest-e2e": "NODE_ENV=test npm run seed-database && npm run build",
     "test-e2e-mocha": "mocha --timeout 10000 --require ts-node/register test/e2e --exit",
-    "test-e2e": "TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 start-test 'npm start > /dev/null' 3005 test-e2e-mocha",
+    "test-e2e": "TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-mocha",
     "seed-database": "ts-node --project src/server/tsconfig.json scripts/seed-database.js",
     "clear-temporary-tables": "ts-node --project src/server/tsconfig.json src/kuksa-integration/clear-temporary-tables.js",
     "fetch-data": "ts-node --project src/server/tsconfig.json src/kuksa-integration/fetch-data.js",
