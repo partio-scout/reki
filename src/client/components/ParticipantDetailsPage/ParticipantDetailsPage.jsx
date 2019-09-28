@@ -32,7 +32,7 @@ export function getParticipantDetailsPage(participantStore, participantActions) 
     }
 
     componentWillMount() {
-      participantActions.fetchParticipantById(this.props.params.id);
+      participantActions.fetchParticipantById(this.props.id);
     }
 
     componentDidMount() {
