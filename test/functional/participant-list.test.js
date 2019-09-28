@@ -31,7 +31,7 @@ describe('Particpant list API endpoint', () => {
 
   it('returns correct participants with a combination of where filters', async () => {
     const response = await getParticipantsWithFilter(
-      '{"where":{"and":[{"ageGroup":"sudenpentu"},{"village":"Testikylä"}]},"skip":0,"limit":200}'
+      '{"where":{"ageGroup":"sudenpentu","village":"Testikylä"},"skip":0,"limit":200}'
     );
     expect(response.result).to.be.an('array').with.length(1);
     expect(response.result[0]).to.have.property('firstName','Tero');

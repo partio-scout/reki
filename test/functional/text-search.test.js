@@ -38,28 +38,28 @@ describe('Free-text search in participant list API endpoint', () => {
   );
 
   it('filters results correctly when combined with multiple filters', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'sudenpentu' },{ 'subCamp':'Alaleiri' },{ 'textSearch':'Teemu' }] })
+    queryParticipants({  'ageGroup':'sudenpentu', 'subCamp':'Alaleiri', 'textSearch':'Teemu' })
     .then(res => {
       expectParticipants([ 'Teemu' ], res.body);
     })
   );
 
   it('works correctly when multiple filters yield no results', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'textSearch':'Teemu' }] })
+    queryParticipants({ 'ageGroup':'seikkailija', 'textSearch':'Teemu' })
     .then(res => {
       expectParticipants([ ], res.body);
     })
   );
 
   it('doesn\'t affect results when only several other filters are present', () =>
-    queryParticipants({ 'and':[{ 'ageGroup':'seikkailija' },{ 'subCamp':'Alaleiri' }] })
+    queryParticipants({ 'ageGroup':'seikkailija', 'subCamp':'Alaleiri' })
     .then(res => {
       expectParticipants([ 'Jussi' ], res.body);
     })
   );
 
   it('filters results by a part of name', () =>
-    queryParticipants({ 'and':[{ 'localGroup':'Testilippukunta' },{ 'textSearch':'Te' }] })
+    queryParticipants({ 'localGroup':'Testilippukunta', 'textSearch':'Te' })
     .then(res => {
       expectParticipants([ 'Tero', 'Teemu' ], res.body);
     })

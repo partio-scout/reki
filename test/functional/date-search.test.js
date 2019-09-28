@@ -31,7 +31,7 @@ describe('Date search in participant list API endpoint', () => {
 
   it('filters correctly when one date and another filter are given', () =>
     expectParticipantsForQuery(
-      { 'and': [ { 'dates': ['2016-07-23T00:00:00.000Z'] }, { 'ageGroup': 'seikkailija' } ] },
+      { 'dates': ['2016-07-23T00:00:00.000Z'], 'ageGroup': 'seikkailija' },
       [ 'Tero' ]
     )
   );
@@ -45,7 +45,7 @@ describe('Date search in participant list API endpoint', () => {
 
   it('filters correctly with and empty date filter and another filter', () =>
     expectParticipantsForQuery(
-      { 'and' : [ { 'dates': [] }, { 'subCamp': 'Alaleiri' } ] },
+      { 'dates': [], 'subCamp': 'Alaleiri' },
       [ 'Teemu', 'Jussi' ]
     )
   );
