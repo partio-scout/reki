@@ -9,7 +9,7 @@ describe('REKI', () =>
     const page = await browser.newPage();
 
     await page.goto(BASE_URL, { waitUntil: 'networkidle2' });
-    await waitForText('Kirjaudu sisään', page);
+    await waitForText('Kirjaudu', page);
 
     await browser.close();
   })
