@@ -10,7 +10,7 @@
     "KUKSA_API_PASSWORD": { "description": "The password to the kuksa api", "required": false },
     "ENABLE_OFFLINE_LOGIN": { "description": "Set this to true if you need to enable logging in without partioid", "value": "false" },
     "PARTIOID_USE_PRODUCTION": { "description": "Set this to true to enable main partioid. Otherwise the partioid test environment will be used", "value": "true" },
-    "REKI_BASE_URL": { "description": "Set this to the url that people will be accessing your Reki instance. Should not contain a trailing slash", "required": true },
+    "REKI_BASE_URL": { "description": "Set this to the url that people will be accessing your Reki instance.", "required": true },
     "PGSSLMODE": { "description": "Instructs that the connection to the database should be secure", "value": "require" }
   },
   "formation": [

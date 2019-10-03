@@ -63,7 +63,7 @@ Select the EU region for your app.
 
 You can also use a custom domain - see Heroku's documentation on how to do that. In that case, replace https://<app-name>.herokuapp.com with your real domain throughout this document. You will also need to set up HTTPS for your custom domain - REKI only works through HTTPS in production.
 
-Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url with https, and must not contain a trailing slash.
+Set the `REKI_BASE_URL` environment variable to the base url of the reki installation. This needs to be an absolute url starting with https, for example `https://reki.finnjamboree.fi` or `https://finnjamboree.fi/reki/`.
 
 ### Setting up PartioID login
 
