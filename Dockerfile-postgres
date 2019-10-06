@@ -1,5 +1,5 @@
 # Postrgres
-FROM postgres:9.6.1
+FROM postgres:11
 
 RUN echo "CREATE USER reki with password 'password'; \
   CREATE DATABASE rekidb; \
