@@ -98,7 +98,10 @@ async function boot(app) {
   });
 
   app.use(helmet());
-  app.use(helmet.noCache()); // noCache disabled by default
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
 
   if (appConfig.standalone) {
     app.use(morgan('dev'));
@@ -111,8 +114,9 @@ async function boot(app) {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       connectSrc: validConnectSrc,
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       imgSrc: ["'self'"],
+      fontSrc: ['https://fonts.gstatic.com'],
     },
   }));
 
@@ -134,9 +138,8 @@ async function boot(app) {
   restApi(app);
   monitoring(app);
   restOfApi404(app);
-  frontend(app);
-
   app.get('/flashes', (req, res) => res.json(req.flash()));
+  frontend(app);
 
   // start the server if `$ node server.js`
   if (appConfig.standalone) {

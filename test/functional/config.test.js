@@ -28,7 +28,7 @@ describe('Configuration API endpoint', () => {
       type: 'mandatory_field',
       dataType: 'integer',
       nullable: true,
-    })
+    }),
   );
 
   it('returns configurable fields for participants, as set in config', async () =>
@@ -37,7 +37,7 @@ describe('Configuration API endpoint', () => {
       type: 'participant_field',
       dataType: 'string',
       nullable: true,
-    })
+    }),
   );
 
   it('returns fields to show in participant table', async () => {

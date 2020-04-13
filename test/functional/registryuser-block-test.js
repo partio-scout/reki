@@ -14,19 +14,19 @@ describe('RegistryUser blocking and unblocking', () => {
 
   it('new users are not blocked', () =>
     models.User.findByPk(1)
-      .then(results => expect(results.blocked).to.equal(false))
+      .then(results => expect(results.blocked).to.equal(false)),
   );
 
   it('user is blocked after blocking', () =>
     blockUser(1)
       .then(() => models.User.findByPk(1))
-      .then(results => expect(results.blocked).to.equal(true))
+      .then(results => expect(results.blocked).to.equal(true)),
   );
 
   it('user is not blocked after unblocking', () =>
     unblockUser(2)
       .then(() => models.User.findByPk(2))
-      .then(results => expect(results.blocked).to.equal(false))
+      .then(results => expect(results.blocked).to.equal(false)),
   );
 
   async function createUserFixtures() {

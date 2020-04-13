@@ -1,51 +1,16 @@
 import React from 'react';
-import { Pagination } from 'react-bootstrap';
+import _ from 'lodash';
 
-export class ListOffsetSelector extends React.Component {
-  constructor(props) {
-    super(props);
+export function ListOffsetSelector({ offset = 0, limit = 1, onOffsetChanged, participantCount = 0 }) {
+  const pageCount = Math.ceil(participantCount/limit);
+  const activePageNumber = Math.floor(offset/limit);
+  const handleSelect = event => onOffsetChanged((event.target.value)*limit);
 
-    this.getPaginationItemCount = () => Math.ceil(this.safeCount()/this.safeChunkSize());
-    this.getActivePageNumber = () => Math.floor(this.safeOffset()/this.safeChunkSize()) + 1;
-    this.handleSelect = (event, selectedEvent) => this.safeCallOffsetChanged((selectedEvent.eventKey-1)*this.safeChunkSize());
-  }
-
-  safeCount() {
-    return this.props.count || 0;
-  }
-
-  safeOffset() {
-    return this.props.offset || 0;
-  }
-
-  safeChunkSize() {
-    return this.props.chunkSize || 1;
-  }
-
-  safeCallOffsetChanged(newOffset) {
-    this.props.onOffsetChanged && this.props.onOffsetChanged(newOffset);
-  }
-
-  render() {
-    return (
-      <Pagination
-        className="pull-right"
-        bsSize="medium"
-        items={ this.getPaginationItemCount() }
-        activePage={ this.getActivePageNumber() }
-        onSelect={ this.handleSelect }
-        maxButtons={ 10 }
-        next
-        prev
-        boundaryLinks
-      />
-    );
-  }
+  return (
+    <select value={ activePageNumber } onChange={ handleSelect }>
+      { _.range(pageCount).map(index => (
+        <option key={ index } value={ index }>{ index + 1 }</option>
+      )) }
+    </select>
+  );
 }
-
-ListOffsetSelector.propTypes = {
-  count: React.PropTypes.number.isRequired,
-  offset: React.PropTypes.number.isRequired,
-  chunkSize: React.PropTypes.number.isRequired,
-  onOffsetChanged: React.PropTypes.func.isRequired,
-};

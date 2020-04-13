@@ -58,7 +58,7 @@ export default function(app) {
         done(e);
         return;
       }
-    }
+    },
   );
 
   passport.use('partioid', strategy);

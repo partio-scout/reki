@@ -10,7 +10,7 @@ const Op = sequelize.Op;
 if (require.main === module) {
   main().then(
     () => { console.log('Finished successfully.'); process.exit(0); },
-    err => { console.error(`Error: ${err}. Exiting.`); process.exit(1); }
+    err => { console.error(`Error: ${err}. Exiting.`); process.exit(1); },
   );
 }
 

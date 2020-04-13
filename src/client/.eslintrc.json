@@ -37,6 +37,8 @@
     "react/prefer-es6-class": "error",
     "react/react-in-jsx-scope": "error",
     "react/sort-comp": "off",
-    "react/jsx-wrap-multilines": "error"
+    "react/jsx-wrap-multilines": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error"
   }
 }

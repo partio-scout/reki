@@ -1,6 +1,6 @@
 import React from 'react';
-import { Table, Button } from 'react-bootstrap';
 import { Presence } from '../../components';
+import { Table } from '../Table';
 
 const RegistryUserRow = props => {
   const {
@@ -15,13 +15,13 @@ const RegistryUserRow = props => {
     memberNumber,
     phoneNumber,
     email,
-    status,
     presence,
+    blocked,
   } = registryUser;
 
-  const blockStatusToggleButton = status === 'blocked'
-    ? <Button onClick={ onUnblock } bsStyle="danger">Salli sisäänkirjautuminen</Button>
-    : <Button onClick={ onBlock } bsStyle="success">Estä sisäänkirjautuminen</Button>;
+  const blockStatusToggleButton = blocked
+    ? <button onClick={ onUnblock }>Salli sisäänkirjautuminen</button>
+    : <button onClick={ onBlock }>Estä sisäänkirjautuminen</button>;
 
   return (
     <tr>
@@ -35,12 +35,6 @@ const RegistryUserRow = props => {
   );
 };
 
-RegistryUserRow.propTypes = {
-  registryUser: React.PropTypes.object,
-  onBlock: React.PropTypes.func,
-  onUnblock: React.PropTypes.func,
-};
-
 export function RegistryUserTable(props) {
   const {
     registryUsers,
@@ -49,7 +43,7 @@ export function RegistryUserTable(props) {
   } = props;
 
   return (
-    <Table striped responsive condensed>
+    <Table>
       <thead>
         <tr>
           <th>Tila</th>
@@ -74,9 +68,3 @@ export function RegistryUserTable(props) {
     </Table>
   );
 }
-
-RegistryUserTable.propTypes = {
-  registryUsers: React.PropTypes.array,
-  onBlock: React.PropTypes.func,
-  onUnblock: React.PropTypes.func,
-};

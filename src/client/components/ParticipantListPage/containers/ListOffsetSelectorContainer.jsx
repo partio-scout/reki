@@ -4,7 +4,7 @@ import { ListOffsetSelector } from '../../../components';
 import { pureShouldComponentUpdate } from '../../../utils';
 
 export function getListOffsetSelectorContainer(participantStore) {
-  function ListOffsetSelectorContainer(props, context) {
+  function ListOffsetSelectorContainer(props) {
     return (
       <AltContainer
         stores={ {
@@ -24,16 +24,5 @@ export function getListOffsetSelectorContainer(participantStore) {
       />
     );
   }
-
-  ListOffsetSelectorContainer.propTypes = {
-    location: React.PropTypes.object.isRequired,
-    offset: React.PropTypes.number.isRequired,
-    limit: React.PropTypes.number.isRequired,
-  };
-
-  ListOffsetSelectorContainer.contextTypes = {
-    router: React.PropTypes.object.isRequired,
-  };
-
   return ListOffsetSelectorContainer;
 }

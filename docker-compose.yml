@@ -1,30 +1,5 @@
 version: '2'
 services:
-  reki:
-    build:
-      context: .
-      dockerfile: Dockerfile-heroku
-    image: reki-heroku
-    command: 'bash -c ''npm run watch'''
-    working_dir: /data
-    volumes:
-      - '.:/data'
-    ports:
-      - '3000:3000'
-    depends_on:
-      - postgres
-    environment:
-      - NODE_ENV=dev
-      - DATABASE_URL=postgres://reki:password@postgres/rekidb
-      - TEST_DATABASE_URL=postgres://reki:password@postgres/rekitestdb
-      - PORT=3000
-      - KUKSA_API_PROXY_URL
-      - KUKSA_API_USERNAME
-      - KUKSA_API_PASSWORD
-      - KUKSA_API_EVENTID
-      - KUKSA_API_ENDPOINT
-      - ENABLE_OFFLINE_LOGIN=true
-
   postgres:
     build:
       context: .
@@ -32,3 +7,5 @@ services:
     image: reki-postgres
     ports:
       - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password

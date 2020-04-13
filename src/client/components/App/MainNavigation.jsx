@@ -1,82 +1,64 @@
 import React from 'react';
 import _ from 'lodash';
-import { Nav } from 'react-bootstrap';
-import { getNavigationItem } from '../../components';
+import { NavigationItem } from '..';
 
-export function getMainNavigation() {
-  const NavigationItem = getNavigationItem();
+const currentUserElement = document.querySelector('#user-info');
+const currentUser = JSON.parse(currentUserElement.textContent);
 
-  class MainNavigation extends React.Component {
-    render() {
-      const navItems = this.props.currentUser ? this.getLoggedInNavItems() : this.getLoggedOutNavItems();
+export function MainNavigation() {
 
-      return (
-        <Nav pullRight>
-          {
-            navItems.map(navItem => <NavigationItem key={ navItem.label } values={ navItem } />)
-          }
-        </Nav>
-      );
-    }
+  const navItems = getLoggedInNavItems(currentUser);
 
-    getLoggedInNavItems() {
-      const navItems = [ ];
-      const roles = this.props.currentUser.roles;
+  return (
+    <nav className="main-navigation">
+      <a className="content-box main-navigation__brand" href="/">REKI</a>
+      <div className="content-box" />
+      { navItems.map((navItem, i) => navItem.spacer ? <div key={ i } className="main-navigation__stretch-spacer" /> : <NavigationItem className="content-box main-navigation__navigation-item" key={ navItem.label } values={ navItem } />) }
+    </nav>
+  );
+}
 
-      if (_.includes(roles, 'registryAdmin')) {
-        navItems.push(
-          {
-            to: '/admin',
-            isIndexLink: true,
-            label: 'Käyttäjät',
-          }
-        );
-      }
+function getLoggedInNavItems(currentUser) {
+  const navItems = [ ];
+  const roles = currentUser.roles;
 
-      if (_.includes(roles, 'registryUser')) {
-        navItems.push(
-          {
-            to: '/participants',
-            isIndexLink: true,
-            label: 'Leiriläiset',
-          }
-        );
-      }
-
-      navItems.push(
-        {
-          icon: 'user',
-          label: `${this.props.currentUser.firstName} ${this.props.currentUser.lastName}`,
-        }
-      );
-
-      navItems.push(
-        {
-          to: '/logout',
-          isExternalLink: true,
-          label: 'Kirjaudu ulos',
-        }
-      );
-
-      return navItems;
-    }
-
-    getLoggedOutNavItems() {
-      return [
-        {
-          to: '/login/partioid',
-          isIndexLink: true,
-          label: 'Kirjaudu sisään',
-          isExternalLink: true,
-        },
-      ];
-    }
+  if (_.includes(roles, 'registryUser')) {
+    navItems.push(
+      {
+        to: '/participants',
+        label: 'Leiriläiset',
+        isActive: location.pathname.startsWith('/participants'),
+      },
+    );
   }
 
-  MainNavigation.propTypes = {
-    currentUser: React.PropTypes.object,
-    onLogout: React.PropTypes.func,
-  };
+  if (_.includes(roles, 'registryAdmin')) {
+    navItems.push(
+      {
+        to: '/admin',
+        label: 'Käyttäjät',
+        isActive: location.pathname.startsWith('/admin'),
+      },
+    );
+  }
 
-  return MainNavigation;
+  navItems.push({
+    spacer: true,
+  });
+
+  navItems.push(
+    {
+      icon: 'user',
+      label: `${currentUser.firstName} ${currentUser.lastName}`,
+    },
+  );
+
+  navItems.push(
+    {
+      to: '/logout',
+      label: 'Kirjaudu ulos',
+    },
+  );
+
+  return navItems;
 }
