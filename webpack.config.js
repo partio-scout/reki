@@ -2,7 +2,7 @@
 const path = require('path');
 const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 const buildPath = path.resolve(__dirname, 'dist', 'public');
-const mainPath = path.resolve(__dirname, 'src', 'client', 'main.jsx');
+const mainPath = path.resolve(__dirname, 'src', 'client', 'main.tsx');
 const tsconfig = path.resolve(__dirname, 'src', 'client', 'tsconfig.json');
 
 const isDev = argv => argv.mode === 'development';
