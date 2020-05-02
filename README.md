@@ -16,6 +16,7 @@ Clone this repository into a local directory.
 
 ### Running the app
 - If you are using nvm, run `nvm use`.
+- Run `export DATABASE_URL=postgres://reki:password@localhost:5432/rekidb` to set the database URL.
 - Run `npm run watch` to start the services.
 
 The app is now running at `http://localhost:8080`.
