@@ -3,10 +3,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "lib": [
-      "ESNext",
-      "dom"
-    ],
+    "lib": ["ESNext", "dom"],
     "jsx": "preserve",
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,

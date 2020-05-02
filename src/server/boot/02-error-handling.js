@@ -1,15 +1,13 @@
 export default function (app) {
-
   function wrap(routeHandler) {
     return async (req, res, next) => {
       try {
-        await routeHandler(req, res);
+        await routeHandler(req, res)
       } catch (err) {
-        next(err);
+        next(err)
       }
-    };
+    }
   }
 
-  app.wrap = wrap;
-
+  app.wrap = wrap
 }

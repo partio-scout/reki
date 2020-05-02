@@ -1,9 +1,9 @@
-import config from '../src/server/conf';
-import { models } from '../src/server/models';
-import crypto from 'crypto';
-import inquirer from 'inquirer';
+import config from '../src/server/conf'
+import { models } from '../src/server/models'
+import crypto from 'crypto'
+import inquirer from 'inquirer'
 
-const password = crypto.randomBytes(24).toString('hex');
+const password = crypto.randomBytes(24).toString('hex')
 const questions = [
   {
     type: 'input',
@@ -34,31 +34,42 @@ const questions = [
     type: 'checkbox',
     name: 'roles',
     message: 'Choose the roles this user should have',
-    choices: config.getRoles().map(role => ({
+    choices: config.getRoles().map((role) => ({
       name: role,
       value: role,
     })),
   },
-];
+]
 
 function printErrorMessage(err) {
   console.error(`Could not create user:
-    ${err.stack}`);
+    ${err.stack}`)
 }
 
-inquirer.prompt(questions)
-  .then(async answers => {
-    const roleNames = answers.roles;
-    delete answers.roles;
+inquirer
+  .prompt(questions)
+  .then(async (answers) => {
+    const roleNames = answers.roles
+    delete answers.roles
 
-    const user = await models.User.create(Object.assign({ password: password }, answers));
-    const roles = (await Promise.all(roleNames.map(roleName => models.UserRole.findOrCreate({ where: { name: roleName } })))).map(tuple => tuple[0]);
+    const user = await models.User.create(
+      Object.assign({ password: password }, answers),
+    )
+    const roles = (
+      await Promise.all(
+        roleNames.map((roleName) =>
+          models.UserRole.findOrCreate({ where: { name: roleName } }),
+        ),
+      )
+    ).map((tuple) => tuple[0])
 
-    await user.setRoles(roles);
-    console.log(`Created user with id ${user.id} with roles ${roleNames.join(', ')}`);
-    process.exit(0);
+    await user.setRoles(roles)
+    console.log(
+      `Created user with id ${user.id} with roles ${roleNames.join(', ')}`,
+    )
+    process.exit(0)
   })
-  .catch(err => {
-    printErrorMessage(err);
-    process.exit(1);
-  });
+  .catch((err) => {
+    printErrorMessage(err)
+    process.exit(1)
+  })

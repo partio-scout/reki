@@ -1,28 +1,30 @@
-import Sequelize from 'sequelize';
-import { sequelize, models } from '../models';
-import config from '../conf';
-import { appConfig } from '../server';
-import argon2 from 'argon2';
+import Sequelize from 'sequelize'
+import { sequelize, models } from '../models'
+import config from '../conf'
+import { appConfig } from '../server'
+import argon2 from 'argon2'
 
 // TODO refactor this to a script file and add tests to check models and roles are
 // created correctly
-export default async function(app) {
+export default async function (app) {
   if (!appConfig.standalone) {
-    return;
+    return
   }
 
-  await sequelize.sync({ alter: true });
+  await sequelize.sync({ alter: true })
 
-  const roles = [];
+  const roles = []
   // Create roles unless they already exist
-  const rolesInConfig = config.getRoles().map(roleName => ({ name: roleName }));
+  const rolesInConfig = config
+    .getRoles()
+    .map((roleName) => ({ name: roleName }))
   for (const role of rolesInConfig) {
-    const [dbRole] = await models.UserRole.findOrCreate({ where: role });
-    roles.push(dbRole);
+    const [dbRole] = await models.UserRole.findOrCreate({ where: role })
+    roles.push(dbRole)
   }
 
   if (appConfig.isDev) {
-    const adminEmail = 'admin@example.com';
+    const adminEmail = 'admin@example.com'
     const [user] = await models.User.findOrCreate({
       where: {
         email: adminEmail,
@@ -36,8 +38,8 @@ export default async function(app) {
         email: adminEmail,
         passwordHash: await argon2.hash('admin'),
       },
-    });
-    user.setRoles(roles);
+    })
+    user.setRoles(roles)
   }
 
   // Destroy roles that are not in the config
@@ -45,5 +47,5 @@ export default async function(app) {
     where: {
       name: { [Sequelize.Op.notIn]: config.getRoles() },
     },
-  });
+  })
 }

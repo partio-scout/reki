@@ -3,15 +3,42 @@
   "description": "Leirirekisteri",
   "repository": "https://github.com/partio-scout/reki",
   "env": {
-    "COOKIE_SECRET": { "description": "A secret string for securing session cookies", "generator": "secret" },
-    "KUKSA_API_ENDPOINT": { "description": "The url at which the kuksa api lives", "value": "https://kuksa.partio.fi/leirirekisteri_rajapinta/api" },
-    "KUKSA_API_EVENTID": { "description": "The event id of your event in kuksa", "required": false },
-    "KUKSA_API_USERNAME": { "description": "The username of the kuksa api", "required": false },
-    "KUKSA_API_PASSWORD": { "description": "The password to the kuksa api", "required": false },
-    "ENABLE_OFFLINE_LOGIN": { "description": "Set this to true if you need to enable logging in without partioid", "value": "false" },
-    "PARTIOID_USE_PRODUCTION": { "description": "Set this to true to enable main partioid. Otherwise the partioid test environment will be used", "value": "true" },
-    "REKI_BASE_URL": { "description": "Set this to the url that people will be accessing your Reki instance.", "required": true },
-    "PGSSLMODE": { "description": "Instructs that the connection to the database should be secure", "value": "require" }
+    "COOKIE_SECRET": {
+      "description": "A secret string for securing session cookies",
+      "generator": "secret"
+    },
+    "KUKSA_API_ENDPOINT": {
+      "description": "The url at which the kuksa api lives",
+      "value": "https://kuksa.partio.fi/leirirekisteri_rajapinta/api"
+    },
+    "KUKSA_API_EVENTID": {
+      "description": "The event id of your event in kuksa",
+      "required": false
+    },
+    "KUKSA_API_USERNAME": {
+      "description": "The username of the kuksa api",
+      "required": false
+    },
+    "KUKSA_API_PASSWORD": {
+      "description": "The password to the kuksa api",
+      "required": false
+    },
+    "ENABLE_OFFLINE_LOGIN": {
+      "description": "Set this to true if you need to enable logging in without partioid",
+      "value": "false"
+    },
+    "PARTIOID_USE_PRODUCTION": {
+      "description": "Set this to true to enable main partioid. Otherwise the partioid test environment will be used",
+      "value": "true"
+    },
+    "REKI_BASE_URL": {
+      "description": "Set this to the url that people will be accessing your Reki instance.",
+      "required": true
+    },
+    "PGSSLMODE": {
+      "description": "Instructs that the connection to the database should be secure",
+      "value": "require"
+    }
   },
   "formation": [
     {

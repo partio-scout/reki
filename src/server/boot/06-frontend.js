@@ -1,26 +1,29 @@
-import express from 'express';
-import path from 'path';
+import express from 'express'
+import path from 'path'
 
-const publicPath = path.resolve('./dist/public');
+const publicPath = path.resolve('./dist/public')
 
-const index = user => `
+const index = (user) => `
 <!DOCTYPE html>
 <html lang="fi">
   <head>
     <title>REKI</title>
     <meta charset="UTF-8" />
-    <script id="user-info" type="application/json">${JSON.stringify(user)}</script>
+    <script id="user-info" type="application/json">${JSON.stringify(
+      user,
+    )}</script>
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Source+Sans+Pro:wght@900&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app"></div>
     <script src="/assets/bundle.js" async></script>
   </body>
-</html>`;
+</html>`
 
-const offlineLoginForm = process.env.ENABLE_OFFLINE_LOGIN === 'true'
-  ? '<a class="btn" href="/login/password">Kirjaudu sähköpostilla ja salasanalla</a>'
-  : '';
+const offlineLoginForm =
+  process.env.ENABLE_OFFLINE_LOGIN === 'true'
+    ? '<a class="btn" href="/login/password">Kirjaudu sähköpostilla ja salasanalla</a>'
+    : ''
 
 const loginPage = `
 <!DOCTYPE html>
@@ -75,22 +78,22 @@ const loginPage = `
       ${offlineLoginForm}
     </div>
   </body>
-</html>`;
+</html>`
 
-export default function(server) {
-  server.use('/assets', express.static(publicPath));
+export default function (server) {
+  server.use('/assets', express.static(publicPath))
   server.get('/login', (req, res) => {
     if (req.user) {
-      res.redirect(303, '/');
+      res.redirect(303, '/')
     } else {
-      res.type('html').send(loginPage);
+      res.type('html').send(loginPage)
     }
-  });
+  })
   server.get('*', (req, res) => {
     if (req.user) {
-      res.type('html').send(index(req.user));
+      res.type('html').send(index(req.user))
     } else {
-      res.redirect(303, '/login');
+      res.redirect(303, '/login')
     }
-  });
+  })
 }

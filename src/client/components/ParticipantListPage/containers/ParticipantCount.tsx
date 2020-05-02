@@ -1,16 +1,18 @@
-import React from 'react';
-import Spinner from 'react-spinner';
+import React from 'react'
+import Spinner from 'react-spinner'
 
 const Count: React.FC<{ count: number | undefined }> = ({ count }) => {
   if (count === undefined) {
-    return <Spinner />;
+    return <Spinner />
   } else {
-    return <>count</>;
+    return <>count</>
   }
-};
+}
 
-export const ParticipantCount: React.FC<{ participantCount: number | undefined }> = ({ participantCount }) => (
+export const ParticipantCount: React.FC<{
+  participantCount: number | undefined
+}> = ({ participantCount }) => (
   <div>
-    Hakutuloksia: <Count count={ participantCount } />
+    Hakutuloksia: <Count count={participantCount} />
   </div>
-);
+)

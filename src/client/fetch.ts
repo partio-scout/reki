@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 export const defaultOpts: RequestInit = {
   method: 'GET',
@@ -6,13 +6,13 @@ export const defaultOpts: RequestInit = {
   credentials: 'same-origin',
   cache: 'no-store',
   headers: {
-    'Accept': 'application/json',
+    Accept: 'application/json',
   },
-};
+}
 
 export function withDefaultOpts(options: RequestInit): RequestInit {
   return {
     ...defaultOpts,
     ...options,
-  };
+  }
 }

@@ -1,13 +1,13 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
-const path = require('path');
-const nodeModulesPath = path.resolve(__dirname, 'node_modules');
-const buildPath = path.resolve(__dirname, 'dist', 'public');
-const mainPath = path.resolve(__dirname, 'src', 'client', 'main.tsx');
-const tsconfig = path.resolve(__dirname, 'src', 'client', 'tsconfig.json');
+const path = require('path')
+const nodeModulesPath = path.resolve(__dirname, 'node_modules')
+const buildPath = path.resolve(__dirname, 'dist', 'public')
+const mainPath = path.resolve(__dirname, 'src', 'client', 'main.tsx')
+const tsconfig = path.resolve(__dirname, 'src', 'client', 'tsconfig.json')
 
-const isDev = argv => argv.mode === 'development';
+const isDev = (argv) => argv.mode === 'development'
 
-const babelLoader = argv => ({
+const babelLoader = (argv) => ({
   loader: 'babel-loader',
   options: {
     presets: [
@@ -28,25 +28,28 @@ const babelLoader = argv => ({
     ],
     plugins: ['react-hot-loader/babel'],
   },
-});
+})
 
 const tsLoader = {
   loader: 'ts-loader',
   options: {
     configFile: tsconfig,
   },
-};
+}
 
-const devServer = argv => isDev(argv) ? {
-  contentBase: buildPath,
-  hot: true,
-  index: '',
-  serveIndex: false,
-  proxy: {
-    context: () => true,
-    target: 'http://localhost:3000/',
-  },
-} : undefined;
+const devServer = (argv) =>
+  isDev(argv)
+    ? {
+        contentBase: buildPath,
+        hot: true,
+        index: '',
+        serveIndex: false,
+        proxy: {
+          context: () => true,
+          target: 'http://localhost:3000/',
+        },
+      }
+    : undefined
 
 module.exports = (env, argv) => ({
   entry: mainPath,
@@ -58,12 +61,7 @@ module.exports = (env, argv) => ({
   devtool: isDev(argv) ? 'eval-source-map' : undefined,
   devServer: devServer(argv),
   resolve: {
-    extensions: [
-      '.js',
-      '.jsx',
-      '.ts',
-      '.tsx',
-    ],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'react-dom': '@hot-loader/react-dom',
     },
@@ -86,4 +84,4 @@ module.exports = (env, argv) => ({
       },
     ],
   },
-});
+})

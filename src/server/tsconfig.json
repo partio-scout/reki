@@ -7,8 +7,5 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   },
-  "include": [
-    "./**/*",
-    "../kuksa-integration/**/*"
-  ]
+  "include": ["./**/*", "../kuksa-integration/**/*"]
 }

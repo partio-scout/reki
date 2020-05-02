@@ -1,4 +1,5 @@
 # REKI
+
 Camp registry system that integrates with Kuksa. Originally developed for Roihu.
 
 Builds in circleci: https://circleci.com/gh/partio-scout/workflows/reki
@@ -6,15 +7,19 @@ Builds in circleci: https://circleci.com/gh/partio-scout/workflows/reki
 ## Developing with Docker
 
 ### Prerequisites
+
 You need to install [Docker](https://docker.com) and [Docker compose](https://docs.docker.com/compose/install/). Nvm is also highly recommended, but you can also just install the correct (or equivalent) node version globally. See the correct version in the .nvmrc file.
 
 ### Installation
+
 Clone this repository into a local directory.
+
 - If you are using nvm, run `nvm install` in that directory.
 - Run `npm install`.
 - Run `docker-compose build` to build the docker containers.
 
 ### Running the app
+
 - If you are using nvm, run `nvm use`.
 - Run `export DATABASE_URL=postgres://reki:password@localhost:5432/rekidb` to set the database URL.
 - Run `npm run watch` to start the services.
@@ -22,6 +27,7 @@ Clone this repository into a local directory.
 The app is now running at `http://localhost:8080`.
 
 ## ES6
+
 ES6 syntax is supported and should be used in all files, including the module syntax.
 
 ## Configuring your REKI installation
@@ -51,7 +57,8 @@ Set the `REKI_BASE_URL` environment variable to the base url of the reki install
 Using PartioID requires that the settings for your REKI installation have been been configured at the PartioID identity provider (id.partio.fi). For this you need to contact the ICT team of Suomen Partiolaiset, sp-it-ryhma@lista.partio.fi.
 
 First off verify your environment variables:
-- Set `PARTIOID_USE_PRODUCTION` to *true*. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will try use the PartioID test environment, partioid-test.partio.fi.
+
+- Set `PARTIOID_USE_PRODUCTION` to _true_. This means the application uses the real PartioID, id.partio.fi. If you leave this unset, the application will try use the PartioID test environment, partioid-test.partio.fi.
 - Verify that your `REKI_BASE_URL` environment variable is correctly set as desribed in the previous section.
 
 Ask the ICT team to add a new service provider (SP) entry for Reki in the identity provider settings, given the metadata available on your reki instance, at the url `<REKI_BASE_URL>/saml/metadata` or `<REKI_BASE_URL>/saml/metadata.php`.
@@ -60,7 +67,9 @@ Ask the ICT team to add a new service provider (SP) entry for Reki in the identi
 
 To test the PartioID login, create a user. Matching users from PartioID to the REKI user database happens with the member number. Thus, create a user with e.g. your own information and member number. You can do this by opening executing `npm run create-user` through `heroku run`, for example:
 
-  heroku run npm run create-user
+```
+heroku run npm run create-user
+```
 
 Make sure to enter the member number correctly.
 

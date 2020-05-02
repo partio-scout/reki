@@ -9,14 +9,10 @@
   },
   "rules": {
     "no-console": "error",
-    "jsx-quotes": "error",
     "react/display-name": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-boolean-value": "off",
-    "react/jsx-closing-bracket-location": [ "error", { "selfClosing": "line-aligned", "nonEmpty": "after-props" } ],
-    "react/jsx-curly-spacing": [ "error", "always" ],
     "react/jsx-handler-names": "off",
-    "react/jsx-indent-props": [ "error", 2 ],
     "react/jsx-key": "off",
     "react/jsx-max-props-per-line": "off",
     "react/jsx-no-duplicate-props": "error",
@@ -37,7 +33,6 @@
     "react/prefer-es6-class": "error",
     "react/react-in-jsx-scope": "error",
     "react/sort-comp": "off",
-    "react/jsx-wrap-multilines": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error"
   }
