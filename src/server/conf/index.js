@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import config from './test.config.js';
+import _ from 'lodash'
+import config from './test.config.js'
 
 const alwaysIncludedFields = [
   {
@@ -95,11 +95,16 @@ const alwaysIncludedFields = [
     searchable: true,
     nullable: true,
   },
-];
+]
 
-const participantFields = alwaysIncludedFields.concat(config.participantCustomFields);
+const participantFields = alwaysIncludedFields.concat(
+  config.participantCustomFields,
+)
 
-const searchableFieldNames = _(participantFields).filter('searchable').map('name').value();
+const searchableFieldNames = _(participantFields)
+  .filter('searchable')
+  .map('name')
+  .value()
 
 export default {
   getFetchDateRanges: () => config.fetchDateRanges,
@@ -115,4 +120,4 @@ export default {
   getParticipantTableFields: () => config.participantTableFields,
   getFilters: () => config.filters,
   getDetailsPageFields: () => config.detailsPageFields,
-};
+}

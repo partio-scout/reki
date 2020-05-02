@@ -1,65 +1,82 @@
-import React from 'react';
-import { classNames } from '../classNames';
+import React from 'react'
+import { classNames } from '../classNames'
 
-export type IconType = 'sort' | 'sort-asc' | 'sort-desc' | 'comment' | 'user' | 'remove' | 'info' | 'ok'
+export type IconType =
+  | 'sort'
+  | 'sort-asc'
+  | 'sort-desc'
+  | 'comment'
+  | 'user'
+  | 'remove'
+  | 'info'
+  | 'ok'
 type IconProps = {
-  type: IconType;
-  className?: string;
+  type: IconType
+  className?: string
 }
 
 export const Icon: React.FC<IconProps> = ({ type, className }) => {
   switch (type) {
     case 'sort':
       return (
-        <svg viewBox="0 0 16 28" className={ classNames('icon', 'sorting-icon', className) }>
+        <svg
+          viewBox="0 0 16 28"
+          className={classNames('icon', 'sorting-icon', className)}
+        >
           <path d="M16 17c0 0.266-0.109 0.516-0.297 0.703l-7 7c-0.187 0.187-0.438 0.297-0.703 0.297s-0.516-0.109-0.703-0.297l-7-7c-0.187-0.187-0.297-0.438-0.297-0.703 0-0.547 0.453-1 1-1h14c0.547 0 1 0.453 1 1zM16 11c0 0.547-0.453 1-1 1h-14c-0.547 0-1-0.453-1-1 0-0.266 0.109-0.516 0.297-0.703l7-7c0.187-0.187 0.438-0.297 0.703-0.297s0.516 0.109 0.703 0.297l7 7c0.187 0.187 0.297 0.438 0.297 0.703z"></path>
         </svg>
-      );
+      )
     case 'sort-asc':
       return (
-        <svg viewBox="0 0 16 28" className={ classNames('icon', 'sorting-icon', className) }>
+        <svg
+          viewBox="0 0 16 28"
+          className={classNames('icon', 'sorting-icon', className)}
+        >
           <path d="M16 11c0 0.547-0.453 1-1 1h-14c-0.547 0-1-0.453-1-1 0-0.266 0.109-0.516 0.297-0.703l7-7c0.187-0.187 0.438-0.297 0.703-0.297s0.516 0.109 0.703 0.297l7 7c0.187 0.187 0.297 0.438 0.297 0.703z"></path>
         </svg>
-      );
+      )
     case 'sort-desc':
       return (
-        <svg viewBox="0 0 16 28" className={ classNames('icon', 'sorting-icon', className) }>
+        <svg
+          viewBox="0 0 16 28"
+          className={classNames('icon', 'sorting-icon', className)}
+        >
           <path d="M16 17c0 0.266-0.109 0.516-0.297 0.703l-7 7c-0.187 0.187-0.438 0.297-0.703 0.297s-0.516-0.109-0.703-0.297l-7-7c-0.187-0.187-0.297-0.438-0.297-0.703 0-0.547 0.453-1 1-1h14c0.547 0 1 0.453 1 1z"></path>
         </svg>
-      );
+      )
     case 'comment':
       return (
-        <svg viewBox="0 0 32 32" className={ classNames('icon', className) }>
+        <svg viewBox="0 0 32 32" className={classNames('icon', className)}>
           <path d="M16 2c8.837 0 16 5.82 16 13s-7.163 13-16 13c-0.849 0-1.682-0.054-2.495-0.158-3.437 3.437-7.539 4.053-11.505 4.144v-0.841c2.142-1.049 4-2.961 4-5.145 0-0.305-0.024-0.604-0.068-0.897-3.619-2.383-5.932-6.024-5.932-10.103 0-7.18 7.163-13 16-13z"></path>
         </svg>
-      );
+      )
     case 'user':
       return (
-        <svg viewBox="0 0 32 32" className={ classNames('icon', className) }>
+        <svg viewBox="0 0 32 32" className={classNames('icon', className)}>
           <path d="M18 22.082v-1.649c2.203-1.241 4-4.337 4-7.432 0-4.971 0-9-6-9s-6 4.029-6 9c0 3.096 1.797 6.191 4 7.432v1.649c-6.784 0.555-12 3.888-12 7.918h28c0-4.030-5.216-7.364-12-7.918z"></path>
         </svg>
-      );
+      )
     case 'remove':
       return (
-        <svg viewBox="0 0 32 32" className={ classNames('icon', className) }>
+        <svg viewBox="0 0 32 32" className={classNames('icon', className)}>
           <path d="M31.708 25.708c-0-0-0-0-0-0l-9.708-9.708 9.708-9.708c0-0 0-0 0-0 0.105-0.105 0.18-0.227 0.229-0.357 0.133-0.356 0.057-0.771-0.229-1.057l-4.586-4.586c-0.286-0.286-0.702-0.361-1.057-0.229-0.13 0.048-0.252 0.124-0.357 0.228 0 0-0 0-0 0l-9.708 9.708-9.708-9.708c-0-0-0-0-0-0-0.105-0.104-0.227-0.18-0.357-0.228-0.356-0.133-0.771-0.057-1.057 0.229l-4.586 4.586c-0.286 0.286-0.361 0.702-0.229 1.057 0.049 0.13 0.124 0.252 0.229 0.357 0 0 0 0 0 0l9.708 9.708-9.708 9.708c-0 0-0 0-0 0-0.104 0.105-0.18 0.227-0.229 0.357-0.133 0.355-0.057 0.771 0.229 1.057l4.586 4.586c0.286 0.286 0.702 0.361 1.057 0.229 0.13-0.049 0.252-0.124 0.357-0.229 0-0 0-0 0-0l9.708-9.708 9.708 9.708c0 0 0 0 0 0 0.105 0.105 0.227 0.18 0.357 0.229 0.356 0.133 0.771 0.057 1.057-0.229l4.586-4.586c0.286-0.286 0.362-0.702 0.229-1.057-0.049-0.13-0.124-0.252-0.229-0.357z"></path>
         </svg>
-      );
+      )
     case 'info':
       return (
-        <svg viewBox="0 0 32 32" className={ classNames('icon', className) }>
+        <svg viewBox="0 0 32 32" className={classNames('icon', className)}>
           <path d="M14 9.5c0-0.825 0.675-1.5 1.5-1.5h1c0.825 0 1.5 0.675 1.5 1.5v1c0 0.825-0.675 1.5-1.5 1.5h-1c-0.825 0-1.5-0.675-1.5-1.5v-1z"></path>
           <path d="M20 24h-8v-2h2v-6h-2v-2h6v8h2z"></path>
           <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13z"></path>
         </svg>
-      );
+      )
     case 'ok':
       return (
-        <svg viewBox="0 0 32 32" className={ classNames('icon', className) }>
+        <svg viewBox="0 0 32 32" className={classNames('icon', className)}>
           <path d="M27 4l-15 15-7-7-5 5 12 12 20-20z"></path>
         </svg>
-      );
+      )
     default:
-      return null;
+      return null
   }
-};
+}

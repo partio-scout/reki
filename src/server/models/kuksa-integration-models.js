@@ -1,6 +1,6 @@
-import Sequelize from 'sequelize';
+import Sequelize from 'sequelize'
 
-export default function(db) {
+export default function (db) {
   const KuksaCampGroup = db.define('kuksa_campgroup', {
     id: {
       type: Sequelize.INTEGER,
@@ -11,7 +11,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaExtraInfoField = db.define('kuksa_extrainfofield', {
     id: {
@@ -23,7 +23,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaExtraSelection = db.define('kuksa_extraselection', {
     id: {
@@ -35,7 +35,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaExtraSelectionGroup = db.define('kuksa_extraselectiongroup', {
     id: {
@@ -47,7 +47,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaLocalGroup = db.define('kuksa_localgroup', {
     id: {
@@ -63,7 +63,7 @@ export default function(db) {
     locality: Sequelize.STRING,
     country: Sequelize.STRING,
     countryCode: Sequelize.STRING,
-  });
+  })
 
   const KuksaParticipant = db.define('kuksa_participant', {
     id: {
@@ -91,7 +91,7 @@ export default function(db) {
     accommodation: Sequelize.STRING,
     cancelled: Sequelize.BOOLEAN,
     diet: Sequelize.STRING,
-  });
+  })
 
   const KuksaParticipantExtraInfo = db.define('kuksa_participantextrainfo', {
     id: {
@@ -103,16 +103,21 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
-  const KuksaParticipantExtraSelection = db.define('kuksa_participantextraselection');
+  const KuksaParticipantExtraSelection = db.define(
+    'kuksa_participantextraselection',
+  )
 
-  const KuksaParticipantPayment = db.define('kuksa_participantpayment');
+  const KuksaParticipantPayment = db.define('kuksa_participantpayment')
 
-  const KuksaParticipantPaymentStatus = db.define('kuksa_participantpaymentstatus', {
-    billed: Sequelize.DATE,
-    paid: Sequelize.DATE,
-  });
+  const KuksaParticipantPaymentStatus = db.define(
+    'kuksa_participantpaymentstatus',
+    {
+      billed: Sequelize.DATE,
+      paid: Sequelize.DATE,
+    },
+  )
 
   const KuksaPayment = db.define('kuksa_payment', {
     id: {
@@ -124,7 +129,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaSubCamp = db.define('kuksa_subcamp', {
     id: {
@@ -136,7 +141,7 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   const KuksaVillage = db.define('kuksa_village', {
     id: {
@@ -148,32 +153,40 @@ export default function(db) {
       type: Sequelize.STRING,
       allowNull: false,
     },
-  });
+  })
 
   // Relationships
 
-  KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup);
-  KuksaExtraSelection.belongsToMany(KuksaParticipant, { through: KuksaParticipantExtraSelection });
+  KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup)
+  KuksaExtraSelection.belongsToMany(KuksaParticipant, {
+    through: KuksaParticipantExtraSelection,
+  })
 
-  KuksaLocalGroup.belongsTo(KuksaCampGroup);
-  KuksaLocalGroup.belongsTo(KuksaSubCamp);
+  KuksaLocalGroup.belongsTo(KuksaCampGroup)
+  KuksaLocalGroup.belongsTo(KuksaSubCamp)
 
-  KuksaParticipant.belongsTo(KuksaLocalGroup);
-  KuksaParticipant.belongsTo(KuksaCampGroup);
-  KuksaParticipant.belongsTo(KuksaVillage);
-  KuksaParticipant.belongsTo(KuksaSubCamp);
-  KuksaParticipant.hasMany(KuksaParticipantExtraInfo);
-  KuksaParticipant.hasOne(KuksaParticipantPaymentStatus);
+  KuksaParticipant.belongsTo(KuksaLocalGroup)
+  KuksaParticipant.belongsTo(KuksaCampGroup)
+  KuksaParticipant.belongsTo(KuksaVillage)
+  KuksaParticipant.belongsTo(KuksaSubCamp)
+  KuksaParticipant.hasMany(KuksaParticipantExtraInfo)
+  KuksaParticipant.hasOne(KuksaParticipantPaymentStatus)
 
-  KuksaParticipant.belongsToMany(KuksaExtraSelection, { through: KuksaParticipantExtraSelection });
-  KuksaParticipantExtraSelection.belongsTo(KuksaExtraSelection);
-  KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup);
+  KuksaParticipant.belongsToMany(KuksaExtraSelection, {
+    through: KuksaParticipantExtraSelection,
+  })
+  KuksaParticipantExtraSelection.belongsTo(KuksaExtraSelection)
+  KuksaExtraSelection.belongsTo(KuksaExtraSelectionGroup)
 
-  KuksaParticipant.belongsToMany(KuksaPayment, { through: KuksaParticipantPayment });
-  KuksaPayment.belongsToMany(KuksaParticipant, { through: KuksaParticipantPayment });
+  KuksaParticipant.belongsToMany(KuksaPayment, {
+    through: KuksaParticipantPayment,
+  })
+  KuksaPayment.belongsToMany(KuksaParticipant, {
+    through: KuksaParticipantPayment,
+  })
 
-  KuksaParticipantExtraInfo.belongsTo(KuksaParticipant);
-  KuksaParticipantExtraInfo.belongsTo(KuksaExtraInfoField);
+  KuksaParticipantExtraInfo.belongsTo(KuksaParticipant)
+  KuksaParticipantExtraInfo.belongsTo(KuksaExtraInfoField)
 
   // Exports
 
@@ -191,5 +204,5 @@ export default function(db) {
     KuksaPayment: KuksaPayment,
     KuksaSubCamp: KuksaSubCamp,
     KuksaVillage: KuksaVillage,
-  };
+  }
 }

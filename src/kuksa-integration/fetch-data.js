@@ -1,50 +1,69 @@
-import { models } from '../server/models';
-import moment from 'moment';
-import transfer from './transfer';
-import { getEventApi } from 'kuksa-event-api-client';
-import config from '../server/conf';
-import { startSpinner } from './util';
+import { models } from '../server/models'
+import moment from 'moment'
+import transfer from './transfer'
+import { getEventApi } from 'kuksa-event-api-client'
+import config from '../server/conf'
+import { startSpinner } from './util'
 
 if (require.main === module) {
   main().then(
-    () => { console.log('Finished successfully.'); process.exit(0); },
-    err => { console.error(`Error: ${err}. Exiting.`); process.exit(1); },
-  );
+    () => {
+      console.log('Finished successfully.')
+      process.exit(0)
+    },
+    (err) => {
+      console.error(`Error: ${err}. Exiting.`)
+      process.exit(1)
+    },
+  )
 }
 
 async function main() {
-  const stopSpinner = startSpinner();
+  const stopSpinner = startSpinner()
   try {
-    const options = getOptionsFromEnvironment();
-    const eventApi = getEventApi(options);
-    await transferTablesOnlyOnce(eventApi);
-    await transferParticipants(eventApi);
-    await transferPayments(eventApi);
+    const options = getOptionsFromEnvironment()
+    const eventApi = getEventApi(options)
+    await transferTablesOnlyOnce(eventApi)
+    await transferParticipants(eventApi)
+    await transferPayments(eventApi)
   } finally {
-    stopSpinner();
+    stopSpinner()
   }
 }
 
 function getOptionsFromEnvironment() {
   function extractEnvVar(environmentVariable, description) {
-    const value = process.env[environmentVariable];
+    const value = process.env[environmentVariable]
     if (!value) {
-      throw new Error(`Specify ${description} in the environment variable ${environmentVariable}.`);
+      throw new Error(
+        `Specify ${description} in the environment variable ${environmentVariable}.`,
+      )
     }
-    return value;
+    return value
   }
 
   return {
-    endpoint: extractEnvVar('KUKSA_API_ENDPOINT', 'the endpoint url of the kuksa api'),
-    username: extractEnvVar('KUKSA_API_USERNAME', 'the username for the kuksa api'),
-    password: extractEnvVar('KUKSA_API_PASSWORD', 'the password for the kuksa api'),
+    endpoint: extractEnvVar(
+      'KUKSA_API_ENDPOINT',
+      'the endpoint url of the kuksa api',
+    ),
+    username: extractEnvVar(
+      'KUKSA_API_USERNAME',
+      'the username for the kuksa api',
+    ),
+    password: extractEnvVar(
+      'KUKSA_API_PASSWORD',
+      'the password for the kuksa api',
+    ),
     eventId: extractEnvVar('KUKSA_API_EVENTID', 'the event id'),
     proxy: process.env.PROXIMO_URL || process.env.KUKSA_API_PROXY_URL, // optional
-  };
+  }
 }
 
 function transferTablesOnlyOnce(eventApi) {
-  console.log('Transferring sub camps, villages, local groups, extra selections, info fields and payments...');
+  console.log(
+    'Transferring sub camps, villages, local groups, extra selections, info fields and payments...',
+  )
 
   return transfer([
     {
@@ -54,7 +73,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getVillages,
       targetModel: models.KuksaVillage,
-      transform: village => ({
+      transform: (village) => ({
         id: village.id,
         subCampId: village.subCamp,
         name: village.name,
@@ -63,7 +82,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getCampGroups,
       targetModel: models.KuksaCampGroup,
-      transform: campGroup => ({
+      transform: (campGroup) => ({
         id: campGroup.id,
         subCampId: campGroup.subCamp,
         villageId: campGroup.village,
@@ -73,7 +92,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getLocalGroups,
       targetModel: models.KuksaLocalGroup,
-      transform: localGroup => ({
+      transform: (localGroup) => ({
         id: localGroup.id,
         subCampId: localGroup.subCamp,
         villageId: localGroup.village,
@@ -88,7 +107,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getExtraInfoFields,
       targetModel: models.KuksaExtraInfoField,
-      transform: field => ({
+      transform: (field) => ({
         id: field.id,
         name: field.name.fi,
       }),
@@ -96,7 +115,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getExtraSelectionGroups,
       targetModel: models.KuksaExtraSelectionGroup,
-      transform: group => ({
+      transform: (group) => ({
         id: group.id,
         name: group.name.fi,
       }),
@@ -104,7 +123,7 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getExtraSelections,
       targetModel: models.KuksaExtraSelection,
-      transform: selection => ({
+      transform: (selection) => ({
         id: selection.id,
         kuksaExtraselectiongroupId: selection.extraSelectionGroup,
         name: selection.name.fi,
@@ -113,22 +132,22 @@ function transferTablesOnlyOnce(eventApi) {
     {
       getFromSource: eventApi.getPayments,
       targetModel: models.KuksaPayment,
-      transform: field => ({
+      transform: (field) => ({
         id: field.id,
         name: field.name.fi,
       }),
     },
-  ]);
+  ])
 }
 
 async function transferParticipants(eventApi) {
   function transferDaterange(daterange) {
-    console.log(`\t daterange ${daterange.startDate} - ${daterange.endDate}`);
+    console.log(`\t daterange ${daterange.startDate} - ${daterange.endDate}`)
     return transfer([
       {
         getFromSource: eventApi.getParticipants,
         targetModel: models.KuksaParticipant,
-        transform: participant => ({
+        transform: (participant) => ({
           id: participant.id,
           firstName: participant.firstName || 'x',
           lastName: participant.lastName || 'x',
@@ -151,7 +170,7 @@ async function transferParticipants(eventApi) {
       {
         getFromSource: eventApi.getParticipantExtraInfos,
         targetModel: models.KuksaParticipantExtraInfo,
-        transform: answer => ({
+        transform: (answer) => ({
           kuksaParticipantId: answer.for,
           kuksaExtrainfofieldId: answer.extraInfoField,
           value: answer.value && answer.value.substring(0, 254),
@@ -161,7 +180,7 @@ async function transferParticipants(eventApi) {
       {
         getFromSource: eventApi.getParticipantExtraSelections,
         targetModel: models.KuksaParticipantExtraSelection,
-        transform: selection => ({
+        transform: (selection) => ({
           kuksaParticipantId: selection.from,
           kuksaExtraselectionId: selection.to,
         }),
@@ -171,39 +190,41 @@ async function transferParticipants(eventApi) {
       {
         getFromSource: eventApi.getParticipantPayments,
         targetModel: models.KuksaParticipantPayment,
-        transform: field => ({
+        transform: (field) => ({
           kuksaParticipantId: field.from,
           kuksaPaymentId: field.to,
         }),
         joinTable: true,
         dateRange: daterange,
       },
-    ]);
+    ])
   }
 
-  const participantDateRanges = config.getFetchDateRanges();
+  const participantDateRanges = config.getFetchDateRanges()
   // set the last date to be current date
-  const lastIndex = participantDateRanges.length - 1;
-  participantDateRanges[lastIndex].endDate = moment().toISOString();
+  const lastIndex = participantDateRanges.length - 1
+  participantDateRanges[lastIndex].endDate = moment().toISOString()
 
-  console.log('Transferring participants, their extra infos, selections and payments');
+  console.log(
+    'Transferring participants, their extra infos, selections and payments',
+  )
   for (const daterange of participantDateRanges) {
-    await transferDaterange(daterange);
+    await transferDaterange(daterange)
   }
 }
 
 function transferPayments(eventApi) {
-  console.log('Transferring payment statuses...');
+  console.log('Transferring payment statuses...')
 
   return transfer([
     {
       getFromSource: eventApi.getParticipantPaymentStatus,
       targetModel: models.KuksaParticipantPaymentStatus,
-      transform: status => ({
+      transform: (status) => ({
         kuksaParticipantId: status.for,
         billed: status.billed,
         paid: status.paid,
       }),
     },
-  ]);
+  ])
 }

@@ -1,17 +1,23 @@
-import * as Rt from 'runtypes';
+import * as Rt from 'runtypes'
 
-export const SortDirection = Rt.Union(Rt.Literal('ASC'), Rt.Literal('DESC'), Rt.Undefined);
+export const SortDirection = Rt.Union(
+  Rt.Literal('ASC'),
+  Rt.Literal('DESC'),
+  Rt.Undefined,
+)
 export type SortDirection = Rt.Static<typeof SortDirection>
 
-export const Ordering = Rt.Dictionary(SortDirection);
+export const Ordering = Rt.Dictionary(SortDirection)
 export type Ordering = Rt.Static<typeof Ordering>
 
 export type FilterSelection = Readonly<Record<string, unknown>>
 
-export const OptionsByProperty = Rt.Dictionary(Rt.Array(Rt.String).asReadonly());
+export const OptionsByProperty = Rt.Dictionary(Rt.Array(Rt.String).asReadonly())
 export type OptionsByProperty = Readonly<Rt.Static<typeof OptionsByProperty>>
 
-export const AvailableDates = Rt.Array(Rt.Record({ date: Rt.String }).asReadonly()).asReadonly();
+export const AvailableDates = Rt.Array(
+  Rt.Record({ date: Rt.String }).asReadonly(),
+).asReadonly()
 export type AvailableDates = Rt.Static<typeof AvailableDates>
 
 export const RegistryUser = Rt.Record({
@@ -22,22 +28,26 @@ export const RegistryUser = Rt.Record({
   phoneNumber: Rt.String,
   email: Rt.String,
   blocked: Rt.Boolean,
-}).asReadonly().And(Rt.Partial({
-  presence: Rt.Number,
-}));
+})
+  .asReadonly()
+  .And(
+    Rt.Partial({
+      presence: Rt.Number,
+    }),
+  )
 export type RegistryUser = Rt.Static<typeof RegistryUser>
 
 export const ParticipantOverview = Rt.Record({
   participantId: Rt.Number,
   dates: Rt.Array(Rt.Record({ date: Rt.String }).asReadonly()).asReadonly(),
-}).asReadonly();
+}).asReadonly()
 export type ParticipantOverview = Rt.Static<typeof ParticipantOverview>
 
 export const PresenceEntry = Rt.Record({
   timestamp: Rt.Number,
   presence: Rt.Number,
   authorId: Rt.String,
-}).asReadonly();
+}).asReadonly()
 export type PresenceEntry = Rt.Static<typeof PresenceEntry>
 
 export const ParticipantDetails = Rt.Record({
@@ -73,9 +83,15 @@ export const ParticipantDetails = Rt.Record({
   childNaps: Rt.String.Or(Rt.Null),
   dates: Rt.Array(Rt.Record({ date: Rt.String }).asReadonly()).asReadonly(),
   allergies: Rt.Array(Rt.Record({ name: Rt.String }).asReadonly()).asReadonly(),
-  selections: Rt.Array(Rt.Record({ selectionName: Rt.String, groupName: Rt.String, kuksaGroupId: Rt.Number }).asReadonly()).asReadonly(),
+  selections: Rt.Array(
+    Rt.Record({
+      selectionName: Rt.String,
+      groupName: Rt.String,
+      kuksaGroupId: Rt.Number,
+    }).asReadonly(),
+  ).asReadonly(),
   presenceHistory: Rt.Array(PresenceEntry).asReadonly(),
   campOfficeNotes: Rt.String.Or(Rt.Null),
   editableInfo: Rt.String.Or(Rt.Null),
-}).asReadonly();
+}).asReadonly()
 export type ParticipantDetails = Rt.Static<typeof ParticipantDetails>

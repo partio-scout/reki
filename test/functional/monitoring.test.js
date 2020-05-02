@@ -1,10 +1,10 @@
-import app from '../../src/server/server';
-import request from 'supertest';
-import { resetDatabase } from '../../scripts/seed-database';
+import app from '../../src/server/server'
+import request from 'supertest'
+import { resetDatabase } from '../../scripts/seed-database'
 
 describe('Monitoring endpoint', () => {
-  beforeEach(resetDatabase);
+  beforeEach(resetDatabase)
 
-  it('should return ok, even for unauthenticated users',
-    () => request(app).get('/monitoring').expect(200, 'OK'));
-});
+  it('should return ok, even for unauthenticated users', () =>
+    request(app).get('/monitoring').expect(200, 'OK'))
+})

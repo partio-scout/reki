@@ -1,8 +1,8 @@
-import { models } from '../server/models';
-import EventEmitter from 'events';
-import { startSpinner } from './util';
+import { models } from '../server/models'
+import EventEmitter from 'events'
+import { startSpinner } from './util'
 
-EventEmitter.prototype._maxListeners = 20;
+EventEmitter.prototype._maxListeners = 20
 
 const modelsToClear = [
   'KuksaSubCamp',
@@ -18,16 +18,16 @@ const modelsToClear = [
   'KuksaParticipantExtraSelection',
   'KuksaPayment',
   'KuksaParticipantPayment',
-];
+]
 
 async function clearTemporaryTables() {
-  const stopSpinner = startSpinner();
+  const stopSpinner = startSpinner()
   try {
     for (const model of modelsToClear) {
-      await models[model].destroy({ where: {} });
+      await models[model].destroy({ where: {} })
     }
   } finally {
-    stopSpinner();
+    stopSpinner()
   }
 }
 
@@ -35,10 +35,10 @@ if (require.main === module) {
   clearTemporaryTables()
     .then(() => console.log(`Tables ${modelsToClear} cleared.`))
     .then(() => {
-      process.exit(0);
+      process.exit(0)
     })
-    .catch(err => {
-      console.error('Temporary model creation failed: ', err);
-      process.exit(1);
-    });
+    .catch((err) => {
+      console.error('Temporary model creation failed: ', err)
+      process.exit(1)
+    })
 }

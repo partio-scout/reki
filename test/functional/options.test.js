@@ -1,43 +1,41 @@
-import { expect } from 'chai';
+import { expect } from 'chai'
 import {
   withFixtures,
   deleteUsers,
   getWithUser,
   expectStatus,
   createUserWithRoles as createUser,
-} from '../utils/test-utils';
-import { resetDatabase } from '../../scripts/seed-database';
+} from '../utils/test-utils'
+import { resetDatabase } from '../../scripts/seed-database'
 
 describe('Options API endpoint', () => {
-
   it('returns filter options', async () => {
     const res = await getWithUser(
       '/api/options',
       await createUser(['registryUser']),
-    );
-    expectStatus(res.status, 200);
+    )
+    expectStatus(res.status, 200)
 
-    expect(res.body.village).to.deep.equal(['Mallikylä', 'muu']);
-    expect(res.body.campGroup).to.deep.equal(['muu']);
-  });
+    expect(res.body.village).to.deep.equal(['Mallikylä', 'muu'])
+    expect(res.body.campGroup).to.deep.equal(['muu'])
+  })
 
-  before(resetDatabase);
+  before(resetDatabase)
   withFixtures({
-    'Option': [
+    Option: [
       {
-        'property': 'village',
-        'value': 'Mallikylä',
+        property: 'village',
+        value: 'Mallikylä',
       },
       {
-        'property': 'village',
-        'value': 'muu',
+        property: 'village',
+        value: 'muu',
       },
       {
-        'property': 'campGroup',
-        'value': 'muu',
+        property: 'campGroup',
+        value: 'muu',
       },
     ],
-  });
-  afterEach(deleteUsers);
-
-});
+  })
+  afterEach(deleteUsers)
+})

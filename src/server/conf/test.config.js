@@ -1,4 +1,4 @@
-import { _ } from 'lodash';
+import { _ } from 'lodash'
 
 /*
  * This is the config file used for tests - don't change it unless you plan to change the tests too!
@@ -133,12 +133,9 @@ const participantCustomFields = [
     dataType: 'string',
     nullable: true,
   },
-];
+]
 
-const participantTableFields = [
-  'firstName',
-  'lastName',
-];
+const participantTableFields = ['firstName', 'lastName']
 
 const filters = [
   {
@@ -149,17 +146,14 @@ const filters = [
     field: 'staffPositionInGenerator',
     title: 'Pesti (kehitin)',
   },
-];
+]
 
 const detailsPageFields = [
   {
     groupTitle: 'Yhteystiedot',
-    fields: [
-      'phone',
-      'email',
-    ],
+    fields: ['phone', 'email'],
   },
-];
+]
 
 // Titles of the multi-select groups that should be synced from Kuksa.
 // Each item represents the name of the selection group.
@@ -170,9 +164,9 @@ const customMultipleSelectionFields = [
   'Lapsen uimataito',
   'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
   '\tLapsi tarvitsee päiväunien aikaan vaippaa',
-];
+]
 
-const participantDatesMapper = wrappedParticipant => {
+const participantDatesMapper = (wrappedParticipant) => {
   // Map payment names to arrays of dates when the participant is present
   const paymentToDatesMappings = {
     'pe 15.7.': ['2016-07-15'],
@@ -218,28 +212,43 @@ const participantDatesMapper = wrappedParticipant => {
     'la 30.7.': ['2016-07-30'],
     'su 31.7.': ['2016-07-31'],
 
-    'Osallistun koko leirin ajaksi': ['2016-07-20','2016-07-21','2016-07-22','2016-07-23','2016-07-24','2016-07-25','2016-07-26','2016-07-27'],
-    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': ['2016-07-28','2016-07-29','2016-07-30','2016-07-31'],
+    'Osallistun koko leirin ajaksi': [
+      '2016-07-20',
+      '2016-07-21',
+      '2016-07-22',
+      '2016-07-23',
+      '2016-07-24',
+      '2016-07-25',
+      '2016-07-26',
+      '2016-07-27',
+    ],
+    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': [
+      '2016-07-28',
+      '2016-07-29',
+      '2016-07-30',
+      '2016-07-31',
+    ],
     'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
-  };
+  }
 
-  return _(wrappedParticipant.getPayments())
-    .flatMap(payment => {
-      const dateMappings = paymentToDatesMappings[payment];
+  return _(wrappedParticipant.getPayments()).flatMap((payment) => {
+    const dateMappings = paymentToDatesMappings[payment]
 
-      if (dateMappings === undefined) {
-        console.log(`Warning! A mapping from payment type '${payment}' to participation dates is missing!`);
-      }
+    if (dateMappings === undefined) {
+      console.log(
+        `Warning! A mapping from payment type '${payment}' to participation dates is missing!`,
+      )
+    }
 
-      return dateMappings || [];
-    });
-};
+    return dateMappings || []
+  })
+}
 
 // Titles of multi-select fields containing the allergy information
 const allergyFields = [
   'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
   'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-];
+]
 
 // Field by which the view can be filtered (participantFields only)
 const filterableByFields = [
@@ -254,7 +263,7 @@ const filterableByFields = [
   'willOfTheWisp',
   'willOfTheWispWave',
   'internationalGuest',
-];
+]
 
 // Roles and their permissions
 const permissions = {
@@ -274,43 +283,47 @@ const permissions = {
     'block and unblock users',
     'view app configuration',
   ],
-};
+}
 
 // Split fetching participants to date ranges in order to avoid overloading Kuksa
 const fetchDateRanges = [
   {
-    'startDate': '2015-01-01T00:00:00',
-    'endDate': '2016-01-22T06:00:00',
+    startDate: '2015-01-01T00:00:00',
+    endDate: '2016-01-22T06:00:00',
   },
   {
-    'startDate': '2016-01-22T00:00:00',
-    'endDate': '2016-02-25T06:00:00',
+    startDate: '2016-01-22T00:00:00',
+    endDate: '2016-02-25T06:00:00',
   },
   {
-    'startDate': '2016-02-25T00:00:00',
-    'endDate': '2016-07-15T05:00:00',
+    startDate: '2016-02-25T00:00:00',
+    endDate: '2016-07-15T05:00:00',
   },
   {
-    'startDate': '2016-07-15T05:00:00',
-    'endDate': '', // Defaults to right now
+    startDate: '2016-07-15T05:00:00',
+    endDate: '', // Defaults to right now
   },
-];
+]
 
 // Takes the participant as fetched from Kuksa and maps it to the participant to
 // save in the database
-const participantBuilderFunction = participant => {
-  const p = participant;
+const participantBuilderFunction = (participant) => {
+  const p = participant
 
   // Shorten family camp age group a bit
-  let ageGroup = p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu';
-  if (ageGroup === 'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.') {
-    ageGroup = 'perheleiri (0-11v.)';
+  let ageGroup =
+    p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu'
+  if (
+    ageGroup ===
+    'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.'
+  ) {
+    ageGroup = 'perheleiri (0-11v.)'
   }
 
   // Family camp residence needs to be deduced differently
-  let subCamp = p.get('kuksa_subcamp.name') || 'Muu';
+  let subCamp = p.get('kuksa_subcamp.name') || 'Muu'
   if (p.get('accommodation') === 'Perheleirissä') {
-    subCamp = 'Riehu';
+    subCamp = 'Riehu'
   }
 
   return {
@@ -327,7 +340,8 @@ const participantBuilderFunction = participant => {
     internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
     diet: p.get('diet'),
     accommodation: p.get('accommodation') || 'Muu',
-    localGroup: p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
+    localGroup:
+      p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
     campGroup: p.get('kuksa_campgroup.name') || 'Muu',
     subCamp: subCamp,
     village: p.get('kuksa_village.name') || 'Muu',
@@ -341,10 +355,12 @@ const participantBuilderFunction = participant => {
     willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
     guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
     guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
-    familyCampProgramInfo: p.getExtraInfo('Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse'),
+    familyCampProgramInfo: p.getExtraInfo(
+      'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse',
+    ),
     childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
-  };
-};
+  }
+}
 
 export default {
   participantCustomFields: participantCustomFields,
@@ -358,4 +374,4 @@ export default {
   participantTableFields: participantTableFields,
   filters: filters,
   detailsPageFields: detailsPageFields,
-};
+}

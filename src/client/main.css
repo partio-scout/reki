@@ -1,16 +1,18 @@
 :root {
   --typography-scale: 1.25;
-  --h1-scale: calc(var(--typography-scale) * var(--typography-scale) * var(--typography-scale));
+  --h1-scale: calc(
+    var(--typography-scale) * var(--typography-scale) * var(--typography-scale)
+  );
 
   --white: white;
   --black: #333;
-  --light-gray: #F4F5F7;
+  --light-gray: #f4f5f7;
   --dark-blue: #253764;
   --light-blue: #28aae1;
 
-  --copy-font-family: "PT Sans", sans-serif;
+  --copy-font-family: 'PT Sans', sans-serif;
 
-  --heading-font-family: "Source Sans Pro", sans-serif;
+  --heading-font-family: 'Source Sans Pro', sans-serif;
   --heading-font-weight: 900;
 
   --link-font-weight: 700;
@@ -37,7 +39,12 @@
   contain: content;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--heading-font-family);
   font-weight: var(--heading-font-weight);
   margin: 0;
