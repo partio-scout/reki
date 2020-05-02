@@ -1,4 +1,4 @@
-export function classNames(...input: readonly ([string, boolean] | string | undefined)[]): string {
+export function classNames(...input: readonly ([string, boolean | undefined] | string | undefined)[]): string {
   return input.map(x => Array.isArray(x) ? x[1] ? x[0] : undefined : x).filter(isNotUndefined).join(' ');
 }
 
