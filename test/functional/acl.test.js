@@ -42,7 +42,6 @@ describe('HTTP API access control', () => {
         'GET /api/registryusers',
         'POST /api/registryusers/:id/block',
         'POST /api/registryusers/:id/unblock',
-        'POST /api/registryusers/logout',
         'GET /api/config',
         'GET /api/audit-events',
       ]
@@ -132,8 +131,6 @@ describe('HTTP API access control', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () =>
         get('/api/registryusers').expect(UNAUTHORIZED))
-      it('logout: OK', () =>
-        post('/api/registryusers/logout').expect(NO_CONTENT))
       it('block user: UNAUTHORIZED', () =>
         post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED))
       it('unblock user: UNAUTHORIZED', () =>
@@ -143,9 +140,6 @@ describe('HTTP API access control', () => {
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () =>
         get('/api/registryusers', []).expect(UNAUTHORIZED))
-
-      it('logout: OK', () =>
-        post('/api/registryusers/logout', null, []).expect(NO_CONTENT))
 
       it('block user: UNAUTHORIZED', () =>
         post(`/api/registryusers/${otherUserId}/block`, null, []).expect(
@@ -161,11 +155,6 @@ describe('HTTP API access control', () => {
       it('find: UNAUTHORIZED', () =>
         get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED))
 
-      it('logout: OK', () =>
-        post('/api/registryusers/logout', null, ['registryUser']).expect(
-          NO_CONTENT,
-        ))
-
       it('block user: UNAUTHORIZED', () =>
         post(`/api/registryusers/${otherUserId}/block`, null, [
           'registryUser',
@@ -179,11 +168,6 @@ describe('HTTP API access control', () => {
     describe('registryAdmin', () => {
       it('find: ok', () =>
         get('/api/registryusers', ['registryAdmin']).expect(OK))
-
-      it('logout: OK', () =>
-        post('/api/registryusers/logout', null, ['registryAdmin']).expect(
-          NO_CONTENT,
-        ))
 
       it('block user: NO_CONTENT', () =>
         post(`/api/registryusers/${otherUserId}/block`, null, [
