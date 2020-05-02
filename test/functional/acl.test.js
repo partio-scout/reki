@@ -15,6 +15,10 @@ const OK = 200
 const NO_CONTENT = 204
 const UNAUTHORIZED = 401
 
+// In the metadata express keeps in its routers, it stores a regex that is used to match incoming requests
+// to route handlers. This regex takes such a regex in string form, and extracts the URL path from it.
+const expressRouteRegex = /^\/\^\\(\/.*)\\\/\?\(\?=\\\/\|\$\)\/i$/i
+
 describe('HTTP API access control', () => {
   const otherUserId = 123
 
@@ -46,16 +50,25 @@ describe('HTTP API access control', () => {
         'GET /api/audit-events',
       ]
 
-      const apiRoutesInApp = _(app._router.stack)
-        .filter((item) => !!item.route && !!item.route.path)
-        .flatMap((item) =>
-          _.map(
-            _.keys(item.route.methods),
-            (method) => `${method.toUpperCase()} ${item.route.path}`,
-          ),
-        )
-        .filter((item) => _.includes(item, ' /api')) //API endpoints only
-        .value()
+      function* getRoutes(router, prefix = '') {
+        for (const item of router.stack) {
+          if (item.name === 'router') {
+            const prefix = item.regexp
+              .toString()
+              .match(expressRouteRegex)[1]
+              .replace(/\\/g, '')
+            yield* getRoutes(item.handle, prefix)
+          } else if (!!item.route && !!item.route.path) {
+            for (const method of Object.keys(item.route.methods)) {
+              yield `${method.toUpperCase()} ${prefix}${item.route.path}`
+            }
+          }
+        }
+      }
+
+      const apiRoutesInApp = Array.from(getRoutes(app._router)).filter((item) =>
+        _.includes(item, ' /api'),
+      ) //API endpoints only
 
       apiRoutesInApp.forEach((route) =>
         expect(apiRoutesWithAccessControlTests).to.contain(
