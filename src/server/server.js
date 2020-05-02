@@ -138,7 +138,9 @@ async function boot(app) {
     res.status(500).send('Internal server error')
   })
 
-  await updateDatabase(app)
+  if (appConfig.standalone) {
+    await updateDatabase()
+  }
   errorHandling(app)
   accessControl(app)
   audit(app)

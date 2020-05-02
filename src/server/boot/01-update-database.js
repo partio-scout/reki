@@ -6,11 +6,7 @@ import argon2 from 'argon2'
 
 // TODO refactor this to a script file and add tests to check models and roles are
 // created correctly
-export default async function (app) {
-  if (!appConfig.standalone) {
-    return
-  }
-
+export default async function () {
   await sequelize.sync({ alter: true })
 
   const roles = []
