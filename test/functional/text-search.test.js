@@ -103,11 +103,17 @@ describe('Free-text search in participant list API endpoint', () => {
     return expect(firstNames).to.have.members(expectedResult)
   }
 
-  async function queryParticipants(filter) {
+  async function queryParticipants({ textSearch, ...filter }) {
+    const params = new URLSearchParams({
+      ...filter,
+      skip: 0,
+      limit: 20,
+    })
+    if (textSearch) {
+      params.set('q', textSearch)
+    }
     const res = await testUtils.getWithUser(
-      `/api/participants/?filter={"where":${encodeURIComponent(
-        JSON.stringify(filter),
-      )},"skip":0,"limit":20}`,
+      `/api/participants/?${params}`,
       await testUtils.createUserWithRoles(['registryUser']),
     )
     testUtils.expectStatus(res.status, 200)

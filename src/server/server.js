@@ -396,7 +396,7 @@ async function boot(app) {
   const getParticipantParamsGetter = (params) =>
     GetParticipantParams.check({ id: Number(params.id) })
   apiRouter.get(
-    '/participants/:id',
+    '/participants/:id(\\d+)',
     optionalBasicAuth(),
     requirePermission('view participants'),
     async (req, res) => {
@@ -446,7 +446,7 @@ async function boot(app) {
   const listParticipantsParamsGetter = (query) => {
     const limit = Number(query.limit) || undefined
     const offset = Number(query.offset) || undefined
-    const textSearch = query.q.split(/\s+/)
+    const textSearch = query.q ? query.q.split(/\s+/) : []
     const orderBy = query.orderBy || 'participantId'
     const orderDirection = query.orderDirection || 'ASC'
     const order = [orderBy, orderDirection]
@@ -494,7 +494,7 @@ async function boot(app) {
         params.dateFilters && params.dateFilters.length
           ? {
               date: {
-                [Op.in]: _.map(where.dates, (dateStr) => new Date(dateStr)),
+                [Op.in]: params.dateFilters.map((dateStr) => new Date(dateStr)),
               },
             }
           : undefined
@@ -784,6 +784,14 @@ async function boot(app) {
       res.type('html').send(index(req.user))
     } else {
       res.redirect(303, '/login')
+    }
+  })
+
+  app.use((error, req, res, next) => {
+    if (error instanceof Rt.ValidationError) {
+      res.sendStatus(400)
+    } else {
+      next(error)
     }
   })
 
