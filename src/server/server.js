@@ -17,6 +17,7 @@ import fs from 'fs'
 import { Strategy as SamlStrategy } from 'passport-saml'
 import argon2 from 'argon2'
 import { BasicStrategy } from 'passport-http'
+import * as Rt from 'runtypes'
 
 import config from './conf'
 import { sequelize, models, updateDatabase } from './models'
@@ -420,49 +421,77 @@ async function boot(app) {
     },
   )
 
+  const NonNegativeInteger = Rt.Number.withConstraint(
+    (num) => Number.isInteger(num) && num >= 1,
+  )
+  const filterableFields = new Set(
+    config.getParticipantFields().map((field) => field.name),
+  )
+
+  const ListParticipantsParams = Rt.Partial({
+    textSearch: Rt.Array(Rt.String).asReadonly(),
+    dateFilters: Rt.Array(Rt.InstanceOf(Date)),
+    fieldFilters: Rt.Array(Rt.Tuple(Rt.String, Rt.String)).asReadonly(),
+    limit: NonNegativeInteger,
+    offset: NonNegativeInteger,
+    order: Rt.Tuple(Rt.String, Rt.Union(Rt.Literal('ASC'), Rt.Literal('DESC'))),
+  })
+
+  const listParticipantsParamsGetter = (query) => {
+    const limit = Number(query.limit) || undefined
+    const offset = Number(query.offset) || undefined
+    const textSearch = query.q.split(/\s+/)
+    const orderBy = query.orderBy || 'participantId'
+    const orderDirection = query.orderDirection || 'ASC'
+    const order = [orderBy, orderDirection]
+
+    const fieldFilters = Object.entries(query).filter(([key]) =>
+      filterableFields.has(key),
+    )
+    const dateFilters = query.dates
+      ? query.dates.split(',').map((x) => new Date(x.trim()))
+      : undefined
+
+    return ListParticipantsParams.check({
+      textSearch,
+      dateFilters,
+      fieldFilters,
+      limit,
+      offset,
+      order,
+    })
+  }
+
   apiRouter.get(
     '/participants',
     optionalBasicAuth(),
     requirePermission('view participants'),
     async (req, res) => {
-      const filter = JSON.parse(req.query.filter || '{}')
-      const limit = +filter.limit || undefined
-      const offset = +filter.skip || undefined
-      // TODO refactor so this comes in right format already
-      const order = filter.order
-        ? filter.order.split(' ')
-        : ['participantId', 'ASC']
-
-      const where = filter.where || {}
-
-      // For free-text searching we need to add ILIKE filter for all searchable text fields
-      if (where.textSearch) {
-        const words = where.textSearch.split(/\s+/)
-        // Why or statement inside an and statement? Because we want to every word in textSearch
-        // to match at least once, but possibly match in different fields. For example "Firstname Lastname"
-        // should match "Firstname" in first name and "Lastname" in last name.
-        where[Op.and] = words.map((word) => {
-          const searches = config.getSearchableFieldNames().map((field) => ({
-            [field]: {
-              [Op.iLike]: `%${word}%`,
-            },
-          }))
-          return { [Op.or]: searches }
-        })
-
-        delete where.textSearch // textSearch is not a real field -> remove, or Sequelize would throw error
+      const params = listParticipantsParamsGetter(req.query)
+      const where = {
+        [Op.and]: [
+          ...params.textSearch.map((word) => ({
+            [Op.or]: config.getSearchableFieldNames().map((field) => ({
+              [field]: {
+                [Op.iLike]: `%${word}%`,
+              },
+            })),
+          })),
+          ...params.fieldFilters.map(([field, value]) => ({
+            [field]: value,
+          })),
+        ],
       }
 
       // Date search
-      let dateFilter
-      if (where.dates && where.dates.length && where.dates.length > 0) {
-        dateFilter = {
-          date: {
-            [Op.in]: _.map(where.dates, (dateStr) => new Date(dateStr)),
-          },
-        }
-      }
-      delete where.dates
+      const dateFilter =
+        params.dateFilters && params.dateFilters.length
+          ? {
+              date: {
+                [Op.in]: _.map(where.dates, (dateStr) => new Date(dateStr)),
+              },
+            }
+          : undefined
 
       const result = await models.Participant.findAndCountAll({
         where: where,
@@ -479,9 +508,9 @@ async function boot(app) {
             as: 'dates',
           },
         ],
-        offset: offset,
-        limit: limit,
-        order: [order],
+        offset: params.offset,
+        limit: params.limit,
+        order: [params.order],
         distinct: true, // without this count is calculated incorrectly
       })
 
@@ -489,7 +518,7 @@ async function boot(app) {
         ...getClientData(req),
         modelType: 'Participant',
         eventType: 'find',
-        meta: { filter, generatedQuery: { where, offset, limit, order } },
+        meta: { params },
       })
 
       res.json({ result: result.rows, count: result.count })
@@ -594,29 +623,32 @@ async function boot(app) {
     )
   }
 
-  app.get('/logout', app.wrap(async (req, res, next) => {
-    if (req.user) {
-      await audit({
-        ...getClientData(req),
-        modelId: req.user.id,
-        modelType: 'User',
-        eventType: 'logout',
-      })
-    }
+  app.get(
+    '/logout',
+    app.wrap(async (req, res, next) => {
+      if (req.user) {
+        await audit({
+          ...getClientData(req),
+          modelId: req.user.id,
+          modelType: 'User',
+          eventType: 'logout',
+        })
+      }
 
-    if (req.user && req.user.sessionType === 'partioid') {
-      strategy.logout(req, (err, request) => {
-        if (err) {
-          next(err)
-        } else {
-          res.redirect(request)
-        }
-      })
-    } else {
-      req.logout()
-      res.redirect(303, '/login')
-    }
-  }))
+      if (req.user && req.user.sessionType === 'partioid') {
+        strategy.logout(req, (err, request) => {
+          if (err) {
+            next(err)
+          } else {
+            res.redirect(request)
+          }
+        })
+      } else {
+        req.logout()
+        res.redirect(303, '/login')
+      }
+    }),
+  )
 
   app.post(
     '/saml/consume',
@@ -658,8 +690,8 @@ async function boot(app) {
 
       const users = await models.User.findAll()
       res.json(users.map(models.User.toClientFormat))
-    },
-  ))
+    }),
+  )
 
   apiRouter.post(
     '/registryusers/:id/block',
@@ -675,13 +707,10 @@ async function boot(app) {
         eventType: 'block',
       })
 
-      await models.User.update(
-        { blocked: true },
-        { where: { id: userId } },
-      )
+      await models.User.update({ blocked: true }, { where: { id: userId } })
       res.status(204).send('')
-    },
-  ))
+    }),
+  )
 
   apiRouter.post(
     '/registryusers/:id/unblock',
@@ -697,13 +726,10 @@ async function boot(app) {
         eventType: 'unblock',
       })
 
-      await models.User.update(
-        { blocked: false },
-        { where: { id: userId } },
-      )
+      await models.User.update({ blocked: false }, { where: { id: userId } })
       res.status(204).send('')
-    },
-  ))
+    }),
+  )
 
   app.get('/monitoring', async (req, res) => {
     try {
