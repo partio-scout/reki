@@ -41,7 +41,7 @@ describe('HTTP API access control', () => {
         'GET /api/options',
         'GET /api/participantdates',
         'GET /api/participants',
-        'GET /api/participants/:id',
+        'GET /api/participants/:id(\\d+)',
         'POST /api/participants/massAssign',
         'GET /api/registryusers',
         'POST /api/registryusers/:id/block',

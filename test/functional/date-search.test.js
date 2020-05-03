@@ -53,12 +53,12 @@ describe('Date search in participant list API endpoint', () => {
 
   async function queryParticipants(filter) {
     const user = await createUserWithRoles(['registryUser'])
-    const res = await getWithUser(
-      `/api/participants/?filter={"where":${JSON.stringify(
-        filter,
-      )},"skip":0,"limit":20}`,
-      user,
-    )
+    const params = new URLSearchParams({
+      ...filter,
+      offset: 0,
+      limit: 20,
+    })
+    const res = await getWithUser(`/api/participants/?${params}`, user)
     expectStatus(res.status, 200)
     return res
   }
