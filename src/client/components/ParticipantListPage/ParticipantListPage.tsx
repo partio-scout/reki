@@ -199,7 +199,9 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
       include: ['dates'],
     }
 
-    const filterString = `filter=${encodeURIComponent(JSON.stringify(filters))}`
+    const filterParams = new URLSearchParams({
+      filter: JSON.stringify(filters),
+    })
 
     if (filter === undefined || Object.keys(filter).length === 0) {
       setParticipants([])
@@ -208,7 +210,7 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
     }
 
     participantResource
-      .findAll(filterString)
+      .findAll(filterParams)
       .then((participantList) =>
         Rt.Record({ result: Rt.Array(ParticipantOverview).asReadonly() })
           .asReadonly()

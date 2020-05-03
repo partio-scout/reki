@@ -1,22 +1,25 @@
 import { withDefaultOpts } from './fetch'
 
 export type RestfulResource = {
-  findAll: (filters?: string) => Promise<unknown>
-  findById: (id: string, filters?: string) => Promise<unknown>
+  findAll: (filters?: URLSearchParams) => Promise<unknown>
+  findById: (id: string, filters?: URLSearchParams) => Promise<unknown>
   create: (obj: string) => Promise<unknown>
   update: (id: string, obj?: unknown) => Promise<unknown>
   del: (id: string) => Promise<unknown>
   raw: (
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    options?: { body?: unknown; filters?: string },
+    options?: { body?: unknown; filters?: URLSearchParams },
   ) => Promise<unknown>
 }
 
 export function RestfulResource(endpoint: string): RestfulResource {
-  function getPath(basePath: string | undefined, filters: string | undefined) {
+  function getPath(
+    basePath: string | undefined,
+    params: URLSearchParams | undefined,
+  ) {
     basePath = basePath !== undefined ? `/${basePath}` : ''
-    filters = filters !== undefined ? `?${filters}` : ''
+    const filters = params !== undefined ? `?${params.toString()}` : ''
     return `${endpoint}${basePath}${filters}`
   }
 
@@ -35,11 +38,11 @@ export function RestfulResource(endpoint: string): RestfulResource {
     return res.json()
   }
 
-  function findAll(filters?: string): Promise<unknown> {
+  function findAll(filters?: URLSearchParams): Promise<unknown> {
     return raw('GET', '', { filters })
   }
 
-  function findById(id: string, filters?: string): Promise<unknown> {
+  function findById(id: string, filters?: URLSearchParams): Promise<unknown> {
     return raw('GET', id, { filters })
   }
 
@@ -58,7 +61,7 @@ export function RestfulResource(endpoint: string): RestfulResource {
   function raw(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    { body, filters }: { body?: unknown; filters?: string } = {},
+    { body, filters }: { body?: unknown; filters?: URLSearchParams } = {},
   ): Promise<unknown> {
     return fetch(
       getPath(path, filters),
