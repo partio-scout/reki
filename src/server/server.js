@@ -386,12 +386,22 @@ async function boot(app) {
       res.json(uniqueDates)
     },
   )
+
+  const NonNegativeInteger = Rt.Number.withConstraint(
+    (num) => Number.isInteger(num) && num >= 1,
+  )
+  const GetParticipantParams = Rt.Record({
+    id: NonNegativeInteger,
+  }).asReadonly()
+  const getParticipantParamsGetter = (params) =>
+    GetParticipantParams.check({ id: Number(params.id) })
   apiRouter.get(
     '/participants/:id',
     optionalBasicAuth(),
     requirePermission('view participants'),
     async (req, res) => {
-      const id = +req.params.id || 0
+      const { id } = getParticipantParamsGetter(req.params)
+
       const participant = await models.Participant.findByPk(id, {
         include: [{ all: true, nested: true }],
       })
@@ -419,10 +429,6 @@ async function boot(app) {
         res.status(404).send('Not found')
       }
     },
-  )
-
-  const NonNegativeInteger = Rt.Number.withConstraint(
-    (num) => Number.isInteger(num) && num >= 1,
   )
   const filterableFields = new Set(
     config.getParticipantFields().map((field) => field.name),
