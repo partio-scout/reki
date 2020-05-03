@@ -722,7 +722,7 @@ async function boot(app) {
     optionalBasicAuth(),
     requirePermission('block and unblock users'),
     app.wrap(async (req, res) => {
-      const userId = req.params.id
+      const userId = NonNegativeInteger.check(Number(req.params.id))
 
       await audit({
         ...getClientData(req),
@@ -741,7 +741,7 @@ async function boot(app) {
     optionalBasicAuth(),
     requirePermission('block and unblock users'),
     app.wrap(async (req, res) => {
-      const userId = req.params.id
+      const userId = NonNegativeInteger.check(Number(req.params.id))
 
       await audit({
         ...getClientData(req),
