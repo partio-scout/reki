@@ -44,9 +44,9 @@ export const ParticipantOverview = Rt.Record({
 export type ParticipantOverview = Rt.Static<typeof ParticipantOverview>
 
 export const PresenceEntry = Rt.Record({
-  timestamp: Rt.Number,
+  timestamp: Rt.String,
   presence: Rt.Number,
-  authorId: Rt.String,
+  authorId: Rt.Number,
 }).asReadonly()
 export type PresenceEntry = Rt.Static<typeof PresenceEntry>
 
