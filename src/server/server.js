@@ -531,15 +531,33 @@ async function boot(app) {
     },
   )
 
+  const ParticipantsMassAssignBody = Rt.Record({
+    ids: Rt.Array(Rt.Number).asReadonly(),
+  }).And(
+    Rt.Union(
+      Rt.Record({
+        fieldName: Rt.Union(
+          Rt.Literal('editableInfo'),
+          Rt.Literal('campOfficeNotes'),
+        ),
+        newValue: Rt.String,
+      }),
+      Rt.Record({
+        fieldName: Rt.Literal('presence'),
+        newValue: Rt.Number,
+      }),
+    ),
+  )
   apiRouter.post(
     '/participants/massAssign',
     optionalBasicAuth(),
     requirePermission('edit participants'),
     async (req, res) => {
+      const body = ParticipantsMassAssignBody.check(req.body)
       const updates = await models.Participant.massAssignField(
-        req.body.ids,
-        req.body.fieldName,
-        req.body.newValue,
+        body.ids,
+        body.fieldName,
+        body.newValue,
         getClientData(req),
       )
       res.json(updates)
