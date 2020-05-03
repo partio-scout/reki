@@ -1,6 +1,6 @@
 import app from '../../src/server/server'
 import request from 'supertest'
-import { expect } from 'chai'
+import { expect, assert } from 'chai'
 import {
   withFixtures,
   createUserWithRoles as createUser,
@@ -26,64 +26,74 @@ describe('HTTP API access control', () => {
   withFixtures(getFixtures())
 
   describe('Access control tests', () => {
-    it('exist for all endpoints under /api', () => {
-      /*
-        If this test just failed, it means that you probably added, moved or removed an API endpoint.
-        To make this test pass, write the relevant tests for your endpoint in this file and update the
-        list of known endpoints below - even if your endpoint is accessible to everyone (which
-        it probably shouldn't be). It's very important to have access control tests for all
-        endpoints.
-      */
+    const apiRoutesWithAccessControlTests = new Set([
+      'GET /api/test/rbac-test-success', // tested in other file
+      'GET /api/test/rbac-test-fail', // tested in other file
+      'GET /api/options',
+      'GET /api/participantdates',
+      'GET /api/participants',
+      'GET /api/participants/:id(\\d+)',
+      'POST /api/participants/massAssign',
+      'GET /api/registryusers',
+      'POST /api/registryusers/:id/block',
+      'POST /api/registryusers/:id/unblock',
+      'GET /api/config',
+      'GET /api/audit-events',
+    ])
 
-      const apiRoutesWithAccessControlTests = [
-        'GET /api/test/rbac-test-success', // tested in other file
-        'GET /api/test/rbac-test-fail', // tested in other file
-        'GET /api/options',
-        'GET /api/participantdates',
-        'GET /api/participants',
-        'GET /api/participants/:id(\\d+)',
-        'POST /api/participants/massAssign',
-        'GET /api/registryusers',
-        'POST /api/registryusers/:id/block',
-        'POST /api/registryusers/:id/unblock',
-        'GET /api/config',
-        'GET /api/audit-events',
-      ]
-
-      function* getRoutes(router, prefix = '') {
-        for (const item of router.stack) {
-          if (item.name === 'router') {
-            const prefix = item.regexp
-              .toString()
-              .match(expressRouteRegex)[1]
-              .replace(/\\/g, '')
-            yield* getRoutes(item.handle, prefix)
-          } else if (!!item.route && !!item.route.path) {
-            for (const method of Object.keys(item.route.methods)) {
-              yield `${method.toUpperCase()} ${prefix}${item.route.path}`
-            }
+    function* getRoutes(router, prefix = '') {
+      for (const item of router.stack) {
+        if (item.name === 'router') {
+          const prefix = item.regexp
+            .toString()
+            .match(expressRouteRegex)[1]
+            .replace(/\\/g, '')
+          yield* getRoutes(item.handle, prefix)
+        } else if (!!item.route && !!item.route.path) {
+          for (const method of Object.keys(item.route.methods)) {
+            yield `${method.toUpperCase()} ${prefix}${item.route.path}`
           }
         }
       }
+    }
 
-      const apiRoutesInApp = Array.from(getRoutes(app._router)).filter((item) =>
-        _.includes(item, ' /api'),
-      ) //API endpoints only
+    const apiRoutesInApp = new Set(
+      Array.from(getRoutes(app._router)).filter((item) =>
+        item.includes(' /api'),
+      ),
+    ) //API endpoints only
 
-      apiRoutesInApp.forEach((route) =>
-        expect(apiRoutesWithAccessControlTests).to.contain(
-          route,
+    for (const route of apiRoutesInApp) {
+      it(`should have access control test for ${route}`, () => {
+        /*
+          If this test just failed, it means that you probably added, moved or removed an API endpoint.
+          To make this test pass, write the relevant tests for your endpoint in this file and update the
+          list of known endpoints below - even if your endpoint is accessible to everyone (which
+          it probably shouldn't be). It's very important to have access control tests for all
+          endpoints.
+        */
+        assert(
+          apiRoutesWithAccessControlTests.has(route),
           `There seems to be no access control test for "${route}" - please add it`,
-        ),
-      )
+        )
+      })
+    }
 
-      apiRoutesWithAccessControlTests.forEach((route) =>
-        expect(apiRoutesInApp).to.contain(
-          route,
-          `"${route}" seems to have been removed - please remove it from this test`,
-        ),
-      )
-    })
+    for (const route of apiRoutesWithAccessControlTests) {
+      it(`should have route for access control test testing ${route}`, () => {
+        /*
+          If this test just failed, it means that you probably added, moved or removed an API endpoint.
+          To make this test pass, write the relevant tests for your endpoint in this file and update the
+          list of known endpoints below - even if your endpoint is accessible to everyone (which
+          it probably shouldn't be). It's very important to have access control tests for all
+          endpoints.
+        */
+        assert(
+          apiRoutesInApp.has(route),
+          `"${route}" seems to have been removed - please add the route handler back, or remove this route from the list of expected routes`,
+        )
+      })
+    }
   })
 
   describe('Participant', () => {
