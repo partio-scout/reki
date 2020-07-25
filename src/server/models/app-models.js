@@ -182,6 +182,33 @@ export default function (db) {
 
   const ParticipantAllergy = db.define('participant_allergy')
 
+  const AuditClientData = db.define('audit_client_data', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    ipVersion: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    ipAddress: {
+      type: Sequelize.BIGINT,
+      allowNull: false,
+    },
+    userAgent: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+    },
+  }, {
+    indexes: [
+      {
+        fields: ['ipVersion', 'ipAddress', 'userAgent'],
+        unique: true,
+      },
+    ],
+  })
+
   const AuditEvent = db.define('audit_event', {
     id: {
       type: Sequelize.INTEGER,
@@ -200,12 +227,25 @@ export default function (db) {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    changes: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     timestamp: {
       type: Sequelize.DATE,
       allowNull: false,
       defaultValue: Sequelize.NOW,
     },
+    reason: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+      defaultValue: '',
+    },
     userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    clientDataId: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
@@ -215,14 +255,6 @@ export default function (db) {
       return AuditEvent.create({
         eventType: description,
         model: 'Participant',
-        modelId: instanceId,
-        userId,
-      })
-    },
-    User: function (userId, instanceId, description) {
-      return AuditEvent.create({
-        eventType: description,
-        model: 'User',
         modelId: instanceId,
         userId,
       })
@@ -305,6 +337,18 @@ export default function (db) {
     }
   }
 
+  AuditEvent.belongsTo(AuditClientData, {
+    as: 'clientData',
+    foreignKey: 'clientDataId',
+    targetKey: 'id',
+  })
+
+  AuditClientData.hasMany(AuditEvent, {
+    as: 'clientData',
+    foreignKey: 'clientDataId',
+    sourceKey: 'id',
+  })
+
   return {
     User: User,
     UserRole: UserRole,
@@ -316,6 +360,7 @@ export default function (db) {
     ParticipantDate: ParticipantDate,
     Allergy: Allergy,
     ParticipantAllergy: ParticipantAllergy,
+    AuditClientData,
     AuditEvent,
   }
 }

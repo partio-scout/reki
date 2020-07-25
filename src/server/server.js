@@ -51,6 +51,9 @@ async function boot(app) {
   if (!appConfig.isDev) {
     app.enable('trust proxy')
     app.use(expressEnforcesSsl())
+  }
+
+  if (process.env.REDIS_URL) {
     const RedisStore = RedisStoreConstructor(session)
     sessionStore = new RedisStore({
       client: redis.createClient(process.env.REDIS_URL),
