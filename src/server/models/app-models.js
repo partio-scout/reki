@@ -253,6 +253,11 @@ export default function (db) {
 
   PresenceHistory.belongsTo(Participant)
 
+  PresenceHistory.belongsTo(User, {
+    as: 'author',
+    foreignKey: 'authorId',
+  })
+
   Selection.belongsTo(Participant)
 
   ParticipantDate.belongsTo(Participant)

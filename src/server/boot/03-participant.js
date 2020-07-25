@@ -21,7 +21,14 @@ export default function (app) {
           participant.participantId,
           'find',
         )
-        res.json(participant)
+
+        res.json({
+          ...(participant.toJSON()),
+          presenceHistory: participant.presenceHistory.map(it => ({
+            ...(it.toJSON()),
+            author: models.User.toClientFormat(it.author),
+          }))
+        })
       } else {
         res.status(404).send('Not found')
       }

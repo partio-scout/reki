@@ -47,6 +47,7 @@ export const PresenceEntry = Rt.Record({
   timestamp: Rt.String,
   presence: Rt.Number,
   authorId: Rt.Number,
+  author: RegistryUser,
 }).asReadonly()
 export type PresenceEntry = Rt.Static<typeof PresenceEntry>
 
