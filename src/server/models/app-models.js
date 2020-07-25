@@ -256,6 +256,13 @@ export default function (db) {
   PresenceHistory.belongsTo(User, {
     as: 'author',
     foreignKey: 'authorId',
+    onDelete: 'SET NULL',
+  })
+
+  User.hasMany(PresenceHistory, {
+    as: 'author',
+    foreignKey: 'authorId',
+    onDelete: 'SET NULL',
   })
 
   Selection.belongsTo(Participant)

@@ -23,11 +23,11 @@ export default function (app) {
         )
 
         res.json({
-          ...(participant.toJSON()),
-          presenceHistory: participant.presenceHistory.map(it => ({
-            ...(it.toJSON()),
+          ...participant.toJSON(),
+          presenceHistory: participant.presenceHistory.map((it) => ({
+            ...it.toJSON(),
             author: models.User.toClientFormat(it.author),
-          }))
+          })),
         })
       } else {
         res.status(404).send('Not found')

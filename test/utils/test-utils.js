@@ -78,8 +78,14 @@ export async function deleteFixturesIfExist(modelName, whereClause) {
   return models[modelName].destroy({ where: whereClause || {} })
 }
 
-export async function withFixtures(fixtures) {
+export async function withFixtures(fixtureParam) {
+  let fixtures = fixtureParam
+
   beforeEach(async () => {
+    if (typeof fixtureParam === 'function') {
+      fixtures = await fixtureParam()
+    }
+
     for (const model in fixtures) {
       await createFixture(model, fixtures[model])
     }

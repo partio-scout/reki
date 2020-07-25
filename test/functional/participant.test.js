@@ -12,8 +12,10 @@ describe('Single participant API endpoint', () => {
   let user
 
   before(resetDatabase)
-  beforeEach(async () => (user = await createUser(['registryUser'])))
-  withFixtures(getFixtures())
+  withFixtures(async () => {
+    user = await createUser(['registryUser'])
+    return getFixtures(user.id)
+  })
   afterEach(deleteUsers)
 
   //TODO split this into several test cases for clarity
@@ -48,7 +50,7 @@ describe('Single participant API endpoint', () => {
     expectStatus(res.status, 404)
   })
 
-  function getFixtures() {
+  function getFixtures(userId) {
     return {
       Participant: [
         {
@@ -76,7 +78,7 @@ describe('Single participant API endpoint', () => {
           participantParticipantId: 1,
           presence: 1,
           timestamp: new Date(2016, 6, 20),
-          authorId: 3,
+          authorId: userId,
         },
       ],
       Allergy: [
