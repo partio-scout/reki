@@ -14,6 +14,7 @@ export function getIpVersionAndAddress(ip) {
     return ['ipv4', new Address4(ipv4)]
   }
 
+  // otherwise it's probably a proper v6 address
   return ['ipv6', new Address6(ip)]
 }
 
@@ -30,11 +31,6 @@ async function findOrCreateClientData(req) {
   })
 
   return data
-}
-
-export function getDiff(object) {
-  // TODO: only include changes
-  return [object.get(), object.previous()]
 }
 
 export async function audit({

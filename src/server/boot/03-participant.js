@@ -3,6 +3,9 @@ import { Op } from 'sequelize'
 import _ from 'lodash'
 import config from '../conf'
 import optionalBasicAuth from '../middleware/optional-basic-auth'
+import { audit } from '../util/audit'
+
+const modelType = 'Participant'
 
 export default function (app) {
   app.get(
@@ -16,11 +19,7 @@ export default function (app) {
       })
 
       if (participant) {
-        await models.AuditEvent.createEvent.Participant(
-          req.user.id,
-          participant.participantId,
-          'find',
-        )
+        await audit({ req, modelType, modelId: participant.participantId, eventType: 'find' })
         res.json(participant)
       } else {
         res.status(404).send('Not found')
@@ -105,7 +104,7 @@ export default function (app) {
         req.body.ids,
         req.body.fieldName,
         req.body.newValue,
-        req.user.id,
+        req,
       )
       res.json(updates)
     }),

@@ -3,6 +3,7 @@ import { models } from '../src/server/models'
 
 function printHelp() {
   console.log('set-password.js <email of the user to set password> <password>')
+  process.exit(1)
 }
 
 const args = process.argv
