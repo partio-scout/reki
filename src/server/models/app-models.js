@@ -1,5 +1,7 @@
 import Sequelize from 'sequelize'
 import _ from 'lodash'
+import { Address4, Address6 } from 'ip-address'
+import { BigInteger } from 'jsbn'
 import conf from '../conf'
 
 const Op = Sequelize.Op
@@ -189,6 +191,7 @@ export default function (db) {
       autoIncrement: true,
     },
     ipVersion: {
+      // allowed values: "ivp4" and "ipv6"
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -208,6 +211,15 @@ export default function (db) {
       },
     ],
   })
+
+  AuditClientData.prototype.getHumanReadableIpString = function getHumanReadableIpString() {
+    const bigInt = new BigInteger(this.ipAddress)
+    const addressObject = this.ipVersion === 'ipv6'
+      ? Address6.fromBigInteger(bigInt)
+      : Address4.fromBigInteger(bigInt)
+
+    return addressObject.correctForm()
+  }
 
   const AuditEvent = db.define('audit_event', {
     id: {
@@ -250,6 +262,18 @@ export default function (db) {
       allowNull: false,
     },
   })
+
+  AuditEvent.toClientJSON = function (event) {
+    const json = event.toJSON()
+
+    if (event.clientData) {
+      json.clientData = event.clientData.toJSON()
+      json.clientData.humanReadableIpAddress = event.clientData.getHumanReadableIpString()
+    }
+
+    return json
+  }
+
   AuditEvent.createEvent = {
     Participant: function (userId, instanceId, description) {
       return AuditEvent.create({

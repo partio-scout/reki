@@ -282,6 +282,7 @@ const permissions = {
     'view own user information',
     'block and unblock users',
     'view app configuration',
+    'view audit log',
   ],
 }
 

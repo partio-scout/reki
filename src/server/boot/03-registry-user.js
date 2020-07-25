@@ -1,6 +1,6 @@
 import optionalBasicAuth from '../middleware/optional-basic-auth'
 import { models } from '../models'
-import { audit, getDiff } from '../util/audit'
+import { audit } from '../util/audit'
 
 const modelType = 'User'
 

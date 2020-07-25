@@ -14,6 +14,7 @@ import RedisStoreConstructor from 'connect-redis'
 import updateDatabase from './boot/01-update-database'
 import errorHandling from './boot/02-error-handling'
 import accessControl from './boot/02-new-access-control'
+import audit from './boot/03-audit'
 import config from './boot/03-config'
 import options from './boot/03-options'
 import participantDate from './boot/03-participant-date'
@@ -140,6 +141,7 @@ async function boot(app) {
   await updateDatabase(app)
   errorHandling(app)
   accessControl(app)
+  audit(app)
   config(app)
   options(app)
   participantDate(app)
