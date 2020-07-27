@@ -281,6 +281,10 @@ export default function (db) {
       json.clientData.humanReadableIpAddress = event.clientData.getHumanReadableIpString()
     }
 
+    if (event.user) {
+      json.user = User.toClientFormat(event.user)
+    }
+
     return json
   }
 
@@ -380,6 +384,9 @@ export default function (db) {
     foreignKey: 'clientDataId',
     sourceKey: 'id',
   })
+
+  AuditEvent.belongsTo(User)
+  User.hasMany(AuditEvent)
 
   return {
     User: User,

@@ -95,3 +95,31 @@ export const ParticipantDetails = Rt.Record({
   editableInfo: Rt.String.Or(Rt.Null),
 }).asReadonly()
 export type ParticipantDetails = Rt.Static<typeof ParticipantDetails>
+
+export const IpVersion = Rt.Union(Rt.Literal('ipv4'), Rt.Literal('ipv6'))
+export type IpVersion = Rt.Static<typeof IpVersion>
+
+export const AuditClientData = Rt.Record({
+  id: Rt.Number,
+  ipVersion: IpVersion,
+  ipAddress: Rt.String,
+  userAgent: Rt.String,
+  humanReadableIpAddress: Rt.String,
+}).asReadonly()
+export type AuditClientData = Rt.Static<typeof AuditClientData>
+
+export const AuditLogEntry = Rt.Record({
+  id: Rt.Number,
+  eventType: Rt.String,
+  model: Rt.String,
+  modelId: Rt.Number.Or(Rt.Null),
+  changes: Rt.Unknown,
+  meta: Rt.Unknown,
+  timestamp: Rt.String,
+  reason: Rt.String.Or(Rt.Null),
+  userId: Rt.Number,
+  user: RegistryUser,
+  clientDataId: Rt.Number,
+  clientData: AuditClientData,
+}).asReadonly()
+export type AuditLogEntry = Rt.Static<typeof AuditLogEntry>

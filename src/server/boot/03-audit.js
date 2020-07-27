@@ -10,8 +10,13 @@ export default function (app) {
     app.wrap(async (req, res) => {
       await audit({ req, modelType: 'AuditEvent', eventType: 'find' })
       const events = await models.AuditEvent.findAll({
-        include: [{ model: models.AuditClientData, as: 'clientData' }],
+        include: [
+          { model: models.AuditClientData, as: 'clientData' },
+          { model: models.User },
+        ],
+        order: [['timestamp', 'DESC']],
       })
+
       res.json(events.map(models.AuditEvent.toClientJSON))
     }),
   )
