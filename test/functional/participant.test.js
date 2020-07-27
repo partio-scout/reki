@@ -45,8 +45,13 @@ describe('Single participant API endpoint', () => {
     expect(res.body.presenceHistory).to.be.an('array').with.length(1)
     expect(res.body.presenceHistory[0]).to.have.property('presence', 1)
     expect(res.body.presenceHistory[0]).to.have.property('author')
-    expect(res.body.presenceHistory[0].author).to.have.property('firstName', 'Testi')
-    expect(res.body.presenceHistory[0].author).to.not.have.property('passwordHash')
+    expect(res.body.presenceHistory[0].author).to.have.property(
+      'firstName',
+      'Testi',
+    )
+    expect(res.body.presenceHistory[0].author).to.not.have.property(
+      'passwordHash',
+    )
   })
 
   it('returns 404 when incorrect id is given', async () => {

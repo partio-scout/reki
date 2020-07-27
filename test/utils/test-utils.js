@@ -85,9 +85,8 @@ export async function withFixtures(fixtureParam) {
     // allow passing in a function, for example
     // if fixtures need a valid user id, create a user
     // in the promise and return fixtures using that id
-    fixtures = typeof fixtureParam === 'function'
-      ? await fixtureParam()
-      : fixtureParam
+    fixtures =
+      typeof fixtureParam === 'function' ? await fixtureParam() : fixtureParam
 
     for (const model in fixtures) {
       await createFixture(model, fixtures[model])
