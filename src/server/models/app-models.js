@@ -243,7 +243,6 @@ export default function (db) {
     },
     modelId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
     },
     changes: {
       type: Sequelize.JSON,
@@ -385,8 +384,13 @@ export default function (db) {
     sourceKey: 'id',
   })
 
-  AuditEvent.belongsTo(User)
-  User.hasMany(AuditEvent)
+  AuditEvent.belongsTo(User, {
+    onDelete: 'CASCADE',
+  })
+
+  User.hasMany(AuditEvent, {
+    onDelete: 'CASCADE',
+  })
 
   return {
     User: User,

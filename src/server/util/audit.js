@@ -35,7 +35,7 @@ async function findOrCreateClientData(req) {
 
 export async function audit({
   req, // express request object
-  modelId = 0,
+  modelId = null,
   modelType,
   eventType,
   reason = '',

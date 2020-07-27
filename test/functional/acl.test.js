@@ -232,6 +232,17 @@ describe('HTTP API access control', () => {
       it('find: OK', () => get('/api/config', ['registryAdmin']).expect(OK)))
   })
 
+  describe('Audit events', () => {
+    describe('Unauthorized user', () =>
+      it('find: UNAUTHORIZED', () => get('/api/audit-events').expect(UNAUTHORIZED)))
+
+    describe('registryUser', () =>
+      it('find: UNAUTHORIZED', () => get('/api/audit-events', ['registryUser']).expect(UNAUTHORIZED)))
+
+    describe('registryAdmin', () =>
+      it('find: OK', () => get('/api/audit-events', ['registryAdmin']).expect(OK)))
+  })
+
   function getFixtures() {
     return {
       Participant: [
