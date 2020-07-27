@@ -44,6 +44,7 @@ describe('HTTP API access control', () => {
         'POST /api/registryusers/:id/unblock',
         'POST /api/registryusers/logout',
         'GET /api/config',
+        'GET /api/audit-events',
       ]
 
       const apiRoutesInApp = _(app._router.stack)
@@ -234,13 +235,16 @@ describe('HTTP API access control', () => {
 
   describe('Audit events', () => {
     describe('Unauthorized user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/audit-events').expect(UNAUTHORIZED)))
+      it('find: UNAUTHORIZED', () =>
+        get('/api/audit-events').expect(UNAUTHORIZED)))
 
     describe('registryUser', () =>
-      it('find: UNAUTHORIZED', () => get('/api/audit-events', ['registryUser']).expect(UNAUTHORIZED)))
+      it('find: UNAUTHORIZED', () =>
+        get('/api/audit-events', ['registryUser']).expect(UNAUTHORIZED)))
 
     describe('registryAdmin', () =>
-      it('find: OK', () => get('/api/audit-events', ['registryAdmin']).expect(OK)))
+      it('find: OK', () =>
+        get('/api/audit-events', ['registryAdmin']).expect(OK)))
   })
 
   function getFixtures() {
