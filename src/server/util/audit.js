@@ -39,15 +39,16 @@ export async function audit({
   modelType,
   eventType,
   reason = '',
-  diff = {},
+  changes = {},
+  meta = {},
 }) {
   const clientData = await findOrCreateClientData(req)
-  const changes = JSON.stringify(diff)
 
   await models.AuditEvent.create({
     eventType,
     model: modelType,
     modelId,
+    meta,
     reason,
     changes,
     userId: req.user.id,

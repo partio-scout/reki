@@ -38,13 +38,23 @@ export default function (app) {
     }),
   )
 
-  app.use('/login/password', passport.authenticate('basic'), async (req, res) => {
-    const responseType = req.accepts(['json', 'html']) || 'json'
-    await audit({ req, modelId: req.user.id, modelType: 'User', eventType: 'login', reason: 'successful password login' })
-    if (responseType === 'json') {
-      res.status(200).json({ message: 'Login successful' })
-    } else {
-      res.redirect(303, '/')
-    }
-  })
+  app.use(
+    '/login/password',
+    passport.authenticate('basic'),
+    async (req, res) => {
+      const responseType = req.accepts(['json', 'html']) || 'json'
+      await audit({
+        req,
+        modelId: req.user.id,
+        modelType: 'User',
+        eventType: 'login',
+        meta: { method: 'password' },
+      })
+      if (responseType === 'json') {
+        res.status(200).json({ message: 'Login successful' })
+      } else {
+        res.redirect(303, '/')
+      }
+    },
+  )
 }

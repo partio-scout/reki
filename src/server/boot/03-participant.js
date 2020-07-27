@@ -19,7 +19,12 @@ export default function (app) {
       })
 
       if (participant) {
-        await audit({ req, modelType, modelId: participant.participantId, eventType: 'find' })
+        await audit({
+          req,
+          modelType,
+          modelId: participant.participantId,
+          eventType: 'find',
+        })
         res.json(participant)
       } else {
         res.status(404).send('Not found')
@@ -91,6 +96,14 @@ export default function (app) {
         order: [order],
         distinct: true, // without this count is calculated incorrectly
       })
+
+      await audit({
+        req,
+        modelType,
+        eventType: 'find',
+        meta: { filter, generatedQuery: { where, offset, limit, order } },
+      })
+
       res.json({ result: result.rows, count: result.count })
     }),
   )

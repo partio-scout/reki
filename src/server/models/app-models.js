@@ -185,39 +185,44 @@ export default function (db) {
 
   const ParticipantAllergy = db.define('participant_allergy')
 
-  const AuditClientData = db.define('audit_client_data', {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    ipVersion: {
-      // allowed values: "ivp4" and "ipv6"
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    ipAddress: {
-      type: Sequelize.BIGINT,
-      allowNull: false,
-    },
-    userAgent: {
-      type: Sequelize.TEXT,
-      allowNull: false,
-    },
-  }, {
-    indexes: [
-      {
-        fields: ['ipVersion', 'ipAddress', 'userAgent'],
-        unique: true,
+  const AuditClientData = db.define(
+    'audit_client_data',
+    {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-    ],
-  })
+      ipVersion: {
+        // allowed values: "ivp4" and "ipv6"
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      ipAddress: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      userAgent: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+    },
+    {
+      indexes: [
+        {
+          fields: ['ipVersion', 'ipAddress', 'userAgent'],
+          unique: true,
+        },
+      ],
+    },
+  )
 
   AuditClientData.prototype.getHumanReadableIpString = function getHumanReadableIpString() {
     const bigInt = new BigInteger(this.ipAddress)
-    const addressObject = this.ipVersion === 'ipv6'
-      ? Address6.fromBigInteger(bigInt)
-      : Address4.fromBigInteger(bigInt)
+    const addressObject =
+      this.ipVersion === 'ipv6'
+        ? Address6.fromBigInteger(bigInt)
+        : Address4.fromBigInteger(bigInt)
 
     return addressObject.correctForm()
   }
@@ -241,7 +246,11 @@ export default function (db) {
       allowNull: false,
     },
     changes: {
-      type: Sequelize.STRING,
+      type: Sequelize.JSON,
+      allowNull: true,
+    },
+    meta: {
+      type: Sequelize.JSON,
       allowNull: true,
     },
     timestamp: {
@@ -323,13 +332,19 @@ export default function (db) {
           if (row[fieldName] !== newValue) {
             const diff = {
               [fieldName]: {
-                'old': row[fieldName],
-                'new': newValue,
+                old: row[fieldName],
+                new: newValue,
               },
             }
 
             await Promise.all([
-              audit({ req, modelType: 'Participant', modelId: row.participantId, eventType: 'update', diff, }),
+              audit({
+                req,
+                modelType: 'Participant',
+                modelId: row.participantId,
+                eventType: 'update',
+                changes: diff,
+              }),
               fieldName === 'presence'
                 ? await PresenceHistory.create({
                     participantParticipantId: row.participantId,
@@ -337,7 +352,7 @@ export default function (db) {
                     timestamp: new Date(),
                     authorId: req.user.id,
                   })
-                : Promise.resolve()
+                : Promise.resolve(),
             ])
 
             row[fieldName] = newValue

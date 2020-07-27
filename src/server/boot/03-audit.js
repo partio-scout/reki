@@ -9,7 +9,9 @@ export default function (app) {
     app.requirePermission('view audit log'),
     app.wrap(async (req, res) => {
       await audit({ req, modelType: 'AuditEvent', eventType: 'find' })
-      const events = await models.AuditEvent.findAll({ include: [{ model: models.AuditClientData, as: 'clientData', }] })
+      const events = await models.AuditEvent.findAll({
+        include: [{ model: models.AuditClientData, as: 'clientData' }],
+      })
       res.json(events.map(models.AuditEvent.toClientJSON))
     }),
   )

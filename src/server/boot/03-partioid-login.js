@@ -57,19 +57,15 @@ export default function (app) {
             message:
               'PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.',
           })
-          return
         } else if (user.blocked) {
           done(null, false, {
             message: 'Käyttäjän sisäänkirjautuminen on estetty',
           })
-          return
         } else {
           done(null, models.User.toClientFormat(user, 'partioid'))
-          return
         }
       } catch (e) {
         done(e)
-        return
       }
     },
   )
@@ -78,23 +74,38 @@ export default function (app) {
 
   app.get(
     '/login/partioid',
-    passport.authenticate('partioid', {
-      failureRedirect: '/',
-      failureFlash: true,
-    }, async (req, res) => {
-      const responseType = req.accepts(['json', 'html']) || 'json'
-      await audit({ req, modelId: req.user.id, modelType: 'User', eventType: 'login', reason: 'successful PartioID login' })
-      if (responseType === 'json') {
-        res.status(200).json({ message: 'Login successful' })
-      } else {
-        res.redirect(303, '/')
-      }
-    }),
+    passport.authenticate(
+      'partioid',
+      {
+        failureRedirect: '/',
+        failureFlash: true,
+      },
+      async (req, res) => {
+        const responseType = req.accepts(['json', 'html']) || 'json'
+        await audit({
+          req,
+          modelId: req.user.id,
+          modelType: 'User',
+          eventType: 'login',
+          meta: { method: 'partioid' },
+        })
+        if (responseType === 'json') {
+          res.status(200).json({ message: 'Login successful' })
+        } else {
+          res.redirect(303, '/')
+        }
+      },
+    ),
   )
 
   app.get('/logout', async (req, res, next) => {
     if (req.user) {
-      await audit({ req, modelId: req.user.id, modelType: 'User', eventType: 'logout' })
+      await audit({
+        req,
+        modelId: req.user.id,
+        modelType: 'User',
+        eventType: 'logout',
+      })
     }
 
     if (req.user && req.user.sessionType === 'partioid') {
