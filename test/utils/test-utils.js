@@ -79,12 +79,15 @@ export async function deleteFixturesIfExist(modelName, whereClause) {
 }
 
 export async function withFixtures(fixtureParam) {
-  let fixtures = fixtureParam
+  let fixtures
 
   beforeEach(async () => {
-    if (typeof fixtureParam === 'function') {
-      fixtures = await fixtureParam()
-    }
+    // allow passing in a function, for example
+    // if fixtures need a valid user id, create a user
+    // in the promise and return fixtures using that id
+    fixtures = typeof fixtureParam === 'function'
+      ? await fixtureParam()
+      : fixtureParam
 
     for (const model in fixtures) {
       await createFixture(model, fixtures[model])
@@ -95,6 +98,8 @@ export async function withFixtures(fixtureParam) {
     for (const model in fixtures) {
       await deleteFixturesIfExist(model)
     }
+
+    fixtures = null
   })
 }
 

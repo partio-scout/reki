@@ -22,6 +22,9 @@ export default function (app) {
           'find',
         )
 
+        // ensure that presenceHistory.author does
+        // not accidentally leak secret user information
+        // such as password hashes
         res.json({
           ...participant.toJSON(),
           presenceHistory: participant.presenceHistory.map((it) => ({

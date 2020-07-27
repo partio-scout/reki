@@ -15,7 +15,7 @@ const OK = 200
 const NO_CONTENT = 204
 const UNAUTHORIZED = 401
 
-describe.only('HTTP API access control', () => {
+describe('HTTP API access control', () => {
   const otherUserId = 123
 
   before(resetDatabase)
