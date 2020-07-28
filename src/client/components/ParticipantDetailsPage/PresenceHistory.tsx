@@ -24,11 +24,9 @@ export const PresenceHistory: React.FC<PresenceHistoryProps> = (props) => (
             <td>{time.format('L [klo] LT')}</td>
             <td>{getPresenceLabel(row.presence)}</td>
             <td>
-              {row.author ? (
-                `${row.author.firstName} ${row.author.lastName}`
-              ) : (
-                'Tuntematon käyttäjä'
-              )}
+              {row.author
+                ? `${row.author.firstName} ${row.author.lastName}`
+                : 'Tuntematon käyttäjä'}
               (#{row.authorId})
             </td>
           </tr>
