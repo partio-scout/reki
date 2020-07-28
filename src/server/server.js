@@ -54,7 +54,7 @@ async function boot(app) {
     app.use(expressEnforcesSsl())
   }
 
-  if (process.env.REDIS_URL) {
+  if (!appConfig.isDev || process.env.REDIS_URL) {
     const RedisStore = RedisStoreConstructor(session)
     sessionStore = new RedisStore({
       client: redis.createClient(process.env.REDIS_URL),

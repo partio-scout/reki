@@ -1,6 +1,6 @@
 import optionalBasicAuth from '../middleware/optional-basic-auth'
 import { models } from '../models'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 export default function (app) {
   app.get(
@@ -17,22 +17,19 @@ export default function (app) {
         ? filter.order.split(' ')
         : ['timestamp', 'DESC']
 
+      await audit({
+        ...getClientData(req),
+        modelType: 'AuditEvent',
+        eventType: 'find',
+        meta: { filter, generatedQuery: { where, offset, limit, order } },
+      })
+
       const events = await models.AuditEvent.findAll({
-        include: [
-          { model: models.AuditClientData, as: 'clientData' },
-          { model: models.User },
-        ],
+        include: [{ model: models.User }],
         where,
         limit,
         offset,
         order: [order],
-      })
-
-      await audit({
-        req,
-        modelType: 'AuditEvent',
-        eventType: 'find',
-        meta: { filter, generatedQuery: { where, offset, limit, order } },
       })
 
       res.json(events.map(models.AuditEvent.toClientJSON))

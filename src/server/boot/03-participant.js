@@ -3,7 +3,7 @@ import { Op } from 'sequelize'
 import _ from 'lodash'
 import config from '../conf'
 import optionalBasicAuth from '../middleware/optional-basic-auth'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 const modelType = 'Participant'
 
@@ -20,7 +20,7 @@ export default function (app) {
 
       if (participant) {
         await audit({
-          req,
+          ...getClientData(req),
           modelType,
           modelId: participant.participantId,
           eventType: 'find',
@@ -98,7 +98,7 @@ export default function (app) {
       })
 
       await audit({
-        req,
+        ...getClientData(req),
         modelType,
         eventType: 'find',
         meta: { filter, generatedQuery: { where, offset, limit, order } },

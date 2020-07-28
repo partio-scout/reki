@@ -4,7 +4,7 @@ import passport from 'passport'
 import { Strategy as SamlStrategy } from 'passport-saml'
 import path from 'path'
 import { URL } from 'url'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 export default function (app) {
   const rekiBaseUrl = new URL(
@@ -83,7 +83,7 @@ export default function (app) {
       async (req, res) => {
         const responseType = req.accepts(['json', 'html']) || 'json'
         await audit({
-          req,
+          ...getClientData(req),
           modelId: req.user.id,
           modelType: 'User',
           eventType: 'login',
@@ -101,7 +101,7 @@ export default function (app) {
   app.get('/logout', async (req, res, next) => {
     if (req.user) {
       await audit({
-        req,
+        ...getClientData(req),
         modelId: req.user.id,
         modelType: 'User',
         eventType: 'logout',

@@ -1,6 +1,6 @@
 import optionalBasicAuth from '../middleware/optional-basic-auth'
 import { models } from '../models'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 const modelType = 'User'
 
@@ -10,7 +10,11 @@ export default function (app) {
     optionalBasicAuth(),
     app.requirePermission('view registry users'),
     async (req, res) => {
-      await audit({ req, modelType, eventType: 'find' })
+      await audit({
+        ...getClientData(req),
+        modelType,
+        eventType: 'find',
+      })
       const users = await models.User.findAll()
       res.json(users.map(models.User.toClientFormat))
     },
@@ -26,7 +30,12 @@ export default function (app) {
         { where: { id: req.params.id } },
       )
       res.status(204).send('')
-      await audit({ req, modelId: user.id, modelType, eventType: 'block' })
+      await audit({
+        ...getClientData(req),
+        modelId: user.id,
+        modelType,
+        eventType: 'block',
+      })
     }),
   )
 
@@ -40,7 +49,12 @@ export default function (app) {
         { where: { id: req.params.id } },
       )
       res.status(204).send('')
-      await audit({ req, modelId: user.id, modelType, eventType: 'unblock' })
+      await audit({
+        ...getClientData(req),
+        modelId: user.id,
+        modelType,
+        eventType: 'unblock',
+      })
     }),
   )
 

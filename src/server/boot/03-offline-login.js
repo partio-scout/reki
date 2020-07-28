@@ -2,7 +2,7 @@ import passport from 'passport'
 import argon2 from 'argon2'
 import { BasicStrategy } from 'passport-http'
 import { models } from '../models'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 export default function (app) {
   const enableOfflineLogin = process.env.ENABLE_OFFLINE_LOGIN === 'true'
@@ -41,10 +41,10 @@ export default function (app) {
   app.use(
     '/login/password',
     passport.authenticate('basic'),
-    async (req, res) => {
+    app.wrap(async (req, res) => {
       const responseType = req.accepts(['json', 'html']) || 'json'
       await audit({
-        req,
+        ...getClientData(req),
         modelId: req.user.id,
         modelType: 'User',
         eventType: 'login',
@@ -55,6 +55,6 @@ export default function (app) {
       } else {
         res.redirect(303, '/')
       }
-    },
+    }),
   )
 }

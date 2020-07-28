@@ -12,14 +12,14 @@ const AuditLogTableRow: React.FC<AuditLogTableRowProps> = (props) => {
   const {
     id,
     user,
+    userId,
     eventType,
     model,
     modelId,
-    clientData,
+    ipAddress,
     meta,
     changes,
   } = auditLogEntry
-  const { humanReadableIpAddress } = clientData
   const time = moment(auditLogEntry.timestamp)
 
   return (
@@ -31,17 +31,12 @@ const AuditLogTableRow: React.FC<AuditLogTableRowProps> = (props) => {
       </td>
       <td>{eventType}</td>
       <td>
-        {user ? (
-          <span>
-            {user.firstName} {user.lastName}
-          </span>
-        ) : (
-          'Tuntematon käyttäjä'
-        )}{' '}
-        (#{user.id})
+        {user
+          ? `${user.firstName} ${user.lastName} (${user.id})`
+          : `Tuntematon käyttäjä (${userId})`}
       </td>
       <td>{time.format('L [klo] LT')}</td>
-      <td>{humanReadableIpAddress}</td>
+      <td>{ipAddress}</td>
       <td>{JSON.stringify(meta)}</td>
       <td>{JSON.stringify(changes)}</td>
     </tr>

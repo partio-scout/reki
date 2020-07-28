@@ -1,7 +1,7 @@
 import argon2 from 'argon2'
 import { models } from '../src/server/models'
 
-function printHelp() {
+function printHelpAndExit() {
   console.log('set-password.js <email of the user to set password> <password>')
   process.exit(1)
 }
@@ -10,10 +10,10 @@ const args = process.argv
 
 if (args.length < 3) {
   console.error('Please specify the user to set password.')
-  printHelp()
+  printHelpAndExit()
 } else if (args.length < 4) {
   console.error('Please specify password.')
-  printHelp()
+  printHelpAndExit()
 }
 
 const email = args[2]

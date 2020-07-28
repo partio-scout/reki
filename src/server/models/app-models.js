@@ -1,9 +1,7 @@
 import Sequelize from 'sequelize'
 import _ from 'lodash'
-import { Address4, Address6 } from 'ip-address'
-import { BigInteger } from 'jsbn'
 import conf from '../conf'
-import { audit } from '../util/audit'
+import { audit, getClientData } from '../util/audit'
 
 const Op = Sequelize.Op
 
@@ -185,48 +183,6 @@ export default function (db) {
 
   const ParticipantAllergy = db.define('participant_allergy')
 
-  const AuditClientData = db.define(
-    'audit_client_data',
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      ipVersion: {
-        // allowed values: "ivp4" and "ipv6"
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      ipAddress: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-      },
-      userAgent: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-    },
-    {
-      indexes: [
-        {
-          fields: ['ipVersion', 'ipAddress', 'userAgent'],
-          unique: true,
-        },
-      ],
-    },
-  )
-
-  AuditClientData.prototype.getHumanReadableIpString = function getHumanReadableIpString() {
-    const bigInt = new BigInteger(this.ipAddress)
-    const addressObject =
-      this.ipVersion === 'ipv6'
-        ? Address6.fromBigInteger(bigInt)
-        : Address4.fromBigInteger(bigInt)
-
-    return addressObject.correctForm()
-  }
-
   const AuditEvent = db.define('audit_event', {
     id: {
       type: Sequelize.INTEGER,
@@ -264,21 +220,19 @@ export default function (db) {
     },
     userId: {
       type: Sequelize.INTEGER,
+    },
+    ipAddress: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    clientDataId: {
-      type: Sequelize.INTEGER,
+    userAgent: {
+      type: Sequelize.TEXT,
       allowNull: false,
     },
   })
 
   AuditEvent.toClientJSON = function (event) {
     const json = event.toJSON()
-
-    if (event.clientData) {
-      json.clientData = event.clientData.toJSON()
-      json.clientData.humanReadableIpAddress = event.clientData.getHumanReadableIpString()
-    }
 
     if (event.user) {
       json.user = User.toClientFormat(event.user)
@@ -342,7 +296,7 @@ export default function (db) {
 
             await Promise.all([
               audit({
-                req,
+                ...getClientData(req),
                 modelType: 'Participant',
                 modelId: row.participantId,
                 eventType: 'update',
@@ -372,24 +326,12 @@ export default function (db) {
     }
   }
 
-  AuditEvent.belongsTo(AuditClientData, {
-    as: 'clientData',
-    foreignKey: 'clientDataId',
-    targetKey: 'id',
-  })
-
-  AuditClientData.hasMany(AuditEvent, {
-    as: 'clientData',
-    foreignKey: 'clientDataId',
-    sourceKey: 'id',
-  })
-
   AuditEvent.belongsTo(User, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
 
   User.hasMany(AuditEvent, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
 
   return {
@@ -403,7 +345,6 @@ export default function (db) {
     ParticipantDate: ParticipantDate,
     Allergy: Allergy,
     ParticipantAllergy: ParticipantAllergy,
-    AuditClientData,
     AuditEvent,
   }
 }
