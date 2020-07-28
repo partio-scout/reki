@@ -25,13 +25,11 @@ export const PresenceHistory: React.FC<PresenceHistoryProps> = (props) => (
             <td>{getPresenceLabel(row.presence)}</td>
             <td>
               {row.author ? (
-                <span>
-                  {row.author.firstName} {row.author.lastName}
-                </span>
+                `${row.author.firstName} ${row.author.lastName}`
               ) : (
-                <span>Unknown user</span>
+                'Tuntematon käyttäjä'
               )}
-              (#{row.author.id})
+              (#{row.authorId})
             </td>
           </tr>
         )
