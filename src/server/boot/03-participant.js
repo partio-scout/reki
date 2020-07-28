@@ -22,7 +22,7 @@ export default function (app) {
           'find',
         )
 
-        // using User.toClientFormat ensures that presenceHistory.author does
+        // Using User.toClientFormat ensures that presenceHistory.author does
         // not accidentally leak secret user information such as password hashes
         // otherwise we could just use res.json(participant) which is practically
         // the same as res.json(participant.toJSON())
