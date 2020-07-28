@@ -50,8 +50,6 @@
     "helmet": "^3.22.0",
     "http-proxy": "^1.18.0",
     "inquirer": "^7.1.0",
-    "ip-address": "^6.3.0",
-    "jsbn": "^1.1.0",
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.15",
     "moment": "^2.25.1",

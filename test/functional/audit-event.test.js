@@ -108,34 +108,39 @@ describe('Audit events', () => {
     it('Should list existing events', async () => {
       const response = await getAuditEventsWithFilter()
 
-      expect(response).to.be.an('array').with.length(3)
+      expect(response).to.be.an('array').with.length(4)
 
-      expect(response[0]).to.have.property('id', 3)
+      expect(response[0]).to.have.property('id', 4)
       expect(response[0]).to.have.property('eventType', 'find')
-      expect(response[0]).to.have.property('model', 'User')
+      expect(response[0]).to.have.property('model', 'AuditEvent')
 
-      expect(response[1]).to.have.property('id', 2)
+      expect(response[1]).to.have.property('id', 3)
       expect(response[1]).to.have.property('eventType', 'find')
-      expect(response[1]).to.have.property('model', 'Participant')
-      expect(response[1]).to.have.property('modelId', null)
+      expect(response[1]).to.have.property('model', 'User')
 
-      expect(response[2]).to.have.property('id', 1)
+      expect(response[2]).to.have.property('id', 2)
       expect(response[2]).to.have.property('eventType', 'find')
       expect(response[2]).to.have.property('model', 'Participant')
-      expect(response[2]).to.have.property('modelId', 42)
+      expect(response[2]).to.have.property('modelId', null)
+
+      expect(response[3]).to.have.property('id', 1)
+      expect(response[3]).to.have.property('eventType', 'find')
+      expect(response[3]).to.have.property('model', 'Participant')
+      expect(response[3]).to.have.property('modelId', 42)
     })
 
     it('Should allow limiting results', async () => {
       const response = await getAuditEventsWithFilter({ limit: 1 })
       expect(response).to.be.an('array').with.length(1)
-      expect(response[0]).to.have.property('id', 3)
+      expect(response[0]).to.have.property('id', 4)
     })
 
     it('Should allow skipping results', async () => {
       const response = await getAuditEventsWithFilter({ skip: 1 })
-      expect(response).to.be.an('array').with.length(2)
-      expect(response[0]).to.have.property('id', 2)
-      expect(response[1]).to.have.property('id', 1)
+      expect(response).to.be.an('array').with.length(3)
+      expect(response[0]).to.have.property('id', 3)
+      expect(response[1]).to.have.property('id', 2)
+      expect(response[2]).to.have.property('id', 1)
     })
 
     async function getAuditEventsWithFilter(filter = {}) {
