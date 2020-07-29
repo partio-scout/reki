@@ -7,7 +7,6 @@ export type PresenceHistoryProps = Readonly<{
   value: readonly PresenceEntry[]
 }>
 
-// TODO Show name of author once backend is able to return it
 export const PresenceHistory: React.FC<PresenceHistoryProps> = (props) => (
   <table>
     <thead>
@@ -24,7 +23,12 @@ export const PresenceHistory: React.FC<PresenceHistoryProps> = (props) => (
           <tr key={time.toString()}>
             <td>{time.format('L [klo] LT')}</td>
             <td>{getPresenceLabel(row.presence)}</td>
-            <td>Käyttäjä #{row.authorId}</td>
+            <td>
+              {row.author
+                ? `${row.author.firstName} ${row.author.lastName}`
+                : 'Tuntematon käyttäjä'}
+              (#{row.authorId})
+            </td>
           </tr>
         )
       })}

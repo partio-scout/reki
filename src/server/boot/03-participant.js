@@ -21,7 +21,18 @@ export default function (app) {
           participant.participantId,
           'find',
         )
-        res.json(participant)
+
+        // Using User.toClientFormat ensures that presenceHistory.author does
+        // not accidentally leak secret user information such as password hashes
+        // otherwise we could just use res.json(participant) which is practically
+        // the same as res.json(participant.toJSON())
+        res.json({
+          ...participant.toJSON(),
+          presenceHistory: participant.presenceHistory.map((it) => ({
+            ...it.toJSON(),
+            author: models.User.toClientFormat(it.author),
+          })),
+        })
       } else {
         res.status(404).send('Not found')
       }

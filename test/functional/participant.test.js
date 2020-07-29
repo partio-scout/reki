@@ -12,8 +12,10 @@ describe('Single participant API endpoint', () => {
   let user
 
   before(resetDatabase)
-  beforeEach(async () => (user = await createUser(['registryUser'])))
-  withFixtures(getFixtures())
+  withFixtures(async () => {
+    user = await createUser(['registryUser'])
+    return getFixtures(user.id)
+  })
   afterEach(deleteUsers)
 
   //TODO split this into several test cases for clarity
@@ -26,9 +28,6 @@ describe('Single participant API endpoint', () => {
     expect(res.body.dates).to.be.an('array').with.length(3)
     expect(res.body).to.have.property('allergies')
     expect(res.body.allergies).to.be.an('array').with.length(1)
-    expect(res.body).to.have.property('presenceHistory')
-    expect(res.body.presenceHistory).to.be.an('array').with.length(1)
-    expect(res.body.presenceHistory[0]).to.have.property('presence', 1)
     expect(res.body).to.have.property('selections')
     expect(res.body.selections).to.be.an('array').with.length(1)
     expect(res.body.selections[0]).to.have.property(
@@ -36,6 +35,23 @@ describe('Single participant API endpoint', () => {
       'herneenpalvojat',
     )
     expect(res.body.selections[0]).to.have.property('selectionName', 'ok')
+  })
+
+  it('returns correct information about presence history', async () => {
+    const res = await getWithUser('/api/participants/1', user)
+    expectStatus(res.status, 200)
+
+    expect(res.body).to.have.property('presenceHistory')
+    expect(res.body.presenceHistory).to.be.an('array').with.length(1)
+    expect(res.body.presenceHistory[0]).to.have.property('presence', 1)
+    expect(res.body.presenceHistory[0]).to.have.property('author')
+    expect(res.body.presenceHistory[0].author).to.have.property(
+      'firstName',
+      'Testi',
+    )
+    expect(res.body.presenceHistory[0].author).to.not.have.property(
+      'passwordHash',
+    )
   })
 
   it('returns 404 when incorrect id is given', async () => {
@@ -48,7 +64,7 @@ describe('Single participant API endpoint', () => {
     expectStatus(res.status, 404)
   })
 
-  function getFixtures() {
+  function getFixtures(userId) {
     return {
       Participant: [
         {
@@ -76,7 +92,7 @@ describe('Single participant API endpoint', () => {
           participantParticipantId: 1,
           presence: 1,
           timestamp: new Date(2016, 6, 20),
-          authorId: 3,
+          authorId: userId,
         },
       ],
       Allergy: [
