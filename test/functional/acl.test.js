@@ -249,6 +249,18 @@ describe('HTTP API access control', () => {
 
   function getFixtures() {
     return {
+      // user has to be before PresenceHistory
+      User: [
+        {
+          id: otherUserId,
+          firstName: 'derp',
+          lastName: 'durp',
+          password: 'password',
+          memberNumber: '1234',
+          email: 'derp@example.com',
+          phoneNumber: '123456',
+        },
+      ],
       Participant: [
         {
           participantId: 1,
@@ -283,7 +295,7 @@ describe('HTTP API access control', () => {
           participantId: 1,
           presence: 3,
           timestamp: new Date(),
-          authorId: 1,
+          authorId: otherUserId,
         },
       ],
       Allergy: [
@@ -312,17 +324,6 @@ describe('HTTP API access control', () => {
           id: 111,
           name: 'derp',
           filter: '?filter=%7B"textSearch"%3A"derpderp"%7D',
-        },
-      ],
-      User: [
-        {
-          id: otherUserId,
-          firstName: 'derp',
-          lastName: 'durp',
-          password: 'password',
-          memberNumber: '1234',
-          email: 'derp@example.com',
-          phoneNumber: '123456',
         },
       ],
     }
