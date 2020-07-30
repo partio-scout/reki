@@ -107,7 +107,7 @@ export const AuditLogEntry = Rt.Record({
   timestamp: Rt.String,
   reason: Rt.String.Or(Rt.Null),
   userId: Rt.Number,
-  user: RegistryUser,
+  user: RegistryUser.Or(Rt.Null),
   ipAddress: Rt.String,
   userAgent: Rt.String,
 }).asReadonly()

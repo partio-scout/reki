@@ -281,7 +281,12 @@ export default function (db) {
 
   ParticipantDate.belongsTo(Participant)
 
-  Participant.massAssignField = function (ids, fieldName, newValue, req) {
+  Participant.massAssignField = function (
+    ids,
+    fieldName,
+    newValue,
+    clientData,
+  ) {
     // field name : validation function
     const allowedFields = {
       presence: (value) => _.includes([1, 2, 3], +value),
@@ -308,7 +313,7 @@ export default function (db) {
 
             await Promise.all([
               audit({
-                ...getClientData(req),
+                ...clientData,
                 modelType: 'Participant',
                 modelId: row.participantId,
                 eventType: 'update',
@@ -319,7 +324,7 @@ export default function (db) {
                     participantParticipantId: row.participantId,
                     presence: newValue,
                     timestamp: new Date(),
-                    authorId: req.user.id,
+                    authorId: clientData.userId,
                   })
                 : Promise.resolve(),
             ])
@@ -339,11 +344,11 @@ export default function (db) {
   }
 
   AuditEvent.belongsTo(User, {
-    onDelete: 'SET NULL',
+    constraints: false,
   })
 
   User.hasMany(AuditEvent, {
-    onDelete: 'SET NULL',
+    constraints: false,
   })
 
   return {

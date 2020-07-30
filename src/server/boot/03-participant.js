@@ -129,7 +129,7 @@ export default function (app) {
         req.body.ids,
         req.body.fieldName,
         req.body.newValue,
-        req,
+        getClientData(req),
       )
       res.json(updates)
     }),
