@@ -25,7 +25,6 @@ export default function (app) {
           modelId: participant.participantId,
           eventType: 'find',
         })
-        res.json(participant)
 
         // Using User.toClientFormat ensures that presenceHistory.author does
         // not accidentally leak secret user information such as password hashes

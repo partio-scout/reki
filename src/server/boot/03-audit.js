@@ -11,8 +11,8 @@ export default function (app) {
       const filter = JSON.parse(req.query.filter || '{}')
 
       const where = filter.where || {}
-      const limit = +filter.limit || 250
-      const offset = +filter.skip || undefined
+      const limit = Number(filter.limit) || 250
+      const offset = Number(filter.skip) || undefined
       const order = filter.order
         ? filter.order.split(' ')
         : ['timestamp', 'DESC']
