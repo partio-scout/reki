@@ -96,3 +96,19 @@ export const ParticipantDetails = Rt.Record({
   editableInfo: Rt.String.Or(Rt.Null),
 }).asReadonly()
 export type ParticipantDetails = Rt.Static<typeof ParticipantDetails>
+
+export const AuditLogEntry = Rt.Record({
+  id: Rt.Number,
+  eventType: Rt.String,
+  model: Rt.String,
+  modelId: Rt.Number.Or(Rt.Null),
+  changes: Rt.Unknown,
+  meta: Rt.Unknown,
+  timestamp: Rt.String,
+  reason: Rt.String.Or(Rt.Null),
+  userId: Rt.Number,
+  user: RegistryUser.Or(Rt.Null),
+  ipAddress: Rt.String,
+  userAgent: Rt.String,
+}).asReadonly()
+export type AuditLogEntry = Rt.Static<typeof AuditLogEntry>

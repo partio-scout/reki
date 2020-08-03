@@ -4,6 +4,7 @@ import passport from 'passport'
 import { Strategy as SamlStrategy } from 'passport-saml'
 import path from 'path'
 import { URL } from 'url'
+import { audit, getClientData } from '../util/audit'
 
 export default function (app) {
   const rekiBaseUrl = new URL(
@@ -27,7 +28,7 @@ export default function (app) {
       entryPoint: partioIdEntryPoint,
       cert: partioIdCertificate,
       logoutUrl: partioIdLogoutUrl,
-      logoutCallbackUrl: 'http://localhost:3000/saml/consume-logout',
+      logoutCallbackUrl: new URL('/saml/consume-logout', rekiBaseUrl).href,
       identifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:transient',
     },
     async (profile, done) => {
@@ -56,19 +57,15 @@ export default function (app) {
             message:
               'PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.',
           })
-          return
         } else if (user.blocked) {
           done(null, false, {
             message: 'Käyttäjän sisäänkirjautuminen on estetty',
           })
-          return
         } else {
           done(null, models.User.toClientFormat(user, 'partioid'))
-          return
         }
       } catch (e) {
         done(e)
-        return
       }
     },
   )
@@ -77,14 +74,40 @@ export default function (app) {
 
   app.get(
     '/login/partioid',
-    passport.authenticate('partioid', {
-      successRedirect: '/',
-      failureRedirect: '/',
-      failureFlash: true,
-    }),
+    passport.authenticate(
+      'partioid',
+      {
+        failureRedirect: '/',
+        failureFlash: true,
+      },
+      async (req, res) => {
+        const responseType = req.accepts(['json', 'html']) || 'json'
+        await audit({
+          ...getClientData(req),
+          modelId: req.user.id,
+          modelType: 'User',
+          eventType: 'login',
+          meta: { method: 'partioid' },
+        })
+        if (responseType === 'json') {
+          res.status(200).json({ message: 'Login successful' })
+        } else {
+          res.redirect(303, '/')
+        }
+      },
+    ),
   )
 
-  app.get('/logout', (req, res, next) => {
+  app.get('/logout', async (req, res, next) => {
+    if (req.user) {
+      await audit({
+        ...getClientData(req),
+        modelId: req.user.id,
+        modelType: 'User',
+        eventType: 'logout',
+      })
+    }
+
     if (req.user && req.user.sessionType === 'partioid') {
       strategy.logout(req, (err, request) => {
         if (err) {

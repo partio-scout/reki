@@ -2,6 +2,7 @@ import passport from 'passport'
 import argon2 from 'argon2'
 import { BasicStrategy } from 'passport-http'
 import { models } from '../models'
+import { audit, getClientData } from '../util/audit'
 
 export default function (app) {
   const enableOfflineLogin = process.env.ENABLE_OFFLINE_LOGIN === 'true'
@@ -37,12 +38,23 @@ export default function (app) {
     }),
   )
 
-  app.use('/login/password', passport.authenticate('basic'), (req, res) => {
-    const responseType = req.accepts(['json', 'html']) || 'json'
-    if (responseType === 'json') {
-      res.status(200).json({ message: 'Login successful' })
-    } else {
-      res.redirect(303, '/')
-    }
-  })
+  app.use(
+    '/login/password',
+    passport.authenticate('basic'),
+    app.wrap(async (req, res) => {
+      const responseType = req.accepts(['json', 'html']) || 'json'
+      await audit({
+        ...getClientData(req),
+        modelId: req.user.id,
+        modelType: 'User',
+        eventType: 'login',
+        meta: { method: 'password' },
+      })
+      if (responseType === 'json') {
+        res.status(200).json({ message: 'Login successful' })
+      } else {
+        res.redirect(303, '/')
+      }
+    }),
+  )
 }

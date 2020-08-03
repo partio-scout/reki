@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize'
 import _ from 'lodash'
 import conf from '../conf'
+import { audit, getClientData } from '../util/audit'
 
 const Op = Sequelize.Op
 
@@ -198,35 +199,46 @@ export default function (db) {
     },
     modelId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+    },
+    changes: {
+      type: Sequelize.JSON,
+      allowNull: true,
+    },
+    meta: {
+      type: Sequelize.JSON,
+      allowNull: true,
     },
     timestamp: {
       type: Sequelize.DATE,
       allowNull: false,
       defaultValue: Sequelize.NOW,
     },
+    reason: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+      defaultValue: '',
+    },
     userId: {
       type: Sequelize.INTEGER,
+    },
+    ipAddress: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    userAgent: {
+      type: Sequelize.TEXT,
       allowNull: false,
     },
   })
-  AuditEvent.createEvent = {
-    Participant: function (userId, instanceId, description) {
-      return AuditEvent.create({
-        eventType: description,
-        model: 'Participant',
-        modelId: instanceId,
-        userId,
-      })
-    },
-    User: function (userId, instanceId, description) {
-      return AuditEvent.create({
-        eventType: description,
-        model: 'User',
-        modelId: instanceId,
-        userId,
-      })
-    },
+
+  AuditEvent.toClientJSON = function (event) {
+    const json = event.toJSON()
+
+    if (event.user) {
+      json.user = User.toClientFormat(event.user)
+    }
+
+    return json
   }
 
   User.belongsToMany(UserRole, { as: 'roles', through: UserRoleMapping })
@@ -269,7 +281,12 @@ export default function (db) {
 
   ParticipantDate.belongsTo(Participant)
 
-  Participant.massAssignField = function (ids, fieldName, newValue, authorId) {
+  Participant.massAssignField = function (
+    ids,
+    fieldName,
+    newValue,
+    clientData,
+  ) {
     // field name : validation function
     const allowedFields = {
       presence: (value) => _.includes([1, 2, 3], +value),
@@ -286,25 +303,34 @@ export default function (db) {
         where: { participantId: { [Op.in]: ids } },
       }).then((rows) => {
         const updates = _.map(rows, async (row) => {
-          const createPresenceHistory =
-            fieldName === 'presence' && row[fieldName] != newValue
-          row[fieldName] = newValue
+          if (row[fieldName] !== newValue) {
+            const diff = {
+              [fieldName]: {
+                old: row[fieldName],
+                new: newValue,
+              },
+            }
 
-          await Promise.all([
-            AuditEvent.createEvent.Participant(
-              authorId,
-              row.participantId,
-              'update',
-            ),
-            createPresenceHistory
-              ? PresenceHistory.create({
-                  participantParticipantId: row.participantId,
-                  presence: newValue,
-                  timestamp: new Date(),
-                  authorId: authorId,
-                })
-              : Promise.resolve(),
-          ])
+            await Promise.all([
+              audit({
+                ...clientData,
+                modelType: 'Participant',
+                modelId: row.participantId,
+                eventType: 'update',
+                changes: diff,
+              }),
+              fieldName === 'presence'
+                ? await PresenceHistory.create({
+                    participantParticipantId: row.participantId,
+                    presence: newValue,
+                    timestamp: new Date(),
+                    authorId: clientData.userId,
+                  })
+                : Promise.resolve(),
+            ])
+
+            row[fieldName] = newValue
+          }
 
           return await row.save()
         })
@@ -316,6 +342,14 @@ export default function (db) {
       return Promise.reject(err)
     }
   }
+
+  AuditEvent.belongsTo(User, {
+    constraints: false,
+  })
+
+  User.hasMany(AuditEvent, {
+    constraints: false,
+  })
 
   return {
     User: User,

@@ -3,6 +3,9 @@ import { Op } from 'sequelize'
 import _ from 'lodash'
 import config from '../conf'
 import optionalBasicAuth from '../middleware/optional-basic-auth'
+import { audit, getClientData } from '../util/audit'
+
+const modelType = 'Participant'
 
 export default function (app) {
   app.get(
@@ -16,11 +19,12 @@ export default function (app) {
       })
 
       if (participant) {
-        await models.AuditEvent.createEvent.Participant(
-          req.user.id,
-          participant.participantId,
-          'find',
-        )
+        await audit({
+          ...getClientData(req),
+          modelType,
+          modelId: participant.participantId,
+          eventType: 'find',
+        })
 
         // Using User.toClientFormat ensures that presenceHistory.author does
         // not accidentally leak secret user information such as password hashes
@@ -103,6 +107,14 @@ export default function (app) {
         order: [order],
         distinct: true, // without this count is calculated incorrectly
       })
+
+      await audit({
+        ...getClientData(req),
+        modelType,
+        eventType: 'find',
+        meta: { filter, generatedQuery: { where, offset, limit, order } },
+      })
+
       res.json({ result: result.rows, count: result.count })
     }),
   )
@@ -116,7 +128,7 @@ export default function (app) {
         req.body.ids,
         req.body.fieldName,
         req.body.newValue,
-        req.user.id,
+        getClientData(req),
       )
       res.json(updates)
     }),

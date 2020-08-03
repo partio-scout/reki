@@ -11,6 +11,7 @@ import {
   ParticipantDetailsPage,
   ParticipantListPage,
   UserManagementPage,
+  AuditLogPage,
 } from './components'
 import { RestfulResource } from './RestfulResource'
 import createMatcher from 'feather-route-matcher'
@@ -37,6 +38,7 @@ const routes = createMatcher({
     />
   ),
   '/admin': UserManagementPage,
+  '/audit': AuditLogPage,
   '*': Homepage,
 })
 

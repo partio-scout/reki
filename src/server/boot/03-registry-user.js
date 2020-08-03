@@ -1,5 +1,8 @@
 import optionalBasicAuth from '../middleware/optional-basic-auth'
 import { models } from '../models'
+import { audit, getClientData } from '../util/audit'
+
+const modelType = 'User'
 
 export default function (app) {
   app.get(
@@ -7,7 +10,11 @@ export default function (app) {
     optionalBasicAuth(),
     app.requirePermission('view registry users'),
     async (req, res) => {
-      await models.AuditEvent.createEvent.User(req.user.id, 0, 'find')
+      await audit({
+        ...getClientData(req),
+        modelType,
+        eventType: 'find',
+      })
       const users = await models.User.findAll()
       res.json(users.map(models.User.toClientFormat))
     },
@@ -18,12 +25,17 @@ export default function (app) {
     optionalBasicAuth(),
     app.requirePermission('block and unblock users'),
     app.wrap(async (req, res) => {
-      await models.User.update(
+      const user = await models.User.update(
         { blocked: true },
         { where: { id: req.params.id } },
       )
       res.status(204).send('')
-      models.AuditEvent.createEvent.User(req.user.id, req.params.id, 'block')
+      await audit({
+        ...getClientData(req),
+        modelId: user.id,
+        modelType,
+        eventType: 'block',
+      })
     }),
   )
 
@@ -32,12 +44,17 @@ export default function (app) {
     optionalBasicAuth(),
     app.requirePermission('block and unblock users'),
     app.wrap(async (req, res) => {
-      await models.User.update(
+      const user = await models.User.update(
         { blocked: false },
         { where: { id: req.params.id } },
       )
       res.status(204).send('')
-      models.AuditEvent.createEvent.User(req.user.id, req.params.id, 'unblock')
+      await audit({
+        ...getClientData(req),
+        modelId: user.id,
+        modelType,
+        eventType: 'unblock',
+      })
     }),
   )
 

@@ -63,6 +63,15 @@ function getLoggedInNavItems(
         isActive: location.pathname.startsWith('/admin'),
       },
     })
+
+    navItems.push({
+      spacer: false,
+      label: 'Loki',
+      link: {
+        to: '/audit',
+        isActive: location.pathname.startsWith('/audit'),
+      },
+    })
   }
 
   navItems.push({
