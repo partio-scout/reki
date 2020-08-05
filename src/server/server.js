@@ -568,7 +568,7 @@ async function boot(app) {
     '/audit-events',
     optionalBasicAuth(),
     requirePermission('view audit log'),
-    app.wrap(async (req, res) => {
+    async (req, res) => {
       const filter = JSON.parse(req.query.filter || '{}')
 
       const where = filter.where || {}
@@ -594,7 +594,7 @@ async function boot(app) {
       })
 
       res.json(events.map(models.AuditEvent.toClientJSON))
-    }),
+    },
   )
 
   app.get(
@@ -627,7 +627,7 @@ async function boot(app) {
     app.use(
       '/login/password',
       passport.authenticate('basic'),
-      app.wrap(async (req, res) => {
+      async (req, res) => {
         const responseType = req.accepts(['json', 'html']) || 'json'
 
         await audit({
@@ -643,36 +643,33 @@ async function boot(app) {
         } else {
           res.redirect(303, '/')
         }
-      }),
+      },
     )
   }
 
-  app.get(
-    '/logout',
-    app.wrap(async (req, res, next) => {
-      if (req.user) {
-        await audit({
-          ...getClientData(req),
-          modelId: req.user.id,
-          modelType: 'User',
-          eventType: 'logout',
-        })
-      }
+  app.get('/logout', async (req, res, next) => {
+    if (req.user) {
+      await audit({
+        ...getClientData(req),
+        modelId: req.user.id,
+        modelType: 'User',
+        eventType: 'logout',
+      })
+    }
 
-      if (req.user && req.user.sessionType === 'partioid') {
-        strategy.logout(req, (err, request) => {
-          if (err) {
-            next(err)
-          } else {
-            res.redirect(request)
-          }
-        })
-      } else {
-        req.logout()
-        res.redirect(303, '/login')
-      }
-    }),
-  )
+    if (req.user && req.user.sessionType === 'partioid') {
+      strategy.logout(req, (err, request) => {
+        if (err) {
+          next(err)
+        } else {
+          res.redirect(request)
+        }
+      })
+    } else {
+      req.logout()
+      res.redirect(303, '/login')
+    }
+  })
 
   app.post(
     '/saml/consume',
@@ -705,7 +702,7 @@ async function boot(app) {
     '/registryusers',
     optionalBasicAuth(),
     requirePermission('view registry users'),
-    app.wrap(async (req, res) => {
+    async (req, res) => {
       await audit({
         ...getClientData(req),
         modelType: 'User',
@@ -714,14 +711,14 @@ async function boot(app) {
 
       const users = await models.User.findAll()
       res.json(users.map(models.User.toClientFormat))
-    }),
+    },
   )
 
   apiRouter.post(
     '/registryusers/:id/block',
     optionalBasicAuth(),
     requirePermission('block and unblock users'),
-    app.wrap(async (req, res) => {
+    async (req, res) => {
       const userId = NonNegativeInteger.check(Number(req.params.id))
 
       await audit({
@@ -733,14 +730,14 @@ async function boot(app) {
 
       await models.User.update({ blocked: true }, { where: { id: userId } })
       res.status(204).send('')
-    }),
+    },
   )
 
   apiRouter.post(
     '/registryusers/:id/unblock',
     optionalBasicAuth(),
     requirePermission('block and unblock users'),
-    app.wrap(async (req, res) => {
+    async (req, res) => {
       const userId = NonNegativeInteger.check(Number(req.params.id))
 
       await audit({
@@ -752,7 +749,7 @@ async function boot(app) {
 
       await models.User.update({ blocked: false }, { where: { id: userId } })
       res.status(204).send('')
-    }),
+    },
   )
 
   app.get('/monitoring', async (req, res) => {
