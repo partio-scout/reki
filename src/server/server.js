@@ -567,7 +567,7 @@ async function boot(app) {
   apiRouter.get(
     '/audit-events',
     optionalBasicAuth(),
-    app.requirePermission('view audit log'),
+    requirePermission('view audit log'),
     app.wrap(async (req, res) => {
       const filter = JSON.parse(req.query.filter || '{}')
 
