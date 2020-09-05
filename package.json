@@ -49,7 +49,7 @@
     "express-session": "^1.17.1",
     "feather-route-matcher": "^3.1.0",
     "helmet": "^3.22.0",
-    "http-proxy": "^1.18.0",
+    "http-proxy": "^1.18.1",
     "inquirer": "^7.1.0",
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.19",
