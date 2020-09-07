@@ -81,7 +81,7 @@ jobs:
       - name: Install deps
         run: npm ci --production=false
       - name: End-to-end tests
-        uses: cypress-io/github-action@v1
+        uses: cypress-io/github-action@v2
         with:
           command: npm run test-e2e
         env:
