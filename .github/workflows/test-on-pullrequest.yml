@@ -62,7 +62,7 @@ jobs:
           TEST_DATABASE_URL: postgres://reki:reki@postgres/reki
   test-e2e:
     runs-on: ubuntu-latest
-    container: node:12
+    container: cypress/browsers:node12.18.0-chrome83-ff77
     services:
       postgres:
         image: postgres
