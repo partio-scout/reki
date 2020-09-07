@@ -24,9 +24,9 @@
     "test-one": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require ts-node/register --exit",
     "test-watch": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --watch --timeout 4000 --require ts-node/register --exit",
     "test-integration": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test mocha --timeout 4000 --require ts-node/register test/integration --exit",
-    "pretest-e2e": "cross-env NODE_ENV=test npm run seed-database && npm run build",
-    "test-e2e-mocha": "mocha --timeout 10000 --require ts-node/register test/e2e --exit",
-    "test-e2e": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-mocha",
+    "pretest-e2e": "docker-compose up -d postgres && cross-env NODE_ENV=test npm run seed-database && npm run build",
+    "test-e2e-cypress": "cross-env TS_NODE_PROJECT= cypress run --project ./test/e2e --browser chrome --headless",
+    "test-e2e": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-cypress",
     "seed-database": "ts-node --project src/server/tsconfig.json scripts/seed-database.js",
     "clear-temporary-tables": "ts-node --project src/server/tsconfig.json src/kuksa-integration/clear-temporary-tables.js",
     "fetch-data": "ts-node --project src/server/tsconfig.json src/kuksa-integration/fetch-data.js",
@@ -34,7 +34,8 @@
     "fetch-from-kuksa": "npm run clear-temporary-tables && npm run fetch-data && npm run rebuild-tables",
     "fetch-from-mock-kuksa": "cross-env KUKSA_API_PROXY_URL=\"\" KUKSA_API_USERNAME=username KUKSA_API_PASSWORD=password KUKSA_API_EVENTID=c3ef7c48-1df4-4bf8-b1d0-d523d601a3e1 KUKSA_API_ENDPOINT=http://localhost:4001 npm run fetch-from-kuksa",
     "mock-kuksa": "ts-node --project src/server/tsconfig.json test/utils/kuksa-integration/mock/mock-kuksa.js",
-    "dump-kuksa": "scripts/dump-kuksa-api.sh"
+    "dump-kuksa": "scripts/dump-kuksa-api.sh",
+    "cypress:open": "cypress open --project ./test/e2e"
   },
   "dependencies": {
     "@types/node": "^12.12.37",
@@ -91,6 +92,7 @@
     "concurrently": "^5.2.0",
     "core-js": "^3.6.5",
     "css-loader": "^3.5.3",
+    "cypress": "^5.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-react": "^7.19.0",
@@ -102,7 +104,6 @@
     "mocha": "^7.1.2",
     "nodemon": "^2.0.3",
     "prettier": "^2.0.5",
-    "puppeteer": "^3.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.21",
