@@ -411,7 +411,7 @@ async function boot(app) {
           ...getClientData(req),
           modelType: 'Participant',
           modelId: participant.participantId,
-          eventType: 'id',
+          eventType: 'find',
         })
 
         // Using User.toClientFormat ensures that presenceHistory.author does
@@ -523,7 +523,7 @@ async function boot(app) {
       await audit({
         ...getClientData(req),
         modelType: 'Participant',
-        eventType: 'id',
+        eventType: 'find',
         meta: { params },
       })
 
