@@ -26,7 +26,7 @@
     "test-integration": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test mocha --timeout 4000 --require ts-node/register test/integration --exit",
     "pretest-e2e": "cross-env NODE_ENV=test npm run seed-database && npm run build",
     "test-e2e-cypress": "cross-env TS_NODE_PROJECT= cypress run --project ./test/e2e --browser chrome --headless",
-    "test-e2e": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-cypress",
+    "test-e2e": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 ENABLE_OFFLINE_LOGIN=true start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-cypress",
     "seed-database": "ts-node --project src/server/tsconfig.json scripts/seed-database.js",
     "clear-temporary-tables": "ts-node --project src/server/tsconfig.json src/kuksa-integration/clear-temporary-tables.js",
     "fetch-data": "ts-node --project src/server/tsconfig.json src/kuksa-integration/fetch-data.js",
@@ -35,7 +35,7 @@
     "fetch-from-mock-kuksa": "cross-env KUKSA_API_PROXY_URL=\"\" KUKSA_API_USERNAME=username KUKSA_API_PASSWORD=password KUKSA_API_EVENTID=c3ef7c48-1df4-4bf8-b1d0-d523d601a3e1 KUKSA_API_ENDPOINT=http://localhost:4001 npm run fetch-from-kuksa",
     "mock-kuksa": "ts-node --project src/server/tsconfig.json test/utils/kuksa-integration/mock/mock-kuksa.js",
     "dump-kuksa": "scripts/dump-kuksa-api.sh",
-    "cypress:open": "npm run pretest-e2e && cross-env NODE_ENV=test PORT=3005 start-test 3005 'cypress open --project ./test/e2e'"
+    "cypress:open": "npm run pretest-e2e && cross-env NODE_ENV=test PORT=3005 ENABLE_OFFLINE_LOGIN=true start-test 3005 'TS_NODE_PROJECT= cypress open --project ./test/e2e'"
   },
   "dependencies": {
     "@types/node": "^12.12.37",

@@ -1,4 +1,5 @@
 {
   "baseUrl": "http://localhost:3005",
-  "integrationFolder": "specs"
+  "integrationFolder": "specs",
+  "nodeVersion": "bundled"
 }
