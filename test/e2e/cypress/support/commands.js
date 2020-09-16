@@ -32,3 +32,7 @@ Cypress.Commands.add('login', (username, password) => {
     },
   })
 })
+
+Cypress.Commands.add('logout', () => {
+  cy.contains('Kirjaudu ulos').click()
+})
