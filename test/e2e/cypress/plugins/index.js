@@ -15,6 +15,7 @@
 import {
   createUserWithRoles,
   deleteFixturesIfExist,
+  deleteAllFixtures,
 } from '../../../utils/test-utils'
 
 /**
@@ -29,6 +30,9 @@ module.exports = (on, config) => {
     },
     deleteFixtures(model) {
       return deleteFixturesIfExist(model)
+    },
+    deleteAllFixtures() {
+      return deleteAllFixtures()
     },
   })
 }

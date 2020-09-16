@@ -19,6 +19,6 @@ describe('REKI', () => {
   })
 
   afterEach(() => {
-    cy.task('deleteFixtures', 'User')
+    cy.task('deleteAllFixtures')
   })
 })

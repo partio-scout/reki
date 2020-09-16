@@ -38,6 +38,6 @@ describe('User management', () => {
   })
 
   afterEach(() => {
-    cy.task('deleteFixtures', 'User')
+    cy.task('deleteAllFixtures')
   })
 })
