@@ -1,4 +1,4 @@
-describe('REKI', () => {
+describe('Authentication', () => {
   beforeEach(() => {
     cy.task('createUser', {
       email: 'masa',
@@ -8,14 +8,20 @@ describe('REKI', () => {
     })
   })
 
-  it('displays a login link when not logged in', () => {
+  it('login link is shown when not logged in', () => {
     cy.visit('/')
     cy.contains('Kirjaudu')
   })
 
-  it('displays the current user when logged in', () => {
+  it('current user name is shown when logged in', () => {
     cy.login('masa', 'Salasana123')
     cy.contains('Mallikas')
+  })
+
+  it('logout works', () => {
+    cy.login('masa', 'Salasana123')
+    cy.logout()
+    cy.contains('Kirjaudu')
   })
 
   afterEach(() => {
