@@ -12,7 +12,9 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+import { readFileSync } from 'fs'
 import {
+  createFixtures,
   createUserWithRoles,
   deleteFixturesIfExist,
   deleteAllFixtures,
@@ -27,6 +29,13 @@ module.exports = (on, config) => {
   on('task', {
     createUser(overrides) {
       return createUserWithRoles(['registryUser', 'registryAdmin'], overrides)
+    },
+    loadFixtures(file) {
+      const fixtures = JSON.parse(
+        readFileSync(`${__dirname}/../fixtures/${file}`),
+      )
+      createFixtures(fixtures)
+      return true
     },
     deleteFixtures(model) {
       return deleteFixturesIfExist(model)

@@ -70,6 +70,12 @@ export function createFixture(modelName, fixture) {
   }
 }
 
+export async function createFixtures(fixtures) {
+  for (const model in fixtures) {
+    await createFixture(model, fixtures[model])
+  }
+}
+
 export function deleteFixtureIfExists(modelName, id) {
   return models[modelName].destroyById(id)
 }
@@ -99,9 +105,7 @@ export async function withFixtures(fixtureParam) {
     fixtures =
       typeof fixtureParam === 'function' ? await fixtureParam() : fixtureParam
 
-    for (const model in fixtures) {
-      await createFixture(model, fixtures[model])
-    }
+    await createFixtures(fixtures)
   })
 
   afterEach(async () => {
