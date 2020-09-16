@@ -14,12 +14,7 @@ describe('REKI', () => {
   })
 
   it('displays the current user when logged in', () => {
-    cy.visit('/login/password', {
-      auth: {
-        username: 'masa',
-        password: 'Salasana123',
-      },
-    })
+    cy.login('masa', 'Salasana123')
     cy.contains('Mallikas')
   })
 
