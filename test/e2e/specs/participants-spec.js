@@ -24,27 +24,6 @@ describe('Participants', () => {
     cy.contains('synt. 1.1.1999')
   })
 
-  it('can be marked present and absent', () => {
-    cy.contains('label', 'Tekstihaku').type('tee')
-    cy.contains('tr', 'Testihenkilö').find('[type="checkbox"]').check()
-    cy.contains('form', '1 henkilö valittu')
-      .find('select')
-      .select('Saapunut leiriin')
-    cy.contains('Tallenna').click()
-
-    cy.visit('/participants/1')
-    cy.contains('tr', 'Saapunut leiriin')
-    cy.contains('label', 'Muuta tilaa')
-      .find('select')
-      .select('Poistunut leiristä')
-    cy.contains('Tallenna').click()
-    cy.contains('tr', 'Poistunut leiristä')
-
-    cy.contains(/Leiriläiset/i).click()
-    cy.contains('label', 'Tekstihaku').type('tee')
-    cy.contains('tr', 'Testihenkilö').find('[title="Poistunut leiristä"]')
-  })
-
   afterEach(() => {
     cy.task('deleteAllFixtures')
   })
