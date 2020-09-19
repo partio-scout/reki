@@ -5,7 +5,7 @@ const Count: React.FC<{ count: number | undefined }> = ({ count }) => {
   if (count === undefined) {
     return <Spinner />
   } else {
-    return <>count</>
+    return <>{count}</>
   }
 }
 
