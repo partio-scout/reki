@@ -85,14 +85,12 @@ export async function deleteFixturesIfExist(modelName, whereClause) {
 }
 
 export async function deleteAllFixtures() {
-  const promises = Object.keys(models).map((key) => {
+  for (const model of Object.keys(models)) {
     // Don't delete UserRoles as those are only created on app startup
-    if (key === 'UserRole') {
-      return Promise.resolve(true)
+    if (model !== 'UserRole') {
+      await deleteFixturesIfExist(model)
     }
-    return deleteFixturesIfExist(key)
-  })
-  return Promise.all(promises)
+  }
 }
 
 export async function withFixtures(fixtureParam) {
