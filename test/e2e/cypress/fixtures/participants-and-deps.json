@@ -72,5 +72,27 @@
       "property": "internationalGuest",
       "value": "false"
     }
+  ],
+  "ParticipantDate": [
+    {
+      "participantId": 1,
+      "date": "2016-07-23"
+    },
+    {
+      "participantId": 1,
+      "date": "2016-07-24"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-23"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-24"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-23"
+    }
   ]
 }
