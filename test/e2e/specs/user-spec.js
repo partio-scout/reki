@@ -24,6 +24,7 @@ describe('User management', () => {
   it('allows disabling users', () => {
     cy.contains('tr', 'Masa Mallikas').contains('Estä').click()
     cy.contains('tr', 'Masa Mallikas').contains('Salli')
+    cy.logout()
 
     // Need to use cy.request() so that we can check the actual status code because
     // the endpoint doesn't actually return anything
