@@ -30,18 +30,19 @@ module.exports = (on, config) => {
     createUser(overrides) {
       return createUserWithRoles(['registryUser', 'registryAdmin'], overrides)
     },
-    loadFixtures(file) {
+    async loadFixtures(file) {
       const fixtures = JSON.parse(
         readFileSync(`${__dirname}/../fixtures/${file}`),
       )
-      createFixtures(fixtures)
+      await createFixtures(fixtures)
       return true
     },
     deleteFixtures(model) {
       return deleteFixturesIfExist(model)
     },
-    deleteAllFixtures() {
-      return deleteAllFixtures()
+    async deleteAllFixtures() {
+      await deleteAllFixtures()
+      return true
     },
   })
 }
