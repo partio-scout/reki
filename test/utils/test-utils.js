@@ -11,7 +11,7 @@ let uniqueIdCounter = 1
 // Functions for managing users in tests
 
 export async function createUserWithRoles(rolesToAdd, overrides) {
-  const password = 'salasana'
+  const password = (overrides && overrides.password) || 'salasana'
   const passwordHash = await argon2.hash(password)
   uniqueIdCounter++
   const userData = Object.assign(
