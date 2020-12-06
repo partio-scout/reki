@@ -1,11 +1,13 @@
 describe('Authentication', () => {
+  const user = {
+    email: 'masa',
+    password: 'Salasana123',
+    firstName: 'Matti',
+    lastName: 'Mallikas',
+  }
+
   beforeEach(() => {
-    cy.task('createUser', {
-      email: 'masa',
-      password: 'Salasana123',
-      firstName: 'Matti',
-      lastName: 'Mallikas',
-    })
+    cy.task('createUser', user)
   })
 
   it('login link is shown when not logged in', () => {
@@ -14,12 +16,12 @@ describe('Authentication', () => {
   })
 
   it('current user name is shown when logged in', () => {
-    cy.login('masa', 'Salasana123')
-    cy.contains('Mallikas')
+    cy.login(user.email, user.password)
+    cy.contains(user.lastName)
   })
 
   it('logout works', () => {
-    cy.login('masa', 'Salasana123')
+    cy.login(user.email, user.password)
     cy.logout()
     cy.contains('Kirjaudu')
   })
