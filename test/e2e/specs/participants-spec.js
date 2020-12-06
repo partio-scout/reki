@@ -27,6 +27,17 @@ describe('Participants', () => {
     cy.get('body').should('not.contain', 'Esimerkki')
   })
 
+  it('will not be shown after the search is reset', () => {
+    cy.contains('label', 'Tekstihaku').type('tee')
+    cy.contains('Hakutuloksia: 2')
+    cy.contains('Testihenkilö')
+    cy.contains('Tyhjennä').click()
+    cy.contains('Hakutuloksia: 0')
+    cy.contains('table', 'Etunimi') // participant table
+      .find('tbody tr')
+      .should('have.length', 0)
+  })
+
   it('can be opened from the list', () => {
     cy.contains('label', 'Tekstihaku').type('tee')
     cy.contains('Testihenkilö').click()
