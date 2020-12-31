@@ -19,6 +19,10 @@ import {
 } from '../../model'
 import { RestfulResource } from '../../RestfulResource'
 
+function isNotUndefined<T>(x: T | undefined): x is T {
+  return x !== undefined
+}
+
 export type ParticipantListColumn =
   | {
       type: 'presence' | 'profileLink' | 'date' | 'text'
@@ -189,25 +193,50 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
   const [participantsLoading, setParticipantsLoading] = useState(true)
   const [participantsLoadForcer, setParticipantsLoadForcer] = useState(false)
   useEffect((): void => {
-    setParticipantsLoading(true)
-
-    const filters = {
-      where: filter,
-      skip: offset,
-      limit: limit,
-      order: getLoopbackOrderParameter(),
-      include: ['dates'],
-    }
-
-    const filterParams = new URLSearchParams({
-      filter: JSON.stringify(filters),
-    })
-
-    if (filter === undefined || Object.keys(filter).length === 0) {
+    const filterEntries = Object.entries(filter)
+    if (filterEntries.length === 0) {
       setParticipants([])
       setParticipantsLoading(false)
       return
     }
+
+    setParticipantsLoading(true)
+
+    const orderEntries = Object.entries(order)
+    const [orderBy, orderDirection] = orderEntries.length
+      ? orderEntries[0]
+      : [undefined, undefined]
+
+    const filters: (string[] | undefined)[] = filterEntries.map(
+      ([key, value]) => {
+        if (key === 'textSearch' && typeof value === 'string') {
+          return ['q', value]
+        }
+        if (Array.isArray(value)) {
+          return [key, value.join(',')]
+        }
+        if (typeof value === 'string') {
+          return [key, value]
+        }
+        if (typeof value === 'number') {
+          return [key, value.toString()]
+        }
+        return undefined
+      },
+    )
+
+    const params = filters
+      .concat([
+        ['offset', offset.toString()],
+        ['limit', limit.toString()],
+        orderBy ? (['orderBy', orderBy] as const) : undefined,
+        orderDirection
+          ? (['orderDirection', orderDirection] as const)
+          : undefined,
+      ] as (string[] | undefined)[])
+      .filter(isNotUndefined)
+
+    const filterParams = new URLSearchParams(params)
 
     participantResource
       .findAll(filterParams)
@@ -223,21 +252,6 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
         },
         (error) => showError('Osallistujia ei voitu ladata', { error }),
       )
-
-    function getLoopbackOrderParameter() {
-      if (!order) {
-        return undefined
-      }
-
-      const strings = Object.keys(order).map((key) => `${key} ${order[key]}`)
-      if (strings.length === 0) {
-        return undefined
-      } else if (strings.length === 1) {
-        return strings[0]
-      } else {
-        return strings
-      }
-    }
   }, [
     offset,
     limit,

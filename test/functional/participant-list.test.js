@@ -14,59 +14,59 @@ describe('Particpant list API endpoint', () => {
   withFixtures(getFixtures())
 
   it('returns all participants when no where filter is given', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 0, limit: 200 })
     expect(response.result).to.be.an('array').with.length(3)
     expect(response.result[0]).to.have.property('firstName', 'Teemu')
   })
 
   it('returns correct participants with one where filter', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{"village":"Kattivaara"},"skip":0,"limit":200}',
-    )
+    const response = await getParticipantsWithFilter({
+      village: 'Kattivaara',
+      offset: 0,
+      limit: 200,
+    })
     expect(response.result).to.be.an('array').with.length(1)
     expect(response.result[0]).to.have.property('firstName', 'Teemu')
   })
 
   it('returns correct participants with a combination of where filters', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{"ageGroup":"sudenpentu","village":"Testikylä"},"skip":0,"limit":200}',
-    )
+    const response = await getParticipantsWithFilter({
+      ageGroup: 'sudenpentu',
+      village: 'Testikylä',
+      offset: 0,
+      limit: 200,
+    })
     expect(response.result).to.be.an('array').with.length(1)
     expect(response.result[0]).to.have.property('firstName', 'Tero')
   })
 
   it('returns the dates the participant is present', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 0, limit: 200 })
     expect(response.result[0]).to.have.property('dates')
     expect(response.result[0].dates).to.be.an('array').with.length(3)
   })
 
   it('skips correct amount of participants from the start when skip parameter is set', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":2,"limit":1}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 2, limit: 1 })
     expect(response.result).to.be.an('array').with.length(1)
     expect(response.result[0]).to.have.property('participantId', 3)
     expect(response.result[0]).to.have.property('firstName', 'Jussi')
   })
 
   it('returns correct amount of participants when limit parameter is set', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":2}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 0, limit: 2 })
     expect(response.result).to.be.an('array').with.length(2)
     expect(response.result[0]).to.have.property('participantId', 1)
     expect(response.result[0]).to.have.property('firstName', 'Teemu')
   })
 
   it('sorts participants correctly when order parameter is set', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200,"order":"lastName DESC"}',
-    )
+    const response = await getParticipantsWithFilter({
+      offset: 0,
+      limit: 200,
+      orderBy: 'lastName',
+      orderDirection: 'DESC',
+    })
     expect(response.result).to.be.an('array').with.length(3)
     expect(response.result[0]).to.have.property('lastName', 'Testihenkilö')
     expect(response.result[1]).to.have.property('lastName', 'Jukola')
@@ -74,17 +74,13 @@ describe('Particpant list API endpoint', () => {
   })
 
   it('returns the count of matching participants along with the result', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":0,"limit":200}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 0, limit: 200 })
     expect(response.count).to.equal(3)
   })
 
   //count should return the number of all maches regardless of the paging
   it('counts matching participants correctly also when skip and limit are set', async () => {
-    const response = await getParticipantsWithFilter(
-      '{"where":{},"skip":1,"limit":2}',
-    )
+    const response = await getParticipantsWithFilter({ offset: 1, limit: 2 })
     expect(response.count).to.equal(3)
   })
 
@@ -93,8 +89,9 @@ describe('Particpant list API endpoint', () => {
   // TODO add test for count when where filter is set
 
   async function getParticipantsWithFilter(filter) {
+    const params = new URLSearchParams(filter)
     const res = await getWithUser(
-      `/api/participants/?filter=${filter}`,
+      `/api/participants/?${params}`,
       await createUser(['registryUser']),
     )
     expectStatus(res.status, 200)
