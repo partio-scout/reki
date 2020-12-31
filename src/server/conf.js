@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-const participantFields = [
+export const participantFields = [
   {
     name: 'presence',
     type: 'mandatory_field',
@@ -199,219 +199,229 @@ const participantFields = [
   },
 ]
 
-export default {
-  getFetchDateRanges: () => [
-    {
-      startDate: '2015-01-01T00:00:00',
-      endDate: '2016-01-22T06:00:00',
-    },
-    {
-      startDate: '2016-01-22T00:00:00',
-      endDate: '2016-02-25T06:00:00',
-    },
-    {
-      startDate: '2016-02-25T00:00:00',
-      endDate: '2016-07-15T05:00:00',
-    },
-    {
-      startDate: '2016-07-15T05:00:00',
-      endDate: '', // Defaults to right now
-    },
-  ],
-  getParticipantBuilderFunction: () => (participant) => {
-    const p = participant
-
-    // Shorten family camp age group a bit
-    let ageGroup =
-      p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu'
-    if (
-      ageGroup ===
-      'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.'
-    ) {
-      ageGroup = 'perheleiri (0-11v.)'
-    }
-
-    // Family camp residence needs to be deduced differently
-    let subCamp = p.get('kuksa_subcamp.name') || 'Muu'
-    if (p.get('accommodation') === 'Perheleirissä') {
-      subCamp = 'Riehu'
-    }
-
-    return {
-      participantId: p.get('id'),
-      firstName: p.get('firstName'),
-      lastName: p.get('lastName'),
-      nickname: p.get('nickname'),
-      memberNumber: p.get('memberNumber'),
-      dateOfBirth: p.get('dateOfBirth'),
-      billedDate: p.getPaymentStatus('billed'),
-      paidDate: p.getPaymentStatus('paid'),
-      phoneNumber: p.get('phoneNumber'),
-      email: p.get('email'),
-      internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
-      diet: p.get('diet'),
-      accommodation: p.get('accommodation') || 'Muu',
-      localGroup:
-        p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
-      campGroup: p.get('kuksa_campgroup.name') || 'Muu',
-      subCamp: subCamp,
-      village: p.get('kuksa_village.name') || 'Muu',
-      country: p.get('kuksa_localgroup.country') || 'Suomi',
-      ageGroup: ageGroup,
-      // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
-      nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
-      staffPosition: p.getExtraInfo('Pesti'),
-      staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-      willOfTheWisp: p.getExtraSelection('Virvatuli'),
-      willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
-      guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
-      guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
-      familyCampProgramInfo: p.getExtraInfo(
-        'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse',
-      ),
-      childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
-    }
+export const fetchDateRanges = [
+  {
+    startDate: '2015-01-01T00:00:00',
+    endDate: '2016-01-22T06:00:00',
   },
-  getParticipantDatesMapper: () => (wrappedParticipant) => {
-    // Map payment names to arrays of dates when the participant is present
-    const paymentToDatesMappings = {
-      'pe 15.7.': ['2016-07-15'],
-      'la 16.7.': ['2016-07-16'],
-      'su 17.7.': ['2016-07-17'],
-      'ma 18.7.': ['2016-07-18'],
-      'ti 19.7.': ['2016-07-19'],
+  {
+    startDate: '2016-01-22T00:00:00',
+    endDate: '2016-02-25T06:00:00',
+  },
+  {
+    startDate: '2016-02-25T00:00:00',
+    endDate: '2016-07-15T05:00:00',
+  },
+  {
+    startDate: '2016-07-15T05:00:00',
+    endDate: '', // Defaults to right now
+  },
+]
 
-      'ke 20.7.': ['2016-07-20'],
-      'ke 20.7. 100% alennus': ['2016-07-20'],
-      'ke 20.7. 50% alennus': ['2016-07-20'],
+export const participantBuilderFunction = (participant) => {
+  const p = participant
 
-      'to 21.7.': ['2016-07-21'],
-      'to 21.7. 100% alennus': ['2016-07-21'],
-      'to 21.7. 50% alennus': ['2016-07-21'],
+  // Shorten family camp age group a bit
+  let ageGroup =
+    p.getExtraSelection('Osallistun seuraavan ikäkauden ohjelmaan:') || 'Muu'
+  if (
+    ageGroup ===
+    'perheleirin ohjelmaan (0-11v.), muistathan merkitä lisätiedot osallistumisesta "vain perheleirin osallistujille" -osuuteen.'
+  ) {
+    ageGroup = 'perheleiri (0-11v.)'
+  }
 
-      'pe 22.7.': ['2016-07-22'],
-      'pe 22.7. 100% alennus': ['2016-07-22'],
-      'pe 22.7. 50% alennus': ['2016-07-22'],
+  // Family camp residence needs to be deduced differently
+  let subCamp = p.get('kuksa_subcamp.name') || 'Muu'
+  if (p.get('accommodation') === 'Perheleirissä') {
+    subCamp = 'Riehu'
+  }
 
-      'la 23.7.': ['2016-07-23'],
-      'la 23.7. 100% alennus': ['2016-07-23'],
-      'la 23.7. 50% alennus': ['2016-07-23'],
+  return {
+    participantId: p.get('id'),
+    firstName: p.get('firstName'),
+    lastName: p.get('lastName'),
+    nickname: p.get('nickname'),
+    memberNumber: p.get('memberNumber'),
+    dateOfBirth: p.get('dateOfBirth'),
+    billedDate: p.getPaymentStatus('billed'),
+    paidDate: p.getPaymentStatus('paid'),
+    phoneNumber: p.get('phoneNumber'),
+    email: p.get('email'),
+    internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
+    diet: p.get('diet'),
+    accommodation: p.get('accommodation') || 'Muu',
+    localGroup:
+      p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
+    campGroup: p.get('kuksa_campgroup.name') || 'Muu',
+    subCamp: subCamp,
+    village: p.get('kuksa_village.name') || 'Muu',
+    country: p.get('kuksa_localgroup.country') || 'Suomi',
+    ageGroup: ageGroup,
+    // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
+    nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
+    staffPosition: p.getExtraInfo('Pesti'),
+    staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
+    willOfTheWisp: p.getExtraSelection('Virvatuli'),
+    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
+    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
+    guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
+    familyCampProgramInfo: p.getExtraInfo(
+      'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse',
+    ),
+    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
+  }
+}
 
-      'su 24.7.': ['2016-07-24'],
-      'su 24.7. 100% alennus': ['2016-07-24'],
-      'su 24.7. 50% alennus': ['2016-07-24'],
+export const participantDatesMapper = (wrappedParticipant) => {
+  // Map payment names to arrays of dates when the participant is present
+  const paymentToDatesMappings = {
+    'pe 15.7.': ['2016-07-15'],
+    'la 16.7.': ['2016-07-16'],
+    'su 17.7.': ['2016-07-17'],
+    'ma 18.7.': ['2016-07-18'],
+    'ti 19.7.': ['2016-07-19'],
 
-      'ma 25.7.': ['2016-07-25'],
-      'ma 25.7. 100% alennus': ['2016-07-25'],
-      'ma 25.7. 50% alennus': ['2016-07-25'],
+    'ke 20.7.': ['2016-07-20'],
+    'ke 20.7. 100% alennus': ['2016-07-20'],
+    'ke 20.7. 50% alennus': ['2016-07-20'],
 
-      'ti 26.7.': ['2016-07-26'],
-      'ti 26.7. 100% alennus': ['2016-07-26'],
-      'ti 26.7. 50% alennus': ['2016-07-26'],
+    'to 21.7.': ['2016-07-21'],
+    'to 21.7. 100% alennus': ['2016-07-21'],
+    'to 21.7. 50% alennus': ['2016-07-21'],
 
-      'ke 27.7.': ['2016-07-27'],
-      'ke 27.7. 100% alennus': ['2016-07-27'],
-      'ke 27.7. 50% alennus': ['2016-07-27'],
+    'pe 22.7.': ['2016-07-22'],
+    'pe 22.7. 100% alennus': ['2016-07-22'],
+    'pe 22.7. 50% alennus': ['2016-07-22'],
 
-      'to 28.7.': ['2016-07-28'],
-      'pe 29.7.': ['2016-07-29'],
-      'la 30.7.': ['2016-07-30'],
-      'su 31.7.': ['2016-07-31'],
+    'la 23.7.': ['2016-07-23'],
+    'la 23.7. 100% alennus': ['2016-07-23'],
+    'la 23.7. 50% alennus': ['2016-07-23'],
 
-      'Osallistun koko leirin ajaksi': [
-        '2016-07-20',
-        '2016-07-21',
-        '2016-07-22',
-        '2016-07-23',
-        '2016-07-24',
-        '2016-07-25',
-        '2016-07-26',
-        '2016-07-27',
-      ],
-      'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': [
-        '2016-07-28',
-        '2016-07-29',
-        '2016-07-30',
-        '2016-07-31',
-      ],
-      'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
+    'su 24.7.': ['2016-07-24'],
+    'su 24.7. 100% alennus': ['2016-07-24'],
+    'su 24.7. 50% alennus': ['2016-07-24'],
+
+    'ma 25.7.': ['2016-07-25'],
+    'ma 25.7. 100% alennus': ['2016-07-25'],
+    'ma 25.7. 50% alennus': ['2016-07-25'],
+
+    'ti 26.7.': ['2016-07-26'],
+    'ti 26.7. 100% alennus': ['2016-07-26'],
+    'ti 26.7. 50% alennus': ['2016-07-26'],
+
+    'ke 27.7.': ['2016-07-27'],
+    'ke 27.7. 100% alennus': ['2016-07-27'],
+    'ke 27.7. 50% alennus': ['2016-07-27'],
+
+    'to 28.7.': ['2016-07-28'],
+    'pe 29.7.': ['2016-07-29'],
+    'la 30.7.': ['2016-07-30'],
+    'su 31.7.': ['2016-07-31'],
+
+    'Osallistun koko leirin ajaksi': [
+      '2016-07-20',
+      '2016-07-21',
+      '2016-07-22',
+      '2016-07-23',
+      '2016-07-24',
+      '2016-07-25',
+      '2016-07-26',
+      '2016-07-27',
+    ],
+    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': [
+      '2016-07-28',
+      '2016-07-29',
+      '2016-07-30',
+      '2016-07-31',
+    ],
+    'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
+  }
+
+  return _(wrappedParticipant.getPayments()).flatMap((payment) => {
+    const dateMappings = paymentToDatesMappings[payment]
+
+    if (dateMappings === undefined) {
+      console.log(
+        `Warning! A mapping from payment type '${payment}' to participation dates is missing!`,
+      )
     }
 
-    return _(wrappedParticipant.getPayments()).flatMap((payment) => {
-      const dateMappings = paymentToDatesMappings[payment]
+    return dateMappings || []
+  })
+}
 
-      if (dateMappings === undefined) {
-        console.log(
-          `Warning! A mapping from payment type '${payment}' to participation dates is missing!`,
-        )
-      }
+export const selectionGroupTitles = [
+  '0-11-vuotias lapsi osallistuu',
+  'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
+  '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
+  'Lapsen uimataito',
+  'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
+  '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+]
 
-      return dateMappings || []
-    })
-  },
-  getSelectionGroupTitles: () => [
-    '0-11-vuotias lapsi osallistuu',
-    'Lapsi osallistuu päiväkodin toimintaan seuraavina päivinä',
-    '\tLapsi osallistuu kouluikäisten ohjelmaan seuraavina päivinä',
-    'Lapsen uimataito',
-    'Lapsi saa poistua itsenäisesti perheleirin kokoontumispaikalta ohjelman päätyttyä',
-    '\tLapsi tarvitsee päiväunien aikaan vaippaa',
+export const optionFieldNames = [
+  'subCamp',
+  'village',
+  'campGroup',
+  'localGroup',
+  'ageGroup',
+  'childNaps',
+  'accommodation',
+  'country',
+  'willOfTheWisp',
+  'willOfTheWispWave',
+  'internationalGuest',
+]
+
+export const searchableFieldNames = _(participantFields)
+  .filter('searchable')
+  .map('name')
+  .value()
+
+export const allergyFieldTitles = [
+  'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+  'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
+]
+
+export const actionPermissions = {
+  registryUser: [
+    'perform allowed test action',
+    'view searchfilters',
+    'view own user information',
+    'modify searchfilters',
+    'view participants',
+    'edit participants',
+    'view app configuration',
   ],
-  getOptionFieldNames: () => [
-    'subCamp',
-    'village',
-    'campGroup',
-    'localGroup',
-    'ageGroup',
-    'childNaps',
-    'accommodation',
-    'country',
-    'willOfTheWisp',
-    'willOfTheWispWave',
-    'internationalGuest',
-  ],
-  getSearchableFieldNames: () =>
-    _(participantFields).filter('searchable').map('name').value(),
-  getAllergyFieldTitles: () => [
-    'Ruoka-aineallergiat. Roihulla ruoka ei sisällä selleriä, kalaa tai pähkinää. Jos et löydä ruoka-aineallergiaasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-    'Erityisruokavalio. Roihulla ruoka on täysin laktoositonta. Jos et löydä erityisruokavaliotasi tai sinulla on muita huomioita, ota yhteys Roihun muonitukseen: erityisruokavaliot@roihu2016.fi.',
-  ],
-  getActionPermissions: () => ({
-    registryUser: [
-      'perform allowed test action',
-      'view searchfilters',
-      'view own user information',
-      'modify searchfilters',
-      'view participants',
-      'edit participants',
-      'view app configuration',
-    ],
-    registryAdmin: [
-      'perform disallowed test action',
-      'view registry users',
-      'view own user information',
-      'block and unblock users',
-      'view app configuration',
-      'view audit log',
-    ],
-  }),
-  getParticipantFields: () => participantFields,
-  getRoles: () => ['registryUser', 'registryAdmin'],
-  getParticipantTableFields: () => ['firstName', 'lastName'],
-  getFilters: () => [
-    {
-      field: 'ageGroup',
-      primary: true,
-    },
-    {
-      field: 'staffPositionInGenerator',
-      title: 'Pesti (kehitin)',
-    },
-  ],
-  getDetailsPageFields: () => [
-    {
-      groupTitle: 'Yhteystiedot',
-      fields: ['phone', 'email'],
-    },
+  registryAdmin: [
+    'perform disallowed test action',
+    'view registry users',
+    'view own user information',
+    'block and unblock users',
+    'view app configuration',
+    'view audit log',
   ],
 }
+
+export const roles = Object.keys(actionPermissions)
+
+export const participantTableFields = ['firstName', 'lastName']
+
+export const filters = [
+  {
+    field: 'ageGroup',
+    primary: true,
+  },
+  {
+    field: 'staffPositionInGenerator',
+    title: 'Pesti (kehitin)',
+  },
+]
+
+export const detailsPageFields = [
+  {
+    groupTitle: 'Yhteystiedot',
+    fields: ['phone', 'email'],
+  },
+]

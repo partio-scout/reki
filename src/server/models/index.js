@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize'
-import config from '../conf'
+import * as config from '../conf'
 import integrationModels from './kuksa-integration-models.js'
 import appModels from './app-models.js'
 import { appConfig } from '../server'
@@ -21,9 +21,7 @@ export const updateDatabase = async () => {
 
   const roles = []
   // Create roles unless they already exist
-  const rolesInConfig = config
-    .getRoles()
-    .map((roleName) => ({ name: roleName }))
+  const rolesInConfig = config.roles.map((roleName) => ({ name: roleName }))
   for (const role of rolesInConfig) {
     const [dbRole] = await models.UserRole.findOrCreate({ where: role })
     roles.push(dbRole)
@@ -51,7 +49,7 @@ export const updateDatabase = async () => {
   // Destroy roles that are not in the config
   await models.UserRole.destroy({
     where: {
-      name: { [Sequelize.Op.notIn]: config.getRoles() },
+      name: { [Sequelize.Op.notIn]: config.roles },
     },
   })
 }

@@ -2,7 +2,7 @@ import { models } from '../server/models'
 import moment from 'moment'
 import transfer from './transfer'
 import { getEventApi } from 'kuksa-event-api-client'
-import config from '../server/conf'
+import * as config from '../server/conf'
 import { startSpinner } from './util'
 
 if (require.main === module) {
@@ -200,7 +200,7 @@ async function transferParticipants(eventApi) {
     ])
   }
 
-  const participantDateRanges = config.getFetchDateRanges()
+  const participantDateRanges = config.fetchDateRanges
   // set the last date to be current date
   const lastIndex = participantDateRanges.length - 1
   participantDateRanges[lastIndex].endDate = moment().toISOString()

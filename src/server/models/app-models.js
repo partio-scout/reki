@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
 import _ from 'lodash'
-import conf from '../conf'
+import * as conf from '../conf'
 import { audit, getClientData } from '../util/audit'
 
 const Op = Sequelize.Op
@@ -73,7 +73,7 @@ export default function (db) {
   const Participant = db.define(
     'participant',
     _.reduce(
-      conf.getParticipantFields(),
+      conf.participantFields,
       (acc, field) => {
         acc[field.name] = {
           type: Sequelize[field.dataType.toUpperCase()],

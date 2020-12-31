@@ -50,7 +50,7 @@ ES6 syntax is supported and should be used in all files, including the module sy
 
 ## Configuring your REKI installation
 
-See conf/test.config.js for an example configuration.
+See src/server/conf.js for an example configuration.
 
 ## Setting up a production environment in Heroku
 

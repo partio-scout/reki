@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import config from '../src/server/conf'
+import * as config from '../src/server/conf'
 import { sequelize } from '../src/server/models'
 import { models } from '../src/server/models'
 
@@ -9,7 +9,7 @@ export async function resetDatabase() {
   await sequelize.sync({ force: true })
 
   // Create roles
-  const roles = config.getRoles().map((roleName) => ({ name: roleName }))
+  const roles = config.roles.map((roleName) => ({ name: roleName }))
   await Promise.all(roles.map((role) => models.UserRole.create(role)))
 }
 

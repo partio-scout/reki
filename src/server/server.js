@@ -19,7 +19,7 @@ import argon2 from 'argon2'
 import { BasicStrategy } from 'passport-http'
 import * as Rt from 'runtypes'
 
-import config from './conf'
+import * as config from './conf'
 import { sequelize, models, updateDatabase } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control.js'
@@ -314,7 +314,7 @@ async function boot(app) {
 
   const apiRouter = Router()
   app.use('/api', apiRouter)
-  const permissions = config.getActionPermissions()
+  const permissions = config.actionPermissions
   const requirePermission = setupAccessControl(app, permissions)
 
   apiRouter.use((req, res, next) => {
@@ -346,10 +346,10 @@ async function boot(app) {
     requirePermission('view app configuration'),
     async (req, res) => {
       res.json({
-        fields: config.getParticipantFields(),
-        tableFields: config.getParticipantTableFields(),
-        detailsPageFields: config.getDetailsPageFields(),
-        filters: config.getFilters(),
+        fields: config.participantFields,
+        tableFields: config.participantTableFields,
+        detailsPageFields: config.detailsPageFields,
+        filters: config.filters,
       })
     },
   )
@@ -431,7 +431,7 @@ async function boot(app) {
     },
   )
   const filterableFields = new Set(
-    config.getParticipantFields().map((field) => field.name),
+    config.participantFields.map((field) => field.name),
   )
 
   const ListParticipantsParams = Rt.Partial({
@@ -477,7 +477,7 @@ async function boot(app) {
       const where = {
         [Op.and]: [
           ...params.textSearch.map((word) => ({
-            [Op.or]: config.getSearchableFieldNames().map((field) => ({
+            [Op.or]: config.searchableFieldNames.map((field) => ({
               [field]: {
                 [Op.iLike]: `%${word}%`,
               },

@@ -2,7 +2,7 @@ import sequelize from 'sequelize'
 import { models } from '../server/models'
 import { _ } from 'lodash'
 import moment from 'moment'
-import config from '../server/conf'
+import * as config from '../server/conf'
 import { startSpinner } from './util'
 
 const Op = sequelize.Op
@@ -40,7 +40,7 @@ async function buildAllergyTable() {
   const selGroups = await models.KuksaExtraSelectionGroup.findAll({
     where: {
       name: {
-        [Op.in]: config.getAllergyFieldTitles(),
+        [Op.in]: config.allergyFieldTitles,
       },
     },
   })
@@ -132,7 +132,7 @@ async function rebuildParticipantsTable() {
 
   const wrappedParticipants = await getWrappedParticipants()
   const participants = wrappedParticipants.map(
-    config.getParticipantBuilderFunction(),
+    config.participantBuilderFunction,
   )
   for (const participant of participants) {
     await models.Participant.upsert(participant)
@@ -182,7 +182,7 @@ async function addAllergiesToParticipants() {
 }
 
 async function addDatesToParticipants() {
-  const participantDatesMapper = config.getParticipantDatesMapper()
+  const participantDatesMapper = config.participantDatesMapper
 
   console.log('Adding dates to participants...')
   const wrappedParticipants = await getWrappedParticipants()
@@ -210,7 +210,7 @@ async function addDatesToParticipants() {
 }
 
 async function buildSelectionTable() {
-  const groupsToCreate = config.getSelectionGroupTitles()
+  const groupsToCreate = config.selectionGroupTitles
 
   console.log('Building selections table...')
 
@@ -267,7 +267,7 @@ async function deleteCancelledParticipants() {
 
 async function buildOptionTable() {
   await models.Option.destroy({ where: {} })
-  for (const field of config.getOptionFieldNames()) {
+  for (const field of config.optionFieldNames) {
     const values = await models.Participant.aggregate(field, 'DISTINCT', {
       plain: false,
     })
