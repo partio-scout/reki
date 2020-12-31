@@ -192,7 +192,7 @@ async function boot(app) {
   const partioIdEntryPoint = `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SSOService.php`
   const partioIdLogoutUrl = `https://${partioIDRemoteName}.partio.fi/simplesaml/saml2/idp/SingleLogoutService.php`
   const partioIdCertificate = fs.readFileSync(
-    path.resolve(`./certs/partioid/${partioIDRemoteName}.crt`),
+    path.resolve(`${__dirname}/../../certs/partioid/${partioIDRemoteName}.crt`),
     'utf-8',
   )
 

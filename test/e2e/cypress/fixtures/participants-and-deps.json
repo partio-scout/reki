@@ -1,0 +1,98 @@
+{
+  "Participant": [
+    {
+      "participantId": 1,
+      "firstName": "Teemu",
+      "lastName": "Testihenkilö",
+      "nonScout": false,
+      "internationalGuest": false,
+      "localGroup": "Testilippukunta",
+      "campGroup": "Leirilippukunta",
+      "village": "Kylä",
+      "subCamp": "Alaleiri",
+      "ageGroup": "sudenpentu",
+      "memberNumber": 123,
+      "staffPosition": null,
+      "staffPositionInGenerator": "Tiskari",
+      "editableInfo": "Muokattava teksti",
+      "dateOfBirth": "1999-01-01"
+    },
+    {
+      "participantId": 2,
+      "firstName": "Tero",
+      "lastName": "Esimerkki",
+      "nonScout": false,
+      "internationalGuest": false,
+      "localGroup": "Testilippukunta",
+      "campGroup": "Leirilippukunta",
+      "village": "Kylä",
+      "subCamp": "Alaleiri",
+      "ageGroup": "sudenpentu",
+      "memberNumber": 345,
+      "staffPosition": "Jumppaohjaaja",
+      "staffPositionInGenerator": null,
+      "campOfficeNotes": "Leiritoimiston jutut",
+      "dateOfBirth": "1999-04-20"
+    },
+    {
+      "participantId": 3,
+      "firstName": "Teemu",
+      "lastName": "Toinen henkilö",
+      "nonScout": false,
+      "internationalGuest": false,
+      "localGroup": "Testilippukunta",
+      "campGroup": "Leirilippukunta",
+      "village": "Kylä",
+      "subCamp": "Alaleiri",
+      "ageGroup": "seikkailija",
+      "memberNumber": 859,
+      "staffPosition": "Kaivaja",
+      "staffPositionInGenerator": "#Tiskari",
+      "dateOfBirth": "1999-08-22"
+    }
+  ],
+  "Option": [
+    {
+      "property": "ageGroup",
+      "value": "sudenpentu"
+    },
+    {
+      "property": "ageGroup",
+      "value": "seikkailija"
+    },
+    {
+      "property": "ageGroup",
+      "value": "aikuinen"
+    },
+    {
+      "property": "internationalGuest",
+      "value": "true"
+    },
+    {
+      "property": "internationalGuest",
+      "value": "false"
+    }
+  ],
+  "ParticipantDate": [
+    {
+      "participantId": 1,
+      "date": "2016-07-23"
+    },
+    {
+      "participantId": 1,
+      "date": "2016-07-24"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-23"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-24"
+    },
+    {
+      "participantId": 2,
+      "date": "2016-07-23"
+    }
+  ]
+}

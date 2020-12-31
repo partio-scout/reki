@@ -70,12 +70,27 @@ export function createFixture(modelName, fixture) {
   }
 }
 
+export async function createFixtures(fixtures) {
+  for (const [model, fixture] of Object.entries(fixtures)) {
+    await createFixture(model, fixture)
+  }
+}
+
 export function deleteFixtureIfExists(modelName, id) {
   return models[modelName].destroyById(id)
 }
 
 export async function deleteFixturesIfExist(modelName, whereClause) {
   return models[modelName].destroy({ where: whereClause || {} })
+}
+
+export async function deleteAllFixtures() {
+  for (const model of Object.keys(models)) {
+    // Don't delete UserRoles as those are only created on app startup
+    if (model !== 'UserRole') {
+      await deleteFixturesIfExist(model)
+    }
+  }
 }
 
 export async function withFixtures(fixtureParam) {
@@ -88,9 +103,7 @@ export async function withFixtures(fixtureParam) {
     fixtures =
       typeof fixtureParam === 'function' ? await fixtureParam() : fixtureParam
 
-    for (const model in fixtures) {
-      await createFixture(model, fixtures[model])
-    }
+    await createFixtures(fixtures)
   })
 
   afterEach(async () => {

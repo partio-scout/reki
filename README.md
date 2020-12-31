@@ -26,6 +26,24 @@ Clone this repository into a local directory.
 
 The app is now running at `http://localhost:8080`.
 
+### Running tests locally
+
+Before running tests, you need to ensure that the database in running and `TEST_DATABASE_URL` is set by running:
+
+```
+export TEST_DATABASE_URL=postgres://reki:password@localhost:5432/rekitestdb
+docker-compose up -d postgres
+```
+
+After that, you can run any of the following depending on your needs:
+
+- `npm test` to run all tests
+- `npm run lint` to run eslint and a prettier check
+- `npm run test-functional` to run functional tests of the server
+- `npm run test-integration` to test the Kuksa integration (this is a bit slow)
+- `npm run test-e2e` to run the end-to-end tests in a headless browser
+- `npm run cypress:open` to open the end-to-end tests in the [Cypress](https://www.cypress.io/) UI, which makes it easier to debug the tests and to write new end-to-end tests.
+
 ## ES6
 
 ES6 syntax is supported and should be used in all files, including the module syntax.
