@@ -71,8 +71,8 @@ export function createFixture(modelName, fixture) {
 }
 
 export async function createFixtures(fixtures) {
-  for (const model in fixtures) {
-    await createFixture(model, fixtures[model])
+  for (const [model, fixture] of Object.entries(fixtures)) {
+    await createFixture(model, fixture)
   }
 }
 
