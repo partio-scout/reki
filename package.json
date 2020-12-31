@@ -25,7 +25,7 @@
     "test-watch": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --watch --timeout 4000 --require ts-node/register --exit",
     "test-integration": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test mocha --timeout 4000 --require ts-node/register test/integration --exit",
     "pretest-e2e": "cross-env NODE_ENV=test npm run seed-database && npm run build",
-    "test-e2e-cypress": "cross-env TS_NODE_PROJECT= cypress run --project ./test/e2e --browser chrome --headless",
+    "test-e2e-cypress": "cross-env TS_NODE_PROJECT= cypress run --project ./test/e2e --headless",
     "test-e2e": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test PORT=3005 ENABLE_OFFLINE_LOGIN=true start-test 'mkdir -p logs && npm start > ./logs/server-test.log 2>&1' 3005 test-e2e-cypress",
     "seed-database": "ts-node --project src/server/tsconfig.json scripts/seed-database.js",
     "clear-temporary-tables": "ts-node --project src/server/tsconfig.json src/kuksa-integration/clear-temporary-tables.js",
