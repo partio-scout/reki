@@ -14,23 +14,40 @@ import Router from 'express-promise-router'
 import _ from 'lodash'
 import { Op } from 'sequelize'
 import fs from 'fs'
-import { Strategy as SamlStrategy } from 'passport-saml'
+import {
+  Strategy as SamlStrategy,
+  Profile as SamlProfile,
+  VerifiedCallback as SamlVerifiedCallback,
+} from 'passport-saml'
 import argon2 from 'argon2'
 import { BasicStrategy } from 'passport-http'
 import * as Rt from 'runtypes'
+import { URL } from 'url'
 
 import * as config from './conf'
 import { sequelize, models, updateDatabase } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
-import setupAccessControl from './middleware/access-control.js'
+import setupAccessControl from './middleware/access-control'
 import { audit, getClientData } from './util/audit'
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface User {
+      id: string
+      memberNumber: string
+      sessionType: string
+      roles: readonly string[]
+    }
+  }
+}
 
 const app = express()
 
 export default app
 
 const bootstrapFileName = path.resolve(__dirname, 'server.js')
-const standalone = require.main.filename === bootstrapFileName
+const standalone = require.main!.filename === bootstrapFileName
 const isDev = process.env.NODE_ENV !== 'production'
 export const appConfig = {
   port: process.env.PORT || 3000,
@@ -39,7 +56,7 @@ export const appConfig = {
   useDevServer: isDev && standalone,
 }
 
-const index = (user) => `
+const index = (user: Express.User) => `
 <!DOCTYPE html>
 <html lang="fi">
   <head>
@@ -120,7 +137,7 @@ const loginPage = `
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app)
 
-async function boot(app) {
+async function boot(app: express.Express): Promise<void> {
   let sessionStore = undefined
 
   if (!appConfig.isDev) {
@@ -128,7 +145,13 @@ async function boot(app) {
     app.use(expressEnforcesSsl())
   }
 
-  if (!appConfig.isDev || process.env.REDIS_URL) {
+  if (!appConfig.isDev || !process.env.REDIS_URL) {
+    throw new Error(
+      'When running in production mode, REDIS_URL needs to be defined',
+    )
+  }
+
+  if (process.env.REDIS_URL) {
     const RedisStore = RedisStoreConstructor(session)
     sessionStore = new RedisStore({
       client: redis.createClient(process.env.REDIS_URL),
@@ -198,7 +221,7 @@ async function boot(app) {
 
   const strategy = new SamlStrategy(
     {
-      callback: new URL('/saml/consume', rekiBaseUrl).href,
+      callbackUrl: new URL('/saml/consume', rekiBaseUrl).href,
       issuer: partioIdIssuer,
       entryPoint: partioIdEntryPoint,
       cert: partioIdCertificate,
@@ -206,12 +229,13 @@ async function boot(app) {
       logoutCallbackUrl: new URL('/saml/consume-logout', rekiBaseUrl).href,
       identifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:transient',
     },
-    async (profile, done) => {
+    async (
+      profile: SamlProfile | null | undefined,
+      done: SamlVerifiedCallback,
+    ) => {
       try {
         if (!profile || !profile.membernumber) {
-          done(null, false, {
-            message: 'Jäsennumero puuttuu PartioID-vastauksesta.',
-          })
+          done(new Error('Jäsennumero puuttuu PartioID-vastauksesta.'))
           return
         }
 
@@ -228,16 +252,15 @@ async function boot(app) {
         })
 
         if (!user) {
-          done(null, false, {
-            message:
+          done(
+            new Error(
               'PartioID:llä ei löytynyt käyttäjää - varmista, että käyttäjän jäsennumero on oikein.',
-          })
+            ),
+          )
         } else if (user.blocked) {
-          done(null, false, {
-            message: 'Käyttäjän sisäänkirjautuminen on estetty',
-          })
+          done(new Error('Käyttäjän sisäänkirjautuminen on estetty'))
         } else {
-          done(null, models.User.toClientFormat(user, 'partioid'))
+          done(null, models.User.toClientFormat(user, 'partioid') as any)
         }
       } catch (e) {
         done(e)
@@ -245,7 +268,7 @@ async function boot(app) {
     },
   )
 
-  passport.use('partioid', strategy)
+  passport.use('partioid', strategy as any) // The typings of passport and passport-saml don't quite match
 
   const enableOfflineLogin = process.env.ENABLE_OFFLINE_LOGIN === 'true'
 
@@ -303,10 +326,17 @@ async function boot(app) {
     }),
   )
 
-  app.use((err, req, res, next) => {
-    console.error(err)
-    res.status(500).send('Internal server error')
-  })
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      console.error(err)
+      res.status(500).send('Internal server error')
+    },
+  )
 
   if (appConfig.standalone) {
     await updateDatabase()
@@ -360,7 +390,7 @@ async function boot(app) {
     requirePermission('view participants'),
     async (req, res) => {
       const options = await models.Option.findAll()
-      const result = {}
+      const result: Record<string, string[]> = {}
       for (const { property, value } of options) {
         if (result[property]) {
           result[property].push(value)
@@ -377,11 +407,11 @@ async function boot(app) {
     requirePermission('view participants'),
     async (req, res) => {
       const participantDates = await models.ParticipantDate.findAll({
-        fields: { date: true, participantId: false },
         order: [['date', 'ASC']],
       })
-      const uniqueDates = _.uniqBy(participantDates, (val) =>
-        val.date.getTime(),
+      const uniqueDates = _.uniqBy<{ date: Date }>(
+        participantDates.map((pd) => ({ date: pd.date })),
+        (val) => val.date.getTime(),
       )
       res.json(uniqueDates)
     },
@@ -393,7 +423,7 @@ async function boot(app) {
   const GetParticipantParams = Rt.Record({
     id: NonNegativeInteger,
   }).asReadonly()
-  const getParticipantParamsGetter = (params) =>
+  const getParticipantParamsGetter = (params: any) =>
     GetParticipantParams.check({ id: Number(params.id) })
   apiRouter.get(
     '/participants/:id(\\d+)',
@@ -403,7 +433,7 @@ async function boot(app) {
       const { id } = getParticipantParamsGetter(req.params)
 
       const participant = await models.Participant.findByPk(id, {
-        include: [{ all: true, nested: true }],
+        include: [{ all: true, nested: true }] as any,
       })
 
       if (participant) {
@@ -420,9 +450,9 @@ async function boot(app) {
         // the same as res.json(participant.toJSON())
         res.json({
           ...participant.toJSON(),
-          presenceHistory: participant.presenceHistory.map((it) => ({
+          presenceHistory: participant.presenceHistory!.map((it) => ({
             ...it.toJSON(),
-            author: models.User.toClientFormat(it.author),
+            author: models.User.toClientFormat(it.author!),
           })),
         })
       } else {
@@ -434,16 +464,17 @@ async function boot(app) {
     config.participantFields.map((field) => field.name),
   )
 
-  const ListParticipantsParams = Rt.Partial({
+  const ListParticipantsParams = Rt.Record({
     textSearch: Rt.Array(Rt.String).asReadonly(),
-    dateFilters: Rt.Array(Rt.InstanceOf(Date)),
-    fieldFilters: Rt.Array(Rt.Tuple(Rt.String, Rt.String)).asReadonly(),
-    limit: NonNegativeInteger,
-    offset: NonNegativeInteger,
     order: Rt.Tuple(Rt.String, Rt.Union(Rt.Literal('ASC'), Rt.Literal('DESC'))),
-  })
+    fieldFilters: Rt.Array(Rt.Tuple(Rt.String, Rt.String)).asReadonly(),
+    dateFilters: Rt.Array(Rt.InstanceOf(Date)),
+    limit: NonNegativeInteger.Or(Rt.Undefined),
+    offset: NonNegativeInteger.Or(Rt.Undefined),
+  }).asReadonly()
+  type ListParticipantsParams = Rt.Static<typeof ListParticipantsParams>
 
-  const listParticipantsParamsGetter = (query) => {
+  const listParticipantsParamsGetter = (query: any): ListParticipantsParams => {
     const limit = Number(query.limit) || undefined
     const offset = Number(query.offset) || undefined
     const textSearch = query.q ? query.q.split(/\s+/) : []
@@ -454,9 +485,11 @@ async function boot(app) {
     const fieldFilters = Object.entries(query).filter(([key]) =>
       filterableFields.has(key),
     )
-    const dateFilters = query.dates
-      ? query.dates.split(',').map((x) => new Date(x.trim()))
-      : undefined
+    const { dates } = query
+    const dateFilters =
+      dates && typeof dates === 'string'
+        ? dates.split(',').map((x) => new Date(x.trim()))
+        : []
 
     return ListParticipantsParams.check({
       textSearch,
@@ -490,14 +523,13 @@ async function boot(app) {
       }
 
       // Date search
-      const dateFilter =
-        params.dateFilters && params.dateFilters.length
-          ? {
-              date: {
-                [Op.in]: params.dateFilters.map((dateStr) => new Date(dateStr)),
-              },
-            }
-          : undefined
+      const dateFilter = params.dateFilters.length
+        ? {
+            date: {
+              [Op.in]: params.dateFilters.map((dateStr) => new Date(dateStr)),
+            },
+          }
+        : undefined
 
       const result = await models.Participant.findAndCountAll({
         where: where,
@@ -544,7 +576,7 @@ async function boot(app) {
       }),
       Rt.Record({
         fieldName: Rt.Literal('presence'),
-        newValue: Rt.Number,
+        newValue: Rt.Literal(1).Or(Rt.Literal(2)).Or(Rt.Literal(3)),
       }),
     ),
   )
@@ -569,7 +601,7 @@ async function boot(app) {
     optionalBasicAuth(),
     requirePermission('view audit log'),
     async (req, res) => {
-      const filter = JSON.parse(req.query.filter || '{}')
+      const filter = JSON.parse((req.query.filter as string) || '{}')
 
       const where = filter.where || {}
       const limit = Number(filter.limit) || 250
@@ -630,9 +662,12 @@ async function boot(app) {
       async (req, res) => {
         const responseType = req.accepts(['json', 'html']) || 'json'
 
+        const userIdString = req.user?.id
+        const userId = userIdString ? Number(userIdString) : undefined
+
         await audit({
           ...getClientData(req),
-          modelId: req.user.id,
+          modelId: userId,
           modelType: 'User',
           eventType: 'login',
           meta: { method: 'password' },
@@ -649,20 +684,23 @@ async function boot(app) {
 
   app.get('/logout', async (req, res, next) => {
     if (req.user) {
+      const userIdString = req.user.id
+      const userId = userIdString ? Number(userIdString) : undefined
+
       await audit({
         ...getClientData(req),
-        modelId: req.user.id,
+        modelId: userId,
         modelType: 'User',
         eventType: 'logout',
       })
     }
 
     if (req.user && req.user.sessionType === 'partioid') {
-      strategy.logout(req, (err, request) => {
+      strategy.logout(req as any, (err, request) => {
         if (err) {
           next(err)
         } else {
-          res.redirect(request)
+          res.redirect(request!)
         }
       })
     } else {
@@ -687,7 +725,7 @@ async function boot(app) {
 
   app.get('/saml/metadata', (req, res) => {
     res.type('application/xml')
-    res.status(200).send(strategy.generateServiceProviderMetadata())
+    res.status(200).send(strategy.generateServiceProviderMetadata(null))
   })
 
   app.get('/saml/metadata.php', (req, res) => {
@@ -710,7 +748,7 @@ async function boot(app) {
       })
 
       const users = await models.User.findAll()
-      res.json(users.map(models.User.toClientFormat))
+      res.json(users.map((user) => models.User.toClientFormat(user)))
     },
   )
 
@@ -784,17 +822,24 @@ async function boot(app) {
     }
   })
 
-  app.use((error, req, res, next) => {
-    if (error instanceof Rt.ValidationError) {
-      res.sendStatus(400)
-    } else {
-      next(error)
-    }
-  })
+  app.use(
+    (
+      error: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      if (error instanceof Rt.ValidationError) {
+        res.sendStatus(400)
+      } else {
+        next(error)
+      }
+    },
+  )
 
   // start the server if `$ node server.js`
   if (appConfig.standalone) {
-    return app.listen(appConfig.port, () => {
+    app.listen(appConfig.port, () => {
       console.log('Web server listening at: %s', appConfig.port)
     })
   }

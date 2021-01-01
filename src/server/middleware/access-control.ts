@@ -1,18 +1,27 @@
+import express from 'express'
 import _ from 'lodash'
 
-export default function (app, permissions) {
+export default function (
+  app: express.Application,
+  permissions: Record<string, readonly string[]>,
+) {
   const UNAUTHORIZED = 401
 
-  function roleHasPermission(role, permission) {
-    return permissions[role].indexOf(permission) > -1
+  function roleHasPermission(role: string, permission: string) {
+    return (permissions[role]?.indexOf(permission) ?? -1) > -1
   }
 
-  function hasPermission(user, permission) {
+  function hasPermission(
+    user: { roles: readonly string[] },
+    permission: string,
+  ) {
     const roleNames = user.roles
     return _.some(roleNames, (name) => roleHasPermission(name, permission))
   }
 
-  return function requirePermission(permission) {
+  return function requirePermission(
+    permission: string,
+  ): express.RequestHandler {
     return function (req, res, next) {
       try {
         if (!req.user || !hasPermission(req.user, permission)) {

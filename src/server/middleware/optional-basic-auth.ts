@@ -1,6 +1,7 @@
+import express from 'express'
 import passport from 'passport'
 
-export default function () {
+export default function getOptionalBasicAuth(): express.RequestHandler {
   const authenticate = passport.authenticate('basic', { session: false })
 
   return function optionalBasicAuth(req, res, next) {
