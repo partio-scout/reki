@@ -1,4 +1,4 @@
-import app from '../../src/server/server'
+import { configureApp } from '../../src/server/server'
 import request from 'supertest'
 import { expect, assert } from 'chai'
 import {
@@ -18,6 +18,8 @@ const UNAUTHORIZED = 401
 // In the metadata express keeps in its routers, it stores a regex that is used to match incoming requests
 // to route handlers. This regex takes such a regex in string form, and extracts the URL path from it.
 const expressRouteRegex = /^\/\^\\(\/.*)\\\/\?\(\?=\\\/\|\$\)\/i$/i
+
+const app = configureApp(false, true)
 
 describe('HTTP API access control', () => {
   const otherUserId = 123
@@ -342,7 +344,7 @@ function get(endpoint, roles) {
     expect: async (code) => {
       if (roles) {
         const user = await createUser(roles)
-        const res = await getWithUser(endpoint, user)
+        const res = await getWithUser(app, endpoint, user)
         expectStatus(res.status, code)
       } else {
         await request(app).get(endpoint).expect(code)
@@ -355,7 +357,12 @@ function post(endpoint, data, roles) {
   return {
     expect: async (code) => {
       if (roles) {
-        const res = await postWithUser(endpoint, await createUser(roles), data)
+        const res = await postWithUser(
+          app,
+          endpoint,
+          await createUser(roles),
+          data,
+        )
         expectStatus(res.status, code)
       } else {
         await request(app).post(endpoint).send(data).expect(code)

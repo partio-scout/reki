@@ -7,10 +7,14 @@ import {
   createUserWithRoles as createUser,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Options API endpoint', () => {
   it('returns filter options', async () => {
     const res = await getWithUser(
+      app,
       '/api/options',
       await createUser(['registryUser']),
     )

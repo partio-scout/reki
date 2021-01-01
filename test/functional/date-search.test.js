@@ -7,6 +7,9 @@ import {
 } from '../utils/test-utils'
 import _ from 'lodash'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Date search in participant list API endpoint', () => {
   before(resetDatabase)
@@ -58,7 +61,7 @@ describe('Date search in participant list API endpoint', () => {
       offset: 0,
       limit: 20,
     })
-    const res = await getWithUser(`/api/participants/?${params}`, user)
+    const res = await getWithUser(app, `/api/participants/?${params}`, user)
     expectStatus(res.status, 200)
     return res
   }

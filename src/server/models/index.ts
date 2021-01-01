@@ -2,7 +2,6 @@ import Sequelize from 'sequelize'
 import * as config from '../conf'
 import integrationModels from './kuksa-integration-models'
 import appModels from './app-models'
-import { appConfig } from '../server'
 import argon2 from 'argon2'
 
 const dbUrl =
@@ -16,7 +15,7 @@ const db = new Sequelize.Sequelize(dbUrl!, {
 export const sequelize = db
 export const models = Object.assign({}, integrationModels(db), appModels(db))
 
-export const updateDatabase = async () => {
+export const updateDatabase = async (isDev: boolean) => {
   await sequelize.sync({ alter: true })
 
   const roles = []
@@ -27,7 +26,7 @@ export const updateDatabase = async () => {
     roles.push(dbRole)
   }
 
-  if (appConfig.isDev) {
+  if (isDev) {
     const adminEmail = 'admin@example.com'
     const [user] = await models.User.findOrCreate({
       where: {

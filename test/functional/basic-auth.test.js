@@ -1,10 +1,12 @@
-import app from '../../src/server/server'
+import { configureApp } from '../../src/server/server'
 import request from 'supertest'
 import {
   createUserWithRoles as createUser,
   deleteUsers,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+
+const app = configureApp(false, true)
 
 function loginRequest(username, password) {
   return request(app).get('/login/password').auth(username, password)

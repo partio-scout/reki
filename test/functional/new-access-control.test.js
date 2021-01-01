@@ -1,5 +1,8 @@
 import * as testUtils from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Role-Based Access Control', () => {
   before(resetDatabase)
@@ -17,6 +20,7 @@ describe('Role-Based Access Control', () => {
 
   it('should succeed when user has permission', async () => {
     const res = await testUtils.getWithUser(
+      app,
       '/api/test/rbac-test-success',
       testUser,
     )
@@ -25,6 +29,7 @@ describe('Role-Based Access Control', () => {
 
   it('should return 401 when user has no permission', async () => {
     const res = await testUtils.getWithUser(
+      app,
       '/api/test/rbac-test-fail',
       testUser,
     )

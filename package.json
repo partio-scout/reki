@@ -2,7 +2,7 @@
   "name": "reki",
   "version": "0.0.0",
   "description": "Finnjamboree 2016 camp registry system",
-  "main": "dist/server/server.js",
+  "main": "dist/server/boot.js",
   "scripts": {
     "start": "node .",
     "build": "npm run build-server && npm run build-client",

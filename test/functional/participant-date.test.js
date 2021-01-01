@@ -7,10 +7,14 @@ import {
   deleteUsers,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Participant dates endpoint', () => {
   it('returns unique dates when participants may be present', async () => {
     const res = await getWithUser(
+      app,
       '/api/participantdates',
       await createUser(['registryUser']),
     )

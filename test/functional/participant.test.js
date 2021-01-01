@@ -7,6 +7,9 @@ import {
   withFixtures,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Single participant API endpoint', () => {
   let user
@@ -20,7 +23,7 @@ describe('Single participant API endpoint', () => {
 
   //TODO split this into several test cases for clarity
   it('returns correct info', async () => {
-    const res = await getWithUser('/api/participants/1', user)
+    const res = await getWithUser(app, '/api/participants/1', user)
     expectStatus(res.status, 200)
 
     expect(res.body).to.have.property('firstName', 'Teemu')
@@ -38,7 +41,7 @@ describe('Single participant API endpoint', () => {
   })
 
   it('returns correct information about presence history', async () => {
-    const res = await getWithUser('/api/participants/1', user)
+    const res = await getWithUser(app, '/api/participants/1', user)
     expectStatus(res.status, 200)
 
     expect(res.body).to.have.property('presenceHistory')
@@ -55,12 +58,12 @@ describe('Single participant API endpoint', () => {
   })
 
   it('returns 404 when incorrect id is given', async () => {
-    const res = await getWithUser('/api/participants/404', user)
+    const res = await getWithUser(app, '/api/participants/404', user)
     expectStatus(res.status, 404)
   })
 
   it('returns 404 when a string id is given', async () => {
-    const res = await getWithUser('/api/participants/hello', user)
+    const res = await getWithUser(app, '/api/participants/hello', user)
     expectStatus(res.status, 404)
   })
 

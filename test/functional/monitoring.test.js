@@ -1,6 +1,8 @@
-import app from '../../src/server/server'
+import { configureApp } from '../../src/server/server'
 import request from 'supertest'
 import { resetDatabase } from '../../scripts/seed-database'
+
+const app = configureApp(false, true)
 
 describe('Monitoring endpoint', () => {
   beforeEach(resetDatabase)

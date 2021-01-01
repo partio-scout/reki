@@ -6,8 +6,11 @@ import {
   getWithUser,
   expectStatus,
 } from '../utils/test-utils'
+import { configureApp } from '../../src/server/server'
 import { resetDatabase } from '../../scripts/seed-database'
 import { models } from '../../src/server/models'
+
+const app = configureApp(false, true)
 
 describe('Audit events', () => {
   withFixtures({
@@ -34,7 +37,7 @@ describe('Audit events', () => {
 
     it('should log an event when finding registry users', async () => {
       const user = await createUser(['registryAdmin'])
-      const response = await getWithUser('/api/registryusers', user)
+      const response = await getWithUser(app, '/api/registryusers', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -46,7 +49,7 @@ describe('Audit events', () => {
 
     it('should log an event when finding audit events', async () => {
       const user = await createUser(['registryAdmin'])
-      const response = await getWithUser('/api/audit-events', user)
+      const response = await getWithUser(app, '/api/audit-events', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -58,7 +61,7 @@ describe('Audit events', () => {
 
     it('should log an event when finding participants', async () => {
       const user = await createUser(['registryUser'])
-      const response = await getWithUser('/api/participants', user)
+      const response = await getWithUser(app, '/api/participants', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -70,7 +73,7 @@ describe('Audit events', () => {
 
     it('should log an event when finding a participant', async () => {
       const user = await createUser(['registryUser'])
-      const response = await getWithUser('/api/participants/42', user)
+      const response = await getWithUser(app, '/api/participants/42', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -95,9 +98,9 @@ describe('Audit events', () => {
       user = await createUser(['registryUser', 'registryAdmin'])
 
       // perform activity to create actual audit log events
-      await getWithUser('/api/participants/42', user)
-      await getWithUser('/api/participants', user)
-      await getWithUser('/api/registryusers', user)
+      await getWithUser(app, '/api/participants/42', user)
+      await getWithUser(app, '/api/participants', user)
+      await getWithUser(app, '/api/registryusers', user)
     })
 
     afterEach(async () => {
@@ -145,6 +148,7 @@ describe('Audit events', () => {
 
     async function getAuditEventsWithFilter(filter = {}) {
       const res = await getWithUser(
+        app,
         `/api/audit-events/?filter=${JSON.stringify(filter)}`,
         user,
       )

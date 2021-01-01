@@ -9,6 +9,9 @@ import {
   expectStatus,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Participant mass edit API endpoint', () => {
   const inCamp = 3
@@ -24,7 +27,7 @@ describe('Participant mass edit API endpoint', () => {
     afterEach(deleteUsers)
 
   it('updates whitelisted fields', async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1, 2],
       newValue: inCamp,
       fieldName: 'presence',
@@ -45,7 +48,7 @@ describe('Participant mass edit API endpoint', () => {
   })
 
   it("doesn't update fields that are not whitelisted", async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1, 2],
       newValue: 'alaleiri2',
       fieldName: 'subCamp',

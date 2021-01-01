@@ -1,5 +1,4 @@
 import Sequelize from 'sequelize'
-import app from '../../src/server/server.js'
 import { expect } from 'chai'
 import { models } from '../../src/server/models'
 import request from 'supertest'
@@ -117,15 +116,15 @@ export async function withFixtures(fixtureParam) {
 
 // Functions for API requests
 
-export async function getWithUser(path, user) {
+export async function getWithUser(app, path, user) {
   return request(app).get(path).auth(user.email, user.clearPassword)
 }
 
-export async function postWithUser(path, user, data) {
+export async function postWithUser(app, path, user, data) {
   return request(app).post(path).auth(user.email, user.clearPassword).send(data)
 }
 
-export async function deleteWithUser(path, user) {
+export async function deleteWithUser(app, path, user) {
   return request(app).delete(path).auth(user.email, user.clearPassword)
 }
 

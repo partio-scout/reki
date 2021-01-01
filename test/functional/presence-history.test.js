@@ -9,6 +9,9 @@ import {
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
 import { models } from '../../src/server/models'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Participant presence history', () => {
   const inCamp = 3
@@ -23,7 +26,7 @@ describe('Participant presence history', () => {
   withFixtures(getFixtures())
 
   it("is saved when updating the participant's presence field", async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: inCamp,
       fieldName: 'presence',
@@ -33,13 +36,13 @@ describe('Participant presence history', () => {
   })
 
   it('includes the author of the change correctly', async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: inCamp,
       fieldName: 'presence',
     })
     expectStatus(res.status, 200)
-    const res2 = await postWithUser('/api/participants/massAssign', user, {
+    const res2 = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: tmpLeftCamp,
       fieldName: 'presence',
@@ -49,13 +52,13 @@ describe('Participant presence history', () => {
   })
 
   it('is saved correctly when updating presences twice', async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: inCamp,
       fieldName: 'presence',
     })
     expectStatus(res.status, 200)
-    const res2 = await postWithUser('/api/participants/massAssign', user, {
+    const res2 = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: leftCamp,
       fieldName: 'presence',
@@ -65,13 +68,13 @@ describe('Participant presence history', () => {
   })
 
   it("is saved when updating two participants' presences at once", async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [2, 3],
       newValue: inCamp,
       fieldName: 'presence',
     })
     expectStatus(res.status, 200)
-    const res2 = await postWithUser('/api/participants/massAssign', user, {
+    const res2 = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [2, 3],
       newValue: tmpLeftCamp,
       fieldName: 'presence',
@@ -82,13 +85,13 @@ describe('Participant presence history', () => {
   })
 
   it("is not saved when presence field of the participant doesn't change", async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [2],
       newValue: inCamp,
       fieldName: 'presence',
     })
     expectStatus(res.status, 200)
-    const res2 = await postWithUser('/api/participants/massAssign', user, {
+    const res2 = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [2],
       newValue: inCamp,
       fieldName: 'presence',
@@ -98,7 +101,7 @@ describe('Participant presence history', () => {
   })
 
   it('is not saved to wrong participants', async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: inCamp,
       fieldName: 'presence',
@@ -108,7 +111,7 @@ describe('Participant presence history', () => {
   })
 
   it('is not saved when invalid presence data is given', async () => {
-    const res = await postWithUser('/api/participants/massAssign', user, {
+    const res = await postWithUser(app, '/api/participants/massAssign', user, {
       ids: [1],
       newValue: 'some string value',
       fieldName: 'presence',

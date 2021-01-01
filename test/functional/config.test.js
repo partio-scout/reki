@@ -4,7 +4,10 @@ import {
   getWithUser,
   expectStatus,
 } from '../utils/test-utils'
+import { configureApp } from '../../src/server/server'
 import { resetDatabase } from '../../scripts/seed-database'
+
+const app = configureApp(false, true)
 
 describe('Configuration API endpoint', () => {
   let response
@@ -13,7 +16,7 @@ describe('Configuration API endpoint', () => {
 
   beforeEach(async () => {
     const user = await createUser(['registryUser'])
-    response = await getWithUser('/api/config', user)
+    response = await getWithUser(app, '/api/config', user)
     expectStatus(response.status, 200)
   })
 
@@ -26,7 +29,7 @@ describe('Configuration API endpoint', () => {
     expect(response.body.fields).to.deep.include({
       name: 'presence',
       type: 'mandatory_field',
-      dataType: 'integer',
+      dataType: 'INTEGER',
       nullable: true,
     }))
 
@@ -34,7 +37,7 @@ describe('Configuration API endpoint', () => {
     expect(response.body.fields).to.deep.include({
       name: 'nickname',
       type: 'participant_field',
-      dataType: 'string',
+      dataType: 'STRING',
       nullable: true,
     }))
 

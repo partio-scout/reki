@@ -25,7 +25,7 @@ import * as Rt from 'runtypes'
 import { URL } from 'url'
 
 import * as config from './conf'
-import { sequelize, models, updateDatabase } from './models'
+import { sequelize, models } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control'
 import { audit, getClientData } from './util/audit'
@@ -40,20 +40,6 @@ declare global {
       roles: readonly string[]
     }
   }
-}
-
-const app = express()
-
-export default app
-
-const bootstrapFileName = path.resolve(__dirname, 'server.js')
-const standalone = require.main!.filename === bootstrapFileName
-const isDev = process.env.NODE_ENV !== 'production'
-export const appConfig = {
-  port: process.env.PORT || 3000,
-  standalone,
-  isDev,
-  useDevServer: isDev && standalone,
 }
 
 const index = (user: Express.User) => `
@@ -133,19 +119,20 @@ const loginPage = `
   </body>
 </html>`
 
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
-boot(app)
+export function configureApp(
+  standalone: boolean,
+  isDev: boolean,
+): express.Application {
+  const app = express()
 
-async function boot(app: express.Express): Promise<void> {
   let sessionStore = undefined
 
-  if (!appConfig.isDev) {
+  if (!isDev) {
     app.enable('trust proxy')
     app.use(expressEnforcesSsl())
   }
 
-  if (!appConfig.isDev || !process.env.REDIS_URL) {
+  if (!isDev && !process.env.REDIS_URL) {
     throw new Error(
       'When running in production mode, REDIS_URL needs to be defined',
     )
@@ -169,7 +156,7 @@ async function boot(app: express.Express): Promise<void> {
       cookie: {
         httpOnly: true,
         maxAge: 4 * 60 * 60 * 1000,
-        secure: !appConfig.isDev,
+        secure: !isDev,
         sameSite: 'lax',
       },
       resave: false,
@@ -307,11 +294,11 @@ async function boot(app: express.Express): Promise<void> {
     next()
   })
 
-  if (appConfig.standalone) {
+  if (standalone) {
     app.use(morgan('dev'))
   }
 
-  const validConnectSrc = appConfig.isDev ? ['*'] : ["'self'"]
+  const validConnectSrc = isDev ? ['*'] : ["'self'"]
 
   app.use(
     helmet.contentSecurityPolicy({
@@ -337,10 +324,6 @@ async function boot(app: express.Express): Promise<void> {
       res.status(500).send('Internal server error')
     },
   )
-
-  if (appConfig.standalone) {
-    await updateDatabase()
-  }
 
   const apiRouter = Router()
   app.use('/api', apiRouter)
@@ -837,12 +820,7 @@ async function boot(app: express.Express): Promise<void> {
     },
   )
 
-  // start the server if `$ node server.js`
-  if (appConfig.standalone) {
-    app.listen(appConfig.port, () => {
-      console.log('Web server listening at: %s', appConfig.port)
-    })
-  }
+  return app
 }
 
 function getSecureRandomString() {

@@ -2,6 +2,9 @@ import { expect } from 'chai'
 import * as testUtils from '../utils/test-utils'
 import _ from 'lodash'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Free-text search in participant list API endpoint', () => {
   before(resetDatabase)
@@ -113,6 +116,7 @@ describe('Free-text search in participant list API endpoint', () => {
       params.set('q', textSearch)
     }
     const res = await testUtils.getWithUser(
+      app,
       `/api/participants/?${params}`,
       await testUtils.createUserWithRoles(['registryUser']),
     )

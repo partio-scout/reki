@@ -7,6 +7,9 @@ import {
   withFixtures,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+
+const app = configureApp(false, true)
 
 describe('Particpant list API endpoint', () => {
   before(resetDatabase)
@@ -91,6 +94,7 @@ describe('Particpant list API endpoint', () => {
   async function getParticipantsWithFilter(filter) {
     const params = new URLSearchParams(filter)
     const res = await getWithUser(
+      app,
       `/api/participants/?${params}`,
       await createUser(['registryUser']),
     )
