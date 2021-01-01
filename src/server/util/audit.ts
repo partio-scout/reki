@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import { models } from '../models'
+import '../express-type-extensions' // This import is required to make the tests work. https://github.com/TypeStrong/ts-node#help-my-types-are-missing
 
 export function getClientData(req: Request): ClientData {
   const userAgent = req.headers['user-agent'] || ''
