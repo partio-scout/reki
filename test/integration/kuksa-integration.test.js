@@ -17,8 +17,14 @@ describe('Kuksa integration (yes, this is very slow)', () => {
     resetDatabase().then(() => {
       mockKuksa.serveFixtures('all')
       mockKuksa.start()
-      exec('npm run fetch-from-kuksa', mockKuksa.getOptionsForExec(), (e) =>
-        done(e),
+      exec(
+        'npm run fetch-from-kuksa',
+        mockKuksa.getOptionsForExec(),
+        (e, stdout, stderr) => {
+          console.log(stdout)
+          console.error(stderr)
+          done(e)
+        },
       )
     })
   })
