@@ -8,12 +8,16 @@ const dbUrl =
   process.env.NODE_ENV === 'test'
     ? process.env.TEST_DATABASE_URL
     : process.env.DATABASE_URL
-const db = new Sequelize.Sequelize(dbUrl!, {
+
+export const sequelize = new Sequelize.Sequelize(dbUrl!, {
   logging: false,
 })
 
-export const sequelize = db
-export const models = Object.assign({}, integrationModels(db), appModels(db))
+export const models = Object.assign(
+  {},
+  integrationModels(sequelize),
+  appModels(sequelize),
+)
 
 export const updateDatabase = async (isDev: boolean) => {
   await sequelize.sync({ alter: true })
