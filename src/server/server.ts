@@ -12,7 +12,7 @@ import redis from 'redis'
 import RedisStoreConstructor from 'connect-redis'
 import Router from 'express-promise-router'
 import _ from 'lodash'
-import { Op } from 'sequelize'
+import { Sequelize, Op } from 'sequelize'
 import fs from 'fs'
 import {
   Strategy as SamlStrategy,
@@ -25,10 +25,10 @@ import * as Rt from 'runtypes'
 import { URL } from 'url'
 
 import * as config from './conf'
-import { sequelize, models } from './models'
+import { Models } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control'
-import { audit, getClientData } from './util/audit'
+import { getClientData } from './util/audit'
 
 const index = (user: Express.User) => `
 <!DOCTYPE html>
@@ -110,6 +110,8 @@ const loginPage = `
 export function configureApp(
   standalone: boolean,
   isDev: boolean,
+  sequelize: Sequelize,
+  models: Models,
 ): express.Application {
   const app = express()
 
@@ -408,7 +410,7 @@ export function configureApp(
       })
 
       if (participant) {
-        await audit({
+        await models.AuditEvent.audit({
           ...getClientData(req),
           modelType: 'Participant',
           modelId: participant.participantId,
@@ -523,7 +525,7 @@ export function configureApp(
         distinct: true, // without this count is calculated incorrectly
       })
 
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelType: 'Participant',
         eventType: 'find',
@@ -547,7 +549,7 @@ export function configureApp(
       }),
       Rt.Record({
         fieldName: Rt.Literal('presence'),
-        newValue: Rt.Literal(1).Or(Rt.Literal(2)).Or(Rt.Literal(3)),
+        newValue: Rt.Union(Rt.Literal(1), Rt.Literal(2), Rt.Literal(3)),
       }),
     ),
   )
@@ -581,7 +583,7 @@ export function configureApp(
         ? filter.order.split(' ')
         : ['timestamp', 'DESC']
 
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelType: 'AuditEvent',
         eventType: 'find',
@@ -610,7 +612,7 @@ export function configureApp(
       },
       async (req, res) => {
         const responseType = req.accepts(['json', 'html']) || 'json'
-        await audit({
+        await models.AuditEvent.audit({
           ...getClientData(req),
           modelId: req.user.id,
           modelType: 'User',
@@ -636,7 +638,7 @@ export function configureApp(
         const userIdString = req.user?.id
         const userId = userIdString ? Number(userIdString) : undefined
 
-        await audit({
+        await models.AuditEvent.audit({
           ...getClientData(req),
           modelId: userId,
           modelType: 'User',
@@ -658,7 +660,7 @@ export function configureApp(
       const userIdString = req.user.id
       const userId = userIdString ? Number(userIdString) : undefined
 
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelId: userId,
         modelType: 'User',
@@ -712,7 +714,7 @@ export function configureApp(
     optionalBasicAuth(),
     requirePermission('view registry users'),
     async (req, res) => {
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelType: 'User',
         eventType: 'find',
@@ -730,7 +732,7 @@ export function configureApp(
     async (req, res) => {
       const userId = NonNegativeInteger.check(Number(req.params.id))
 
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelId: userId,
         modelType: 'User',
@@ -749,7 +751,7 @@ export function configureApp(
     async (req, res) => {
       const userId = NonNegativeInteger.check(Number(req.params.id))
 
-      await audit({
+      await models.AuditEvent.audit({
         ...getClientData(req),
         modelId: userId,
         modelType: 'User',

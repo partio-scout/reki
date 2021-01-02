@@ -1,5 +1,4 @@
 import { Request } from 'express'
-import { models } from '../models'
 import '../express-type-extensions' // This import is required to make the tests work. https://github.com/TypeStrong/ts-node#help-my-types-are-missing
 
 export function getClientData(req: Request): ClientData {
@@ -25,26 +24,4 @@ export interface AuditParams extends ClientData {
   meta?: Record<string, unknown>
 }
 
-export async function audit({
-  modelId,
-  modelType,
-  eventType,
-  reason = '',
-  changes = {},
-  meta = {},
-  userId,
-  ipAddress,
-  userAgent,
-}: AuditParams) {
-  await models.AuditEvent.create({
-    eventType,
-    model: modelType,
-    modelId: modelId ?? null,
-    changes,
-    meta,
-    reason,
-    userId: userId ?? null,
-    ipAddress,
-    userAgent,
-  })
-}
+export type AuditFunction = (params: AuditParams) => Promise<void>

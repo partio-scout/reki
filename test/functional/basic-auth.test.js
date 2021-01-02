@@ -5,8 +5,15 @@ import {
   deleteUsers,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 function loginRequest(username, password) {
   return request(app).get('/login/password').auth(username, password)
@@ -16,25 +23,25 @@ const OK = 200
 const UNAUTHORIZED = 401
 
 describe('Login with basic auth', () => {
-  before(resetDatabase)
+  before(() => resetDatabase(sequelize, models))
 
   beforeEach(async () => {
-    await createUser(['registryUser', 'registryAdmin'], {
+    await createUser(models, ['registryUser', 'registryAdmin'], {
       email: 'correct', // non-email username
       password: 'CorrectPassword1122',
     })
-    await createUser(['registryUser', 'registryAdmin'], {
+    await createUser(models, ['registryUser', 'registryAdmin'], {
       email: 'blocked',
       password: 'SomeCorrectPw123',
       blocked: true,
     })
-    await createUser(['registryUser', 'registryAdmin'], {
+    await createUser(models, ['registryUser', 'registryAdmin'], {
       email: 'correct@example.org',
       password: 'CorrectForUser3',
     })
   })
 
-  afterEach(deleteUsers)
+  afterEach(() => deleteUsers(models))
 
   it('succeeds with correct username (non-email) and correct password', async () => {
     await loginRequest('correct', 'CorrectPassword1122').expect(OK)

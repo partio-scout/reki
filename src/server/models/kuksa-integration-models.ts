@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
 
-export default function (sequelize: Sequelize.Sequelize) {
+function getIntegrationModels(sequelize: Sequelize.Sequelize) {
   class KuksaCampGroup extends Sequelize.Model {}
   KuksaCampGroup.init(
     {
@@ -253,3 +253,7 @@ export default function (sequelize: Sequelize.Sequelize) {
     KuksaVillage: KuksaVillage,
   }
 }
+
+export default getIntegrationModels
+
+export type IntegrationModels = ReturnType<typeof getIntegrationModels>

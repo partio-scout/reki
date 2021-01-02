@@ -1,7 +1,7 @@
 import Sequelize, { Op } from 'sequelize'
 import _ from 'lodash'
 import * as conf from '../conf'
-import { audit, ClientData } from '../util/audit'
+import { AuditParams, ClientData } from '../util/audit'
 
 type SessionType = 'partioid' | 'password'
 
@@ -12,93 +12,7 @@ type MassAssignValueTypes = {
 }
 type MassAssignFields = keyof MassAssignValueTypes
 
-export default function (sequelize: Sequelize.Sequelize) {
-  class PresenceHistory extends Sequelize.Model {
-    author?: User
-  }
-  PresenceHistory.init(
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      presence: Sequelize.INTEGER,
-      timestamp: Sequelize.DATE,
-      authorId: Sequelize.INTEGER,
-    },
-    { sequelize, modelName: 'presence_history' },
-  )
-
-  class Participant extends Sequelize.Model {
-    participantId!: number
-
-    presenceHistory?: PresenceHistory[]
-
-    static massAssignField<F extends MassAssignFields>(
-      ids: readonly number[],
-      fieldName: F,
-      newValue: MassAssignValueTypes[F],
-      clientData: ClientData,
-    ) {
-      return Participant.findAll({
-        where: { participantId: { [Op.in]: Array.from(ids) } },
-      }).then((rows) => {
-        const updates = _.map(rows, async (row: any) => {
-          if (row[fieldName] !== newValue) {
-            const diff = {
-              [fieldName]: {
-                old: row[fieldName],
-                new: newValue,
-              },
-            }
-
-            await audit({
-              ...clientData,
-              modelType: 'Participant',
-              modelId: row.participantId,
-              eventType: 'update',
-              changes: diff,
-            })
-            if (fieldName === 'presence') {
-              await PresenceHistory.create({
-                participantParticipantId: row.participantId,
-                presence: newValue,
-                timestamp: new Date(),
-                authorId: clientData.userId,
-              })
-            }
-
-            row[fieldName] = newValue
-          }
-
-          return await row.save()
-        })
-        return Promise.all(updates)
-      })
-    }
-  }
-  Participant.init(
-    _.reduce(
-      conf.participantFields,
-      (acc: Sequelize.ModelAttributes, field) => {
-        acc[field.name] = {
-          type: Sequelize[field.dataType],
-          allowNull: field.nullable || false,
-        }
-        return acc
-      },
-      {
-        participantId: {
-          type: Sequelize.INTEGER,
-          primaryKey: true,
-          autoIncrement: true,
-        },
-      },
-    ),
-    { sequelize, modelName: 'participant' },
-  )
-
+function getAppModels(sequelize: Sequelize.Sequelize) {
   class User extends Sequelize.Model {
     id!: number
     firstName!: string
@@ -164,6 +78,194 @@ export default function (sequelize: Sequelize.Sequelize) {
       },
     },
     { sequelize, modelName: 'user' },
+  )
+
+  class AuditEvent extends Sequelize.Model {
+    id!: number
+    eventType!: string
+    model!: string
+    modelId!: number | null
+    changes!: Record<string, unknown> | null
+    meta!: Record<string, unknown> | null
+    timestamp!: Date
+    reason!: string
+    userId!: number | null
+    ipAddress!: string
+    userAgent!: string
+
+    user?: User
+    createUser!: Sequelize.BelongsToCreateAssociationMixin<User>
+    setUser!: Sequelize.BelongsToSetAssociationMixin<User, number>
+
+    static toClientJSON(event: AuditEvent) {
+      const json: any = event.toJSON()
+
+      if (event.user) {
+        json.user = User.toClientFormat(event.user)
+      }
+
+      return json
+    }
+
+    static async audit({
+      modelId,
+      modelType,
+      eventType,
+      reason = '',
+      changes = {},
+      meta = {},
+      userId,
+      ipAddress,
+      userAgent,
+    }: AuditParams): Promise<void> {
+      await AuditEvent.create({
+        eventType,
+        model: modelType,
+        modelId: modelId ?? null,
+        changes,
+        meta,
+        reason,
+        userId: userId ?? null,
+        ipAddress,
+        userAgent,
+      })
+    }
+  }
+  AuditEvent.init(
+    {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      eventType: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      model: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      modelId: {
+        type: Sequelize.INTEGER,
+      },
+      changes: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      meta: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      timestamp: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      reason: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+        defaultValue: '',
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+      },
+      ipAddress: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      userAgent: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+    },
+    { sequelize, modelName: 'audit_event' },
+  )
+
+  class PresenceHistory extends Sequelize.Model {
+    author?: User
+  }
+  PresenceHistory.init(
+    {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      presence: Sequelize.INTEGER,
+      timestamp: Sequelize.DATE,
+      authorId: Sequelize.INTEGER,
+    },
+    { sequelize, modelName: 'presence_history' },
+  )
+
+  class Participant extends Sequelize.Model {
+    participantId!: number
+
+    presenceHistory?: PresenceHistory[]
+
+    static massAssignField<F extends MassAssignFields>(
+      ids: readonly number[],
+      fieldName: F,
+      newValue: MassAssignValueTypes[F],
+      clientData: ClientData,
+    ) {
+      return Participant.findAll({
+        where: { participantId: { [Op.in]: Array.from(ids) } },
+      }).then((rows) => {
+        const updates = _.map(rows, async (row: any) => {
+          if (row[fieldName] !== newValue) {
+            const diff = {
+              [fieldName]: {
+                old: row[fieldName],
+                new: newValue,
+              },
+            }
+
+            await AuditEvent.audit({
+              ...clientData,
+              modelType: 'Participant',
+              modelId: row.participantId,
+              eventType: 'update',
+              changes: diff,
+            })
+            if (fieldName === 'presence') {
+              await PresenceHistory.create({
+                participantParticipantId: row.participantId,
+                presence: newValue,
+                timestamp: new Date(),
+                authorId: clientData.userId,
+              })
+            }
+
+            row[fieldName] = newValue
+          }
+
+          return await row.save()
+        })
+        return Promise.all(updates)
+      })
+    }
+  }
+  Participant.init(
+    _.reduce(
+      conf.participantFields,
+      (acc: Sequelize.ModelAttributes, field) => {
+        acc[field.name] = {
+          type: Sequelize[field.dataType],
+          allowNull: field.nullable || false,
+        }
+        return acc
+      },
+      {
+        participantId: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
+      },
+    ),
+    { sequelize, modelName: 'participant' },
   )
 
   class UserRole extends Sequelize.Model {}
@@ -294,84 +396,6 @@ export default function (sequelize: Sequelize.Sequelize) {
   class ParticipantAllergy extends Sequelize.Model {}
   ParticipantAllergy.init({}, { sequelize, modelName: 'participant_allergy' })
 
-  class AuditEvent extends Sequelize.Model {
-    id!: number
-    eventType!: string
-    model!: string
-    modelId!: number | null
-    changes!: Record<string, unknown> | null
-    meta!: Record<string, unknown> | null
-    timestamp!: Date
-    reason!: string
-    userId!: number | null
-    ipAddress!: string
-    userAgent!: string
-
-    user?: User
-    createUser!: Sequelize.BelongsToCreateAssociationMixin<User>
-    setUser!: Sequelize.BelongsToSetAssociationMixin<User, number>
-
-    static toClientJSON(event: AuditEvent) {
-      const json: any = event.toJSON()
-
-      if (event.user) {
-        json.user = User.toClientFormat(event.user)
-      }
-
-      return json
-    }
-  }
-  AuditEvent.init(
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      eventType: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      model: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      modelId: {
-        type: Sequelize.INTEGER,
-      },
-      changes: {
-        type: Sequelize.JSON,
-        allowNull: true,
-      },
-      meta: {
-        type: Sequelize.JSON,
-        allowNull: true,
-      },
-      timestamp: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      reason: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        defaultValue: '',
-      },
-      userId: {
-        type: Sequelize.INTEGER,
-      },
-      ipAddress: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      userAgent: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-    },
-    { sequelize, modelName: 'audit_event' },
-  )
-
   User.belongsToMany(UserRole, { as: 'roles', through: UserRoleMapping })
   UserRole.belongsToMany(User, { as: 'users', through: UserRoleMapping })
 
@@ -434,3 +458,7 @@ export default function (sequelize: Sequelize.Sequelize) {
     AuditEvent,
   }
 }
+
+export default getAppModels
+
+export type AppModels = ReturnType<typeof getAppModels>

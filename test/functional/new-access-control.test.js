@@ -1,22 +1,29 @@
 import * as testUtils from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Role-Based Access Control', () => {
-  before(resetDatabase)
+  before(() => resetDatabase(sequelize, models))
 
   let testUser
 
   beforeEach(() =>
-    resetDatabase()
-      .then(() => testUtils.createUserWithRoles(['registryUser']))
+    resetDatabase(sequelize, models)
+      .then(() => testUtils.createUserWithRoles(models, ['registryUser']))
       .then((user) => {
         testUser = user
       }),
   )
-  afterEach(testUtils.deleteUsers)
+  afterEach(() => testUtils.deleteUsers(models))
 
   it('should succeed when user has permission', async () => {
     const res = await testUtils.getWithUser(

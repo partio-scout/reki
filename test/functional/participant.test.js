@@ -8,18 +8,25 @@ import {
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Single participant API endpoint', () => {
   let user
 
-  before(resetDatabase)
-  withFixtures(async () => {
-    user = await createUser(['registryUser'])
+  before(() => resetDatabase(sequelize, models))
+  withFixtures(models, async () => {
+    user = await createUser(models, ['registryUser'])
     return getFixtures(user.id)
   })
-  afterEach(deleteUsers)
+  afterEach(() => deleteUsers(models))
 
   //TODO split this into several test cases for clarity
   it('returns correct info', async () => {

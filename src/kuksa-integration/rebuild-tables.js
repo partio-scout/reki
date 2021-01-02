@@ -1,9 +1,9 @@
 import sequelize from 'sequelize'
-import { models } from '../server/models'
 import { _ } from 'lodash'
 import moment from 'moment'
 import * as config from '../server/conf'
 import { startSpinner } from './util'
+import { initializeSequelize, initializeModels } from '../server/models'
 
 const Op = sequelize.Op
 
@@ -21,21 +21,24 @@ if (require.main === module) {
 }
 
 async function main() {
+  const sequelize = initializeSequelize()
   const stopSpinner = startSpinner()
   try {
-    await buildAllergyTable()
-    await rebuildParticipantsTable()
-    await addAllergiesToParticipants()
-    await addDatesToParticipants()
-    await buildSelectionTable()
-    await deleteCancelledParticipants()
-    await buildOptionTable()
+    const models = initializeModels(sequelize)
+    await buildAllergyTable(models)
+    await rebuildParticipantsTable(models)
+    await addAllergiesToParticipants(models)
+    await addDatesToParticipants(models)
+    await buildSelectionTable(models)
+    await deleteCancelledParticipants(models)
+    await buildOptionTable(models)
   } finally {
+    sequelize.close()
     stopSpinner()
   }
 }
 
-async function buildAllergyTable() {
+async function buildAllergyTable(models) {
   console.log('Rebuilding allergies table...')
   const selGroups = await models.KuksaExtraSelectionGroup.findAll({
     where: {
@@ -60,7 +63,7 @@ async function buildAllergyTable() {
   }
 }
 
-async function getWrappedParticipants() {
+async function getWrappedParticipants(models) {
   function getExtraInfo(participant, fieldName) {
     const field = _.find(
       participant.kuksa_participantextrainfos,
@@ -127,10 +130,10 @@ async function getWrappedParticipants() {
   }))
 }
 
-async function rebuildParticipantsTable() {
+async function rebuildParticipantsTable(models) {
   console.log('Rebuilding participants table...')
 
-  const wrappedParticipants = await getWrappedParticipants()
+  const wrappedParticipants = await getWrappedParticipants(models)
   const participants = wrappedParticipants.map(
     config.participantBuilderFunction,
   )
@@ -140,7 +143,7 @@ async function rebuildParticipantsTable() {
   console.log('Rebuild complete.')
 }
 
-async function addAllergiesToParticipants() {
+async function addAllergiesToParticipants(models) {
   async function removeOldAndAddNewAllergies(participant, newAllergies) {
     await models.ParticipantAllergy.destroy({
       where: { participantParticipantId: participant.participantId },
@@ -181,11 +184,11 @@ async function addAllergiesToParticipants() {
   console.log('Allergies and diets added.')
 }
 
-async function addDatesToParticipants() {
+async function addDatesToParticipants(models) {
   const participantDatesMapper = config.participantDatesMapper
 
   console.log('Adding dates to participants...')
-  const wrappedParticipants = await getWrappedParticipants()
+  const wrappedParticipants = await getWrappedParticipants(models)
   for (const wrappedParticipant of wrappedParticipants) {
     await models.ParticipantDate.destroy({
       where: { participantId: wrappedParticipant.get('id') },
@@ -209,7 +212,7 @@ async function addDatesToParticipants() {
   }
 }
 
-async function buildSelectionTable() {
+async function buildSelectionTable(models) {
   const groupsToCreate = config.selectionGroupTitles
 
   console.log('Building selections table...')
@@ -253,7 +256,7 @@ async function buildSelectionTable() {
   console.log('Selections table built.')
 }
 
-async function deleteCancelledParticipants() {
+async function deleteCancelledParticipants(models) {
   console.log('Deleting cancelled participants...')
   const participants = await models.KuksaParticipant.findAll({
     where: { cancelled: true },
@@ -265,7 +268,7 @@ async function deleteCancelledParticipants() {
   console.log(`Deleted ${count} cancelled participants.`)
 }
 
-async function buildOptionTable() {
+async function buildOptionTable(models) {
   await models.Option.destroy({ where: {} })
   for (const field of config.optionFieldNames) {
     const values = await models.Participant.aggregate(field, 'DISTINCT', {

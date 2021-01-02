@@ -1,4 +1,3 @@
-import { models } from '../../src/server/models'
 import _ from 'lodash'
 import { expect } from 'chai'
 import {
@@ -10,8 +9,15 @@ import {
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Participant mass edit API endpoint', () => {
   const inCamp = 3
@@ -20,11 +26,13 @@ describe('Participant mass edit API endpoint', () => {
 
   let user
 
-  before(resetDatabase)
-  withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  withFixtures(models, getFixtures())
 
-  beforeEach(async () => (user = await createUserWithRoles(['registryUser']))),
-    afterEach(deleteUsers)
+  beforeEach(
+    async () => (user = await createUserWithRoles(models, ['registryUser'])),
+  ),
+    afterEach(() => deleteUsers(models))
 
   it('updates whitelisted fields', async () => {
     const res = await postWithUser(app, '/api/participants/massAssign', user, {

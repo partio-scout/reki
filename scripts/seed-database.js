@@ -1,11 +1,10 @@
 import EventEmitter from 'events'
 import * as config from '../src/server/conf'
-import { sequelize } from '../src/server/models'
-import { models } from '../src/server/models'
+import { initializeSequelize, initializeModels } from '../src/server/models'
 
 EventEmitter.prototype._maxListeners = 20
 
-export async function resetDatabase() {
+export async function resetDatabase(sequelize, models) {
   await sequelize.sync({ force: true })
 
   // Create roles
@@ -17,7 +16,9 @@ export async function resetDatabase() {
 // When running as a script we need to disconnect database connections to allow the
 // process to exit.
 if (require.main === module) {
-  resetDatabase()
+  const sequelize = initializeSequelize()
+  const models = initializeModels(sequelize)
+  resetDatabase(sequelize, models)
     .catch((err) => console.error('Database reset and seeding failed: ', err))
     .finally(() => {
       sequelize.close()

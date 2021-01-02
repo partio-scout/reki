@@ -1,25 +1,33 @@
 import Sequelize from 'sequelize'
 import * as config from '../conf'
-import integrationModels from './kuksa-integration-models'
-import appModels from './app-models'
 import argon2 from 'argon2'
 
-const dbUrl =
-  process.env.NODE_ENV === 'test'
-    ? process.env.TEST_DATABASE_URL
-    : process.env.DATABASE_URL
+import appModels, { AppModels } from './app-models'
+import integrationModels, {
+  IntegrationModels,
+} from './kuksa-integration-models'
 
-export const sequelize = new Sequelize.Sequelize(dbUrl!, {
-  logging: false,
-})
+export type Models = AppModels & IntegrationModels
 
-export const models = Object.assign(
-  {},
-  integrationModels(sequelize),
-  appModels(sequelize),
-)
+export function initializeSequelize() {
+  const dbUrl =
+    process.env.NODE_ENV === 'test'
+      ? process.env.TEST_DATABASE_URL
+      : process.env.DATABASE_URL
+  return new Sequelize.Sequelize(dbUrl!, {
+    logging: false,
+  })
+}
 
-export const updateDatabase = async (isDev: boolean) => {
+export function initializeModels(sequelize: Sequelize.Sequelize): Models {
+  return Object.assign({}, integrationModels(sequelize), appModels(sequelize))
+}
+
+export const updateDatabase = async (
+  sequelize: Sequelize.Sequelize,
+  models: Models,
+  isDev: boolean,
+) => {
   await sequelize.sync({ alter: true })
 
   const roles = []

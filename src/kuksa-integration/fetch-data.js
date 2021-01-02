@@ -1,9 +1,9 @@
-import { models } from '../server/models'
 import moment from 'moment'
 import transfer from './transfer'
 import { getEventApi } from 'kuksa-event-api-client'
 import * as config from '../server/conf'
 import { startSpinner } from './util'
+import { initializeSequelize, initializeModels } from '../server/models'
 
 if (require.main === module) {
   main().then(
@@ -19,14 +19,18 @@ if (require.main === module) {
 }
 
 async function main() {
+  const sequelize = initializeSequelize()
+
   const stopSpinner = startSpinner()
   try {
+    const models = initializeModels(sequelize)
     const options = getOptionsFromEnvironment()
     const eventApi = getEventApi(options)
-    await transferTablesOnlyOnce(eventApi)
-    await transferParticipants(eventApi)
-    await transferPayments(eventApi)
+    await transferTablesOnlyOnce(models, eventApi)
+    await transferParticipants(models, eventApi)
+    await transferPayments(models, eventApi)
   } finally {
+    sequelize.close()
     stopSpinner()
   }
 }
@@ -60,7 +64,7 @@ function getOptionsFromEnvironment() {
   }
 }
 
-function transferTablesOnlyOnce(eventApi) {
+function transferTablesOnlyOnce(models, eventApi) {
   console.log(
     'Transferring sub camps, villages, local groups, extra selections, info fields and payments...',
   )
@@ -140,7 +144,7 @@ function transferTablesOnlyOnce(eventApi) {
   ])
 }
 
-async function transferParticipants(eventApi) {
+async function transferParticipants(models, eventApi) {
   function transferDaterange(daterange) {
     console.log(`\t daterange ${daterange.startDate} - ${daterange.endDate}`)
     return transfer([
@@ -213,7 +217,7 @@ async function transferParticipants(eventApi) {
   }
 }
 
-function transferPayments(eventApi) {
+function transferPayments(models, eventApi) {
   console.log('Transferring payment statuses...')
 
   return transfer([

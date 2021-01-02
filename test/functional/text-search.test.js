@@ -3,13 +3,20 @@ import * as testUtils from '../utils/test-utils'
 import _ from 'lodash'
 import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Free-text search in participant list API endpoint', () => {
-  before(resetDatabase)
-  afterEach(testUtils.deleteUsers)
-  testUtils.withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  afterEach(() => testUtils.deleteUsers(models))
+  testUtils.withFixtures(models, getFixtures())
 
   it("doesn't filter results when no filter is given", () =>
     queryParticipants({}).then((res) => {
@@ -118,7 +125,7 @@ describe('Free-text search in participant list API endpoint', () => {
     const res = await testUtils.getWithUser(
       app,
       `/api/participants/?${params}`,
-      await testUtils.createUserWithRoles(['registryUser']),
+      await testUtils.createUserWithRoles(models, ['registryUser']),
     )
     testUtils.expectStatus(res.status, 200)
     return res

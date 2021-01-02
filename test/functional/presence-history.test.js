@@ -8,10 +8,16 @@ import {
   withFixtures,
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
-import { models } from '../../src/server/models'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Participant presence history', () => {
   const inCamp = 3
@@ -20,10 +26,10 @@ describe('Participant presence history', () => {
 
   let user
 
-  before(resetDatabase)
-  beforeEach(async () => (user = await createUser(['registryUser'])))
-  afterEach(deleteUsers)
-  withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  beforeEach(async () => (user = await createUser(models, ['registryUser'])))
+  afterEach(() => deleteUsers(models))
+  withFixtures(models, getFixtures())
 
   it("is saved when updating the participant's presence field", async () => {
     const res = await postWithUser(app, '/api/participants/massAssign', user, {

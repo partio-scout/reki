@@ -8,15 +8,22 @@ import {
 } from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Participant dates endpoint', () => {
   it('returns unique dates when participants may be present', async () => {
     const res = await getWithUser(
       app,
       '/api/participantdates',
-      await createUser(['registryUser']),
+      await createUser(models, ['registryUser']),
     )
 
     expectStatus(res.status, 200)
@@ -29,10 +36,10 @@ describe('Participant dates endpoint', () => {
     expect(res.body[4]).to.have.property('date', '2016-07-27T00:00:00.000Z')
   })
 
-  before(resetDatabase)
-  afterEach(deleteUsers)
+  before(() => resetDatabase(sequelize, models))
+  afterEach(() => deleteUsers(models))
 
-  withFixtures({
+  withFixtures(models, {
     Participant: [
       {
         participantId: 1,

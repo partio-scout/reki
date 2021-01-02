@@ -1,17 +1,23 @@
 import { expect } from 'chai'
 import * as testUtils from '../utils/test-utils'
 import { resetDatabase } from '../../scripts/seed-database'
-import { models } from '../../src/server/models'
 import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-const app = configureApp(false, true)
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('User API endpoints', () => {
   let user
 
-  before(resetDatabase)
+  before(() => resetDatabase(sequelize, models))
   beforeEach(createUserFixtures)
-  afterEach(testUtils.deleteUsers)
+  afterEach(() => testUtils.deleteUsers(models))
 
   it('findAll: correctly lists all users', async () => {
     const res = await testUtils.getWithUser(app, '/api/registryusers', user)
@@ -47,7 +53,7 @@ describe('User API endpoints', () => {
   })
 
   async function createUserFixtures() {
-    await testUtils.createUserWithRoles(['registryUser'], {
+    await testUtils.createUserWithRoles(models, ['registryUser'], {
       id: 1,
       memberNumber: '00000000',
       email: 'user@example.com',
@@ -57,7 +63,7 @@ describe('User API endpoints', () => {
       phoneNumber: '0000000001',
       blocked: true,
     })
-    await testUtils.createUserWithRoles(['registryUser'], {
+    await testUtils.createUserWithRoles(models, ['registryUser'], {
       id: 2,
       memberNumber: '00000001',
       email: 'jumala@example.com',
@@ -67,7 +73,7 @@ describe('User API endpoints', () => {
       phoneNumber: '0000000002',
       blocked: false,
     })
-    user = await testUtils.createUserWithRoles(['registryAdmin'], {
+    user = await testUtils.createUserWithRoles(models, ['registryAdmin'], {
       id: 3,
       memberNumber: '00000002',
       email: 'jukka.pekka@example.com',
