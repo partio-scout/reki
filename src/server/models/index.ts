@@ -8,6 +8,7 @@ import integrationModels, {
 } from './kuksa-integration-models'
 
 export type Models = AppModels & IntegrationModels
+export type ModelInstances = { [K in keyof Models]: InstanceType<Models[K]> }
 
 export function initializeSequelize() {
   const dbUrl =
