@@ -1,4 +1,4 @@
-export const startSpinner = () => {
+export const startSpinner = (): (() => void) => {
   const P = ['\\', '|', '/', '-']
   let x = 0
   const intervalId = setInterval(() => {
@@ -8,5 +8,14 @@ export const startSpinner = () => {
 
   return () => {
     clearInterval(intervalId)
+  }
+}
+
+export function withSpinner<T>(fn: () => T): T {
+  const stopSpinner = startSpinner()
+  try {
+    return fn()
+  } finally {
+    stopSpinner()
   }
 }

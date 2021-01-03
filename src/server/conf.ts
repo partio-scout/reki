@@ -235,12 +235,14 @@ export const fetchDateRanges: readonly DateRange[] = [
   },
 ]
 
-interface WrappedParticipant {
+export interface WrappedParticipant {
   get: (name: string) => unknown
   getExtraSelection: (name: string) => unknown
-  getPaymentStatus: (name: string) => unknown
+  getPaymentStatus: (name: 'billed' | 'paid') => unknown
   getExtraInfo: (name: string) => unknown
   getPayments: () => readonly string[]
+  getAllExtraSelections: (groupName: string) => unknown[]
+  getRawFields: () => unknown
 }
 
 export const participantBuilderFunction = (
@@ -302,7 +304,7 @@ export const participantBuilderFunction = (
 
 export const participantDatesMapper = (
   wrappedParticipant: WrappedParticipant,
-) => {
+): string[] => {
   // Map payment names to arrays of dates when the participant is present
   const paymentToDatesMappings: Record<string, readonly string[]> = {
     'pe 15.7.': ['2016-07-15'],
@@ -367,17 +369,19 @@ export const participantDatesMapper = (
     'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
   }
 
-  return _(wrappedParticipant.getPayments()).flatMap((payment) => {
-    const dateMappings = paymentToDatesMappings[payment]
+  return _(wrappedParticipant.getPayments())
+    .flatMap((payment) => {
+      const dateMappings = paymentToDatesMappings[payment]
 
-    if (dateMappings === undefined) {
-      console.log(
-        `Warning! A mapping from payment type '${payment}' to participation dates is missing!`,
-      )
-    }
+      if (dateMappings === undefined) {
+        console.log(
+          `Warning! A mapping from payment type '${payment}' to participation dates is missing!`,
+        )
+      }
 
-    return dateMappings || []
-  })
+      return dateMappings || []
+    })
+    .value()
 }
 
 export const selectionGroupTitles: readonly string[] = [
