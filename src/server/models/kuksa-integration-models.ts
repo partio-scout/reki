@@ -1,7 +1,10 @@
 import Sequelize from 'sequelize'
 
 function getIntegrationModels(sequelize: Sequelize.Sequelize) {
-  class KuksaCampGroup extends Sequelize.Model {}
+  class KuksaCampGroup extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaCampGroup.init(
     {
       id: {
@@ -17,7 +20,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_campgroup' },
   )
 
-  class KuksaExtraInfoField extends Sequelize.Model {}
+  class KuksaExtraInfoField extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaExtraInfoField.init(
     {
       id: {
@@ -33,7 +39,12 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_extrainfofield' },
   )
 
-  class KuksaExtraSelection extends Sequelize.Model {}
+  class KuksaExtraSelection extends Sequelize.Model {
+    id!: number
+    name!: string
+
+    kuksa_extraselectiongroup?: KuksaExtraSelectionGroup
+  }
   KuksaExtraSelection.init(
     {
       id: {
@@ -49,7 +60,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_extraselection' },
   )
 
-  class KuksaExtraSelectionGroup extends Sequelize.Model {}
+  class KuksaExtraSelectionGroup extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaExtraSelectionGroup.init(
     {
       id: {
@@ -65,7 +79,14 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_extraselectiongroup' },
   )
 
-  class KuksaLocalGroup extends Sequelize.Model {}
+  class KuksaLocalGroup extends Sequelize.Model {
+    id!: string
+    name!: string
+    scoutOrganization!: string | null
+    locality!: string | null
+    country!: string | null
+    countryCode!: string | null
+  }
   KuksaLocalGroup.init(
     {
       id: {
@@ -85,7 +106,25 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_localgroup' },
   )
 
-  class KuksaParticipant extends Sequelize.Model {}
+  class KuksaParticipant extends Sequelize.Model {
+    id!: string
+    firstName!: string
+    lastName!: string
+    memberNumber!: string | null
+    nickname!: string | null
+    dateOfBirth!: Date | null
+    phoneNumber!: string | null
+    email!: string | null
+    representedParty!: string | null
+    accommodation!: string | null
+    cancelled!: boolean | null
+    diet!: string | null
+
+    kuksa_participantextrainfos?: KuksaParticipantExtraInfo[]
+    kuksa_extraselections?: KuksaExtraSelection[]
+    kuksa_participantpaymentstatus?: KuksaParticipantPaymentStatus
+    kuksa_payments?: KuksaPayment[]
+  }
   KuksaParticipant.init(
     {
       id: {
@@ -105,7 +144,7 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
       nickname: Sequelize.STRING,
       dateOfBirth: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       phoneNumber: Sequelize.STRING,
       email: Sequelize.STRING,
@@ -117,7 +156,13 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_participant' },
   )
 
-  class KuksaParticipantExtraInfo extends Sequelize.Model {}
+  class KuksaParticipantExtraInfo extends Sequelize.Model {
+    id!: number
+    value!: string
+
+    kuksa_extrainfofield?: KuksaExtraInfoField
+    kukksa_participant?: KuksaParticipant
+  }
   KuksaParticipantExtraInfo.init(
     {
       id: {
@@ -133,7 +178,11 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_participantextrainfo' },
   )
 
-  class KuksaParticipantExtraSelection extends Sequelize.Model {}
+  class KuksaParticipantExtraSelection extends Sequelize.Model {
+    kuksaParticipantId!: number | null
+
+    kuksa_extraselection?: KuksaExtraSelection
+  }
   KuksaParticipantExtraSelection.init(
     {},
     { sequelize, modelName: 'kuksa_participantextraselection' },
@@ -145,7 +194,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_participantpayment' },
   )
 
-  class KuksaParticipantPaymentStatus extends Sequelize.Model {}
+  class KuksaParticipantPaymentStatus extends Sequelize.Model {
+    billed!: Date | null
+    paid!: Date | null
+  }
   KuksaParticipantPaymentStatus.init(
     {
       billed: Sequelize.DATE,
@@ -154,7 +206,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_participantpaymentstatus' },
   )
 
-  class KuksaPayment extends Sequelize.Model {}
+  class KuksaPayment extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaPayment.init(
     {
       id: {
@@ -170,7 +225,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_payment' },
   )
 
-  class KuksaSubCamp extends Sequelize.Model {}
+  class KuksaSubCamp extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaSubCamp.init(
     {
       id: {
@@ -186,7 +244,10 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'kuksa_subcamp' },
   )
 
-  class KuksaVillage extends Sequelize.Model {}
+  class KuksaVillage extends Sequelize.Model {
+    id!: number
+    name!: string
+  }
   KuksaVillage.init(
     {
       id: {
@@ -238,19 +299,19 @@ function getIntegrationModels(sequelize: Sequelize.Sequelize) {
   // Exports
 
   return {
-    KuksaCampGroup: KuksaCampGroup,
-    KuksaExtraInfoField: KuksaExtraInfoField,
-    KuksaExtraSelection: KuksaExtraSelection,
-    KuksaExtraSelectionGroup: KuksaExtraSelectionGroup,
-    KuksaLocalGroup: KuksaLocalGroup,
-    KuksaParticipant: KuksaParticipant,
-    KuksaParticipantExtraInfo: KuksaParticipantExtraInfo,
-    KuksaParticipantExtraSelection: KuksaParticipantExtraSelection,
-    KuksaParticipantPayment: KuksaParticipantPayment,
-    KuksaParticipantPaymentStatus: KuksaParticipantPaymentStatus,
-    KuksaPayment: KuksaPayment,
-    KuksaSubCamp: KuksaSubCamp,
-    KuksaVillage: KuksaVillage,
+    KuksaCampGroup,
+    KuksaExtraInfoField,
+    KuksaExtraSelection,
+    KuksaExtraSelectionGroup,
+    KuksaLocalGroup,
+    KuksaParticipant,
+    KuksaParticipantExtraInfo,
+    KuksaParticipantExtraSelection,
+    KuksaParticipantPayment,
+    KuksaParticipantPaymentStatus,
+    KuksaPayment,
+    KuksaSubCamp,
+    KuksaVillage,
   }
 }
 
