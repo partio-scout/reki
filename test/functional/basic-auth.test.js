@@ -4,10 +4,10 @@ import {
   createUserWithRoles as createUser,
   deleteUsers,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
 import {
   initializeSequelize,
   initializeModels,
+  resetDatabase,
   Models,
 } from '../../src/server/models'
 

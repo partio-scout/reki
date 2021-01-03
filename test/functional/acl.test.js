@@ -8,11 +8,11 @@ import {
   postWithUser,
   expectStatus,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
 import _ from 'lodash'
 import {
   initializeSequelize,
   initializeModels,
+  resetDatabase,
   Models,
 } from '../../src/server/models'
 

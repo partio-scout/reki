@@ -23,6 +23,17 @@ export function initializeModels(sequelize: Sequelize.Sequelize): Models {
   return Object.assign({}, integrationModels(sequelize), appModels(sequelize))
 }
 
+export async function resetDatabase(
+  sequelize: Sequelize.Sequelize,
+  models: Models,
+): Promise<void> {
+  await sequelize.sync({ force: true })
+
+  // Create roles
+  const roles = config.roles.map((roleName) => ({ name: roleName }))
+  await Promise.all(roles.map((role) => models.UserRole.create(role)))
+}
+
 export const updateDatabase = async (
   sequelize: Sequelize.Sequelize,
   models: Models,

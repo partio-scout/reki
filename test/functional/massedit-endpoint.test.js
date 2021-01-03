@@ -7,11 +7,11 @@ import {
   postWithUser,
   expectStatus,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
 import { configureApp } from '../../src/server/server'
 import {
   initializeSequelize,
   initializeModels,
+  resetDatabase,
   Models,
 } from '../../src/server/models'
 

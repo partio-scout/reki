@@ -1,13 +1,13 @@
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import chaiDateTime from 'chai-datetime'
-import { resetDatabase } from '../../scripts/seed-database'
 import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa'
 import { exec } from 'child_process'
 import moment from 'moment'
 import {
   initializeSequelize,
   initializeModels,
+  resetDatabase,
   Models,
 } from '../../src/server/models'
 

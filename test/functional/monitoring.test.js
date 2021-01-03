@@ -1,9 +1,9 @@
 import { configureApp } from '../../src/server/server'
 import request from 'supertest'
-import { resetDatabase } from '../../scripts/seed-database'
 import {
   initializeSequelize,
   initializeModels,
+  resetDatabase,
   Models,
 } from '../../src/server/models'
 
