@@ -30,7 +30,14 @@ import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control'
 import { getClientData } from './util/audit'
 
-const index = (user: Express.User) => `
+type RouteInfo =
+  | { route: 'participantsList' }
+  | { route: 'participantDetails'; participantId: string }
+  | { route: 'admin' }
+  | { route: 'auditLog' }
+  | { route: 'homePage' }
+
+const index = (user: Express.User, routeInfo: RouteInfo) => `
 <!DOCTYPE html>
 <html lang="fi">
   <head>
@@ -38,6 +45,9 @@ const index = (user: Express.User) => `
     <meta charset="UTF-8" />
     <script id="user-info" type="application/json">${JSON.stringify(
       user,
+    )}</script>
+    <script id="route-info" type="application/json">${JSON.stringify(
+      routeInfo,
     )}</script>
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Source+Sans+Pro:wght@900&display=swap" rel="stylesheet">
   </head>
@@ -787,9 +797,40 @@ export function configureApp(
       res.type('html').send(loginPage)
     }
   })
-  app.get('*', (req, res) => {
+  app.get('/participants/:id', (req, res) => {
+    const participantId = req.params.id
     if (req.user) {
-      res.type('html').send(index(req.user))
+      res
+        .type('html')
+        .send(index(req.user, { route: 'participantDetails', participantId }))
+    } else {
+      res.redirect(303, '/login')
+    }
+  })
+  app.get('/participants', (req, res) => {
+    if (req.user) {
+      res.type('html').send(index(req.user, { route: 'participantsList' }))
+    } else {
+      res.redirect(303, '/login')
+    }
+  })
+  app.get('/admin', (req, res) => {
+    if (req.user) {
+      res.type('html').send(index(req.user, { route: 'admin' }))
+    } else {
+      res.redirect(303, '/login')
+    }
+  })
+  app.get('/audit', (req, res) => {
+    if (req.user) {
+      res.type('html').send(index(req.user, { route: 'auditLog' }))
+    } else {
+      res.redirect(303, '/login')
+    }
+  })
+  app.get('/', (req, res) => {
+    if (req.user) {
+      res.type('html').send(index(req.user, { route: 'homePage' }))
     } else {
       res.redirect(303, '/login')
     }

@@ -4,6 +4,7 @@ import 'react-hot-loader'
 import React from 'react'
 import { render } from 'react-dom'
 import moment from 'moment'
+import * as Rt from 'runtypes'
 
 import {
   App,
@@ -14,7 +15,6 @@ import {
   AuditLogPage,
 } from './components'
 import { RestfulResource } from './RestfulResource'
-import createMatcher from 'feather-route-matcher'
 import { ErrorProvider } from './errors'
 
 moment.locale('fi')
@@ -23,31 +23,53 @@ const participantResource = RestfulResource('/api/participants')
 const participantDateResource = RestfulResource('/api/participantDates')
 const optionResource = RestfulResource('/api/options')
 
-const routes = createMatcher({
-  '/participants': () => (
-    <ParticipantListPage
-      optionResource={optionResource}
-      participantDateResource={participantDateResource}
-      participantResource={participantResource}
-    />
-  ),
-  '/participants/:id': (params: { id: string }) => (
-    <ParticipantDetailsPage
-      participantResource={participantResource}
-      {...params}
-    />
-  ),
-  '/admin': UserManagementPage,
-  '/audit': AuditLogPage,
-  '*': Homepage,
-})
+const RouteInfo = Rt.Union(
+  Rt.Record({ route: Rt.Literal('participantsList') }),
+  Rt.Record({
+    route: Rt.Literal('participantDetails'),
+    participantId: Rt.String,
+  }),
+  Rt.Record({ route: Rt.Literal('admin') }),
+  Rt.Record({ route: Rt.Literal('auditLog') }),
+  Rt.Record({ route: Rt.Literal('homePage') }),
+)
+type RouteInfo = Rt.Static<typeof RouteInfo>
 
-const { page: RouteComponent, params }: any = routes(location.pathname)
+const routeInfoElement = document.querySelector('#route-info')
+const parsedRouteInfo = RouteInfo.check(
+  JSON.parse(routeInfoElement!.textContent!),
+)
+
+const Router: React.FC<{ routeInfo: RouteInfo }> = ({ routeInfo }) => {
+  switch (routeInfo.route) {
+    case 'participantsList':
+      return (
+        <ParticipantListPage
+          optionResource={optionResource}
+          participantDateResource={participantDateResource}
+          participantResource={participantResource}
+        />
+      )
+    case 'participantDetails':
+      return (
+        <ParticipantDetailsPage
+          participantResource={participantResource}
+          id={routeInfo.participantId}
+        />
+      )
+    case 'admin':
+      return <UserManagementPage />
+    case 'auditLog':
+      return <AuditLogPage />
+    case 'homePage':
+      return <Homepage />
+  }
+}
 
 render(
   <ErrorProvider>
     <App>
-      <RouteComponent {...params} />
+      <Router routeInfo={parsedRouteInfo} />
     </App>
   </ErrorProvider>,
   document.getElementById('app'),
