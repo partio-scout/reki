@@ -1,4 +1,4 @@
-import app from '../../src/server/server'
+import { configureApp } from '../../src/server/server'
 import request from 'supertest'
 import { expect, assert } from 'chai'
 import {
@@ -8,8 +8,13 @@ import {
   postWithUser,
   expectStatus,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
 import _ from 'lodash'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
 
 const OK = 200
 const NO_CONTENT = 204
@@ -19,11 +24,15 @@ const UNAUTHORIZED = 401
 // to route handlers. This regex takes such a regex in string form, and extracts the URL path from it.
 const expressRouteRegex = /^\/\^\\(\/.*)\\\/\?\(\?=\\\/\|\$\)\/i$/i
 
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
+
 describe('HTTP API access control', () => {
   const otherUserId = 123
 
-  before(resetDatabase)
-  withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  withFixtures(models, getFixtures())
 
   describe('Access control tests', () => {
     const apiRoutesWithAccessControlTests = new Set([
@@ -99,11 +108,11 @@ describe('HTTP API access control', () => {
   describe('Participant', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/participants').expect(UNAUTHORIZED))
+        get(models, '/api/participants').expect(UNAUTHORIZED))
       it('findById: UNAUTHORIZED', () =>
-        get('/api/participants/1').expect(UNAUTHORIZED))
+        get(models, '/api/participants/1').expect(UNAUTHORIZED))
       it('massedit: UNAUTHORIZED', () =>
-        post('/api/participants/massAssign', {
+        post(models, '/api/participants/massAssign', {
           ids: [1],
           newValue: 1,
           fieldName: 'presence',
@@ -112,11 +121,12 @@ describe('HTTP API access control', () => {
 
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/participants', []).expect(UNAUTHORIZED))
+        get(models, '/api/participants', []).expect(UNAUTHORIZED))
       it('findById: UNAUTHORIZED', () =>
-        get('/api/participants/1', []).expect(UNAUTHORIZED))
+        get(models, '/api/participants/1', []).expect(UNAUTHORIZED))
       it('massedit: UNAUTHORIZED', () =>
         post(
+          models,
           '/api/participants/massAssign',
           { ids: [1], newValue: 1, fieldName: 'presence' },
           [],
@@ -125,11 +135,12 @@ describe('HTTP API access control', () => {
 
     describe('registryUser', () => {
       it('find: OK', () =>
-        get('/api/participants', ['registryUser']).expect(OK))
+        get(models, '/api/participants', ['registryUser']).expect(OK))
       it('findById: OK', () =>
-        get('/api/participants/1', ['registryUser']).expect(OK))
+        get(models, '/api/participants/1', ['registryUser']).expect(OK))
       it('massedit: OK', () =>
         post(
+          models,
           '/api/participants/massAssign',
           { ids: [1], newValue: 1, fieldName: 'presence' },
           ['registryUser'],
@@ -138,11 +149,16 @@ describe('HTTP API access control', () => {
 
     describe('registryAdmin', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/participants', ['registryAdmin']).expect(UNAUTHORIZED))
+        get(models, '/api/participants', ['registryAdmin']).expect(
+          UNAUTHORIZED,
+        ))
       it('findById: UNAUTHORIZED', () =>
-        get('/api/participants/1', ['registryAdmin']).expect(UNAUTHORIZED))
+        get(models, '/api/participants/1', ['registryAdmin']).expect(
+          UNAUTHORIZED,
+        ))
       it('massedit: UNAUTHORIZED', () =>
         post(
+          models,
           '/api/participants/massAssign',
           { ids: [1], newValue: 1, fieldName: 'presence' },
           ['registryAdmin'],
@@ -153,51 +169,63 @@ describe('HTTP API access control', () => {
   describe('RegistryUser', () => {
     describe('Unauthenticated user', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/registryusers').expect(UNAUTHORIZED))
+        get(models, '/api/registryusers').expect(UNAUTHORIZED))
       it('block user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/block`).expect(UNAUTHORIZED))
+        post(models, `/api/registryusers/${otherUserId}/block`).expect(
+          UNAUTHORIZED,
+        ))
       it('unblock user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/unblock`).expect(UNAUTHORIZED))
+        post(models, `/api/registryusers/${otherUserId}/unblock`).expect(
+          UNAUTHORIZED,
+        ))
     })
 
     describe('Authenticated user without roles', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/registryusers', []).expect(UNAUTHORIZED))
+        get(models, '/api/registryusers', []).expect(UNAUTHORIZED))
 
       it('block user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/block`, null, []).expect(
-          UNAUTHORIZED,
-        ))
+        post(
+          models,
+          `/api/registryusers/${otherUserId}/block`,
+          null,
+          [],
+        ).expect(UNAUTHORIZED))
       it('unblock user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/unblock`, null, []).expect(
-          UNAUTHORIZED,
-        ))
+        post(
+          models,
+          `/api/registryusers/${otherUserId}/unblock`,
+          null,
+          [],
+        ).expect(UNAUTHORIZED))
     })
 
     describe('registryUser', () => {
       it('find: UNAUTHORIZED', () =>
-        get('/api/registryusers', ['registryUser']).expect(UNAUTHORIZED))
+        get(models, '/api/registryusers', ['registryUser']).expect(
+          UNAUTHORIZED,
+        ))
 
       it('block user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/block`, null, [
+        post(models, `/api/registryusers/${otherUserId}/block`, null, [
           'registryUser',
         ]).expect(UNAUTHORIZED))
       it('unblock user: UNAUTHORIZED', () =>
-        post(`/api/registryusers/${otherUserId}/unblock`, null, [
+        post(models, `/api/registryusers/${otherUserId}/unblock`, null, [
           'registryUser',
         ]).expect(UNAUTHORIZED))
     })
 
     describe('registryAdmin', () => {
       it('find: ok', () =>
-        get('/api/registryusers', ['registryAdmin']).expect(OK))
+        get(models, '/api/registryusers', ['registryAdmin']).expect(OK))
 
       it('block user: NO_CONTENT', () =>
-        post(`/api/registryusers/${otherUserId}/block`, null, [
+        post(models, `/api/registryusers/${otherUserId}/block`, null, [
           'registryAdmin',
         ]).expect(NO_CONTENT))
       it('unblock user: NO_CONTENT', () =>
-        post(`/api/registryusers/${otherUserId}/unblock`, null, [
+        post(models, `/api/registryusers/${otherUserId}/unblock`, null, [
           'registryAdmin',
         ]).expect(NO_CONTENT))
     })
@@ -205,53 +233,62 @@ describe('HTTP API access control', () => {
 
   describe('Option', () => {
     describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/options').expect(UNAUTHORIZED)))
+      it('find: UNAUTHORIZED', () =>
+        get(models, '/api/options').expect(UNAUTHORIZED)))
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/options', ['registryUser']).expect(OK)))
+      it('find: OK', () =>
+        get(models, '/api/options', ['registryUser']).expect(OK)))
 
     describe('registryAdmin', () =>
       it('find: UNAUTHORIZED', () =>
-        get('/api/options', ['registryAdmin']).expect(UNAUTHORIZED)))
+        get(models, '/api/options', ['registryAdmin']).expect(UNAUTHORIZED)))
   })
 
   describe('ParticipantDate', () => {
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () =>
-        get('/api/participantdates').expect(UNAUTHORIZED)))
+        get(models, '/api/participantdates').expect(UNAUTHORIZED)))
 
     describe('registryUser', () =>
       it('find: OK', () =>
-        get('/api/participantdates', ['registryUser']).expect(OK)))
+        get(models, '/api/participantdates', ['registryUser']).expect(OK)))
 
     describe('registryAdmin', () =>
       it('find: UNAUTHORIZED', () =>
-        get('/api/participantdates', ['registryAdmin']).expect(UNAUTHORIZED)))
+        get(models, '/api/participantdates', ['registryAdmin']).expect(
+          UNAUTHORIZED,
+        )))
   })
 
   describe('Config', () => {
     describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () => get('/api/config').expect(UNAUTHORIZED)))
+      it('find: UNAUTHORIZED', () =>
+        get(models, '/api/config').expect(UNAUTHORIZED)))
 
     describe('registryUser', () =>
-      it('find: OK', () => get('/api/config', ['registryUser']).expect(OK)))
+      it('find: OK', () =>
+        get(models, '/api/config', ['registryUser']).expect(OK)))
 
     describe('registryAdmin', () =>
-      it('find: OK', () => get('/api/config', ['registryAdmin']).expect(OK)))
+      it('find: OK', () =>
+        get(models, '/api/config', ['registryAdmin']).expect(OK)))
   })
 
   describe('Audit events', () => {
     describe('Unauthorized user', () =>
       it('find: UNAUTHORIZED', () =>
-        get('/api/audit-events').expect(UNAUTHORIZED)))
+        get(models, '/api/audit-events').expect(UNAUTHORIZED)))
 
     describe('registryUser', () =>
       it('find: UNAUTHORIZED', () =>
-        get('/api/audit-events', ['registryUser']).expect(UNAUTHORIZED)))
+        get(models, '/api/audit-events', ['registryUser']).expect(
+          UNAUTHORIZED,
+        )))
 
     describe('registryAdmin', () =>
       it('find: OK', () =>
-        get('/api/audit-events', ['registryAdmin']).expect(OK)))
+        get(models, '/api/audit-events', ['registryAdmin']).expect(OK)))
   })
 
   function getFixtures() {
@@ -337,12 +374,12 @@ describe('HTTP API access control', () => {
   }
 })
 
-function get(endpoint, roles) {
+function get(models, endpoint, roles) {
   return {
     expect: async (code) => {
       if (roles) {
-        const user = await createUser(roles)
-        const res = await getWithUser(endpoint, user)
+        const user = await createUser(models, roles)
+        const res = await getWithUser(app, endpoint, user)
         expectStatus(res.status, code)
       } else {
         await request(app).get(endpoint).expect(code)
@@ -351,11 +388,16 @@ function get(endpoint, roles) {
   }
 }
 
-function post(endpoint, data, roles) {
+function post(models, endpoint, data, roles) {
   return {
     expect: async (code) => {
       if (roles) {
-        const res = await postWithUser(endpoint, await createUser(roles), data)
+        const res = await postWithUser(
+          app,
+          endpoint,
+          await createUser(models, roles),
+          data,
+        )
         expectStatus(res.status, code)
       } else {
         await request(app).post(endpoint).send(data).expect(code)

@@ -5,7 +5,8 @@
     "target": "es2018",
     "outDir": "../../dist",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["./**/*", "../kuksa-integration/**/*"]
 }

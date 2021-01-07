@@ -6,11 +6,20 @@ import {
   getWithUser,
   expectStatus,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
-import { models } from '../../src/server/models'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Audit events', () => {
-  withFixtures({
+  withFixtures(models, {
     Participant: [
       {
         participantId: 42,
@@ -27,14 +36,14 @@ describe('Audit events', () => {
       },
     ],
   })
-  afterEach(deleteUsers)
+  afterEach(() => deleteUsers(models))
 
   describe('Logging events when performing actions', () => {
-    before(resetDatabase)
+    before(() => resetDatabase(sequelize, models))
 
     it('should log an event when finding registry users', async () => {
-      const user = await createUser(['registryAdmin'])
-      const response = await getWithUser('/api/registryusers', user)
+      const user = await createUser(models, ['registryAdmin'])
+      const response = await getWithUser(app, '/api/registryusers', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -45,8 +54,8 @@ describe('Audit events', () => {
     })
 
     it('should log an event when finding audit events', async () => {
-      const user = await createUser(['registryAdmin'])
-      const response = await getWithUser('/api/audit-events', user)
+      const user = await createUser(models, ['registryAdmin'])
+      const response = await getWithUser(app, '/api/audit-events', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -57,8 +66,8 @@ describe('Audit events', () => {
     })
 
     it('should log an event when finding participants', async () => {
-      const user = await createUser(['registryUser'])
-      const response = await getWithUser('/api/participants', user)
+      const user = await createUser(models, ['registryUser'])
+      const response = await getWithUser(app, '/api/participants', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -69,8 +78,8 @@ describe('Audit events', () => {
     })
 
     it('should log an event when finding a participant', async () => {
-      const user = await createUser(['registryUser'])
-      const response = await getWithUser('/api/participants/42', user)
+      const user = await createUser(models, ['registryUser'])
+      const response = await getWithUser(app, '/api/participants/42', user)
       expectStatus(response.status, 200)
 
       await expectAuditEventToEventuallyExist({
@@ -90,14 +99,14 @@ describe('Audit events', () => {
   describe('Accessing audit events via the API', () => {
     let user
 
-    before(resetDatabase)
+    before(() => resetDatabase(sequelize, models))
     beforeEach(async () => {
-      user = await createUser(['registryUser', 'registryAdmin'])
+      user = await createUser(models, ['registryUser', 'registryAdmin'])
 
       // perform activity to create actual audit log events
-      await getWithUser('/api/participants/42', user)
-      await getWithUser('/api/participants', user)
-      await getWithUser('/api/registryusers', user)
+      await getWithUser(app, '/api/participants/42', user)
+      await getWithUser(app, '/api/participants', user)
+      await getWithUser(app, '/api/registryusers', user)
     })
 
     afterEach(async () => {
@@ -145,6 +154,7 @@ describe('Audit events', () => {
 
     async function getAuditEventsWithFilter(filter = {}) {
       const res = await getWithUser(
+        app,
         `/api/audit-events/?filter=${JSON.stringify(filter)}`,
         user,
       )

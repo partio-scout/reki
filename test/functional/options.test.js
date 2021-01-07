@@ -6,13 +6,24 @@ import {
   expectStatus,
   createUserWithRoles as createUser,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Options API endpoint', () => {
   it('returns filter options', async () => {
     const res = await getWithUser(
+      app,
       '/api/options',
-      await createUser(['registryUser']),
+      await createUser(models, ['registryUser']),
     )
     expectStatus(res.status, 200)
 
@@ -20,8 +31,8 @@ describe('Options API endpoint', () => {
     expect(res.body.campGroup).to.deep.equal(['muu'])
   })
 
-  before(resetDatabase)
-  withFixtures({
+  before(() => resetDatabase(sequelize, models))
+  withFixtures(models, {
     Option: [
       {
         property: 'village',
@@ -37,5 +48,5 @@ describe('Options API endpoint', () => {
       },
     ],
   })
-  afterEach(deleteUsers)
+  afterEach(() => deleteUsers(models))
 })

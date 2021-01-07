@@ -1,5 +1,8 @@
 import argon2 from 'argon2'
-import { models } from '../src/server/models'
+import { initializeSequelize, initializeModels } from '../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
 
 function printHelpAndExit() {
   console.log('set-password.js <email of the user to set password> <password>')

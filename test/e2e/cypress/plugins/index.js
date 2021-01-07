@@ -19,6 +19,10 @@ import {
   deleteFixturesIfExist,
   deleteAllFixtures,
 } from '../../../utils/test-utils'
+import {
+  initializeSequelize,
+  initializeModels,
+} from '../../../../src/server/models'
 
 /**
  * @type {Cypress.PluginConfig}
@@ -26,22 +30,29 @@ import {
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  const sequelize = initializeSequelize()
+  const models = initializeModels(sequelize)
+
   on('task', {
     createUser(overrides) {
-      return createUserWithRoles(['registryUser', 'registryAdmin'], overrides)
+      return createUserWithRoles(
+        models,
+        ['registryUser', 'registryAdmin'],
+        overrides,
+      )
     },
     async loadFixtures(file) {
       const fixtures = JSON.parse(
         readFileSync(`${__dirname}/../fixtures/${file}`),
       )
-      await createFixtures(fixtures)
+      await createFixtures(models, fixtures)
       return true
     },
-    deleteFixtures(model) {
-      return deleteFixturesIfExist(model)
+    deleteFixtures(modelName) {
+      return deleteFixturesIfExist(models, modelName)
     },
     async deleteAllFixtures() {
-      await deleteAllFixtures()
+      await deleteAllFixtures(models)
       return true
     },
   })

@@ -1,7 +1,10 @@
-import config from '../src/server/conf'
-import { models } from '../src/server/models'
+import * as config from '../src/server/conf'
 import crypto from 'crypto'
 import inquirer from 'inquirer'
+import { initializeSequelize, initializeModels } from '../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
 
 const password = crypto.randomBytes(24).toString('hex')
 const questions = [
@@ -34,7 +37,7 @@ const questions = [
     type: 'checkbox',
     name: 'roles',
     message: 'Choose the roles this user should have',
-    choices: config.getRoles().map((role) => ({
+    choices: config.roles.map((role) => ({
       name: role,
       value: role,
     })),

@@ -1,17 +1,26 @@
 import { expect } from 'chai'
 import * as testUtils from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
-import { models } from '../../src/server/models'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('User API endpoints', () => {
   let user
 
-  before(resetDatabase)
+  before(() => resetDatabase(sequelize, models))
   beforeEach(createUserFixtures)
-  afterEach(testUtils.deleteUsers)
+  afterEach(() => testUtils.deleteUsers(models))
 
   it('findAll: correctly lists all users', async () => {
-    const res = await testUtils.getWithUser('/api/registryusers', user)
+    const res = await testUtils.getWithUser(app, '/api/registryusers', user)
     testUtils.expectStatus(res.status, 200)
     expect(res.body).to.be.an('array').with.length(3)
     expect(res.body[0]).to.have.property('id').to.be.above(0)
@@ -19,6 +28,7 @@ describe('User API endpoints', () => {
 
   it('if user is blocked status changes in database', async () => {
     const res = await testUtils.postWithUser(
+      app,
       '/api/registryusers/2/block',
       user,
       null,
@@ -31,6 +41,7 @@ describe('User API endpoints', () => {
 
   it('unblock: updates unblocked status in database', async () => {
     const res = await testUtils.postWithUser(
+      app,
       '/api/registryusers/1/unblock',
       user,
       null,
@@ -42,7 +53,7 @@ describe('User API endpoints', () => {
   })
 
   async function createUserFixtures() {
-    await testUtils.createUserWithRoles(['registryUser'], {
+    await testUtils.createUserWithRoles(models, ['registryUser'], {
       id: 1,
       memberNumber: '00000000',
       email: 'user@example.com',
@@ -52,7 +63,7 @@ describe('User API endpoints', () => {
       phoneNumber: '0000000001',
       blocked: true,
     })
-    await testUtils.createUserWithRoles(['registryUser'], {
+    await testUtils.createUserWithRoles(models, ['registryUser'], {
       id: 2,
       memberNumber: '00000001',
       email: 'jumala@example.com',
@@ -62,7 +73,7 @@ describe('User API endpoints', () => {
       phoneNumber: '0000000002',
       blocked: false,
     })
-    user = await testUtils.createUserWithRoles(['registryAdmin'], {
+    user = await testUtils.createUserWithRoles(models, ['registryAdmin'], {
       id: 3,
       memberNumber: '00000002',
       email: 'jukka.pekka@example.com',

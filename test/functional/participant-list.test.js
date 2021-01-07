@@ -6,12 +6,22 @@ import {
   deleteUsers,
   withFixtures,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Particpant list API endpoint', () => {
-  before(resetDatabase)
-  afterEach(deleteUsers)
-  withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  afterEach(() => deleteUsers(models))
+  withFixtures(models, getFixtures())
 
   it('returns all participants when no where filter is given', async () => {
     const response = await getParticipantsWithFilter({ offset: 0, limit: 200 })
@@ -91,8 +101,9 @@ describe('Particpant list API endpoint', () => {
   async function getParticipantsWithFilter(filter) {
     const params = new URLSearchParams(filter)
     const res = await getWithUser(
+      app,
       `/api/participants/?${params}`,
-      await createUser(['registryUser']),
+      await createUser(models, ['registryUser']),
     )
     expectStatus(res.status, 200)
     return res.body

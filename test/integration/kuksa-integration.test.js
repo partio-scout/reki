@@ -1,11 +1,18 @@
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import chaiDateTime from 'chai-datetime'
-import { resetDatabase } from '../../scripts/seed-database'
 import mockKuksa from '../utils/kuksa-integration/mock/mock-kuksa'
 import { exec } from 'child_process'
 import moment from 'moment'
-import { models } from '../../src/server/models'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
 
 const expect = chai.expect
 chai.use(chaiAsPromised)
@@ -14,11 +21,17 @@ chai.use(chaiDateTime)
 describe('Kuksa integration (yes, this is very slow)', () => {
   before(function (done) {
     this.timeout(800000)
-    resetDatabase().then(() => {
+    resetDatabase(sequelize, models).then(() => {
       mockKuksa.serveFixtures('all')
       mockKuksa.start()
-      exec('npm run fetch-from-kuksa', mockKuksa.getOptionsForExec(), (e) =>
-        done(e),
+      exec(
+        'npm run fetch-from-kuksa',
+        mockKuksa.getOptionsForExec(),
+        (e, stdout, stderr) => {
+          console.log(stdout)
+          console.error(stderr)
+          done(e)
+        },
       )
     })
   })

@@ -1,10 +1,11 @@
-import { models } from '../server/models'
-import EventEmitter from 'events'
-import { startSpinner } from './util'
+import { withSpinner } from './util'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+} from '../../src/server/models'
 
-EventEmitter.prototype._maxListeners = 20
-
-const modelsToClear = [
+const modelsToClear: ReadonlyArray<keyof Models> = [
   'KuksaSubCamp',
   'KuksaVillage',
   'KuksaCampGroup',
@@ -20,19 +21,18 @@ const modelsToClear = [
   'KuksaParticipantPayment',
 ]
 
-async function clearTemporaryTables() {
-  const stopSpinner = startSpinner()
-  try {
+async function clearTemporaryTables(models: Models) {
+  withSpinner(async () => {
     for (const model of modelsToClear) {
       await models[model].destroy({ where: {} })
     }
-  } finally {
-    stopSpinner()
-  }
+  })
 }
 
 if (require.main === module) {
-  clearTemporaryTables()
+  const sequelize = initializeSequelize()
+  const models = initializeModels(sequelize)
+  clearTemporaryTables(models)
     .then(() => console.log(`Tables ${modelsToClear} cleared.`))
     .then(() => {
       process.exit(0)

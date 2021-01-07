@@ -4,16 +4,26 @@ import {
   getWithUser,
   expectStatus,
 } from '../utils/test-utils'
-import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Configuration API endpoint', () => {
   let response
 
-  before(resetDatabase)
+  before(() => resetDatabase(sequelize, models))
 
   beforeEach(async () => {
-    const user = await createUser(['registryUser'])
-    response = await getWithUser('/api/config', user)
+    const user = await createUser(models, ['registryUser'])
+    response = await getWithUser(app, '/api/config', user)
     expectStatus(response.status, 200)
   })
 
@@ -26,7 +36,7 @@ describe('Configuration API endpoint', () => {
     expect(response.body.fields).to.deep.include({
       name: 'presence',
       type: 'mandatory_field',
-      dataType: 'integer',
+      dataType: 'INTEGER',
       nullable: true,
     }))
 
@@ -34,7 +44,7 @@ describe('Configuration API endpoint', () => {
     expect(response.body.fields).to.deep.include({
       name: 'nickname',
       type: 'participant_field',
-      dataType: 'string',
+      dataType: 'STRING',
       nullable: true,
     }))
 

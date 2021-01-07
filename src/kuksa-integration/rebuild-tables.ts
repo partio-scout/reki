@@ -1,9 +1,14 @@
 import sequelize from 'sequelize'
-import { models } from '../server/models'
-import { _ } from 'lodash'
+import _ from 'lodash'
 import moment from 'moment'
-import config from '../server/conf'
+import * as config from '../server/conf'
 import { startSpinner } from './util'
+import {
+  initializeSequelize,
+  initializeModels,
+  Models,
+  ModelInstances,
+} from '../server/models'
 
 const Op = sequelize.Op
 
@@ -21,33 +26,36 @@ if (require.main === module) {
 }
 
 async function main() {
+  const sequelize = initializeSequelize()
   const stopSpinner = startSpinner()
   try {
-    await buildAllergyTable()
-    await rebuildParticipantsTable()
-    await addAllergiesToParticipants()
-    await addDatesToParticipants()
-    await buildSelectionTable()
-    await deleteCancelledParticipants()
-    await buildOptionTable()
+    const models = initializeModels(sequelize)
+    await buildAllergyTable(models)
+    await rebuildParticipantsTable(models)
+    await addAllergiesToParticipants(models)
+    await addDatesToParticipants(models)
+    await buildSelectionTable(models)
+    await deleteCancelledParticipants(models)
+    await buildOptionTable(models)
   } finally {
+    sequelize.close()
     stopSpinner()
   }
 }
 
-async function buildAllergyTable() {
+async function buildAllergyTable(models: Models) {
   console.log('Rebuilding allergies table...')
   const selGroups = await models.KuksaExtraSelectionGroup.findAll({
     where: {
       name: {
-        [Op.in]: config.getAllergyFieldTitles(),
+        [Op.in]: config.allergyFieldTitles as any,
       },
     },
   })
   const kuksaSelections = await models.KuksaExtraSelection.findAll({
     where: {
       kuksaExtraselectiongroupId: {
-        [Op.in]: _.map(selGroups, (group) => group.id),
+        [Op.in]: selGroups.map((group) => group.id),
       },
     },
   })
@@ -60,22 +68,31 @@ async function buildAllergyTable() {
   }
 }
 
-async function getWrappedParticipants() {
-  function getExtraInfo(participant, fieldName) {
+async function getWrappedParticipants(models: Models) {
+  function getExtraInfo(
+    participant: ModelInstances['KuksaParticipant'],
+    fieldName: string,
+  ) {
     const field = _.find(
       participant.kuksa_participantextrainfos,
-      (o) => _.get(o, 'kuksa_extrainfofield.name') === fieldName,
+      (o) => o?.kuksa_extrainfofield?.name === fieldName,
     )
     return field ? field.value : null
   }
 
-  function getAllExtraSelections(participant, fieldName) {
-    return participant.kuksa_extraselections
-      .filter((o) => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName)
+  function getAllExtraSelections(
+    participant: ModelInstances['KuksaParticipant'],
+    fieldName: string,
+  ) {
+    return (participant.kuksa_extraselections ?? [])
+      .filter((o) => o?.kuksa_extraselectiongroup?.name === fieldName)
       .map((selection) => selection.name)
   }
 
-  function getExtraSelection(participant, fieldName) {
+  function getExtraSelection(
+    participant: ModelInstances['KuksaParticipant'],
+    fieldName: string,
+  ) {
     const selection = _.find(
       participant.kuksa_extraselections,
       (o) => _.get(o, 'kuksa_extraselectiongroup.name') === fieldName,
@@ -83,7 +100,10 @@ async function getWrappedParticipants() {
     return selection ? selection.name : null
   }
 
-  function getPaymentStatus(statuses, type) {
+  function getPaymentStatus(
+    statuses: ModelInstances['KuksaParticipantPaymentStatus'] | undefined,
+    type: 'billed' | 'paid',
+  ) {
     if (!statuses) {
       return null
     }
@@ -105,7 +125,7 @@ async function getWrappedParticipants() {
       },
       {
         model: models.KuksaExtraSelection,
-        include: models.KuksaExtraSelectionGroup,
+        include: [models.KuksaExtraSelectionGroup],
       },
       models.KuksaParticipantPaymentStatus,
       models.KuksaPayment,
@@ -113,26 +133,29 @@ async function getWrappedParticipants() {
   })
   // don't add participants that are cancelled
   const activeParticipants = _.filter(participants, (p) => !p.cancelled)
-  return activeParticipants.map((participant) => ({
-    get: (path) => _.get(participant, path),
-    getPaymentStatus: (type) =>
-      getPaymentStatus(participant.kuksa_participantpaymentstatus, type),
-    getExtraInfo: (field) => getExtraInfo(participant, field),
-    getExtraSelection: (groupName) => getExtraSelection(participant, groupName),
-    getAllExtraSelections: (groupName) =>
-      getAllExtraSelections(participant, groupName),
-    getPayments: () =>
-      participant.kuksa_payments.map((payment) => payment.name),
-    getRawFields: () => participant,
-  }))
+  return activeParticipants.map(
+    (participant): config.WrappedParticipant => ({
+      get: (path) => _.get(participant, path),
+      getPaymentStatus: (type) =>
+        getPaymentStatus(participant.kuksa_participantpaymentstatus, type),
+      getExtraInfo: (field) => getExtraInfo(participant, field),
+      getExtraSelection: (groupName) =>
+        getExtraSelection(participant, groupName),
+      getAllExtraSelections: (groupName) =>
+        getAllExtraSelections(participant, groupName),
+      getPayments: () =>
+        (participant.kuksa_payments ?? []).map((payment) => payment.name),
+      getRawFields: () => participant,
+    }),
+  )
 }
 
-async function rebuildParticipantsTable() {
+async function rebuildParticipantsTable(models: Models) {
   console.log('Rebuilding participants table...')
 
-  const wrappedParticipants = await getWrappedParticipants()
+  const wrappedParticipants = await getWrappedParticipants(models)
   const participants = wrappedParticipants.map(
-    config.getParticipantBuilderFunction(),
+    config.participantBuilderFunction,
   )
   for (const participant of participants) {
     await models.Participant.upsert(participant)
@@ -140,8 +163,11 @@ async function rebuildParticipantsTable() {
   console.log('Rebuild complete.')
 }
 
-async function addAllergiesToParticipants() {
-  async function removeOldAndAddNewAllergies(participant, newAllergies) {
+async function addAllergiesToParticipants(models: Models) {
+  async function removeOldAndAddNewAllergies(
+    participant: ModelInstances['Participant'],
+    newAllergies: readonly string[],
+  ) {
     await models.ParticipantAllergy.destroy({
       where: { participantParticipantId: participant.participantId },
     })
@@ -153,7 +179,9 @@ async function addAllergiesToParticipants() {
     }
   }
 
-  async function findParticipantsAllergies(participant) {
+  async function findParticipantsAllergies(
+    participant: ModelInstances['Participant'],
+  ) {
     const allergies = await models.Allergy.findAll()
     const allergyIds = _.map(allergies, 'allergyId')
     const participantsAllergies = await models.KuksaParticipantExtraSelection.findAll(
@@ -181,36 +209,34 @@ async function addAllergiesToParticipants() {
   console.log('Allergies and diets added.')
 }
 
-async function addDatesToParticipants() {
-  const participantDatesMapper = config.getParticipantDatesMapper()
+async function addDatesToParticipants(models: Models) {
+  const participantDatesMapper = config.participantDatesMapper
 
   console.log('Adding dates to participants...')
-  const wrappedParticipants = await getWrappedParticipants()
+  const wrappedParticipants = await getWrappedParticipants(models)
   for (const wrappedParticipant of wrappedParticipants) {
     await models.ParticipantDate.destroy({
-      where: { participantId: wrappedParticipant.get('id') },
+      where: { participantId: wrappedParticipant.get('id') as any },
     })
     await models.ParticipantDate.bulkCreate(
       mapPaymentsToDates(wrappedParticipant),
     )
   }
 
-  function mapPaymentsToDates(wrappedParticipant) {
+  function mapPaymentsToDates(wrappedParticipant: config.WrappedParticipant) {
     const participantId = wrappedParticipant.get('id')
 
-    return _(participantDatesMapper(wrappedParticipant))
-      .uniq()
+    return Array.from(new Set(participantDatesMapper(wrappedParticipant)))
       .sort()
       .map((date) => ({
         participantId: participantId,
         date: moment(date).toDate(),
       }))
-      .value()
   }
 }
 
-async function buildSelectionTable() {
-  const groupsToCreate = config.getSelectionGroupTitles()
+async function buildSelectionTable(models: Models) {
+  const groupsToCreate = config.selectionGroupTitles
 
   console.log('Building selections table...')
 
@@ -220,40 +246,38 @@ async function buildSelectionTable() {
     const participantSelections = await models.KuksaParticipantExtraSelection.findAll(
       {
         where: { kuksaParticipantId: p.participantId },
-        include: {
-          model: models.KuksaExtraSelection,
-          include: [models.KuksaExtraSelectionGroup],
-        },
+        include: [
+          {
+            model: models.KuksaExtraSelection,
+            include: [models.KuksaExtraSelectionGroup],
+          },
+        ],
       },
     )
     const selections = participantSelections
       .filter(
-        (s) =>
-          !!(
-            s.kuksa_extraselection &&
-            s.kuksa_extraselection.kuksa_extraselectiongroup
-          ),
+        (s) => s.kuksa_extraselection?.kuksa_extraselectiongroup !== undefined,
       ) // Apparently some selections don't have a group, so handle only selections with group
       .filter(
         (s) =>
           _.indexOf(
             groupsToCreate,
-            s.kuksa_extraselection.kuksa_extraselectiongroup.name,
+            s.kuksa_extraselection?.kuksa_extraselectiongroup?.name,
           ) > -1,
       )
       .map((sel) => ({
         participantParticipantId: sel.kuksaParticipantId,
-        kuksaGroupId: sel.kuksa_extraselection.kuksa_extraselectiongroup.id,
-        kuksaSelectionId: sel.kuksa_extraselection.id,
-        groupName: sel.kuksa_extraselection.kuksa_extraselectiongroup.name.trim(),
-        selectionName: sel.kuksa_extraselection.name,
+        kuksaGroupId: sel.kuksa_extraselection?.kuksa_extraselectiongroup?.id,
+        kuksaSelectionId: sel.kuksa_extraselection?.id,
+        groupName: sel.kuksa_extraselection?.kuksa_extraselectiongroup?.name?.trim(),
+        selectionName: sel.kuksa_extraselection?.name,
       }))
     await models.Selection.bulkCreate(selections)
   }
   console.log('Selections table built.')
 }
 
-async function deleteCancelledParticipants() {
+async function deleteCancelledParticipants(models: Models) {
   console.log('Deleting cancelled participants...')
   const participants = await models.KuksaParticipant.findAll({
     where: { cancelled: true },
@@ -265,19 +289,21 @@ async function deleteCancelledParticipants() {
   console.log(`Deleted ${count} cancelled participants.`)
 }
 
-async function buildOptionTable() {
+async function buildOptionTable(models: Models) {
   await models.Option.destroy({ where: {} })
-  for (const field of config.getOptionFieldNames()) {
-    const values = await models.Participant.aggregate(field, 'DISTINCT', {
+  for (const field of config.optionFieldNames) {
+    const values = await models.Participant.aggregate<
+      ModelInstances['Participant'],
+      { DISTINCT: string }[]
+    >(field as any, 'DISTINCT', {
       plain: false,
     })
 
-    for (const value of _(values)
-      .map((obj) => obj['DISTINCT'])
-      .uniq()
-      .reject(_.isNull)
-      .value()
-      .sort()) {
+    const uniqueSortedOptionValues = Array.from(
+      new Set(values.map((obj) => obj.DISTINCT).filter((value) => value)),
+    ).sort()
+
+    for (const value of uniqueSortedOptionValues) {
       await models.Option.create({ property: field, value: value })
     }
   }

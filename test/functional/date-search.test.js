@@ -6,11 +6,21 @@ import {
   expectStatus,
 } from '../utils/test-utils'
 import _ from 'lodash'
-import { resetDatabase } from '../../scripts/seed-database'
+import { configureApp } from '../../src/server/server'
+import {
+  initializeSequelize,
+  initializeModels,
+  resetDatabase,
+  Models,
+} from '../../src/server/models'
+
+const sequelize = initializeSequelize()
+const models = initializeModels(sequelize)
+const app = configureApp(false, true, sequelize, models)
 
 describe('Date search in participant list API endpoint', () => {
-  before(resetDatabase)
-  withFixtures(getFixtures())
+  before(() => resetDatabase(sequelize, models))
+  withFixtures(models, getFixtures())
 
   it("doesn't filter results when no filters are given", () =>
     expectParticipantsForQuery({}, ['Tero', 'Teemu', 'Jussi']))
@@ -52,13 +62,13 @@ describe('Date search in participant list API endpoint', () => {
   })
 
   async function queryParticipants(filter) {
-    const user = await createUserWithRoles(['registryUser'])
+    const user = await createUserWithRoles(models, ['registryUser'])
     const params = new URLSearchParams({
       ...filter,
       offset: 0,
       limit: 20,
     })
-    const res = await getWithUser(`/api/participants/?${params}`, user)
+    const res = await getWithUser(app, `/api/participants/?${params}`, user)
     expectStatus(res.status, 200)
     return res
   }
