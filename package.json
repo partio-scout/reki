@@ -11,7 +11,7 @@
     "watch": "concurrently --k -i -n server,build-server,build-client,database -c black.bgGreen,black.bgBlue,black.bgYellow,black.bgRed \"npm:watch:server\" \"npm:watch:build-server\" \"npm:watch:build-client\" \"docker-compose up postgres\"",
     "watch:server": "nodemon --watch dist/server --delay 1",
     "watch:build-client": "webpack-dev-server --mode development --config webpack.config.js",
-    "watch:build-server": "tsc -w --project src/server/",
+    "watch:build-server": "tsc -w --preserveWatchOutput --project src/server/",
     "set-password": "ts-node --project src/server/tsconfig.json scripts/set-password.js",
     "create-user": "ts-node --project src/server/tsconfig.json scripts/create-user.js",
     "delete-user": "ts-node --project src/server/tsconfig.json scripts/delete-user.js",
