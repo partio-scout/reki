@@ -1,6 +1,5 @@
 import Sequelize, { Op } from 'sequelize'
 import _ from 'lodash'
-import * as conf from '../conf'
 import { AuditParams, ClientData } from '../util/audit'
 
 type SessionType = 'partioid' | 'password'
@@ -201,6 +200,14 @@ function getAppModels(sequelize: Sequelize.Sequelize) {
 
   class Participant extends Sequelize.Model {
     participantId!: number
+    presence!: number
+    firstName!: string
+    lastName!: string
+    memberNumber!: string | null
+    phoneNumber!: string | null
+    campOfficeNotes!: string
+    editableInfo!: string
+    extraFiels!: Record<string, unknown>
 
     presenceHistory?: PresenceHistory[]
 
@@ -248,23 +255,48 @@ function getAppModels(sequelize: Sequelize.Sequelize) {
     }
   }
   Participant.init(
-    _.reduce(
-      conf.participantFields,
-      (acc: Sequelize.ModelAttributes, field) => {
-        acc[field.name] = {
-          type: Sequelize[field.dataType],
-          allowNull: field.nullable || false,
-        }
-        return acc
+    {
+      participantId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-      {
-        participantId: {
-          type: Sequelize.INTEGER,
-          primaryKey: true,
-          autoIncrement: true,
-        },
+      presence: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
-    ),
+      firstName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      lastName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      memberNumber: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      phoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      campOfficeNotes: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+        defaultValue: '',
+      },
+      editableInfo: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+        defaultValue: '',
+      },
+      extraFiels: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
+    },
     { sequelize, modelName: 'participant' },
   )
 
