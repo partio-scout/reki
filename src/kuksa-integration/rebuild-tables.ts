@@ -1,4 +1,4 @@
-import sequelize from 'sequelize'
+import { Sequelize, Op } from 'sequelize'
 import _ from 'lodash'
 import moment from 'moment'
 import * as config from '../server/conf'
@@ -9,8 +9,6 @@ import {
   Models,
   ModelInstances,
 } from '../server/models'
-
-const Op = sequelize.Op
 
 if (require.main === module) {
   main().then(
@@ -30,21 +28,44 @@ async function main() {
   const stopSpinner = startSpinner()
   try {
     const models = initializeModels(sequelize)
-    await buildAllergyTable(models)
-    await rebuildParticipantsTable(models)
-    await addAllergiesToParticipants(models)
-    await addDatesToParticipants(models)
-    await buildSelectionTable(models)
-    await deleteCancelledParticipants(models)
-    await buildOptionTable(models)
+    await withProgressLogging('building allergy table', () =>
+      buildAllergyTable(models),
+    )
+    await withProgressLogging('building participants table', () =>
+      rebuildParticipantsTable(models),
+    )
+    await withProgressLogging('adding allergies to participants', () =>
+      addAllergiesToParticipants(models),
+    )
+    await withProgressLogging('adding dates to participants', () =>
+      addDatesToParticipants(models),
+    )
+    await withProgressLogging('building selection table', () =>
+      buildSelectionTable(models),
+    )
+    await withProgressLogging('deleting cancelled participants', () =>
+      deleteCancelledParticipants(models),
+    )
+    await withProgressLogging('building option table', () =>
+      buildOptionTable(sequelize, models),
+    )
   } finally {
     sequelize.close()
     stopSpinner()
   }
 }
 
+async function withProgressLogging<T>(
+  message: string,
+  func: () => Promise<T>,
+): Promise<T> {
+  console.log(message)
+  const res = await func()
+  console.log(`Done with: ${message}`)
+  return res
+}
+
 async function buildAllergyTable(models: Models) {
-  console.log('Rebuilding allergies table...')
   const selGroups = await models.KuksaExtraSelectionGroup.findAll({
     where: {
       name: {
@@ -151,16 +172,11 @@ async function getWrappedParticipants(models: Models) {
 }
 
 async function rebuildParticipantsTable(models: Models) {
-  console.log('Rebuilding participants table...')
-
   const wrappedParticipants = await getWrappedParticipants(models)
-  const participants = wrappedParticipants.map(
-    config.participantBuilderFunction,
-  )
-  for (const participant of participants) {
+  for (const wrappedParticipant of wrappedParticipants) {
+    const participant = config.participantBuilderFunction(wrappedParticipant)
     await models.Participant.upsert(participant)
   }
-  console.log('Rebuild complete.')
 }
 
 async function addAllergiesToParticipants(models: Models) {
@@ -197,8 +213,6 @@ async function addAllergiesToParticipants(models: Models) {
     return _.map(participantsAllergies, 'kuksaExtraselectionId')
   }
 
-  console.log('Adding allergies and diets to participants...')
-
   const participants = await models.Participant.findAll({
     include: [models.Allergy],
   })
@@ -206,13 +220,11 @@ async function addAllergiesToParticipants(models: Models) {
     const allergies = await findParticipantsAllergies(participant)
     await removeOldAndAddNewAllergies(participant, allergies)
   }
-  console.log('Allergies and diets added.')
 }
 
 async function addDatesToParticipants(models: Models) {
   const participantDatesMapper = config.participantDatesMapper
 
-  console.log('Adding dates to participants...')
   const wrappedParticipants = await getWrappedParticipants(models)
   for (const wrappedParticipant of wrappedParticipants) {
     await models.ParticipantDate.destroy({
@@ -237,8 +249,6 @@ async function addDatesToParticipants(models: Models) {
 
 async function buildSelectionTable(models: Models) {
   const groupsToCreate = config.selectionGroupTitles
-
-  console.log('Building selections table...')
 
   await models.Selection.destroy({ where: {} })
   const participants = await models.Participant.findAll()
@@ -274,37 +284,23 @@ async function buildSelectionTable(models: Models) {
       }))
     await models.Selection.bulkCreate(selections)
   }
-  console.log('Selections table built.')
 }
 
 async function deleteCancelledParticipants(models: Models) {
-  console.log('Deleting cancelled participants...')
   const participants = await models.KuksaParticipant.findAll({
     where: { cancelled: true },
   })
   const idsToDelete = _.map(participants, 'id')
-  const count = await models.Participant.destroy({
+  await models.Participant.destroy({
     where: { participantId: { [Op.in]: idsToDelete } },
   })
-  console.log(`Deleted ${count} cancelled participants.`)
 }
 
-async function buildOptionTable(models: Models) {
+async function buildOptionTable(sequelize: Sequelize, models: Models) {
   await models.Option.destroy({ where: {} })
   for (const field of config.optionFieldNames) {
-    const values = await models.Participant.aggregate<
-      ModelInstances['Participant'],
-      { DISTINCT: string }[]
-    >(field as any, 'DISTINCT', {
-      plain: false,
-    })
-
-    const uniqueSortedOptionValues = Array.from(
-      new Set(values.map((obj) => obj.DISTINCT).filter((value) => value)),
-    ).sort()
-
-    for (const value of uniqueSortedOptionValues) {
-      await models.Option.create({ property: field, value: value })
-    }
+    await sequelize.query(
+      `INSERT INTO options (property, value, "createdAt", "updatedAt") (SELECT DISTINCT '${field}' AS property, "extraFields"->>'${field}' AS value, NOW() as "createdAt", NOW() as "updatedAt" FROM participants WHERE "extraFields"->>'${field}' IS NOT NULL ORDER BY "extraFields"->>'${field}')`,
+    )
   }
 }

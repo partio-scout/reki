@@ -7,13 +7,11 @@ import {
 } from '../..'
 import { GenericPropertyFilterContainer } from './GenericPropertyFilterContainer'
 import {
-  QuickFilterConfiguration,
-  QuickFilterDefinition,
-} from '../ParticipantListPage'
-import {
   AvailableDates,
   FilterSelection,
   OptionsByProperty,
+  QuickFilterConfiguration,
+  QuickFilterDefinition,
 } from '../../../model'
 
 type QuickFilterControlProps = Readonly<{
@@ -116,7 +114,20 @@ export const QuickFilterContainer: React.FC<QuickFilterContainerProps> = (
 
   return (
     <form className="quick-filter-container">
-      {props.configuration.filters.map((group, i) => (
+      <QuickFilterGroup>
+        <QuickFilterControl
+          filter={{
+            type: 'debouncedTextField',
+            property: 'textSearch',
+            label: 'Tekstihaku',
+          }}
+          currentSelection={currentSelection}
+          updateFilter={props.updateFilter}
+          availableDates={props.availableDates}
+          optionsByProperty={props.optionsByProperty}
+        />
+      </QuickFilterGroup>
+      {props.configuration.map((group, i) => (
         <QuickFilterGroup key={i}>
           {group.map((filter) => (
             <QuickFilterControl

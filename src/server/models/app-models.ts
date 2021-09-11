@@ -198,6 +198,17 @@ function getAppModels(sequelize: Sequelize.Sequelize) {
     { sequelize, modelName: 'presence_history' },
   )
 
+  const participantDirectFields = [
+    'participantId',
+    'presence',
+    'firstName',
+    'lastName',
+    'memberNumber',
+    'phoneNumber',
+    'campOfficeNotes',
+    'editableInfo',
+  ] as const
+
   class Participant extends Sequelize.Model {
     participantId!: number
     presence!: number
@@ -207,7 +218,7 @@ function getAppModels(sequelize: Sequelize.Sequelize) {
     phoneNumber!: string | null
     campOfficeNotes!: string
     editableInfo!: string
-    extraFiels!: Record<string, unknown>
+    extraFields!: Record<string, string>
 
     presenceHistory?: PresenceHistory[]
 
@@ -253,52 +264,82 @@ function getAppModels(sequelize: Sequelize.Sequelize) {
         return Promise.all(updates)
       })
     }
+
+    static readonly defaultFields: ReadonlySet<
+      typeof participantDirectFields[number]
+    > = new Set(participantDirectFields)
+
+    static readonly searchableDefaultFieldNames: ReadonlySet<
+      typeof participantDirectFields[number]
+    > = new Set([
+      'firstName',
+      'lastName',
+      'memberNumber',
+      'phoneNumber',
+      'campOfficeNotes',
+      'editableInfo',
+    ])
+
+    static isDefaultField(
+      fieldName: string,
+    ): fieldName is typeof participantDirectFields[number] {
+      return Participant.defaultFields.has(fieldName as any)
+    }
+    static isSearchableField(
+      fieldName: typeof participantDirectFields[number],
+    ): boolean {
+      return Participant.searchableDefaultFieldNames.has(fieldName)
+    }
   }
-  Participant.init(
-    {
-      participantId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      presence: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-      },
-      firstName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      lastName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      memberNumber: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      phoneNumber: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      campOfficeNotes: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        defaultValue: '',
-      },
-      editableInfo: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        defaultValue: '',
-      },
-      extraFiels: {
-        type: Sequelize.JSONB,
-        allowNull: false,
-        defaultValue: {},
-      },
+  const participantModelAttributes: Record<
+    typeof participantDirectFields[number] | 'extraFields',
+    Sequelize.DataType | Sequelize.ModelAttributeColumnOptions
+  > = {
+    participantId: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    { sequelize, modelName: 'participant' },
-  )
+    presence: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    },
+    firstName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    memberNumber: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    phoneNumber: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    campOfficeNotes: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+      defaultValue: '',
+    },
+    editableInfo: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+      defaultValue: '',
+    },
+    extraFields: {
+      type: Sequelize.JSONB,
+      allowNull: false,
+      defaultValue: {},
+    },
+  }
+  Participant.init(participantModelAttributes, {
+    sequelize,
+    modelName: 'participant',
+  })
 
   class UserRole extends Sequelize.Model {}
   UserRole.init(

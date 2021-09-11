@@ -29,6 +29,10 @@ import { Models } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control'
 import { getClientData } from './util/audit'
+import {
+  participantListColumns,
+  quickFilterConfiguration,
+} from './temporaryFixedData'
 
 type RouteInfo =
   | { route: 'participantsList' }
@@ -443,9 +447,6 @@ export function configureApp(
       }
     },
   )
-  const filterableFields = new Set(
-    config.participantFields.map((field) => field.name),
-  )
 
   const ListParticipantsParams = Rt.Record({
     textSearch: Rt.Array(Rt.String).asReadonly(),
@@ -456,7 +457,6 @@ export function configureApp(
     offset: NonNegativeInteger.Or(Rt.Undefined),
   }).asReadonly()
   type ListParticipantsParams = Rt.Static<typeof ListParticipantsParams>
-
   const listParticipantsParamsGetter = (query: any): ListParticipantsParams => {
     const limit = Number(query.limit) || undefined
     const offset = Number(query.offset) || undefined
@@ -465,9 +465,15 @@ export function configureApp(
     const orderDirection = query.orderDirection || 'ASC'
     const order = [orderBy, orderDirection]
 
-    const fieldFilters = Object.entries(query).filter(([key]) =>
-      filterableFields.has(key),
+    const defaultFieldFilters = Object.entries(query).filter(
+      ([key]) =>
+        models.Participant.isDefaultField(key) &&
+        models.Participant.isSearchableField(key),
     )
+    const extraFieldFilters = Object.entries(query)
+      .filter(([key]) => !models.Participant.isDefaultField(key))
+      .map((k) => [`extraFields.${k[0]}`, k[1]])
+    const fieldFilters = [...defaultFieldFilters, ...extraFieldFilters]
     const { dates } = query
     const dateFilters =
       dates && typeof dates === 'string'
@@ -485,6 +491,21 @@ export function configureApp(
   }
 
   apiRouter.get(
+    '/participantListFilters',
+    optionalBasicAuth(),
+    requirePermission('view participants'),
+    async (req, res) => {
+      await models.AuditEvent.audit({
+        ...getClientData(req),
+        modelType: 'ParticipantListFilters',
+        eventType: 'find',
+      })
+
+      res.json(quickFilterConfiguration)
+    },
+  )
+
+  apiRouter.get(
     '/participants',
     optionalBasicAuth(),
     requirePermission('view participants'),
@@ -493,11 +514,22 @@ export function configureApp(
       const where = {
         [Op.and]: [
           ...params.textSearch.map((word) => ({
-            [Op.or]: config.searchableFieldNames.map((field) => ({
-              [field]: {
-                [Op.iLike]: `%${word}%`,
-              },
-            })),
+            [Op.or]: [
+              ...Array.from(
+                models.Participant.searchableDefaultFieldNames.values(),
+              ).map((field) => ({
+                [field]: {
+                  [Op.iLike]: `%${word}%`,
+                },
+              })),
+              ...config.searchableFieldNames.map((field) => ({
+                extraFields: {
+                  [field]: {
+                    [Op.iLike]: `%${word}%`,
+                  },
+                },
+              })),
+            ],
           })),
           ...params.fieldFilters.map(([field, value]) => ({
             [field]: value,
@@ -542,7 +574,11 @@ export function configureApp(
         meta: { params },
       })
 
-      res.json({ result: result.rows, count: result.count })
+      res.json({
+        result: result.rows,
+        count: result.count,
+        columns: participantListColumns,
+      })
     },
   )
 

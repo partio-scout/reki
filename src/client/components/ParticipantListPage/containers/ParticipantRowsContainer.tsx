@@ -1,8 +1,11 @@
 import React from 'react'
 import Spinner from 'react-spinner'
 import { ParticipantRow } from '../../../components'
-import { ParticipantListColumn } from '../ParticipantListPage'
-import { ParticipantOverview, AvailableDates } from '../../../model'
+import {
+  ParticipantListColumn,
+  ParticipantOverview,
+  AvailableDates,
+} from '../../../model'
 
 export type ParticipantRowsContainerProps = Readonly<{
   isChecked: (participantId: ParticipantOverview['participantId']) => boolean
