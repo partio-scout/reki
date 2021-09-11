@@ -20,6 +20,7 @@
     "lint": "npm run eslint-check && npm run prettier-check",
     "eslint-check": "eslint --ext js --ext jsx --ext ts --ext tsx src test scripts webpack.config.js",
     "prettier-check": "prettier --check '**/*.{js,jsx,mjs,ts,tsx,json,md,css,less,scss}'",
+    "prettier-write": "prettier --write '**/*.{js,jsx,mjs,ts,tsx,json,md,css,less,scss}'",
     "test-functional": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require ts-node/register test/functional --exit",
     "test-one": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --timeout 4000 --require ts-node/register --exit",
     "test-watch": "cross-env TS_NODE_PROJECT=src/server/tsconfig.json NODE_ENV=test ENABLE_OFFLINE_LOGIN=true mocha --watch --timeout 4000 --require ts-node/register --exit",
