@@ -358,20 +358,6 @@ export function configureApp(
   )
 
   apiRouter.get(
-    '/config',
-    optionalBasicAuth(),
-    requirePermission('view app configuration'),
-    async (req, res) => {
-      res.json({
-        fields: config.participantFields,
-        tableFields: config.participantTableFields,
-        detailsPageFields: config.detailsPageFields,
-        filters: config.filters,
-      })
-    },
-  )
-
-  apiRouter.get(
     '/options',
     optionalBasicAuth(),
     requirePermission('view participants'),

@@ -42,11 +42,11 @@ describe('HTTP API access control', () => {
       'GET /api/participantdates',
       'GET /api/participants',
       'GET /api/participants/:id(\\d+)',
+      'GET /api/participantListFilters',
       'POST /api/participants/massAssign',
       'GET /api/registryusers',
       'POST /api/registryusers/:id/block',
       'POST /api/registryusers/:id/unblock',
-      'GET /api/config',
       'GET /api/audit-events',
     ])
 
@@ -231,6 +231,24 @@ describe('HTTP API access control', () => {
     })
   })
 
+  describe('ParticipantListFilters', () => {
+    describe('Unauthenticated user', () =>
+      it('find: UNAUTHORIZED', () =>
+        get(models, '/api/participantListFilters').expect(UNAUTHORIZED)))
+
+    describe('registryUser', () =>
+      it('find: OK', () =>
+        get(models, '/api/participantListFilters', ['registryUser']).expect(
+          OK,
+        )))
+
+    describe('registryAdmin', () =>
+      it('find: UNAUTHORIZED', () =>
+        get(models, '/api/participantListFilters', ['registryAdmin']).expect(
+          UNAUTHORIZED,
+        )))
+  })
+
   describe('Option', () => {
     describe('Unauthenticated user', () =>
       it('find: UNAUTHORIZED', () =>
@@ -259,20 +277,6 @@ describe('HTTP API access control', () => {
         get(models, '/api/participantdates', ['registryAdmin']).expect(
           UNAUTHORIZED,
         )))
-  })
-
-  describe('Config', () => {
-    describe('Unauthenticated user', () =>
-      it('find: UNAUTHORIZED', () =>
-        get(models, '/api/config').expect(UNAUTHORIZED)))
-
-    describe('registryUser', () =>
-      it('find: OK', () =>
-        get(models, '/api/config', ['registryUser']).expect(OK)))
-
-    describe('registryAdmin', () =>
-      it('find: OK', () =>
-        get(models, '/api/config', ['registryAdmin']).expect(OK)))
   })
 
   describe('Audit events', () => {
