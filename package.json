@@ -52,7 +52,7 @@
     "helmet": "^4.3.1",
     "http-proxy": "^1.18.1",
     "inquirer": "^7.1.0",
-    "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.0/kuksa-event-api-client.tar.gz",
+    "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v4.0.1/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.21",
     "moment": "^2.25.1",
     "morgan": "^1.10.0",
