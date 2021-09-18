@@ -22,7 +22,7 @@ export const UserManagementPage: React.FC = () => {
 
         setRegistryUsers(json)
       }
-    } catch (error) {
+    } catch (error: any) {
       showError('Ladatuissa käyttäjätiedoissa on virhe.', error)
     }
   }, [showError])
@@ -37,7 +37,7 @@ export const UserManagementPage: React.FC = () => {
         `/api/registryusers/${userId}/block`,
         withDefaultOpts({ method: 'POST' }),
       )
-    } catch (e) {
+    } catch (e: any) {
       showError(e)
     }
     loadUsers()
@@ -49,7 +49,7 @@ export const UserManagementPage: React.FC = () => {
         `/api/registryusers/${userId}/unblock`,
         withDefaultOpts({ method: 'POST' }),
       )
-    } catch (e) {
+    } catch (e: any) {
       showError(e)
     }
     loadUsers()

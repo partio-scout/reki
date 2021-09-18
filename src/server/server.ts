@@ -249,7 +249,7 @@ export function configureApp(
         } else {
           done(null, models.User.toClientFormat(user, 'partioid') as any)
         }
-      } catch (e) {
+      } catch (e: any) {
         done(e)
       }
     },

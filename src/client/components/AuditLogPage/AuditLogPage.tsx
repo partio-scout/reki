@@ -20,7 +20,7 @@ export const AuditLogPage: React.FC = () => {
 
         setLogEntries(json)
       }
-    } catch (error) {
+    } catch (error: any) {
       showError('Ladatuissa lokitiedoissa on virhe.', error)
     }
   }, [showError])
