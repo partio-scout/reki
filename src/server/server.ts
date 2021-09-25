@@ -444,23 +444,31 @@ export function configureApp(
   }).asReadonly()
   type ListParticipantsParams = Rt.Static<typeof ListParticipantsParams>
   const listParticipantsParamsGetter = (query: any): ListParticipantsParams => {
-    const limit = Number(query.limit) || undefined
-    const offset = Number(query.offset) || undefined
-    const textSearch = query.q ? query.q.split(/\s+/) : []
-    const orderBy = query.orderBy || 'participantId'
-    const orderDirection = query.orderDirection || 'ASC'
+    const {
+      limit: rawLimit,
+      offset: rawOffset,
+      q,
+      orderBy: rawOrderBy,
+      orderDirection: rawOrderDirection,
+      dates,
+      ...restOfQuery
+    } = query
+    const limit = Number(rawLimit) || undefined
+    const offset = Number(rawOffset) || undefined
+    const textSearch = q ? q.split(/\s+/) : []
+    const orderBy = rawOrderBy || 'participantId'
+    const orderDirection = rawOrderDirection || 'ASC'
     const order = [orderBy, orderDirection]
 
-    const defaultFieldFilters = Object.entries(query).filter(
+    const defaultFieldFilters = Object.entries(restOfQuery).filter(
       ([key]) =>
         models.Participant.isDefaultField(key) &&
         models.Participant.isSearchableField(key),
     )
-    const extraFieldFilters = Object.entries(query)
+    const extraFieldFilters = Object.entries(restOfQuery)
       .filter(([key]) => !models.Participant.isDefaultField(key))
       .map((k) => [`extraFields.${k[0]}`, k[1]])
     const fieldFilters = [...defaultFieldFilters, ...extraFieldFilters]
-    const { dates } = query
     const dateFilters =
       dates && typeof dates === 'string'
         ? dates.split(',').map((x) => new Date(x.trim()))
