@@ -12,10 +12,7 @@ describe('Participants', () => {
   // REKI shouldn't show results before searching to prevent users from accidentally
   // seeing personally identifiable information
   it('are not shown in the list initially', () => {
-    cy.contains('Hakutuloksia: 0')
-    cy.contains('table', 'Etunimi') // participant table
-      .find('tbody tr')
-      .should('have.length', 0)
+    cy.contains('p', 'Tee haku yllä olevilla kentillä')
   })
 
   it('can be filtered with a search', () => {
@@ -32,10 +29,7 @@ describe('Participants', () => {
     cy.contains('Hakutuloksia: 2')
     cy.contains('Testihenkilö')
     cy.contains('Tyhjennä').click()
-    cy.contains('Hakutuloksia: 0')
-    cy.contains('table', 'Etunimi') // participant table
-      .find('tbody tr')
-      .should('have.length', 0)
+    cy.contains('p', 'Tee haku yllä olevilla kentillä')
   })
 
   it('can be opened from the list', () => {

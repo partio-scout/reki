@@ -4,9 +4,9 @@ import { MainNavigation } from './MainNavigation'
 import { ErrorNotification } from './ErrorNotification'
 
 export const App = hot(({ children }: { children?: React.ReactNode }) => (
-  <div>
+  <>
     <MainNavigation />
     {children}
     <ErrorNotification />
-  </div>
+  </>
 ))

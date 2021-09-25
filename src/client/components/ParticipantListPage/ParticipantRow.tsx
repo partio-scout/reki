@@ -2,8 +2,12 @@ import React, { ReactNode } from 'react'
 import moment from 'moment'
 import _ from 'lodash'
 import { Presence, Icon } from '..'
-import { ParticipantListColumn } from './ParticipantListPage'
-import { ParticipantOverview, AvailableDates } from '../../model'
+import {
+  ParticipantListColumn,
+  ParticipantOverview,
+  AvailableDates,
+  isDefaultParticipantField,
+} from '../../model'
 
 const LinkCell: React.FC<{ href: string; title: string }> = ({
   href,
@@ -21,15 +25,17 @@ const NoInfo: React.FC = () => (
   <small style={{ color: 'grey' }}>ei tietoa</small>
 )
 
-const getNullableFormatter = (
-  //: ((value: any) => React.ReactNode) => (value: any): React.ReactNode =
-  finalFormatter: (value: any) => ReactNode = (x) => x,
-) => (value: any): ReactNode => {
-  if (value === null || value === undefined) {
-    return <NoInfo />
+const getNullableFormatter =
+  (
+    //: ((value: any) => React.ReactNode) => (value: any): React.ReactNode =
+    finalFormatter: (value: any) => ReactNode = (x) => x,
+  ) =>
+  (value: any): ReactNode => {
+    if (value === null || value === undefined) {
+      return <NoInfo />
+    }
+    return finalFormatter(value)
   }
-  return finalFormatter(value)
-}
 
 const NullableBoolean: React.FC<{
   value: boolean | null | undefined
@@ -79,7 +85,7 @@ const CellContent: React.FC<{
     case 'presence':
       return (
         <td key={column.type + column.property}>
-          <Presence value={(participant as any)[column.property]} />
+          <Presence value={participant.presence} />
         </td>
       )
     case 'profileLink':
@@ -87,33 +93,46 @@ const CellContent: React.FC<{
         <LinkCell
           key={column.type + column.property}
           href={`participants/${participant.participantId}`}
-          title={(participant as any)[column.property]}
+          title={
+            stringOrUndefined(
+              getParticipantProperty(participant, column.property),
+            ) ?? ''
+          }
         >
-          {(participant as any)[column.property]}
+          {stringOrUndefined(
+            getParticipantProperty(participant, column.property),
+          ) ?? ''}
         </LinkCell>
       )
     case 'date':
       return (
         <td key={column.type + column.property}>
-          {formatDate((participant as any)[column.property])}
+          {formatDate(
+            stringOrUndefined(
+              getParticipantProperty(participant, column.property),
+            ) ?? '',
+          )}
         </td>
       )
-    case 'iconWithTooltip':
-      return (participant as any)[column.property] ? (
-        <td
-          key={column.type + column.property}
-          title={(participant as any)[column.property]}
-        >
+    case 'iconWithTooltip': {
+      const value = stringOrUndefined(
+        getParticipantProperty(participant, column.property),
+      )
+      return value ? (
+        <td key={column.type + column.property} title={value}>
           <Icon type={column.icon} />
         </td>
       ) : (
         <td key={column.type + column.property} />
       )
+    }
     case 'boolean':
       return (
         <td key={column.type + column.property}>
           <NullableBoolean
-            value={(participant as any)[column.property]}
+            value={booleanOrUndefined(
+              getParticipantProperty(participant, column.property),
+            )}
             true={column.true || 'kyllä'}
             false={column.false || 'ei'}
           />
@@ -123,7 +142,11 @@ const CellContent: React.FC<{
     default:
       return (
         <td key={column.type + column.property}>
-          {formatNullableString((participant as any)[column.property])}
+          {formatNullableString(
+            stringOrUndefined(
+              getParticipantProperty(participant, column.property),
+            ),
+          )}
         </td>
       )
   }
@@ -175,4 +198,31 @@ export const ParticipantRow: React.FC<ParticipantRowProps> = (props) => {
       ))}
     </tr>
   )
+}
+
+function getParticipantProperty(
+  participant: ParticipantOverview,
+  propertyName: string,
+): string | number | boolean | null | undefined {
+  if (isDefaultParticipantField(propertyName)) {
+    return participant[propertyName] ?? undefined
+  } else {
+    return participant.extraFields[propertyName]
+  }
+}
+
+function stringOrUndefined(value: unknown): string | undefined {
+  if (typeof value === 'string') {
+    return value
+  } else {
+    return undefined
+  }
+}
+
+function booleanOrUndefined(value: unknown): boolean | undefined {
+  if (typeof value === 'boolean') {
+    return value
+  } else {
+    return undefined
+  }
 }

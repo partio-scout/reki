@@ -29,6 +29,10 @@ import { Models } from './models'
 import optionalBasicAuth from './middleware/optional-basic-auth'
 import setupAccessControl from './middleware/access-control'
 import { getClientData } from './util/audit'
+import {
+  participantListColumns,
+  quickFilterConfiguration,
+} from './temporaryFixedData'
 
 type RouteInfo =
   | { route: 'participantsList' }
@@ -354,20 +358,6 @@ export function configureApp(
   )
 
   apiRouter.get(
-    '/config',
-    optionalBasicAuth(),
-    requirePermission('view app configuration'),
-    async (req, res) => {
-      res.json({
-        fields: config.participantFields,
-        tableFields: config.participantTableFields,
-        detailsPageFields: config.detailsPageFields,
-        filters: config.filters,
-      })
-    },
-  )
-
-  apiRouter.get(
     '/options',
     optionalBasicAuth(),
     requirePermission('view participants'),
@@ -443,9 +433,6 @@ export function configureApp(
       }
     },
   )
-  const filterableFields = new Set(
-    config.participantFields.map((field) => field.name),
-  )
 
   const ListParticipantsParams = Rt.Record({
     textSearch: Rt.Array(Rt.String).asReadonly(),
@@ -456,19 +443,32 @@ export function configureApp(
     offset: NonNegativeInteger.Or(Rt.Undefined),
   }).asReadonly()
   type ListParticipantsParams = Rt.Static<typeof ListParticipantsParams>
-
   const listParticipantsParamsGetter = (query: any): ListParticipantsParams => {
-    const limit = Number(query.limit) || undefined
-    const offset = Number(query.offset) || undefined
-    const textSearch = query.q ? query.q.split(/\s+/) : []
-    const orderBy = query.orderBy || 'participantId'
-    const orderDirection = query.orderDirection || 'ASC'
+    const {
+      limit: rawLimit,
+      offset: rawOffset,
+      q,
+      orderBy: rawOrderBy,
+      orderDirection: rawOrderDirection,
+      dates,
+      ...restOfQuery
+    } = query
+    const limit = Number(rawLimit) || undefined
+    const offset = Number(rawOffset) || undefined
+    const textSearch = q ? q.split(/\s+/) : []
+    const orderBy = rawOrderBy || 'participantId'
+    const orderDirection = rawOrderDirection || 'ASC'
     const order = [orderBy, orderDirection]
 
-    const fieldFilters = Object.entries(query).filter(([key]) =>
-      filterableFields.has(key),
+    const defaultFieldFilters = Object.entries(restOfQuery).filter(
+      ([key]) =>
+        models.Participant.isDefaultField(key) &&
+        models.Participant.isSearchableField(key),
     )
-    const { dates } = query
+    const extraFieldFilters = Object.entries(restOfQuery)
+      .filter(([key]) => !models.Participant.isDefaultField(key))
+      .map((k) => [`extraFields.${k[0]}`, k[1]])
+    const fieldFilters = [...defaultFieldFilters, ...extraFieldFilters]
     const dateFilters =
       dates && typeof dates === 'string'
         ? dates.split(',').map((x) => new Date(x.trim()))
@@ -485,25 +485,55 @@ export function configureApp(
   }
 
   apiRouter.get(
+    '/participantListFilters',
+    optionalBasicAuth(),
+    requirePermission('view participants'),
+    async (req, res) => {
+      await models.AuditEvent.audit({
+        ...getClientData(req),
+        modelType: 'ParticipantListFilters',
+        eventType: 'find',
+      })
+
+      res.json(quickFilterConfiguration)
+    },
+  )
+
+  apiRouter.get(
     '/participants',
     optionalBasicAuth(),
     requirePermission('view participants'),
     async (req, res) => {
       const params = listParticipantsParamsGetter(req.query)
-      const where = {
-        [Op.and]: [
-          ...params.textSearch.map((word) => ({
-            [Op.or]: config.searchableFieldNames.map((field) => ({
+      const whereParts = [
+        ...params.textSearch.map((word) => ({
+          [Op.or]: [
+            ...Array.from(
+              models.Participant.searchableDefaultFieldNames.values(),
+            ).map((field) => ({
               [field]: {
                 [Op.iLike]: `%${word}%`,
               },
             })),
-          })),
-          ...params.fieldFilters.map(([field, value]) => ({
-            [field]: value,
-          })),
-        ],
-      }
+            ...config.searchableFieldNames.map((field) => ({
+              extraFields: {
+                [field]: {
+                  [Op.iLike]: `%${word}%`,
+                },
+              },
+            })),
+          ],
+        })),
+        ...params.fieldFilters.map(([field, value]) => ({
+          [field]: value,
+        })),
+      ]
+      const where =
+        whereParts.length > 0
+          ? {
+              [Op.and]: whereParts,
+            }
+          : undefined
 
       // Date search
       const dateFilter = params.dateFilters.length
@@ -542,7 +572,11 @@ export function configureApp(
         meta: { params },
       })
 
-      res.json({ result: result.rows, count: result.count })
+      res.json({
+        result: result.rows,
+        count: result.count,
+        columns: participantListColumns,
+      })
     },
   )
 

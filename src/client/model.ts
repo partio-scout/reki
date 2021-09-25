@@ -40,8 +40,31 @@ export type RegistryUser = Rt.Static<typeof RegistryUser>
 export const ParticipantOverview = Rt.Record({
   participantId: Rt.Number,
   dates: Rt.Array(Rt.Record({ date: Rt.String }).asReadonly()).asReadonly(),
+  presence: Rt.Number.Or(Rt.Null),
+  firstName: Rt.String,
+  lastName: Rt.String,
+  memberNumber: Rt.String.Or(Rt.Null),
+  phoneNumber: Rt.String.Or(Rt.Null),
+  campOfficeNotes: Rt.String,
+  editableInfo: Rt.String,
+  extraFields: Rt.Dictionary(
+    Rt.Union(Rt.String, Rt.Boolean, Rt.Number, Rt.Null, Rt.Undefined),
+  ),
 }).asReadonly()
 export type ParticipantOverview = Rt.Static<typeof ParticipantOverview>
+
+export const participantDefaultFields = [
+  'firstName',
+  'lastName',
+  'memberNumber',
+  'phoneNumber',
+  'campOfficeNotes',
+  'editableInfo',
+] as const
+export const isDefaultParticipantField = (
+  fieldName: string,
+): fieldName is typeof participantDefaultFields[number] =>
+  participantDefaultFields.indexOf(fieldName as any) !== -1
 
 export const PresenceEntry = Rt.Record({
   timestamp: Rt.String,
@@ -56,32 +79,11 @@ export const ParticipantDetails = Rt.Record({
   presence: Rt.Number.Or(Rt.Null),
   firstName: Rt.String,
   lastName: Rt.String,
-  nickname: Rt.String.Or(Rt.Null),
-  dateOfBirth: Rt.String,
-  nonScout: Rt.Boolean,
-  billedDate: Rt.String.Or(Rt.Null),
-  paidDate: Rt.String.Or(Rt.Null),
+  extraFields: Rt.Dictionary(
+    Rt.String.Or(Rt.Null).Or(Rt.Number).Or(Rt.Boolean),
+  ),
   memberNumber: Rt.String.Or(Rt.Null),
-  homeCity: Rt.String.Or(Rt.Null),
-  country: Rt.String.Or(Rt.Null),
-  email: Rt.String.Or(Rt.Null),
   phoneNumber: Rt.String.Or(Rt.Null),
-  ageGroup: Rt.String.Or(Rt.Null),
-  localGroup: Rt.String.Or(Rt.Null),
-  subCamp: Rt.String.Or(Rt.Null),
-  campGroup: Rt.String.Or(Rt.Null),
-  village: Rt.String.Or(Rt.Null),
-  internationalGuest: Rt.Boolean.Or(Rt.Null),
-  staffPosition: Rt.String.Or(Rt.Null),
-  staffPositionInGenerator: Rt.String.Or(Rt.Null),
-  swimmingSkill: Rt.String.Or(Rt.Null),
-  willOfTheWisp: Rt.String.Or(Rt.Null),
-  willOfTheWispWave: Rt.String.Or(Rt.Null),
-  guardianOne: Rt.String.Or(Rt.Null),
-  guardianTwo: Rt.String.Or(Rt.Null),
-  diet: Rt.String.Or(Rt.Null),
-  familyCampProgramInfo: Rt.String.Or(Rt.Null),
-  childNaps: Rt.String.Or(Rt.Null),
   dates: Rt.Array(Rt.Record({ date: Rt.String }).asReadonly()).asReadonly(),
   allergies: Rt.Array(Rt.Record({ name: Rt.String }).asReadonly()).asReadonly(),
   selections: Rt.Array(
@@ -112,3 +114,84 @@ export const AuditLogEntry = Rt.Record({
   userAgent: Rt.String,
 }).asReadonly()
 export type AuditLogEntry = Rt.Static<typeof AuditLogEntry>
+
+export const IconType = Rt.Union(
+  Rt.Literal('sort'),
+  Rt.Literal('sort-asc'),
+  Rt.Literal('sort-desc'),
+  Rt.Literal('comment'),
+  Rt.Literal('user'),
+  Rt.Literal('remove'),
+  Rt.Literal('info'),
+  Rt.Literal('ok'),
+)
+export type IconType = Rt.Static<typeof IconType>
+
+export const ParticipantListColumn = Rt.Union(
+  Rt.Record({
+    type: Rt.Union(
+      Rt.Literal('presence'),
+      Rt.Literal('profileLink'),
+      Rt.Literal('date'),
+      Rt.Literal('text'),
+    ),
+    property: Rt.String,
+    label: Rt.String,
+  }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('iconWithTooltip'),
+    property: Rt.String,
+    icon: IconType,
+    label: Rt.Record({ icon: IconType, tooltip: Rt.String }).asReadonly(),
+  }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('boolean'),
+    property: Rt.String,
+    label: Rt.String,
+    true: Rt.String.Or(Rt.Undefined),
+    false: Rt.String.Or(Rt.Undefined),
+  }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('availableDates'),
+    label: Rt.String,
+  }).asReadonly(),
+)
+export type ParticipantListColumn = Rt.Static<typeof ParticipantListColumn>
+
+export const QuickFilterDefinition = Rt.Union(
+  Rt.Record({
+    type: Rt.Literal('debouncedTextField'),
+    property: Rt.String,
+    label: Rt.String,
+  }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('options'),
+    property: Rt.String,
+    label: Rt.String,
+  }).asReadonly(),
+  Rt.Record({ type: Rt.Literal('presence'), label: Rt.String }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('generic'),
+    label: Rt.String,
+    properties: Rt.Array(
+      Rt.Record({ property: Rt.String, label: Rt.String }).asReadonly(),
+    ).asReadonly(),
+  }).asReadonly(),
+  Rt.Record({
+    type: Rt.Literal('availableDates'),
+    label: Rt.String,
+  }).asReadonly(),
+)
+export type QuickFilterDefinition = Rt.Static<typeof QuickFilterDefinition>
+
+export const QuickFilterConfiguration = Rt.Array(
+  Rt.Array(QuickFilterDefinition).asReadonly(),
+).asReadonly()
+export type QuickFilterConfiguration = Rt.Static<
+  typeof QuickFilterConfiguration
+>
+
+export const ParticipantListFindResult = Rt.Record({
+  result: Rt.Array(ParticipantOverview).asReadonly(),
+  columns: Rt.Array(ParticipantListColumn).asReadonly(),
+}).asReadonly()

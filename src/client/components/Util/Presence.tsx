@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function getPresenceLabel(value: number | undefined): string {
+export function getPresenceLabel(value: number | null | undefined): string {
   if (value == 1) {
     return 'Poistunut leiristä'
   } else if (value == 2) {
@@ -11,7 +11,7 @@ export function getPresenceLabel(value: number | undefined): string {
   return 'Tuntematon arvo'
 }
 
-export function getPresenceColor(value: number | undefined): string {
+export function getPresenceColor(value: number | null | undefined): string {
   if (value == 1) {
     return '#ec404b'
   } else if (value == 2) {
@@ -23,7 +23,7 @@ export function getPresenceColor(value: number | undefined): string {
 }
 
 type PresenceProps = Readonly<{
-  value: number | undefined
+  value: number | null | undefined
 }>
 
 export const Presence: React.FC<PresenceProps> = ({ value }) => {

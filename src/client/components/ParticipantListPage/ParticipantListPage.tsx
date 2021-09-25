@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import * as Rt from 'runtypes'
 import _ from 'lodash'
 import { SortableHeaderCell } from '../Util/SortableHeaderCell'
 import { ParticipantRowsContainer } from './containers/ParticipantRowsContainer'
@@ -11,11 +10,13 @@ import { SelectAll } from './SelectAll'
 import { useParticipantQueryParams } from './useParticipantQueryParams'
 import { Table } from '../Table'
 import { useErrorContext } from '../../errors'
-import { IconType } from '../Icon'
 import {
   ParticipantOverview,
   OptionsByProperty,
   AvailableDates,
+  QuickFilterConfiguration,
+  ParticipantListColumn,
+  ParticipantListFindResult,
 } from '../../model'
 import { RestfulResource } from '../../RestfulResource'
 
@@ -23,132 +24,18 @@ function isNotUndefined<T>(x: T | undefined): x is T {
   return x !== undefined
 }
 
-export type ParticipantListColumn =
-  | {
-      type: 'presence' | 'profileLink' | 'date' | 'text'
-      property: string
-      label: string
-    }
-  | {
-      type: 'iconWithTooltip'
-      property: string
-      icon: IconType
-      label: { icon: IconType; tooltip: string }
-    }
-  | {
-      type: 'boolean'
-      property: string
-      label: string
-      true?: string
-      false?: string
-    }
-  | { type: 'availableDates'; label: string }
-
-const participantListColumns: readonly ParticipantListColumn[] = [
-  { type: 'presence', property: 'presence', label: 'Tila' },
-  { type: 'profileLink', property: 'firstName', label: 'Etunimi' },
-  { type: 'profileLink', property: 'lastName', label: 'Sukunimi' },
-  { type: 'date', property: 'dateOfBirth', label: 'Syntymäpäivä' },
-  { type: 'text', property: 'staffPosition', label: 'Pesti' },
-  { type: 'date', property: 'billedDate', label: 'Laskutettu' },
-  { type: 'date', property: 'paidDate', label: 'Maksettu' },
-  { type: 'text', property: 'memberNumber', label: 'Jäsennumero' },
-  {
-    type: 'iconWithTooltip',
-    icon: 'info',
-    property: 'campOfficeNotes',
-    label: { icon: 'info', tooltip: 'Leiritoimiston merkinnät' },
-  },
-  {
-    type: 'iconWithTooltip',
-    icon: 'comment',
-    property: 'editableInfo',
-    label: { icon: 'comment', tooltip: 'Lisätiedot' },
-  },
-  {
-    type: 'boolean',
-    true: 'EVP',
-    false: 'partiolainen',
-    property: 'nonScout',
-    label: 'Onko partiolainen?',
-  },
-  { type: 'text', property: 'homeCity', label: 'Kotikaupunki' },
-  {
-    type: 'boolean',
-    property: 'interestedInHomeHospitality',
-    label: 'Home hospitality',
-  },
-  { type: 'text', property: 'email', label: 'Sähköposti' },
-  { type: 'text', property: 'phoneNumber', label: 'Puhelinnumero' },
-  { type: 'text', property: 'ageGroup', label: 'Ikäkausi' },
-  { type: 'text', property: 'accommodation', label: 'Majoittuminen' },
-  { type: 'text', property: 'localGroup', label: 'Lippukunta' },
-  { type: 'text', property: 'village', label: 'Kylä' },
-  { type: 'text', property: 'subCamp', label: 'Alaleiri' },
-  { type: 'text', property: 'campGroup', label: 'Leirilippukunta' },
-  { type: 'availableDates', label: 'Ilmoittautumispäivät' },
-]
-
-export type QuickFilterConfiguration = Readonly<{
-  filters: readonly (readonly QuickFilterDefinition[])[]
-}>
-export type QuickFilterDefinition = Readonly<
-  | { type: 'debouncedTextField'; property: string; label: string }
-  | { type: 'options'; property: string; label: string }
-  | { type: 'presence'; label: string }
-  | {
-      type: 'generic'
-      label: string
-      properties: readonly Readonly<{ property: string; label: string }>[]
-    }
-  | { type: 'availableDates'; label: string }
->
-const quickFilterConfiguration: QuickFilterConfiguration = {
-  filters: [
-    [
-      {
-        type: 'debouncedTextField',
-        property: 'textSearch',
-        label: 'Tekstihaku',
-      },
-    ],
-    [
-      { type: 'options', property: 'ageGroup', label: 'Ikäkausi' },
-      { type: 'presence', label: 'Tila' },
-      { type: 'options', property: 'localGroup', label: 'Lippukunta' },
-    ],
-    [
-      { type: 'options', property: 'subCamp', label: 'Alaleiri' },
-      { type: 'options', property: 'village', label: 'Kylä' },
-      { type: 'options', property: 'campGroup', label: 'Leirilippukunta' },
-    ],
-    [
-      {
-        type: 'generic',
-        label: 'Muu kenttä',
-        properties: [
-          { property: 'childNaps', label: 'Lapsi nukkuu päiväunet' },
-          { property: 'accommodation', label: 'Majoittautuminen' },
-          { property: 'country', label: 'Maa' },
-          { property: 'willOfTheWisp', label: 'Virvatuli' },
-          { property: 'willOfTheWispWave', label: 'Virvatulen aalto' },
-          { property: 'internationalGuest', label: 'KV-osallistuja' },
-        ],
-      },
-    ],
-  ],
-}
-
-export type ParticipantListPageProps = Readonly<{
+export type ParticipantListPageProps = {
   optionResource: RestfulResource
   participantDateResource: RestfulResource
   participantResource: RestfulResource
-}>
+  quickFilters: QuickFilterConfiguration
+}
 
 export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
   optionResource,
   participantDateResource,
   participantResource,
+  quickFilters,
 }) => {
   const { showError } = useErrorContext()
 
@@ -190,8 +77,12 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
   const [participants, setParticipants] = useState<
     readonly ParticipantOverview[]
   >([])
+  const [participantListColumns, setParticipantListColumns] = useState<
+    readonly ParticipantListColumn[]
+  >([])
   const [participantsLoading, setParticipantsLoading] = useState(true)
   const [participantsLoadForcer, setParticipantsLoadForcer] = useState(false)
+
   useEffect((): void => {
     const filterEntries = Object.entries(filter)
     if (filterEntries.length === 0) {
@@ -241,13 +132,12 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
     participantResource
       .findAll(filterParams)
       .then((participantList) =>
-        Rt.Record({ result: Rt.Array(ParticipantOverview).asReadonly() })
-          .asReadonly()
-          .check(participantList),
+        ParticipantListFindResult.check(participantList),
       )
       .then(
         (participantList) => {
           setParticipants(participantList.result)
+          setParticipantListColumns(participantList.columns)
           setParticipantsLoading(false)
         },
         (error) => showError('Osallistujia ei voitu ladata', { error }),
@@ -309,7 +199,7 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
         <h1>Leiriläiset</h1>
         <div>
           <QuickFilterContainer
-            configuration={quickFilterConfiguration}
+            configuration={quickFilters}
             updateFilter={updateFilter}
             resetFilter={resetFilter}
             filter={filter}
@@ -319,69 +209,75 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
         </div>
       </header>
       <main className="content-box">
-        <ParticipantCount participantCount={participantCount} />
-        <Table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>
-                <SelectAll
-                  hideLabel
-                  checked={checked}
-                  participants={participantIds}
-                  setChecked={setChecked}
-                />
-              </th>
-              {participantListColumns.map((column) =>
-                column.type === 'availableDates' ? (
-                  <th key={column.type} colSpan={availableDates.length}>
-                    {column.label}
+        {Object.entries(filter).length === 0 ? (
+          <p>Tee haku yllä olevilla kentillä</p>
+        ) : (
+          <>
+            <ParticipantCount participantCount={participantCount} />
+            <Table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>
+                    <SelectAll
+                      hideLabel
+                      checked={checked}
+                      participants={participantIds}
+                      setChecked={setChecked}
+                    />
                   </th>
-                ) : (
-                  <SortableHeaderCell
-                    key={column.type + column.property}
-                    property={column.property}
-                    label={
-                      typeof column.label === 'string' ? (
-                        column.label
-                      ) : (
-                        <div title={column.label.tooltip}>
-                          <Icon type={column.label.icon} />
-                        </div>
-                      )
-                    }
-                    order={order}
-                    orderChanged={updateOrder}
-                  />
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            <ParticipantRowsContainer
-              isChecked={isChecked}
-              checkboxCallback={handleCheckboxChange}
-              columns={participantListColumns}
-              availableDates={availableDates}
-              offset={offset}
-              participants={participants}
-              loading={participantsLoading}
+                  {participantListColumns.map((column) =>
+                    column.type === 'availableDates' ? (
+                      <th key={column.type} colSpan={availableDates.length}>
+                        {column.label}
+                      </th>
+                    ) : (
+                      <SortableHeaderCell
+                        key={column.type + column.property}
+                        property={column.property}
+                        label={
+                          typeof column.label === 'string' ? (
+                            column.label
+                          ) : (
+                            <div title={column.label.tooltip}>
+                              <Icon type={column.label.icon} />
+                            </div>
+                          )
+                        }
+                        order={order}
+                        orderChanged={updateOrder}
+                      />
+                    ),
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                <ParticipantRowsContainer
+                  isChecked={isChecked}
+                  checkboxCallback={handleCheckboxChange}
+                  columns={participantListColumns}
+                  availableDates={availableDates}
+                  offset={offset}
+                  participants={participants}
+                  loading={participantsLoading}
+                />
+              </tbody>
+            </Table>
+            <MassEdit
+              checked={checked}
+              participants={participantIds}
+              setChecked={setChecked}
+              onSubmit={handleMassEdit}
+              participantsLoading={participantsLoading}
             />
-          </tbody>
-        </Table>
-        <MassEdit
-          checked={checked}
-          participants={participantIds}
-          setChecked={setChecked}
-          onSubmit={handleMassEdit}
-          participantsLoading={participantsLoading}
-        />
-        <ListOffsetSelector
-          onOffsetChanged={updateOffset}
-          offset={offset}
-          limit={limit}
-          participantCount={participantCount}
-        />
+            <ListOffsetSelector
+              onOffsetChanged={updateOffset}
+              offset={offset}
+              limit={limit}
+              participantCount={participantCount}
+            />
+          </>
+        )}
       </main>
     </>
   )

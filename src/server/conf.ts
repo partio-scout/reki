@@ -14,31 +14,6 @@ export interface ParticipantFieldsDef {
 
 export const participantFields: readonly ParticipantFieldsDef[] = [
   {
-    name: 'presence',
-    type: 'mandatory_field',
-    dataType: 'INTEGER',
-    nullable: true,
-  },
-  {
-    name: 'firstName',
-    type: 'mandatory_field',
-    dataType: 'STRING',
-    searchable: true,
-  },
-  {
-    name: 'lastName',
-    type: 'mandatory_field',
-    dataType: 'STRING',
-    searchable: true,
-  },
-  {
-    name: 'memberNumber',
-    type: 'mandatory_field',
-    dataType: 'STRING',
-    nullable: true,
-    searchable: true,
-  },
-  {
     name: 'billedDate',
     type: 'mandatory_field',
     dataType: 'DATE',
@@ -93,20 +68,6 @@ export const participantFields: readonly ParticipantFieldsDef[] = [
     dataType: 'BOOLEAN',
   },
   {
-    name: 'campOfficeNotes',
-    type: 'mandatory_field',
-    dataType: 'TEXT',
-    searchable: true,
-    nullable: true,
-  },
-  {
-    name: 'editableInfo',
-    type: 'mandatory_field',
-    dataType: 'TEXT',
-    searchable: true,
-    nullable: true,
-  },
-  {
     name: 'nickname',
     type: 'participant_field',
     dataType: 'STRING',
@@ -116,12 +77,6 @@ export const participantFields: readonly ParticipantFieldsDef[] = [
     name: 'dateOfBirth',
     type: 'participant_field',
     dataType: 'DATE',
-    nullable: true,
-  },
-  {
-    name: 'phoneNumber',
-    type: 'participant_field',
-    dataType: 'STRING',
     nullable: true,
   },
   {
@@ -272,33 +227,36 @@ export const participantBuilderFunction = (
     lastName: p.get('lastName'),
     nickname: p.get('nickname'),
     memberNumber: p.get('memberNumber'),
-    dateOfBirth: p.get('dateOfBirth'),
-    billedDate: p.getPaymentStatus('billed'),
-    paidDate: p.getPaymentStatus('paid'),
     phoneNumber: p.get('phoneNumber'),
-    email: p.get('email'),
-    internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
-    diet: p.get('diet'),
-    accommodation: p.get('accommodation') || 'Muu',
-    localGroup:
-      p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
-    campGroup: p.get('kuksa_campgroup.name') || 'Muu',
-    subCamp: subCamp,
-    village: p.get('kuksa_village.name') || 'Muu',
-    country: p.get('kuksa_localgroup.country') || 'Suomi',
-    ageGroup: ageGroup,
-    // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
-    nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
-    staffPosition: p.getExtraInfo('Pesti'),
-    staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
-    willOfTheWisp: p.getExtraSelection('Virvatuli'),
-    willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
-    guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
-    guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
-    familyCampProgramInfo: p.getExtraInfo(
-      'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse',
-    ),
-    childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
+
+    extraFields: {
+      dateOfBirth: p.get('dateOfBirth'),
+      billedDate: p.getPaymentStatus('billed'),
+      paidDate: p.getPaymentStatus('paid'),
+      email: p.get('email'),
+      internationalGuest: !!p.get('kuksa_localgroup'), // has local group == is international guest
+      diet: p.get('diet'),
+      accommodation: p.get('accommodation') || 'Muu',
+      localGroup:
+        p.get('representedParty') || p.get('kuksa_localgroup.name') || 'Muu',
+      campGroup: p.get('kuksa_campgroup.name') || 'Muu',
+      subCamp: subCamp,
+      village: p.get('kuksa_village.name') || 'Muu',
+      country: p.get('kuksa_localgroup.country') || 'Suomi',
+      ageGroup: ageGroup,
+      // Not a scout if 1) no finnish member number and 2) not part of international group ("local group")
+      nonScout: !p.get('memberNumber') && !p.get('kuksa_localgroup.name'),
+      staffPosition: p.getExtraInfo('Pesti'),
+      staffPositionInGenerator: p.getExtraInfo('Pesti kehittimessä'),
+      willOfTheWisp: p.getExtraSelection('Virvatuli'),
+      willOfTheWispWave: p.getExtraSelection('Virvatulen aalto'),
+      guardianOne: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 1)'),
+      guardianTwo: p.getExtraInfo('Leirillä olevan lapsen huoltaja (nro 2)'),
+      familyCampProgramInfo: p.getExtraInfo(
+        'Mikäli vastasit edelliseen kyllä, kerro tässä tarkemmin millaisesta ohjelmasta on kyse',
+      ),
+      childNaps: p.getExtraSelection('Lapsi nukkuu päiväunet'),
+    },
   }
 }
 
@@ -360,13 +318,10 @@ export const participantDatesMapper = (
       '2016-07-26',
       '2016-07-27',
     ],
-    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': [
-      '2016-07-28',
-      '2016-07-29',
-      '2016-07-30',
-      '2016-07-31',
-    ],
-    'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
+    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..':
+      ['2016-07-28', '2016-07-29', '2016-07-30', '2016-07-31'],
+    'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.':
+      [],
   }
 
   return _(wrappedParticipant.getPayments())
