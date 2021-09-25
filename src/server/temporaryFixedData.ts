@@ -74,7 +74,8 @@ export const participantListColumns: readonly ParticipantListColumn[] = [
   { type: 'availableDates', label: 'Ilmoittautumispäivät' },
 ]
 
-export type QuickFilterConfiguration = readonly (readonly QuickFilterDefinition[])[]
+export type QuickFilterConfiguration =
+  readonly (readonly QuickFilterDefinition[])[]
 export type QuickFilterDefinition = Readonly<
   | { type: 'debouncedTextField'; property: string; label: string }
   | { type: 'options'; property: string; label: string }

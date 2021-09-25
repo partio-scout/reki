@@ -200,16 +200,15 @@ async function addAllergiesToParticipants(models: Models) {
   ) {
     const allergies = await models.Allergy.findAll()
     const allergyIds = _.map(allergies, 'allergyId')
-    const participantsAllergies = await models.KuksaParticipantExtraSelection.findAll(
-      {
+    const participantsAllergies =
+      await models.KuksaParticipantExtraSelection.findAll({
         where: {
           [Op.and]: [
             { kuksaParticipantId: participant.participantId },
             { kuksaExtraselectionId: { [Op.in]: allergyIds } },
           ],
         },
-      },
-    )
+      })
     return _.map(participantsAllergies, 'kuksaExtraselectionId')
   }
 
@@ -253,8 +252,8 @@ async function buildSelectionTable(models: Models) {
   await models.Selection.destroy({ where: {} })
   const participants = await models.Participant.findAll()
   for (const p of participants) {
-    const participantSelections = await models.KuksaParticipantExtraSelection.findAll(
-      {
+    const participantSelections =
+      await models.KuksaParticipantExtraSelection.findAll({
         where: { kuksaParticipantId: p.participantId },
         include: [
           {
@@ -262,8 +261,7 @@ async function buildSelectionTable(models: Models) {
             include: [models.KuksaExtraSelectionGroup],
           },
         ],
-      },
-    )
+      })
     const selections = participantSelections
       .filter(
         (s) => s.kuksa_extraselection?.kuksa_extraselectiongroup !== undefined,
@@ -279,7 +277,8 @@ async function buildSelectionTable(models: Models) {
         participantParticipantId: sel.kuksaParticipantId,
         kuksaGroupId: sel.kuksa_extraselection?.kuksa_extraselectiongroup?.id,
         kuksaSelectionId: sel.kuksa_extraselection?.id,
-        groupName: sel.kuksa_extraselection?.kuksa_extraselectiongroup?.name?.trim(),
+        groupName:
+          sel.kuksa_extraselection?.kuksa_extraselectiongroup?.name?.trim(),
         selectionName: sel.kuksa_extraselection?.name,
       }))
     await models.Selection.bulkCreate(selections)

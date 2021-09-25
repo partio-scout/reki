@@ -25,15 +25,17 @@ const NoInfo: React.FC = () => (
   <small style={{ color: 'grey' }}>ei tietoa</small>
 )
 
-const getNullableFormatter = (
-  //: ((value: any) => React.ReactNode) => (value: any): React.ReactNode =
-  finalFormatter: (value: any) => ReactNode = (x) => x,
-) => (value: any): ReactNode => {
-  if (value === null || value === undefined) {
-    return <NoInfo />
+const getNullableFormatter =
+  (
+    //: ((value: any) => React.ReactNode) => (value: any): React.ReactNode =
+    finalFormatter: (value: any) => ReactNode = (x) => x,
+  ) =>
+  (value: any): ReactNode => {
+    if (value === null || value === undefined) {
+      return <NoInfo />
+    }
+    return finalFormatter(value)
   }
-  return finalFormatter(value)
-}
 
 const NullableBoolean: React.FC<{
   value: boolean | null | undefined

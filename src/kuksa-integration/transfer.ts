@@ -10,19 +10,19 @@ export interface TransferModel<SourceObjectType> {
   getFromSource: (
     dateRange: undefined | DateRange,
   ) => Promise<SourceObjectType[]>
-  transform?: (sourceObject: SourceObjectType) => object
+  transform?: (sourceObject: SourceObjectType) => any
   joinTable?: boolean
   dateRange?: DateRange
 }
 
-export async function transferModel<SourceObjectType extends object>(
+export async function transferModel<SourceObjectType>(
   model: TransferModel<SourceObjectType>,
 ): Promise<void> {
   const sourceObjects = await model.getFromSource(model.dateRange)
   const transform =
     model.transform !== undefined
       ? model.transform
-      : (input: SourceObjectType): object => input
+      : (input: SourceObjectType): any => input
   const objects = sourceObjects.map((sourceObject) => transform(sourceObject))
 
   if (model.joinTable) {
@@ -41,7 +41,7 @@ export async function transferModel<SourceObjectType extends object>(
 
 async function recreateObjects(
   model: ModelCtor<Model>,
-  objects: readonly object[],
+  objects: readonly any[],
 ): Promise<void> {
   for (const obj of objects) {
     await model.destroy({ where: obj as any })
@@ -51,7 +51,7 @@ async function recreateObjects(
 
 async function upsertObjects(
   model: ModelCtor<Model>,
-  objects: readonly object[],
+  objects: readonly any[],
 ): Promise<void> {
   for (const obj of objects) {
     await model.upsert(obj)

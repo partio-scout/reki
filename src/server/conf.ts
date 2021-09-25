@@ -318,13 +318,10 @@ export const participantDatesMapper = (
       '2016-07-26',
       '2016-07-27',
     ],
-    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..': [
-      '2016-07-28',
-      '2016-07-29',
-      '2016-07-30',
-      '2016-07-31',
-    ],
-    'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.': [],
+    'Osallistun koko purkuleirille (4 päivää) ja saan alennusta leirimaksusta 20 euroa. Summa hyvitetään purkuleirin jälkeen..':
+      ['2016-07-28', '2016-07-29', '2016-07-30', '2016-07-31'],
+    'Osallistun vain rakennus-/purkuleirille tai Home Hospitalityn isäntäperheenä.':
+      [],
   }
 
   return _(wrappedParticipant.getPayments())

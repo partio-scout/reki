@@ -44,10 +44,8 @@ const parsedRouteInfo = RouteInfo.check(
   JSON.parse(routeInfoElement!.textContent!),
 )
 const Router: React.FC<{ routeInfo: RouteInfo }> = ({ routeInfo }) => {
-  const [
-    quickFilterConfiguration,
-    setQuickFilterConfiguration,
-  ] = React.useState<QuickFilterConfiguration>([])
+  const [quickFilterConfiguration, setQuickFilterConfiguration] =
+    React.useState<QuickFilterConfiguration>([])
 
   React.useEffect(() => {
     participantListFiltersResource

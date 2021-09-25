@@ -21,10 +21,10 @@ export const PropertySelect: React.FC<PropertySelectProps> = ({
   optionsByProperty,
 }) => {
   const value = currentSelection[property] || ''
-  const options = useMemo(() => _.sortBy(optionsByProperty[property] || []), [
-    optionsByProperty,
-    property,
-  ])
+  const options = useMemo(
+    () => _.sortBy(optionsByProperty[property] || []),
+    [optionsByProperty, property],
+  )
 
   const handleValueChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value
