@@ -82,6 +82,7 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
   >([])
   const [participantsLoading, setParticipantsLoading] = useState(true)
   const [participantsLoadForcer, setParticipantsLoadForcer] = useState(false)
+
   useEffect((): void => {
     const filterEntries = Object.entries(filter)
     if (filterEntries.length === 0) {
@@ -208,69 +209,75 @@ export const ParticipantListPage: React.FC<ParticipantListPageProps> = ({
         </div>
       </header>
       <main className="content-box">
-        <ParticipantCount participantCount={participantCount} />
-        <Table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>
-                <SelectAll
-                  hideLabel
-                  checked={checked}
-                  participants={participantIds}
-                  setChecked={setChecked}
-                />
-              </th>
-              {participantListColumns.map((column) =>
-                column.type === 'availableDates' ? (
-                  <th key={column.type} colSpan={availableDates.length}>
-                    {column.label}
+        {Object.entries(filter).length === 0 ? (
+          <p>Tee haku yllä olevilla kentillä</p>
+        ) : (
+          <>
+            <ParticipantCount participantCount={participantCount} />
+            <Table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>
+                    <SelectAll
+                      hideLabel
+                      checked={checked}
+                      participants={participantIds}
+                      setChecked={setChecked}
+                    />
                   </th>
-                ) : (
-                  <SortableHeaderCell
-                    key={column.type + column.property}
-                    property={column.property}
-                    label={
-                      typeof column.label === 'string' ? (
-                        column.label
-                      ) : (
-                        <div title={column.label.tooltip}>
-                          <Icon type={column.label.icon} />
-                        </div>
-                      )
-                    }
-                    order={order}
-                    orderChanged={updateOrder}
-                  />
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            <ParticipantRowsContainer
-              isChecked={isChecked}
-              checkboxCallback={handleCheckboxChange}
-              columns={participantListColumns}
-              availableDates={availableDates}
-              offset={offset}
-              participants={participants}
-              loading={participantsLoading}
+                  {participantListColumns.map((column) =>
+                    column.type === 'availableDates' ? (
+                      <th key={column.type} colSpan={availableDates.length}>
+                        {column.label}
+                      </th>
+                    ) : (
+                      <SortableHeaderCell
+                        key={column.type + column.property}
+                        property={column.property}
+                        label={
+                          typeof column.label === 'string' ? (
+                            column.label
+                          ) : (
+                            <div title={column.label.tooltip}>
+                              <Icon type={column.label.icon} />
+                            </div>
+                          )
+                        }
+                        order={order}
+                        orderChanged={updateOrder}
+                      />
+                    ),
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                <ParticipantRowsContainer
+                  isChecked={isChecked}
+                  checkboxCallback={handleCheckboxChange}
+                  columns={participantListColumns}
+                  availableDates={availableDates}
+                  offset={offset}
+                  participants={participants}
+                  loading={participantsLoading}
+                />
+              </tbody>
+            </Table>
+            <MassEdit
+              checked={checked}
+              participants={participantIds}
+              setChecked={setChecked}
+              onSubmit={handleMassEdit}
+              participantsLoading={participantsLoading}
             />
-          </tbody>
-        </Table>
-        <MassEdit
-          checked={checked}
-          participants={participantIds}
-          setChecked={setChecked}
-          onSubmit={handleMassEdit}
-          participantsLoading={participantsLoading}
-        />
-        <ListOffsetSelector
-          onOffsetChanged={updateOffset}
-          offset={offset}
-          limit={limit}
-          participantCount={participantCount}
-        />
+            <ListOffsetSelector
+              onOffsetChanged={updateOffset}
+              offset={offset}
+              limit={limit}
+              participantCount={participantCount}
+            />
+          </>
+        )}
       </main>
     </>
   )
