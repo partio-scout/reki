@@ -40,68 +40,68 @@ describe('Kuksa integration (yes, this is very slow)', () => {
     expect(models.Participant.count()).to.eventually.equal(53))
 
   it('correctly transfers participant extra info (free-text fields)', () =>
-    expect(models.Participant.findByPk(541)).to.eventually.have.property(
-      'staffPosition',
+    expect(models.Participant.findByPk(541)).to.eventually.have.nested.property(
+      'extraFields.staffPosition',
       'Perunankuorija',
     ))
 
   it('correctly transfers participant extra selection (multiple choice fields)', () =>
-    expect(models.Participant.findByPk(515)).to.eventually.have.property(
-      'ageGroup',
+    expect(models.Participant.findByPk(515)).to.eventually.have.nested.property(
+      'extraFields.ageGroup',
       'vaeltajat (18-22v.)',
     ))
 
   it('correctly transfers participant local group', () =>
-    expect(models.Participant.findByPk(10)).to.eventually.have.property(
-      'localGroup',
+    expect(models.Participant.findByPk(10)).to.eventually.have.nested.property(
+      'extraFields.localGroup',
       'Liitukauden Liitäjät ry',
     ))
 
   it('correctly transfers participant camp group', () =>
-    expect(models.Participant.findByPk(494)).to.eventually.have.property(
-      'campGroup',
+    expect(models.Participant.findByPk(494)).to.eventually.have.nested.property(
+      'extraFields.campGroup',
       'Leirilippukunta Savu',
     ))
 
   it('correctly transfers participant village', () =>
-    expect(models.Participant.findByPk(508)).to.eventually.have.property(
-      'village',
+    expect(models.Participant.findByPk(508)).to.eventually.have.nested.property(
+      'extraFields.village',
       'Testikylä',
     ))
 
   it('correctly transfers participant subcamp', () =>
-    expect(models.Participant.findByPk(38)).to.eventually.have.property(
-      'subCamp',
+    expect(models.Participant.findByPk(38)).to.eventually.have.nested.property(
+      'extraFields.subCamp',
       'Unity',
     ))
 
   it('sets nonScout status as true for participants with no memberNumber and no localGroup', () =>
-    expect(models.Participant.findByPk(515)).to.eventually.have.property(
-      'nonScout',
+    expect(models.Participant.findByPk(515)).to.eventually.have.nested.property(
+      'extraFields.nonScout',
       true,
     ))
 
   it('sets nonScout status as false if memberNumber is set', () =>
-    expect(models.Participant.findByPk(541)).to.eventually.have.property(
-      'nonScout',
+    expect(models.Participant.findByPk(541)).to.eventually.have.nested.property(
+      'extraFields.nonScout',
       false,
     ))
 
   it('sets nonScout status as false if localGroup is set', () =>
-    expect(models.Participant.findByPk(42)).to.eventually.have.property(
-      'nonScout',
+    expect(models.Participant.findByPk(42)).to.eventually.have.nested.property(
+      'extraFields.nonScout',
       false,
     ))
 
   it('sets internationalGuest status as true if localGroup is set', () =>
-    expect(models.Participant.findByPk(42)).to.eventually.have.property(
-      'internationalGuest',
+    expect(models.Participant.findByPk(42)).to.eventually.have.nested.property(
+      'extraFields.internationalGuest',
       true,
     ))
 
   it('sets internationalGuest status as false if no localGroup is set', () =>
-    expect(models.Participant.findByPk(542)).to.eventually.have.property(
-      'internationalGuest',
+    expect(models.Participant.findByPk(542)).to.eventually.have.nested.property(
+      'extraFields.internationalGuest',
       false,
     ))
 
@@ -129,42 +129,42 @@ describe('Kuksa integration (yes, this is very slow)', () => {
     ))
 
   it('sets the billed date as null if participant has not been billed', () =>
-    expect(models.Participant.findByPk(1)).to.eventually.have.property(
-      'billedDate',
+    expect(models.Participant.findByPk(1)).to.eventually.have.nested.property(
+      'extraFields.billedDate',
       null,
     ))
 
   it('sets the paid date as null if participant has not paid the bill', () =>
-    expect(models.Participant.findByPk(6)).to.eventually.have.property(
-      'paidDate',
+    expect(models.Participant.findByPk(6)).to.eventually.have.nested.property(
+      'extraFields.paidDate',
       null,
     ))
 
   it('sets the billed date if participant has been billed', () =>
-    expect(models.Participant.findByPk(6))
-      .to.eventually.have.property('billedDate')
-      .that.is.a('date'))
+    expect(models.Participant.findByPk(6)).to.eventually.have.nested.property(
+      'extraFields.billedDate',
+    ))
 
   it('sets the paid date if participant has paid', () =>
-    expect(models.Participant.findByPk(497))
-      .to.eventually.have.property('paidDate')
-      .that.is.a('date'))
+    expect(models.Participant.findByPk(497)).to.eventually.have.nested.property(
+      'extraFields.paidDate',
+    ))
 
   it('sets the billed date as null if payment status is missing', () =>
-    expect(models.Participant.findByPk(38)).to.eventually.have.property(
-      'billedDate',
+    expect(models.Participant.findByPk(38)).to.eventually.have.nested.property(
+      'extraFields.billedDate',
       null,
     ))
 
   it('sets the paid date as null if payment status is missing', () =>
-    expect(models.Participant.findByPk(38)).to.eventually.have.property(
-      'paidDate',
+    expect(models.Participant.findByPk(38)).to.eventually.have.nested.property(
+      'extraFields.paidDate',
       null,
     ))
 
   it('sets the correct amount of dates for participants with individual dates', () =>
     expect(models.Participant.findByPk(448, { include: ['dates'] }))
-      .to.eventually.have.property('dates')
+      .to.eventually.have.nested.property('dates')
       .that.has.length(2))
 
   it('sets the correct amount of dates for participants with full camp', () =>
