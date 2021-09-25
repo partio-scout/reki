@@ -58,15 +58,8 @@ export const ParticipantDetailsPage: React.FC<ParticipantDetailsPageProps> = ({
   }, [id, participantResource, showError])
 
   useEffect((): void => {
-    participantResource
-      .findById(id)
-      .then((participant) => ParticipantDetails.check(participant))
-      .then((participant) => setParticipantFromServer(participant))
-      .catch((error) => {
-        setParticipantFromServer(undefined)
-        showError('Osallistujan tietojen lataaminen epäonnistui', { error })
-      })
-  }, [id, participantResource, showError])
+    loadParticipant()
+  }, [loadParticipant])
 
   useEffect((): void => {
     setParticipant(participantFromServer)
@@ -146,35 +139,37 @@ export const ParticipantDetailsPage: React.FC<ParticipantDetailsPageProps> = ({
     const {
       firstName,
       lastName,
-      nickname,
-      dateOfBirth,
-      nonScout,
-      billedDate,
-      paidDate,
       memberNumber,
-      homeCity,
-      country,
-      email,
       phoneNumber,
-      ageGroup,
-      localGroup,
-      subCamp,
-      campGroup,
-      village,
-      internationalGuest,
-      staffPosition,
-      staffPositionInGenerator,
-      swimmingSkill,
-      willOfTheWisp,
-      willOfTheWispWave,
-      guardianOne,
-      guardianTwo,
-      diet,
-      familyCampProgramInfo,
-      childNaps,
       dates,
       allergies,
       selections,
+      extraFields: {
+        nickname,
+        dateOfBirth,
+        nonScout,
+        billedDate,
+        paidDate,
+        homeCity,
+        country,
+        email,
+        ageGroup,
+        localGroup,
+        subCamp,
+        campGroup,
+        village,
+        internationalGuest,
+        staffPosition,
+        staffPositionInGenerator,
+        swimmingSkill,
+        willOfTheWisp,
+        willOfTheWispWave,
+        guardianOne,
+        guardianTwo,
+        diet,
+        familyCampProgramInfo,
+        childNaps,
+      },
     } = participantDetails
 
     const participantName = `${firstName} ${lastName}`
@@ -184,12 +179,12 @@ export const ParticipantDetailsPage: React.FC<ParticipantDetailsPageProps> = ({
       ? 'EVP'
       : `Partiolainen (jäsennumero: ${memberNumber})`
 
-    const formattedBilledDate = billedDate
-      ? moment(billedDate).format('D.M.YYYY')
-      : '–'
-    const formattedPaidDate = paidDate
-      ? moment(paidDate).format('D.M.YYYY')
-      : '–'
+    const formattedBilledDate =
+      typeof billedDate === 'string'
+        ? moment(billedDate).format('D.M.YYYY')
+        : '–'
+    const formattedPaidDate =
+      typeof paidDate === 'string' ? moment(paidDate).format('D.M.YYYY') : '–'
 
     const presence = participantDetails.presence
     const presenceHistory = participantDetails.presenceHistory || []
@@ -221,7 +216,9 @@ export const ParticipantDetailsPage: React.FC<ParticipantDetailsPageProps> = ({
         <header className="content-box participant-details-header">
           <h1>
             {participantName}
-            <small> (synt. {moment(dateOfBirth).format('D.M.YYYY')})</small>
+            {typeof dateOfBirth === 'string' ? (
+              <small> (synt. {moment(dateOfBirth).format('D.M.YYYY')})</small>
+            ) : null}
           </h1>
           <h4>{participantStatus}</h4>
         </header>
