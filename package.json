@@ -130,7 +130,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "engines": {
-    "node": "12.16.3"
+    "node": "14.17.6"
   },
   "repository": {
     "type": "git",
