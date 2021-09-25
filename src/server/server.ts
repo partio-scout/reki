@@ -505,31 +505,35 @@ export function configureApp(
     requirePermission('view participants'),
     async (req, res) => {
       const params = listParticipantsParamsGetter(req.query)
-      const where = {
-        [Op.and]: [
-          ...params.textSearch.map((word) => ({
-            [Op.or]: [
-              ...Array.from(
-                models.Participant.searchableDefaultFieldNames.values(),
-              ).map((field) => ({
+      const whereParts = [
+        ...params.textSearch.map((word) => ({
+          [Op.or]: [
+            ...Array.from(
+              models.Participant.searchableDefaultFieldNames.values(),
+            ).map((field) => ({
+              [field]: {
+                [Op.iLike]: `%${word}%`,
+              },
+            })),
+            ...config.searchableFieldNames.map((field) => ({
+              extraFields: {
                 [field]: {
                   [Op.iLike]: `%${word}%`,
                 },
-              })),
-              ...config.searchableFieldNames.map((field) => ({
-                extraFields: {
-                  [field]: {
-                    [Op.iLike]: `%${word}%`,
-                  },
-                },
-              })),
-            ],
-          })),
-          ...params.fieldFilters.map(([field, value]) => ({
-            [field]: value,
-          })),
-        ],
-      }
+              },
+            })),
+          ],
+        })),
+        ...params.fieldFilters.map(([field, value]) => ({
+          [field]: value,
+        })),
+      ]
+      const where =
+        whereParts.length > 0
+          ? {
+              [Op.and]: whereParts,
+            }
+          : undefined
 
       // Date search
       const dateFilter = params.dateFilters.length
