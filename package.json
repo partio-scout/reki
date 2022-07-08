@@ -56,7 +56,7 @@
     "inquirer": "^7.1.0",
     "kuksa-event-api-client": "https://github.com/partio-scout/kuksa-event-api-client/releases/download/v5.0.1/kuksa-event-api-client.tar.gz",
     "lodash": "^4.17.21",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
