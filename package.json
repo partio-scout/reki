@@ -113,7 +113,7 @@
     "file-loader": "^6.0.0",
     "history": "^4.10.1",
     "lint-staged": "^10.2.2",
-    "mocha": "^7.1.2",
+    "mocha": "^10.1.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.4.1",
     "react": "^16.13.1",
