@@ -58,7 +58,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "passport-saml": "^3.2.2",
     "pg": "^8.0.3",
